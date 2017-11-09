@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document xmlns="http://maven.apache.org/XDOC/2.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
+
+  <properties>
+    <title>Beigesoftware, Beige-Accounting</title>
+   </properties>
+
+  <body>
+
+    <section name="Accounting of purchase returns.">
+
+      <p>At 16 Jan Bob detect what 12 eggs and 1 pound of cheese is not fresh, so he make purchase return to Carlo's grocery:
+          <p align="center"><img alt="Beige-Accounting purchase returns" style="max-width: 100%" src="images/purchase-return.png" /></p>
+      </p>
+      <p>Field <b>Site from</b> is optional. If it's empty then withdrawal will be from the first warehouse
+        site/s with available item/s.</p>
+      <p>It make complex accounting, warehouse and draw goods entries:
+          <p align="center"><img alt="Beige-Accounting purchase return report" style="max-width: 100%" src="images/purchase-return-report.png" /></p>
+      </p>
+
+      <p>After that purchase invoice full report shows goods withdrawal:
+          <p align="center"><img style="max-width: 100%" src="images/purchase-report-after-return.png" /></p>
+      </p>
+
+    </section>
+
+  </body>
+
+</document>

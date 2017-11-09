@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document xmlns="http://maven.apache.org/XDOC/2.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
+
+  <properties>
+    <title>Beigesoftware, Beige-Accounting</title>
+   </properties>
+
+  <body>
+
+    <section name="Beige-Accounting on Android.">
+<p>
+  This is same WEB application based on embedded A-Jetty server for Android.
+  Bob decided to try this application on his Android smart-phone.
+  He install Google Chrome.
+  Then he install Beige Accounting <b>beige-accounting-android-1.1.3.apk</b> from central Maven repository <a href="https://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.beigesoft%22">https://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.beigesoft%22</a>.
+  He started it then push button "Start" to start A-Jetty server. Then he push button "http://localhost:8080", chrome browser will be
+  opened this address. If you can't set chrome as default browser, then type this address by hand in it (these screenshots from Samsung DUOS Android 4.2.2):
+  <p align="center"><img style="max-width: 100%" src="images/android-start.png" /></p>
+  <p>He upload database as bobspizza.sqlite
+  into Google Drive from his notebook then download it on smart-phone then copy it into "BeigeAccountingBackup" directory.
+  Then he open Database manager and restore bobspizza.sqlite as current database.</p>
+  <p align="center"><img style="max-width: 100%" src="images/android-dbmanager.png" /></p>
+  <p align="center">He looks at the same data:</p>
+  <p align="center"><img style="max-width: 100%" src="images/android-data1.png" /></p>
+  <p align="center"><img style="max-width: 100%" src="images/android-data2.png" /></p>
+  <p align="center"><img style="max-width: 100%" src="images/android-balance.png" /></p>
+  <p>He can create new purchase:</p>
+  <p align="center"><img style="max-width: 100%" src="images/android-purchaseline.png" /></p>
+  <br></br>
+  <p>Screenshots from virtual Nexus 10 Android 7:</p>
+  <p align="center"><img style="max-width: 100%" src="images/android-vn10-a7-lsales.png" /></p>
+  <p align="center"><img style="max-width: 100%" src="images/android-vn10-a7-balance.png" /></p>
+  <br></br>
+  <p>Screenshots from virtual Nexus 10 Android 6:</p>
+  <p align="center"><img style="max-width: 100%" src="images/android-vn10-a6-dbmanager.png" /></p>
+  <p align="center"><img style="max-width: 100%" src="images/android-vn10-a6-mprocess.png" /></p>
+  <br></br>
+  <p>Screenshots from virtual Nexus 10 Android 5.0.1:</p>
+  <p align="center"><img style="max-width: 100%" src="images/android-vn10-a501-debtorscreditors.png" /></p>
+  
+</p>
+
+    </section>
+
+  </body>
+
+</document>

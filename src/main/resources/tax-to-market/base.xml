@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Copyright (c) 2016 Beigesoft ™
+ 
+ Licensed under the GNU General Public License (GPL), Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+ 
+  http://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html
+ -->
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+<comment>Base replicator/persister properties</comment>
+<entry key="classes"><!--make sure ORDER of entities!!!-->
+  org.beigesoft.accounting.persistable.Expense,
+  org.beigesoft.accounting.persistable.ExpenseUsed,
+  org.beigesoft.accounting.persistable.Account,
+  org.beigesoft.accounting.persistable.SubaccountLine,
+  org.beigesoft.accounting.persistable.Tax,
+  org.beigesoft.accounting.persistable.TaxUsed,
+  org.beigesoft.accounting.persistable.BankAccount,
+  org.beigesoft.accounting.persistable.BankAccountUsed,
+  org.beigesoft.accounting.persistable.Property,
+  org.beigesoft.accounting.persistable.PropertyUsed,
+  org.beigesoft.accounting.persistable.EmployeeCategory,
+  org.beigesoft.accounting.persistable.EmployeeCategoryUsed,
+  org.beigesoft.accounting.persistable.Employee,
+  org.beigesoft.accounting.persistable.EmployeeUsed,
+  org.beigesoft.accounting.persistable.WageType,
+  org.beigesoft.accounting.persistable.WageTypeUsed,
+  org.beigesoft.accounting.persistable.EmployeeYearWage,
+  org.beigesoft.accounting.persistable.InvItemType,
+  org.beigesoft.accounting.persistable.InvItemCategory,
+  org.beigesoft.accounting.persistable.InvItemCategoryUsed,
+  org.beigesoft.accounting.persistable.InvItemTaxCategory,
+  org.beigesoft.accounting.persistable.InvItemTaxCategoryLine,
+  org.beigesoft.accounting.persistable.InvItem,
+  org.beigesoft.accounting.persistable.ServicePurchasedCategory,
+  org.beigesoft.accounting.persistable.ServicePurchased,
+  org.beigesoft.accounting.persistable.ServiceToSaleCategory,
+  org.beigesoft.accounting.persistable.ServiceToSaleCategoryUsed,
+  org.beigesoft.accounting.persistable.ServiceToSale,
+  org.beigesoft.accounting.persistable.DebtorCreditorCategory,
+  org.beigesoft.accounting.persistable.DebtorCreditorCategoryUsed,
+  org.beigesoft.accounting.persistable.DebtorCreditor,
+  org.beigesoft.accounting.persistable.DebtorCreditorUsed,
+  org.beigesoft.accounting.persistable.Warehouse,
+  org.beigesoft.accounting.persistable.WarehouseSite,
+  org.beigesoft.accounting.persistable.AccountingEntries,
+  org.beigesoft.accounting.persistable.AccountingEntry</entry>
+<entry key="settingsKeysForClasses">filter,ISrvEntitySync</entry>
+<entry key="settingsKeysForFields">isEnabled, ISrvFieldWriter, ISrvEntityFieldFiller</entry>
+<entry key="excludeFields">isNews</entry>
+</properties>

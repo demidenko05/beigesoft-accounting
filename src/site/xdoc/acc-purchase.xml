@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document xmlns="http://maven.apache.org/XDOC/2.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
+
+  <properties>
+    <title>Beigesoftware, Beige-Accounting</title>
+   </properties>
+
+  <body>
+
+    <section name="Accounting of purchase, prepayments, payments tracking.">
+
+      <h4>Sales taxes payed for raw material (producing USA).</h4>
+      <p>In USA sales taxes paid for material/merchandise is "included into inventory" and they are deducting income tax.
+      Term "included into inventory" means that Inventory(not exactly inventory items costs) include your all capitalized and uncapitalized business expenses (rent, goods cost, taxes, etc),
+      and capitalized deducting income amount is calculated by equation,
+      see <a href="acc-bobs-taxes.html">Accounting of business owner taxes, retained earnings.</a>.
+      According <a href="https://www.irs.gov/pub/irs-pdf/p535.pdf">IRS 535 Business Expenses</a> sales taxes that Bob paid for materials
+      are business expenses.
+      IRS say that taxes (exclude Taxes assessed on the basis of income, I guess these are Bob's taxes) are Indirect Costs Required to be Capitalized.
+      So Bob should set accounting settings "Extract sales taxes from purchase" to true,
+      and set "is used" to true for method "PurchaseInvoice, Debit SalesTaxFromPurchase per Tax."
+      Also set "is used" asset account <b>Sales Tax From Purchase</b>.
+      Then fill inventory item tax category and set sales tax for each material.
+      Purchase invoice will extract taxes cost into <b>Sales Tax From Purchase</b>.
+      Then Bob can transfer amount from <b>Sales Tax From Purchase</b> to <b>Inventory Capitalized Cost</b>.
+      </p>
+      <p>Sales taxes due to buyer for your goods/service are extracted from sales revenue and they are not deducting your income tax,
+      this is rule for all countries.</p>
+      <p>For many other countries sales taxes (e.g. VAT) is always extracted from goods/service cost and they are deducting themselves.</p>
+
+      <p>Here is used fake sales tax 6% for goods with cheese (only for example purpose)!</p>
+      
+      <p>To apply sales tax for a material/merchandise you should:
+        <p>1. Add <b>Item Tax Category</b> e.g.:
+          <p align="center"><img alt="Beige-Accounting merchandise sales tax category" style="max-width: 100%" src="images/item-tax-category.png" /></p>
+        </p>
+        <p>1. Set <b>Item Tax Category</b> for material e.g.:
+          <p align="center"><img alt="Beige-Accounting set merchandise sales tax" style="max-width: 100%" src="images/set-merchandise-sales-tax.png" /></p>
+        </p>
+      </p>
+      
+      <h4>Prepayments</h4>
+      <p>At 14 Jan Bob prepaid goods to Carlo's grocery:
+          <p align="center"><img alt="Beige-Accounting prepayment for purchase" style="max-width: 100%" src="images/prepayment-for-purchase.png" /></p>
+      </p>
+      <p>It make simple accounting entries:
+          <p align="center"><img alt="Beige-Accounting prepayment for purchase report" style="max-width: 100%" src="images/prepayment-for-purchase-report.png" /></p>
+      </p>
+
+      <p>
+        After a document is accounted you can't change it, you can only reverse it
+        and change description of its accounting entries. Beige-Accounting is designed for high load,
+        this kind of software requires accuracy, otherwise you will get mess-up quickly. Just make database backup more frequently.
+      </p>
+      
+      <h4>Purchase</h4>
+      <p>
+        Bob bought at Jan 15 pizza ingredients and fill purchase invoice then account it:
+        <p align="center"><img alt="Beige-Accounting purchase invoice" style="max-width: 100%" src="images/purchase1.png" /></p>
+        <p>Field <b>pay by date</b> is optional.</p>
+        <p align="center">full report  is:</p>
+        <p align="center"><img alt="Beige-Accounting purchase invoice report" style="max-width: 100%" src="images/purchase2.png" /></p>
+        As you can see purchase invoice make accounting record prepayments to account payable. Only prepayment per invoice is allowed,
+        otherwise you should either make prepayments and payments tracking "by hand" or divide prepayment by pieces.
+      </p>
+
+      <h4>Payments tracking</h4>
+      <p>At 15 Jan Bob paid the rest to Carlo's grocery for purchase invoice#1:
+          <p align="center"><img alt="Beige-Accounting payment for purchase" style="max-width: 100%" src="images/payment-for-purchase.png" /></p>
+      </p>
+      <p>It make simple accounting entries:
+          <p align="center"><img alt="Beige-Accounting payment for purchase report" style="max-width: 100%" src="images/payment-for-purchase-report.png" /></p>
+      </p>
+      <p>After what purchase invoice payment tracking fields in list have changed:
+          <p align="center"><img alt="Beige-Accounting payment for purchase tracking" style="max-width: 100%" src="images/purchase-payment-tracking.png" /></p>
+      </p>
+
+
+    </section>
+
+  </body>
+
+</document>

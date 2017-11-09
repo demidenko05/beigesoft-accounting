@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Beigesoft"         
+    xmlns="http://maven.apache.org/DECORATION/1.4.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/DECORATION/1.4.0 http://maven.apache.org/xsd/decoration-1.4.0.xsd">
+  <skin>
+   <groupId>org.beigesoft</groupId>
+   <artifactId>beige-maven-skin</artifactId>
+   <version>1.0.1</version>
+  </skin>
+  <body>
+    <menu ref="reports" />
+    <menu name="Articles">
+      <item name="Specification Beigesoft Accounting" href="specification-accounting.html" />
+      <item name="Business logic" href="specification-business-logic.html" />
+      <item name="Beige Accounting, Bob's pizza example " href="bobs-pizza.html" />
+    </menu>
+  </body>
+</project>

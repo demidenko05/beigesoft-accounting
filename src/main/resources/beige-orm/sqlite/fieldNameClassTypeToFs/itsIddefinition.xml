@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Copyright (c) 2016 Beigesoft ™
+ 
+ Licensed under the GNU General Public License (GPL), Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+ 
+  http://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html
+ -->
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+<comment>Correspondence of class types to id definition. ORDER is essential, the LAST value will be used.</comment>
+<entry key="org.beigesoft.persistable.AHasIdLong">integer not null primary key</entry>
+<entry key="org.beigesoft.accounting.persistable.SubaccountLine">integer not null primary key autoincrement</entry>
+<entry key="org.beigesoft.accounting.persistable.BalanceAt">integer not null primary key autoincrement</entry>
+</properties>

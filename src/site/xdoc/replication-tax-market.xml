@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document xmlns="http://maven.apache.org/XDOC/2.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
+
+  <properties>
+    <title>Database replication from tax to market accounting specification #1.</title>
+  </properties>
+
+  <body>
+
+    <!-- The body of the document contains a number of sections -->
+    <section name="Database replication from tax to market accounting specification #1.">
+      <p>This is about data replication from Tax accounting (records are made according Tax Law rules)
+        to Market accounting (records are made according market rules),
+        e.g. in tax accounting bad debt must be reported at the end of the year after being approved by authority,
+        but in market accounting - immediately.
+      </p>
+      <p>Data to be replicate are: accounting entries (filter applied) and subaccounts (Products, services, etc.)</p>
+      
+      <h4>Interactive filter of accounting entries</h4>
+      <p>User can elect accounts to avoid they replication</p>
+      <p>Filter final (plus filter for immutable APersistableBase) string should be like:
+      <pre>
+         where (ITSID>0 and IDDATABASEBIRTH=2135) and ((ACCDEBIT isnull or ACCDEBIT not in ('BadDebts')) and (ACCCREDIT isnull or ACCCREDIT not in ('BadDebts','Property')))
+      </pre>
+      this filter disabled property deprecation entries and all bad debts entries.
+      This filter is implemented with <b>org.beigesoft.replicator.filter.FilterAvoidAccDebtCredit</b>.
+      </p>
+      <p>Persistable model org.beigesoft.replicator.ReplicationAccMethod:
+        <ul>
+          <li>ReplicationMethod fields.</li>
+          <li>excludeDebitAccounts - List&lt;ReplExcludeAccountsDebit&gt; exclude accounting entries with debits.</li>
+          <li>excludeCreditAccounts - List&lt;ReplExcludeAccountsCredit&gt; exclude accounting entries with credits.</li>
+        </ul>
+      </p>
+      <p>Persistable model org.beigesoft.replicator.ReplExcludeAccountsDebit consist of:
+        <ul>
+          <li>APersistableBase fields</li>
+          <li>itsOwner - ReplicationAccMethod, Not null</li>
+          <li>account - Account not null.</li>
+          <li>description - String nullable</li>
+        </ul>
+      </p>
+      <p>Persistable model org.beigesoft.replicator.ReplExcludeAccountsCredit consist of:
+        <ul>
+          <li>APersistableBase fields</li>
+          <li>itsOwner - ReplicationAccMethod, Not null</li>
+          <li>account - Account not null.</li>
+          <li>description - String nullable</li>
+        </ul>
+      </p>
+    </section>
+
+  </body>
+
+</document>

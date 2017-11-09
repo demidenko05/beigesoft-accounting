@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Copyright (c) 2016 Beigesoft ™
+ 
+ Licensed under the GNU General Public License (GPL), Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+ 
+  http://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html
+ -->
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+<comment>Correspondence of class types to its ID names. ORDER is essential, the LAST value will be used.</comment>
+<entry key="java.lang.Object">itsId</entry>
+<entry key="org.beigesoft.persistable.DatabaseInfo">databaseId</entry>
+<entry key="org.beigesoft.persistable.UserTomcat">itsUser</entry>
+<entry key="org.beigesoft.persistable.UserRoleTomcat">itsUser,itsRole</entry>
+<entry key="org.beigesoft.persistable.UserRoleJetty">itsUser,itsRole</entry>
+<entry key="org.beigesoft.accounting.persistable.WarehouseRest">warehouseSite,invItem,unitOfMeasure</entry>
+</properties>

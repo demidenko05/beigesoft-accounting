@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document xmlns="http://maven.apache.org/XDOC/2.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
+
+  <properties>
+    <title>Beige-software, Beige-Accounting</title>
+   </properties>
+
+  <body>
+
+    <section name="Beige-Accounting Bob's pizza example.">
+
+      <p>If it's slow, then try <a href="https://sites.google.com/site/beigesoftware/bobspizza">https://sites.google.com/site/beigesoftware/bobs-pizza</a></p>
+      
+      <h4>Topics:</h4>      
+      
+      <h5>
+        <a href="acc-settings.html">Software installation, accounting settings, chart of accounts, started capital.</a>
+      </h5>
+      
+      <h5>
+        <a href="acc-property.html">Accounting of property.</a>
+      </h5>
+
+      <h5>
+        <a href="acc-rent.html">Accounting of rent, electricity etc.</a>
+      </h5>
+
+      <h5>
+        <a href="acc-purchase.html">Accounting of purchase, prepayments, payments tracking.</a>
+      </h5>
+
+      <h5>
+        <a href="acc-purchase-return.html">Accounting of purchase returns.</a>
+      </h5>
+
+      <h5>
+        <a href="acc-employment.html">Accounting of employment (payroll).</a>
+      </h5>
+
+      <h5>
+        <a href="acc-manufacturing.html">Accounting of manufacturing (producing).</a>
+      </h5>
+
+      <h5>
+        <a href="acc-selling.html">Accounting of sales, prepayments, payments tracking.</a>
+      </h5>
+
+      <h5>
+        <a href="acc-sales-return.html">Accounting of sales returns.</a>
+      </h5>
+
+      <h5>
+        <a href="acc-loss.html">Accounting of goods loss/broke/stole.</a>
+      </h5>
+
+      <h5>
+        <a href="acc-bad-debts.html">Accounting of bad debts.</a>
+      </h5>
+
+      <h5>
+        <a href="acc-bobs-taxes.html">Accounting of business owner taxes, retained earnings.</a>
+      </h5>
+
+      <h5>
+        <a href="acc-android.html">Beige-Accounting on Android.</a>
+      </h5>
+
+      <h5>
+        <a href="import-db-web.html">Import database with WEB-service.</a>
+      </h5>
+
+      <h5>
+        <a href="acc-start-not-from-scratch.html">Beige-Accounting start not from scratch.</a>
+      </h5>
+
+      <h5>
+        <a href="acc-tax-market.html">Market (business) accounting, import data from tax accounting.</a>
+      </h5>
+
+      <h5>
+        * Sample databases <b>bobs-pizza-tax.sqlite (from scratch)</b>, <b>bobs-pizza-market.sqlite</b> and <b>bobs-pizza-nfs.sqlite (not from scratch)</b> you can download from <a href="https://sourceforge.net/projects/beige-accounting/">https://sourceforge.net/projects/beige-accounting/</a>
+      </h5>
+
+    </section>
+
+  </body>
+
+</document>

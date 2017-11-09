@@ -1,0 +1,1937 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document xmlns="http://maven.apache.org/XDOC/2.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
+
+  <properties>
+    <title>Beigesoft-Accounting specification version #3</title>
+  </properties>
+
+  <body>
+
+    <!-- The body of the document contains a number of sections -->
+    <section name="Beigesoft-Accounting specification version #2">
+      <p>It consist of accounting methods.</p>
+      <p>Any method is implemented with a persistable (stored in database) or not models, and business services that makes them.</p>
+      <p>Main models:
+        <ul>
+          <li>document e.g. invoice, bank statement etc.</li>
+          <li>calculated records from documents e.g. CogsEntry (for sale/loss), DrawMaterialEntry(for manufacture), CogsAverageRests.</li>
+          <li>accounting records derived from documents and calculated records according chosen accounting methods.</li>
+        </ul>
+      </p>
+      <p>Accounting services:
+        <ul>
+          <li>SQL queries that makes accounting records from documents and calculated records.</li>
+          <li>Accounting methods chooser that allow user to choose current accounting methods (SQL queries). For example COGS FIFO, Sales Tax Accural etc.</li>
+          <li>Persist service that persist accounting records into database</li>
+          <li>Check dirty service that check accounting/calculated records is consistent. For example user change sales tax from 9% to 10%.
+          If user change accounting methods e.g. from COGS FIFO to COGS LIFO then it is means that current accounting records are needed to be corrected.</li>
+        </ul>
+      </p>
+      <p>
+        There are two approaches to make accounting entries:
+        <ul>
+          <li>Inside document when it is completed. But this method is no possible for some accounting methods that are periodic,
+            e.g. accounting entries for Periodic COGS and Inventory are made at the end of period.
+          </li>
+          <li>Make entries for all documents (that has no accounting entries).</li>
+        </ul>
+        Some documents are accounting documents, so they make accounting (journal) entries immediately.
+        The most business documents that makes purchase, transfer, loss, sold of goods makes warehouse entries immediately.
+        These documents can be hold in different databases (distributed database) e.g. "Store #1", "Store #2",
+        so accounting records are made in the "central" database.
+        All accounting records are unchangeable i.e. they can be only adjusted or reversed.
+      </p>
+      
+      <h4>Triple ID {itsId, idDatabaseBirth, idBirth}</h4>
+      <p>Common practice for distributed databases is use UUID as primary key.
+      But in this case it requires field "ID of database birth" for tracking
+      entry origin and adding logic like "account/reverse foreign document".
+      So triple key that consist of primary integer key ITSID and implicit integer key pair "IDDATABASEBIRTH and ID BIRTH" is alternative solution.
+      This is for entities that have not "global or enterprise ID", e.g. currency USD has global ID=840,
+      employee Rob Swallow has SSN="12323-234-2132", so its ID="123232342132". Warehouse A in company B has
+      enterprise ID=1. This triple ID has business appearance - "idDatabaseBirth-idBorn", where idBorn=itsId if it
+      was born in current database, otherwise idBorn=idBirth. itsId is always primary key in current database.
+      </p>
+
+      <h4>Foreign documents</h4>
+      <p>This is for distributed database only. The best approach is only database that hold entries for all branches (warehouse A in city A, warehouse B in city B)
+      and these entries are made through Internet (WEB-browser, POS - WEB-service).</p>
+      <p>Documents that imported form another database can't be edited but accounted. For example accounting entries are made in office database,
+      but documents (sales) imported from store A database and store B database and these documents hasn't accounted in "their database birth".</p>
+      <p>If foreign document was accounted in "database birth" (its acc.entries has same idDatabaseBirth), then user can't reverse it in "central" DB, so reversing is allowed in the database where accounting entries was made.
+        This is means that it should be implemented logic for a document to allow account it either in database birth or in "central" database.
+      </p>
+      <p>Warehouse and draw goods/material entries can be made and reversed only in database birth.
+      Foreign document can not make such entries or reverse them. Such entries can be imported (replicated) for report usage.
+      So two databases can't make such entries for same warehouse site cause this is illogical.
+      A database is tied with local warehouse. ID warehouses (and places) must be enterprise unique e.g. database A warehouse A ID=1001,
+      database B warehouse B ID=2001 and so on.
+      </p>
+      <p>
+        Summary about foreign and local entities (these entities have triple ID):
+        <ul>
+          <li>Foreign entity can not be edited.</li>
+          <li>Unaccounted foreign document can be accounted and after reversed.</li>
+          <li>Accounted (in foreign DB) foreign document can not be reversed.</li>
+          <li>Warehouse or draw material entries (and their sources) and reversing them can be made only for local entities (document or line).</li>
+          <li>Unaccounted foreign document that makes warehouse or draw material entries also  can be accounted and after reversed (only accounting entries),
+          it can be reversed (warehouse or draw material entries) in database birth and this reversing document can not be replicated (only for database birth),
+          so such reversed document can not be replicated too.</li>
+        </ul>
+      </p>
+
+      <h5>Common persistable models</h5>
+      <p>Persistable model Account consist of:
+        <ul>
+          <li>AHasNameIdStringVersion fields</li>
+          <li>isUsed - Boolean, if used in current method, e.g. Sales Tax Payable not used if you are not Sales Tax Vendor (no selling taxable goods and services)</li>
+          <li>normalBalanceType - ENormalBalanceType, Not Null DEBIT(0) or CREDIT (1)</li>
+          <li>itsType - EAccountType.ASSET/LIABILITY/OWNERS_EQUITY/GROSS_INCOME_REVENUE/GROSS_INCOME_EXPENSE</li>
+           <li>itsNumber - String, Not Null number</li>
+          <li>subaccType - Integer Subacccount type, e.g. 2001 - InvItemCategory, 2003 - Tax, 2004 - DebtorCreditor...
+            This is constant [entity].constTypeCode()
+          </li>
+          <li>isCreatedByUser - Boolean, If account created programmatically then  user can't delete or change its main fields (ID, type, normal balance type).
+          </li>
+          <li>description - String</li>
+          <li>subaccounts - List&lt;SubaccountLine&gt; - list of existed subaccounts</li>
+        </ul>
+      </p>
+      <p>SubaccountLine consist of:
+        <ul>
+          <li>AHasIdLong fields</li>
+          <li>itsOwner - account</li>
+          <li>subaccId - Long subaccount ID, not null</li>
+          <li>subaccName - String subaccount name, not null</li>
+          <li>subaccType - Integer subaccount type, not null, must be same as owner's one</li>
+          <li>itsVersion - Version, changed time algorithm cause check dirty</li>
+        </ul>
+      </p>
+      
+      <p>Persistable model Currency consist of:
+        <ul>
+          <li>AHasNameIdLong fields</li>
+        </ul>
+      </p>
+      <p>Persistable model AccountingEntry consist of:
+        <ul>
+          <li>APersistableBase - fields</li>
+          <li>itsDate - Date, Not Null, from document</li>
+          <li>sourceId - Long, Not Null, document/line ID</li>
+          <li>sourceDatabaseBirth - Integer, Not Null, ID of database where source was born</li>
+          <li>sourceType - Integer, Not Null Source Type e.g. 1001 - PurchaseInvoiceLine, 1002 - SalesInvoiceLine, 1003 - AccountingEntriesLine.
+            This is constant [document/line].constTypeCode()
+          </li>
+          <li>reversedId - Long, reversed/reversing ACC.entry</li>
+          <li>reversedIdDatabaseBirth - Integer, ID database birth of reversed/reversing ACC.entry</li>
+          <li>accDebit - Account e.g Inventory</li>
+          <li>subaccDebitType - Integer Subacccount type, e.g. 2001 - InvItemCategory, 2003 - Tax, 2004 - DebtorCreditor.
+            This is constant entity.constTypeCode();
+          </li>
+          <li>subaccDebitId - Long foreign ID of subaccount</li>
+          <li>subaccDebit - String e.g. InvItem line1</li>
+          <li>debit - BigDecimal, Not Null.</li>
+          <li>accCredit - Account</li>
+          <li>subaccCreditType - Integer</li>
+          <li>subaccCreditId - Long</li>
+          <li>subaccCredit - String</li>
+          <li>credit - BigDecimal, Not Null.</li>
+          <li>description - String.</li>
+        </ul>
+        When accDebit and accCredit are not null then debit = credit for symmetric double entry,
+        overwise debit = 0 if accDebit is null or credit = 0 if accCredit is null for compound (e.g. triple) asymmetric entries.
+        After saving any AccountingEntry you can only edit its description.
+      </p>
+            
+      <p>SQL queries from document described in accounting/[document name].xml.<br></br>
+        XML entry is: Key is SQL file name, value is DEBIT/DEBITCREDIT/CREDIT, true/false if used in current method.
+        For example accounting/SalesInvoice.xml:
+        <pre style="white-space: pre-wrap;">
+          &lt;entry key="accRecDebCustInvCust2"&gt;DEBIT, true&lt;/entry&gt;
+          &lt;entry key="salesCreCustInvProdCat2"&gt;CREDIT, true&lt;/entry&gt;
+          &lt;entry key="salTaxPayAccuralCreCustInv2"&gt;CREDIT, true&lt;/entry&gt;
+          &lt;entry key="cogskncDebinvCreCustInvProdCat2"&gt;DEBITCREDIT, true&lt;/entry&gt;
+          &lt;entry key="cogskncDebinvCreCustInvProd2"&gt;DEBITCREDIT, false&lt;/entry&gt;
+        </pre>
+      </p>
+      
+      <h5>Base persistable models:</h5>
+      <p>Base persistable model APersistableBase consist of:
+        <ul>
+          <li>itsId - Long, Not Null, autogenerated PK</li>
+          <li>idDatabaseBirth - Integer, Not Null, ID of database where it was born</li>
+          <li>idBirth - Long, code from database where it was born</li>
+        </ul>
+        Fields idDatabaseBirth and idBirth makes entity ready for distributed database.
+      </p>
+      <p>Base persistable model standard APersistableBaseHasName with name consist of:
+        <ul>
+          <li>fields from APersistableBase</li>
+          <li>itsName - String, Not Null name</li>
+        </ul>
+      </p>
+      <p>Base model AHasNameIdLong consist of:
+        <ul>
+          <li>itsId - Long, Not Null, PK</li>
+          <li>itsName - String, Not Null name</li>
+        </ul>
+      </p>
+      <p>Interface IHasTypeCode (for any model that used in derived entries) consist of:
+        <ul>
+          <li>Integer constTypeCode();</li>
+        </ul>
+      </p>
+      <p>Interface IMakingWarehouseEntry extends IHasId&lt;Long&gt;, IHasTypeCode (for any model that load/draw warehouse) consist of:
+        <ul>
+          <li>InvItem getInvItem();</li>
+          <li>void setInvItem(InvItem pInvItem);</li>
+          <li>UnitOfMeasure getUnitOfMeasure();</li>
+          <li>void setUnitOfMeasure(UnitOfMeasure pUnitOfMeasure);</li>
+          <li>Long getItsQuantity();</li>
+          <li>void setItsQuantity(Long pItsQuantity);</li>
+          <li>Long getReversedId();</li>
+          <li>void setReversedId(Long pReversedId);</li>
+        </ul>
+      </p>
+      <p>Base model Subaccount consist of:
+        <ul>
+          <li>AHasNameIdLong fields, implements IHasTypeCode</li>
+          <li>itsVersion - Version, changed time algorithm cause check dirty of
+            calculated from it (derived) records</li>
+        </ul>
+      </p>
+      <p>Base model ASubaccountUsed consist of:
+        <ul>
+          <li>APersistableBaseVersion fields</li>
+          <li>getSubaccount() - T extends Subaccount</li>
+          <li>setSubaccount(T extends Subaccount)</li>
+        </ul>
+      </p>
+      <p>Base model AHasNameIdString consist of:
+        <ul>
+          <li>itsId - String, Not Null, PK</li>
+          <li>itsVersion - Version, changed time algorithm for replication.</li>
+          <li>itsName - String, Not Null name</li>
+        </ul>
+      </p>
+      <p>Base persistable model ADoc consist of:
+        <ul>
+          <li>fields from APersistableBase</li>
+          <li>itsVersion - Version, changed time algorithm cause check dirty of
+            calculated from it (derived) records</li>
+          <li>hasMadeAccEntries - Boolean, Not Null.</li>
+          <li>itsDate - Date, Not Null</li>
+          <li>itsTotal - BigDecimal, Not Null.</li>
+        </ul>
+        Document service prevent any changes when document has accounting entries.
+      </p>
+      <p>Base persistable model ADocWithTaxes consist of:
+        <ul>
+          <li>fields from ADoc</li>
+          <li>totalTaxes - BigDecimal, Not Null.</li>
+          <li>subtotal - BigDecimal, Not Null.</li>
+        </ul>
+      </p>
+      <p>Base persistable AInvItemMovement consist of:
+        <ul>
+          <li>standard APersistableBase fields</li>
+          <li>itsVersion - Long Version, autoincrement algorithm.</li>
+          <li>invItem - InvItem, Not Null</li>
+          <li>unitOfMeasure - UnitOfMeasure, not null</li>
+          <li>itsQuantity - BigDecimal, Not Null.</li>
+          <li>itsTotal - BigDecimal, Not Null.</li>
+          <li>constTypeCode - Integer, Not Null, source type code.</li>
+        </ul>
+      </p>
+      <p>Base persistable AInvItemMovementPrice consist of:
+        <ul>
+          <li>AInvItemMovement fields</li>
+          <li>itsPrice - BigDecimal, Not Null.</li>
+        </ul>
+      </p>
+      <p>Base persistable AInvItemMovementPriceTax consist of:
+        <ul>
+          <li>AInvItemMovementPrice fields</li>
+          <li>totalTaxes - BigDecimal, Not Null.</li>
+          <li>subtotal - BigDecimal, Not Null.</li>
+          <li>taxesDescription - String unchangeable, e.g. "tax1 10%=12, tax2 5%=6".</li>
+        </ul>
+      </p>
+      <p>Base persistable model ADrawItemEntry of withdrawal inventory item for use, sale, loss consist of:
+        <ul>
+          <li>standard APersistableBase fields</li>
+          <li>itsVersion - Long Version, autoincrement algorithm.</li>
+          <li>itsDate - Date, Not Null, from drawing document e.g. SalesInvoice</li>
+          <li>itsId - Long, Not Null, autogenerated PK</li>
+          <li>reversedId - Long, reversed/reversing line ID</li>
+          <li>sourceType - Integer, Not Null Source Type e.g. 1001 - PurchaseInvoiceLine, 5 - Manufacture.
+            This is constant [document/line].constTypeCode()
+          </li>
+          <li>sourceId - Long, Not Null, document/line ID</li>
+          <li>drawingId - Long, Not Null, drawing document/line ID, e.g. COGS.InvItem made by base source SalesInvoiceLine.
+          </li>
+          <li>drawingType - Integer, Not Null, drawing document/line source Type code</li>
+          <li>drawingOwnerId - Long, drawing document ID if exists, e.g. SalesInvoice ID.</li>
+          <li>invItem - InvItem, Not Null</li>
+          <li>unitOfMeasure - UnitOfMeasure, not null</li>
+          <li>itsQuantity - BigDecimal, Not Null.</li>
+          <li>itsPrice - BigDecimal, Not Null.</li>
+          <li>itsTotal - BigDecimal, Not Null.</li>
+        </ul>
+      </p>
+
+      <h5>Persistable model AccSettings</h5>
+      <p>Precision (amount of decimal spaces after dot) of currency depends of whether it is cost or price.
+      Price usually has 2 decimal places, cost has 4 cause it comes from division total on quantity.
+      Accounting settings has properties costPrecision, pricePrecision
+      and balancePrecision. balancePrecision uses just in balance report, it never round data in database.</p>
+      <p>It consist of:
+        <ul>
+          <li>itsId - Long, Not Null, PK</li>
+          <li>itsVersion - Version, changed time algorithm.</li>
+          <li>isExtractSalesTaxFromSales - Boolean, Not Null, if sales tax vendor sales taxes fields will be appeared in sales invoice, and taxes will be extracted into SalesTaxPayable</li>
+          <li>isExtractSalesTaxFromPurchase - Boolean, Not Null, if sales tax vendor sales taxes fields will be appeared in purchase invoice, and taxes will be extracted into SalesTaxFromPurchase,
+          this is for methods where payed taxes from purchase should be extracted from inventory e.g. VAT or sales taxes that should be capitalized (USA producing).</li>
+          <li>organization - String e.g. "Bob's Pizza".</li>
+          <li>currentAccYear - Date current accounting year to prevent wrong accounting entries.</li>
+          <li>balanceStorePeriod - EPeriod, Balance store period, not null, EPeriod.DAILY/WEEKLY/MONTHLY.</li>
+          <li>quantityPrecision - Integer, not Null, quantity precision by default 2</li>
+          <li>costPrecision - Integer, not Null, Cost precision</li>
+          <li>pricePrecision - Integer, not Null, price precision</li>
+          <li>balancePrecision - Integer, not Null, balance precision</li>
+          <li>currency - Currency, Not Null.</li>
+          <li>nameFillWageLinesMethod - Name of method(service in factory app-beans) that fill wage lines, not null.</li>
+          <li>description - String e.g. "method#1".</li>
+          <li>cogsMethod - CogsMethod, COGS method, e.g. FIFO Perpetual</li>
+          <li>regEmail - String, if exist</li>
+          <li>regAddress1 - String, if exist</li>
+          <li>regAddress2 - String, if exist</li>
+          <li>regZip - String, if exist</li>
+          <li>regCountry - String, if exist</li>
+          <li>regState - String, if exist</li>
+          <li>regCity - String, if exist</li>
+          <li>regPhone - String, if exist</li>
+          <li>accEntriesSources - List&gt;AccEntriesSourcesLine&lt; accounting entries sources</li>
+          <li>cogsItemSources - List&gt;CogsItemSourcesLine&lt; sources for InvItem to be draw by sales, loss (they have theRest>0
+          and makes accounting COGS entries)</li>
+          <li>drawMaterialSources - List&gt;DrawMaterialSourcesLine&lt; sources for material to be draw for manufacturing (they have theRest>0)</li>
+        </ul>
+        <p>Precision (amount of decimal spaces after dot) of currency depends of whether it is cost or price.
+        Price usually has 2 decimal places, cost has 4 cause it comes from division total on quantity.
+        Accounting settings has properties costPrecision, pricePrecision
+        and balancePrecision. balancePrecision uses just in balance report, it never round data in database.</p>
+        Model AccEntriesSourcesLine consist of:
+        <ul>
+          <li>itsId - Long, Not Null, PK</li>
+          <li>itsVersion - Version, changed time algorithm</li>
+          <li>sourceType - Integer, Not Null, source type code e.g. 1 - PurchaseInvoice</li>
+          <li>setCode - String, Not Null, source set code for this sourceType, e.g. "NoSalesTaxsubAccInvItemCategory"
+           user can't use sources with different setCode, unchangeable.
+          </li>
+          <li>itsOwner AccSettings, not Null</li>
+          <li>fileName -  String, Not Null,SQL file name without extension "sql", not Null, unchangeable</li>
+          <li>sourceIdName - String, Not Null, Source ID name, e.g. DRAWINGOWNERID or SALESINVOICE.ITSID,
+              unchangeable, not Null.</li>
+          <li>entriesSourceType - EEntriesSourceType.DEBIT/DEBITCREDIT/CREDIT, not Null, unchangeable</li>
+          <li>isUsed - if used in current method</li>
+          <li>description - String e.g. "SI: Debit Inventory per InvItem Category", unchangeable</li>
+        </ul>
+        Base Model ADrawItemSourcesLine consist of:
+        <ul>
+          <li>itsId - Long, Not Null, PK</li>
+          <li>itsVersion - Version, changed time algorithm.</li>
+          <li>sourceType - Integer, Not Null, source type code e.g. 1001 - PurchaseInvoiceLine</li>
+          <li>useInMethods - String, Not null, unchangeable, comma delimited array of CogsMethod ID e.g. "1, 2, 3"</li>
+          <li>itsOwner AccSettings, not Null</li>
+          <li>fileName - SQL file name without extension "sql", not Null, unchangeable</li>
+          <li>isUsed - if used in current method</li>
+          <li>description - String e.g. "PurchaseInvoiceLine any FIFO LIFO", unchangeable</li>
+        </ul>
+        Model CogsItemSourcesLine consist of:
+        <ul>
+          <li>ADrawItemSourcesLine fields</li>
+        </ul>
+        Model DrawMaterialSourcesLine consist of:
+        <ul>
+          <li>ADrawItemSourcesLine fields</li>
+        </ul>
+        Model CogsMethod consist of:
+        <ul>
+          <li>itsId - Long, Not Null, PK</li>
+          <li>itsVersion - Version, changed time algorithm cause check dirty of
+            calculated from it (derived) records</li>
+          <li>itsName - String, Not null, unchangeable, "FIFO perpetual"</li>
+          <li>fileName - SQL file name without extension "sql", not Null, unchangeable</li>
+        </ul>
+      </p>
+
+      <h4>Chart of accounts</h4>
+      <p> See insert.sql:
+      </p>
+
+      <h4>Generic document AccountingEntries</h4>
+      <p>consist of:
+        <ul>
+          <li>fields from APersistableBase</li>
+          <li>itsVersion - Version, changed time algorithm cause check dirty of
+            calculated from it (derived) records</li>
+          <li>itsDate - Date, Not Null</li>
+          <li>totalDebit - BigDecimal, Not Null</li>
+          <li>totalCredit - BigDecimal, Not Null</li>
+          <li>hasMadeAccEntries - Boolean, Not Null, if document has made accounting entries then user can only reverse whole document.</li>
+          <li>List&lt;AccountingEntry&gt; which sourceType = 3 and sourceId = AccountingEntries.itsId</li>
+        </ul>
+      </p>
+
+      <h5>Inventory, purchase, sales, uses, manufacture, loss</h5>
+      <p>Models:</p>
+      <p>Persistable model DebtorCreditor consist of:
+        <ul>
+          <li>Subaccount fields implements IHasTypeCode</li>
+          <li>itsCategory - DebtorCreditorCategory, not null</li>
+          <li>regEmail - String, if exist</li>
+          <li>regAddress1 - String, if exist</li>
+          <li>regAddress2 - String, if exist</li>
+          <li>regZip - String, if exist</li>
+          <li>regCountry - String, if exist</li>
+          <li>regState - String, if exist</li>
+          <li>regCity - String, if exist</li>
+          <li>regPhone - String, if exist</li>
+        </ul>
+        constTypeCode() = 2004<br></br>
+      </p>
+      <p>Persistable model DebtorCreditorUsed consist of:
+        <ul>
+          <li>ASubaccountUsed fields</li>
+          <li>subaccount - DebtorCreditor, not null</li>
+        </ul>
+      </p>
+      <p>Persistable model DebtorCreditorCategory consist of:
+        <ul>
+          <li>Subaccount fields implements IHasTypeCode</li>
+          <li>itsCategory - DebtorCreditorCategoryCategory, not null</li>
+        </ul>
+        constTypeCode() = 2005<br></br>
+      </p>
+      <p>Persistable model DebtorCreditorCategoryUsed consist of:
+        <ul>
+          <li>ASubaccountUsed fields</li>
+          <li>subaccount - DebtorCreditorCategory, not null</li>
+        </ul>
+      </p>
+      <p>Persistable model InvItemCategory consist of:
+        <ul>
+          <li>Subaccount fields implements IHasTypeCode</li>
+        </ul>
+        constTypeCode() = 2001<br></br>
+        For inventory item of type product(goods) it means product category
+      </p>
+      <p><b>Any subaccount may be used in input accounting entries document</b> that doesn't hold this
+      subaccount as foreign key, so <b>input accounting entries document</b> must report such subaccount in
+      their correspondent <b>[subaccount]Used</b> table to prevent delete that used subaccount</p>
+      <p>InvItemCategoryUsed consist of:
+        <ul>
+          <li>ASubaccountUsed fields</li>
+          <li>subaccount - InvItemCategory, not null</li>
+        </ul>
+      </p>
+      <p>Persistable model InvItemType consist of:
+        <ul>
+          <li>AHasNameIdLongVersion fields</li>
+        </ul>
+        Merchandise or stock in trade,
+        Raw materials, Work in process, Finished products, Supplies that physically
+        become a part of the item intended for sale.
+      </p>
+      <p>Persistable model InvItem consist of:
+        <ul>
+          <li>APersistableBaseHasName fields (Long ID)</li>
+          <li>itsVersion - Version, changed time algorithm cause check dirty of
+            calculated from it (derived) records</li>
+          <li>defUnitOfMeasure - UnitOfMeasure dafault not null </li>
+          <li>itsCategory - InvItemCategory, not null.</li>
+          <li>itsType - InvItemType, not null.</li>
+        </ul>
+      </p>
+      <p>UnitOfMeasure:
+        <ul>
+          <li>AHasNameIdLongVersion fields.</li>
+          <li>itsVersion - Version, changed time algorithm cause check dirty of
+            calculated from it (derived) records</li>
+          <li>itsName - string not null</li>
+        </ul>
+        1 each, 2 box, 3 dozen, 4 gramme, 5 pound, 6 kilogram, 7 cubic centimeters, 8 liter, 9 cubic inches, 10 cubic feet,
+        11 minute, 12 hour. They a unchangeable.
+      </p>
+      <h4>Purchase</h4>
+      <p>Persistable model PurchaseInvoice consist of:
+        <ul>
+          <li>ADocWithTaxes fields</li>
+          <li>vendor - DebtorCreditor, Not Null</li>
+          <li>paymentTo - PrepaymentTo</li>
+          <li>paymentTotal - BigDecimal, Not Null, Payment total (prepayment and afterpayment)</li>
+          <li>paymentDescription - String, Not Null, Payment description, read only</li>
+          <li>payByDate - Date, nullable, should pay by this date</li>
+          <li>itsLines - List&lt;PurchaseInvoiceLine&gt;</li>
+        </ul>
+        constTypeCode() = 1
+      </p>
+      <p>Model IDrawItemSource of entity that hold inventory item to draw for manufacture/sold/loss consist of:
+        <ul>
+          <li>IMakingWarehouseEntry methods</li>
+          <li>BigDecimal getTheRest();</li>
+          <li>void setTheRest(BigDecimal pTheRest);</li>
+        </ul>
+      </p>
+      <p>Persistable model PurchaseInvoiceLine implements IDrawItemSource consist of:
+        <ul>
+          <li>AInvItemMovementPrice fields</li>
+          <li>warehouseSite - WarehouseSite, Not Null, e.g. kitchen</li>
+          <li>itsOwner - PurchaseInvoice, Not null</li>
+          <li>theRest - BigDecimal, Not Null, The rest, charged by the quantity, draws by sales, loss etc.</li>
+          <li>reversedId - Long, ID of reversed/reversing PurchaseInvoiceLine</li>
+        </ul>
+        constTypeCode() = 1001
+      </p>
+      <p>
+      Method "PurInvInvCatPayDbtCrdt":
+      "PurchaseInvoice , Debit Inventory per InvItemCategory, Credit AccPayable per DebtorCreditor."
+      Accounting entries source: accounting/journalEntries/PurInvInvCatPayDbtCrdt.sql:
+      <pre style="white-space: pre-wrap;">
+select 1 as SOURCETYPE, PURCHASEINVOICE.:IDNAME as SOURCEID, PURCHASEINVOICE.ITSDATE,
+'Inventory' as ACCDEBIT, 2001 as SUBACCDEBITTYPE, INVITEMCATEGORY.ITSID as SUBACCDEBITID, INVITEMCATEGORY.ITSNAME as SUBACCDEBIT, sum(PURCHASEINVOICELINE.SUBTOTAL) as DEBIT,
+'AccPayable' as ACCCREDIT, 2004 as SUBACCCREDITTYPE, DEBTORCREDITOR.ITSID as SUBACCCREDITID, DEBTORCREDITOR.ITSNAME as SUBACCCREDIT, sum(PURCHASEINVOICELINE.ITSTOTAL) as CREDIT
+from PURCHASEINVOICELINE
+join PURCHASEINVOICE on PURCHASEINVOICE.ITSID = PURCHASEINVOICELINE.ITSOWNER
+join INVITEM on INVITEM.ITSID = PURCHASEINVOICELINE.INVITEM
+join INVITEMCATEGORY on INVITEMCATEGORY.ITSID = INVITEM.ITSCATEGORY
+join DEBTORCREDITOR on DEBTORCREDITOR.ITSID = PURCHASEINVOICE.VENDOR
+where PURCHASEINVOICELINE.REVERSEDID is null and PURCHASEINVOICE.REVERSEDID is null and HASMADEACCENTRIES = 0 :WHEREADD
+group by SOURCETYPE, SOURCEID, ITSDATE, ACCDEBIT, SUBACCDEBITTYPE, SUBACCDEBITID, SUBACCDEBIT, ACCCREDIT, SUBACCCREDITTYPE, SUBACCCREDITID, SUBACCCREDIT
+      </pre>
+      Where :IDNAME is either ITSID if document was born in current database or IDBIRTH if document was imported,
+      and :WHEREADD can be "and PURCHASEINVOICE.ITSID=1" to make accounting entries in document.
+      Or "and ITSDATE &gt;= 1459458000000 and ITSDATE &lt;= 1460622396965" to make accounting entries for all documents.
+      </p>
+
+      Method "PurInvAccPayDbtPrepayToCrdt":
+      "PurchaseInvoice , If prepaid Debit AccPayable per DebtorCreditor, Credit PrepaymentsTo per DebtorCreditor."
+      Accounting entries source: accounting/journalEntries/PurInvAccPayDbtPrepayToCrdt.sql:
+      <pre style="white-space: pre-wrap;">
+select 1 as SOURCETYPE, PURCHASEINVOICE.:IDNAME as SOURCEID, PURCHASEINVOICE.ITSDATE as ITSDATE,
+'AccPayable' as ACCDEBIT, 2004 as SUBACCDEBITTYPE, DEBTORCREDITOR.ITSID as SUBACCDEBITID, DEBTORCREDITOR.ITSNAME as SUBACCDEBIT, 
+case when PURCHASEINVOICE.ITSTOTAL &lt; PREPAYMENTTO.ITSTOTAL then PURCHASEINVOICE.ITSTOTAL else PREPAYMENTTO.ITSTOTAL end as DEBIT,
+'PrepaymentsTo' as ACCCREDIT, 2004 as SUBACCCREDITTYPE, DEBTORCREDITOR.ITSID as SUBACCCREDITID, DEBTORCREDITOR.ITSNAME as SUBACCCREDIT,
+case when PURCHASEINVOICE.ITSTOTAL &lt; PREPAYMENTTO.ITSTOTAL then PURCHASEINVOICE.ITSTOTAL else PREPAYMENTTO.ITSTOTAL end as CREDIT
+from PREPAYMENTTO
+join PURCHASEINVOICE on PREPAYMENTTO.ITSID = PURCHASEINVOICE.PREPAYMENTTO
+join DEBTORCREDITOR on DEBTORCREDITOR.ITSID = PURCHASEINVOICE.VENDOR
+where PREPAYMENTTO.REVERSEDID is null and PURCHASEINVOICE.REVERSEDID is null and PURCHASEINVOICE.HASMADEACCENTRIES = 0 :WHEREADD
+      </pre>
+
+      <h4>Payments to vendors</h4>
+      <p>Where are two documents:
+        <ul>
+          <li>PrepaymentTo - prepayment, it is referenced in Purchase invoice</li>
+          <li>PaymentTo - payments after purchase</li>
+        </ul>
+        These documents are used to track payments for purchase, to make accounting entries for prepayments/prepayments
+        and can be used for a sales tax deducting logic or other. You are free to use simple accounting entries instead.
+      </p>
+      <p>Persistable model PrepaymentTo consist of:
+        <ul>
+          <li>ADoc fields</li>
+          <li>purchaseInvoiceId - Long - settled by PurchaseInvoice</li>
+          <li>vendor - DebtorCreditor, Not Null</li>
+          <li>accCash - Account, Not null</li>
+          <li>subaccCashType - Integer, Subccount cash type if exist.</li>
+          <li>subaccCashId - Long, Subccount cash ID if exist.</li>
+          <li>subaccCash - String, Subccount cash appearance.</li>
+        </ul>
+        constTypeCode() = 7
+      </p>
+      Method "PrepaymentToDbtAccCashCrdt":
+      "PrepaymentTo, Debit PrepaymentsTo per DebtorCreditor, Credit [AccCash]."
+      Accounting entries source: accounting/journalEntries/PrepaymentToDbtAccCashCrdt.sql:
+      <pre style="white-space: pre-wrap;">
+select 7 as SOURCETYPE, PREPAYMENTTO.:IDNAME as SOURCEID, PREPAYMENTTO.ITSDATE, 'PrepaymentsTo' as ACCDEBIT,
+2004 as SUBACCDEBITTYPE, DEBTORCREDITOR.ITSID as SUBACCDEBITID, DEBTORCREDITOR.ITSNAME as SUBACCDEBIT, PREPAYMENTTO.ITSTOTAL as DEBIT,
+PREPAYMENTTO.ACCCASH as ACCCREDIT, SUBACCCASHTYPE  as SUBACCCREDITTYPE, SUBACCCASHID  as SUBACCCREDITID, SUBACCCASH as SUBACCCREDIT, PREPAYMENTTO.ITSTOTAL as CREDIT
+from PREPAYMENTTO
+join DEBTORCREDITOR on DEBTORCREDITOR.ITSID = PREPAYMENTTO.VENDOR
+where PREPAYMENTTO.REVERSEDID is null and HASMADEACCENTRIES = 0 :WHEREADD
+      </pre>
+      <p>Persistable model PaymentTo consist of:
+        <ul>
+          <li>ADoc fields</li>
+          <li>purchaseInvoice - PurchaseInvoice , Not Null</li>
+          <li>accCash - Account, Not null</li>
+          <li>subaccCashType - Integer, Subccount cash type if exist.</li>
+          <li>subaccCashId - Long, Subccount cash ID if exist.</li>
+          <li>subaccCash - String, Subccount cash appearance.</li>
+        </ul>
+        constTypeCode() = 8
+      </p>
+      Method "PaymentToAccPayDbtAccCashCrdt":
+      "PaymentTo, Debit AccPayable per DebtorCreditor, Credit [AccCash]."
+      Accounting entries source: accounting/journalEntries/PaymentToAccPayDbtAccCashCrdt.sql:
+      <pre style="white-space: pre-wrap;">
+select 8 as SOURCETYPE, PAYMENTTO.:IDNAME as SOURCEID, PAYMENTTO.ITSDATE, 'AccPayable' as ACCDEBIT,
+2004 as SUBACCDEBITTYPE, DEBTORCREDITOR.ITSID as SUBACCDEBITID, DEBTORCREDITOR.ITSNAME as SUBACCDEBIT, PAYMENTTO.ITSTOTAL as DEBIT,
+PAYMENTTO.ACCCASH as ACCCREDIT, SUBACCCASHTYPE  as SUBACCCREDITTYPE, SUBACCCASHID  as SUBACCCREDITID, SUBACCCASH as SUBACCCREDIT, PAYMENTTO.ITSTOTAL as CREDIT
+from PAYMENTTO
+join PURCHASEINVOICE on PURCHASEINVOICE.ITSID = PAYMENTTO.PURCHASEINVOICE
+join DEBTORCREDITOR on DEBTORCREDITOR.ITSID = PURCHASEINVOICE.VENDOR
+where PAYMENTTO.REVERSEDID is null and PAYMENTTO.HASMADEACCENTRIES = 0 and PURCHASEINVOICE.HASMADEACCENTRIES = 1 :WHEREADD
+      </pre>
+
+      <h4>Manufacturing</h4>
+      <p>Persistable model ManufacturingProcess implements IDrawItemSource, IDocWarehouse consist of:
+        <ul>
+          <li>AInvItemMovementCost fields</li>
+          <li>hasMadeAccEntries - Boolean, Not Null, if document has made accounting entries then user can only reverse whole document.</li>
+          <li>itsDate - Date, Not Null</li>
+          <li>itsTotal - BigDecimal, Not Null, date start of manufacturing</li>
+          <li>warehouseSite - WarehouseSite, Not Null, e.g. kitchen</li>
+          <li>itsPrice - BigDecimal, Not Null, Cost = (Total cost material + AdditionalCosts)/quantity of product.</li>
+          <li>idManufacture - Long, The Manufacture that draws this completed product into finished goods.</li>
+          <li>isComplete - Boolean. Sign what manufacturing is complete.
+            After that this ManufacturingProcess and its lines become none-editable.
+            User can only make accounting records (if hi didn't it)
+            and reverse whole manufacture.</li>
+          <li>reversedId - Long, ID of reversed/reversing ManufacturingProcess</li>
+          <li>usedMaterials - List&lt;UsedMaterialLine&gt; Used materials</li>
+          <li>additionCosts - List&lt;AdditionCostLine&gt; additional direct/indirect uncapitalized costs</li>
+        </ul>
+        constTypeCode() = 4
+      </p>
+      <p>Persistable model UsedMaterialLine implements IMakingWarehouseEntry, consist of:
+        <ul>
+          <li>AInvItemMovementPrice fields</li>
+          <li>itsDate - Date, Not Null</li>
+          <li>itsOwner - ManufacturingProcess, Not null</li>
+          <li>reversedId - Long, ID of reversed/reversing UsedMaterialLine</li>
+        </ul>
+        constTypeCode() = 1003<br></br>
+        It makes UseMaterialEntry entries that withdrawal material usually from PurchaseInvoiceLine
+        by ISrvUseMaterialEntry
+      </p>
+      <p>Persistable model AdditionCostLine consist of:
+        <ul>
+          <li>APersistableBase fields</li>
+          <li>itsOwner - ManufacturingProcess, Not null</li>
+          <li>itsDate - Date, Not Null</li>
+          <li>accExpense - Account, Not Null, e.g. WagesExpences</li>
+          <li>subaccExpenseType - Integer, Not Null, Subacccount type.
+            This is constant [entity].constTypeCode() e.g. 2007 EmployeeCategory</li>
+          <li>subaccExpenseId - Long, Not Null, Foreign ID of subaccount</li>
+          <li>subaccExpense - String, Not Null, Appearance of subaccount e.g. "Mark Crown"</li>
+          <li>itsTotal - BigDecimal, Not Null.</li>
+          <li>description - String.</li>
+          <li>reversedId - Long, ID of reversed/reversing AdditionCostLine</li>
+        </ul>
+        constTypeCode() = 1004
+      </p>
+      Method "ManufacturingUsedMaterialProductInvCat":
+      "ManufacturingProcess , Used material, Debit Inventory per InvItemCategory (from head), Credit Inventory per InvItemCategory (from lines)."
+      Accounting entries source: accounting/journalEntries/ManufacturingUsedMaterialProductInvCat.sql:
+      <pre style="white-space: pre-wrap;">
+select 4 as SOURCETYPE, MANUFACTURINGPROCESS.:IDNAME as SOURCEID, MANUFACTURINGPROCESS.ITSDATE,
+'Inventory' as ACCDEBIT, 2001 as SUBACCDEBITTYPE, INVITEMCATEGORYPR.ITSID as SUBACCDEBITID, INVITEMCATEGORYPR.ITSNAME as SUBACCDEBIT, sum(USEDMATERIALLINE.ITSTOTAL) as DEBIT,
+'Inventory' as ACCCREDIT, 2001 as SUBACCCREDITTYPE, INVITEMCATEGORYMAT.ITSID as SUBACCCREDITID, INVITEMCATEGORYMAT.ITSNAME as SUBACCCREDIT, sum(USEDMATERIALLINE.ITSTOTAL) as CREDIT
+from USEDMATERIALLINE
+join INVITEM as INVITEMMAT on INVITEMMAT.ITSID = USEDMATERIALLINE.INVITEM
+join INVITEMCATEGORY as INVITEMCATEGORYMAT on INVITEMCATEGORYMAT.ITSID = INVITEMMAT.ITSCATEGORY
+join MANUFACTURINGPROCESS on MANUFACTURINGPROCESS.ITSID = USEDMATERIALLINE.ITSOWNER
+join INVITEM as INVITEMPR on INVITEMPR.ITSID = MANUFACTURINGPROCESS.INVITEM
+join INVITEMCATEGORY as INVITEMCATEGORYPR on INVITEMCATEGORYPR.ITSID = INVITEMPR.ITSCATEGORY
+where USEDMATERIALLINE.REVERSEDID is null and MANUFACTURINGPROCESS.REVERSEDID is null and HASMADEACCENTRIES = 0 :WHEREADD
+group by SOURCETYPE, SOURCEID, MANUFACTURINGPROCESS.ITSDATE, ACCDEBIT, SUBACCDEBITTYPE, SUBACCDEBITID, SUBACCDEBIT, ACCCREDIT, SUBACCCREDITTYPE, SUBACCCREDITID, SUBACCCREDIT
+      </pre>
+      Method "ManufacturingAdditionCostInvCat":
+      "ManufacturingProcess , addition cost, Debit Inventory per InvItemCategory (from head), Credit accExpense per subAccccExpense (from lines)."
+      Accounting entries source: accounting/journalEntries/ManufacturingAdditionCostInvCat.sql:
+      <pre style="white-space: pre-wrap;">
+select 4 as SOURCETYPE, MANUFACTURINGPROCESS.:IDNAME as SOURCEID, MANUFACTURINGPROCESS.ITSDATE,
+'Inventory' as ACCDEBIT, 2001 as SUBACCDEBITTYPE, INVITEMCATEGORYPR.ITSID as SUBACCDEBITID, INVITEMCATEGORYPR.ITSNAME as SUBACCDEBIT, sum(ADDITIONCOSTLINE.ITSTOTAL) as DEBIT,
+ACCEXPENSE  as ACCCREDIT, SUBACCEXPENSETYPE  as SUBACCCREDITTYPE, SUBACCEXPENSEID  as SUBACCCREDITID, SUBACCEXPENSE  as SUBACCCREDIT, sum(ADDITIONCOSTLINE.ITSTOTAL) as CREDIT
+from ADDITIONCOSTLINE
+join MANUFACTURINGPROCESS on MANUFACTURINGPROCESS.ITSID = ADDITIONCOSTLINE.ITSOWNER
+join INVITEM as INVITEMPR on INVITEMPR.ITSID = MANUFACTURINGPROCESS.INVITEM
+join INVITEMCATEGORY as INVITEMCATEGORYPR on INVITEMCATEGORYPR.ITSID = INVITEMPR.ITSCATEGORY
+where MANUFACTURINGPROCESS.REVERSEDID is null and HASMADEACCENTRIES = 0 :WHEREADD
+group by SOURCETYPE, SOURCEID, MANUFACTURINGPROCESS.ITSDATE, ACCDEBIT, SUBACCDEBITTYPE, SUBACCDEBITID, SUBACCDEBIT, ACCCREDIT, SUBACCCREDITTYPE, SUBACCCREDITID, SUBACCCREDIT
+      </pre>
+      <p>Persistable model UseMaterialEntry consist of:
+        <ul>
+          <li>ADrawItemEntry fields</li>
+        </ul>
+        It used to withdrawals material from purchase line where the rest>0 to manufacturing
+        according UsedMaterialLine, so UsedMaterialLine.itsPrice = sum(UseMaterialEntry.itsTotal)/UsedMaterialLine.itsQuantity
+      </p>
+      <p>ServicePurchased ISrvUseMaterialEntry do follow:
+        <ul>
+          <li>withdrawal(IMakingWarehouseEntry source, Date pDate, Long pDrawingOwnerId) - Withdrawal warehouse material for manufacture product
+            pDrawingOwnerId drawing Owner Id if exists, e.g. SalesInvoice.itsId for SalesInvoiceLine
+          </li>
+          <li>reverseDraw(IMakingWarehouseEntry source) - Reverse a withdrawal material for manufacture product.</li>
+        </ul>
+      </p>
+      <p>ServicePurchased SrvUseMaterialEntry implements ISrvUseMaterialEntry use SQL query to reveal material source by FIFO/LIFO:<br></br>
+        materials to draw source FIFO: trade/drawItemFifoSourceM1S.sql:
+        <pre style="white-space: pre-wrap;">
+select *
+from
+  (
+    :SOURCEALL
+  ) as UNION_RECORDS
+order by ITSDATE;
+        </pre>
+        materials to draw source LIFO: trade/drawItemLifoSourceM1S.sql:
+        <pre style="white-space: pre-wrap;">
+select *
+from
+  (
+    :SOURCEALL
+  ) as UNION_RECORDS
+order by ITSDATE desc;
+        </pre>
+        :SOURCEALL is set of SQL queries:<br></br>
+        Method "DRAWPURCHASELINEM1": "source of material/product/merchandise from PurchaseInvoiceLine"
+        Accounting entries source: trade/drawPurchaseLineM1.sql:
+        <pre style="white-space: pre-wrap;">
+select 1001 as SOURCETYPE, PURCHASEINVOICELINE.:IDNAME as SOURCEID, 1 as SOURCEOWNERTYPE, PURCHASEINVOICE.ITSID as SOURCEOWNERID, PURCHASEINVOICE.ITSDATE, THEREST
+from PURCHASEINVOICELINE
+join PURCHASEINVOICE on PURCHASEINVOICE.ITSID = PURCHASEINVOICELINE.ITSOWNER
+where PURCHASEINVOICELINE.REVERSEDID is null and THEREST>0 and INVITEM=:INVITEM and UNITOFMEASURE=:UNITOFMEASURE
+        </pre>
+        These sources user elect in AccSettings.cogsMetod (FIFO/LIFO) and set of DrawMaterialSourcesLine that have isUsed = true
+      </p>
+      <p>Persistable model Manufacture implements IDrawItemSource (it just transfers completed product in progress into finished product) consist of:
+        <ul>
+          <li>AInvItemMovement fields</li>
+          <li>hasMadeAccEntries - Boolean, Not Null, if document has made accounting entries then user can only reverse whole document.</li>
+          <li>itsDate - Date, Not Null</li>
+          <li>manufacturingProcess - ManufacturingProcess, Not Null, Basis manufacturing process</li>
+          <li>itsTotal - BigDecimal, Not Null, Total from ManufacturingProcess, none-editable.</li>
+          <li>warehouseSite - WarehouseSite, Not Null, e.g. refrigerator</li>
+          <li>itsPrice - BigDecimal, Not Null, Cost from ManufacturingProcess, none-editable.</li>
+          <li>theRest - BigDecimal, Not Null, The rest, charged by the quantity, draws by sales, loss etc.</li>
+          <li>reversedId - Long, ID of reversed/reversing manufacture</li>
+        </ul>
+        constTypeCode() = 5
+      </p>
+      Method "ManufactureProductInvCat":
+      "Manufacture, Debit Inventory per InvItemCategory (from manufacture), Credit Inventory per InvItemCategory (from manufacturing process)."
+      Accounting entries source: accounting/journalEntries/ManufactureProductInvCat.sql:
+      <pre style="white-space: pre-wrap;">
+select 5 as SOURCETYPE, MANUFACTURE.:IDNAME as SOURCEID, MANUFACTURE.ITSDATE,
+'Inventory' as ACCDEBIT, 2001 as SUBACCDEBITTYPE, INVITEMCATEGORYM.ITSID as SUBACCDEBITID, INVITEMCATEGORYM.ITSNAME as SUBACCDEBIT, sum(MANUFACTURE.ITSTOTAL) as DEBIT,
+'Inventory' as ACCCREDIT, 2001 as SUBACCCREDITTYPE, INVITEMCATEGORYMP.ITSID as SUBACCCREDITID, INVITEMCATEGORYMP.ITSNAME as SUBACCCREDIT, sum(MANUFACTURE.ITSTOTAL) as CREDIT
+from MANUFACTURE
+join INVITEM as INVITEMM on INVITEMM.ITSID = MANUFACTURE.INVITEM
+join INVITEMCATEGORY as INVITEMCATEGORYM on INVITEMCATEGORYM.ITSID = INVITEMM.ITSCATEGORY
+join MANUFACTURINGPROCESS on MANUFACTURINGPROCESS.ITSID = MANUFACTURE.MANUFACTURINGPROCESS 
+join INVITEM as INVITEMMP on INVITEMMP.ITSID = MANUFACTURINGPROCESS.INVITEM
+join INVITEMCATEGORY as INVITEMCATEGORYMP on INVITEMCATEGORYMP.ITSID = INVITEMMP.ITSCATEGORY
+where MANUFACTURE.REVERSEDID is null  and MANUFACTURE.HASMADEACCENTRIES = 0 :WHEREADD
+group by SOURCETYPE, SOURCEID, MANUFACTURE.ITSDATE, ACCDEBIT, SUBACCDEBITTYPE, SUBACCDEBITID, SUBACCDEBIT, ACCCREDIT, SUBACCCREDITTYPE, SUBACCCREDITID, SUBACCCREDIT
+      </pre>
+
+      <h4>Sales</h4>
+      <p>Persistable model SalesInvoice (sell) consist of:
+        <ul>
+          <li>ADocWithTaxes fields, implements IDocWarehouse</li>
+          <li>customer - DebtorCreditor, Not Null</li>
+          <li>itsLines - List&lt;SalesInvoiceLine&gt; lines</li>
+          <li>taxesLines - List&lt;SalesInvoiceTaxLine&gt; taxes lines</li>
+          <li>prepaymentFrom - PrepaymentFrom </li>
+          <li>payByDate - Date, nullable, should pay by this date</li>
+          <li>paymentTotal - BigDecimal, Not Null, Payment total (prepayment and afterpayment)</li>
+          <li>paymentTotal - BigDecimal, Not Null, Payment total (prepayment and afterpayment)</li>
+          <li>paymentDescription - String, Not Null, Payment description, read only</li>
+        </ul>
+        constTypeCode() = 2
+      </p>
+      <p>Persistable model SalesInvoiceLine consist of:
+        <ul>
+          <li>AInvItemMovementPriceTax fields</li>
+          <li>itsOwner - SalesInvoice, Not null</li>
+          <li>warehouseSiteFo - WarehouseSite, nullable  Warehouse site from.
+          If it's empty (null) then withdrawal will be from the first
+          site/s that has the goods, otherwise withdrawal will be exactly from this site.</li>
+          <li>reversedId - Long, ID of reversed/reversing SalesInvoiceLine</li>
+        </ul>
+        constTypeCode() = 1002
+      </p>
+      Method "SalInvInvCatRecDbtCrdt": "SalesInvoice, AccReceivable.DebtorCreditor Credit Sales.InvItemCategory"
+      Accounting entries source: accounting/journalEntries/SalInvNoTaxInvCatRecDbtCrdt.sql:
+      <pre style="white-space: pre-wrap;">
+select 2 as SOURCETYPE, SALESINVOICE.:IDNAME as SOURCEID, SALESINVOICE.ITSDATE,
+'AccReceivable' as ACCDEBIT, 2004 as SUBACCDEBITTYPE, DEBTORCREDITOR.ITSID as SUBACCDEBITID, DEBTORCREDITOR.ITSNAME as SUBACCDEBIT, sum(SALESINVOICELINE.ITSTOTAL) as DEBIT,
+'Sales' as ACCCREDIT, 2001 as SUBACCCREDITTYPE, INVITEMCATEGORY.ITSID as SUBACCCREDITID, INVITEMCATEGORY.ITSNAME as SUBACCCREDIT, sum(SALESINVOICELINE.SUBTOTAL) as CREDIT
+from SALESINVOICELINE
+join SALESINVOICE on SALESINVOICE.ITSID = SALESINVOICELINE.ITSOWNER
+join INVITEM on INVITEM.ITSID = SALESINVOICELINE.INVITEM
+join INVITEMCATEGORY on INVITEMCATEGORY.ITSID = INVITEM.ITSCATEGORY
+join DEBTORCREDITOR on DEBTORCREDITOR.ITSID = SALESINVOICE.CUSTOMER
+where SALESINVOICELINE.REVERSEDID is null and SALESINVOICE.REVERSEDID is null and HASMADEACCENTRIES = 0 :WHEREADD
+group by SOURCETYPE, SOURCEID, ITSDATE, ACCDEBIT, SUBACCDEBITTYPE, SUBACCDEBITID, SUBACCDEBIT, ACCCREDIT, SUBACCCREDITTYPE, SUBACCCREDITID, SUBACCCREDIT
+      </pre>
+
+      <h4>Payments from  customers</h4>
+      <p>Where are two documents:
+        <ul>
+          <li>PrepaymentFrom - prepayment</li>
+          <li>PaymentFrom - payments after sales</li>
+        </ul>
+        These documents are used to track payments for sales, to make accounting entries for prepayments/prepayments.
+        You are free to use simple accounting entries instead.
+      </p>
+      <p>Persistable model PrepaymentFrom consist of:
+        <ul>
+          <li>ADoc fields</li>
+          <li>salesInvoiceId - Long - settled by SalesInvoice</li>
+          <li>customer - DebtorCreditor, Not Null</li>
+          <li>accCash - Account, Not null</li>
+          <li>subaccCashType - Integer, Subccount cash type if exist.</li>
+          <li>subaccCashId - Long, Subccount cash ID if exist.</li>
+          <li>subaccCash - String, Subccount cash appearance.</li>
+        </ul>
+        constTypeCode() = 9
+      </p>
+      Method "PrepaymentFromCrtAccCashDbt":
+      "PrepaymentFrom, Debit [AccCash], Credit PrepaymentsFrom per DebtorCreditor."
+      Accounting entries source: accounting/journalEntries/PrepaymentFromCrtAccCashDbt.sql:
+      <pre style="white-space: pre-wrap;">
+select 9 as SOURCETYPE, PREPAYMENTFROM.:IDNAME as SOURCEID, PREPAYMENTFROM.ITSDATE, PREPAYMENTFROM.ACCCASH as ACCDEBIT,
+SUBACCCASHTYPE as SUBACCDEBITTYPE, SUBACCCASHID as SUBACCDEBITID, SUBACCCASH as SUBACCDEBIT, PREPAYMENTFROM.ITSTOTAL as DEBIT,
+'PrepaymentsFrom' as ACCCREDIT, 2004 as SUBACCCREDITTYPE, DEBTORCREDITOR.ITSID as SUBACCCREDITID, DEBTORCREDITOR.ITSNAME as SUBACCCREDIT, PREPAYMENTFROM.ITSTOTAL as CREDIT
+from PREPAYMENTFROM
+join DEBTORCREDITOR on DEBTORCREDITOR.ITSID = PREPAYMENTFROM.CUSTOMER
+where PREPAYMENTFROM.REVERSEDID is null and HASMADEACCENTRIES = 0 :WHEREADD
+      </pre>
+
+      Method "SalInvPrepayFromDbtAccRecievCrdt":
+      "SalesInvoice , If prepaid Debit PrepaymentsFrom per DebtorCreditor, Credit AccReceivable per DebtorCreditor."
+      Accounting entries source: accounting/journalEntries/SalInvPrepayFromDbtAccRecievCrdt.sql:
+      <pre style="white-space: pre-wrap;">
+select 2 as SOURCETYPE, SALESINVOICE.:IDNAME as SOURCEID, SALESINVOICE.ITSDATE as ITSDATE,
+'PrepaymentsFrom' as ACCDEBIT, 2004 as SUBACCDEBITTYPE, DEBTORCREDITOR.ITSID as SUBACCDEBITID, DEBTORCREDITOR.ITSNAME as SUBACCDEBIT, 
+case when SALESINVOICE.ITSTOTAL &lt; PREPAYMENTFROM.ITSTOTAL then SALESINVOICE.ITSTOTAL else PREPAYMENTFROM.ITSTOTAL end as DEBIT,
+'AccReceivable' as ACCCREDIT, 2004 as SUBACCCREDITTYPE, DEBTORCREDITOR.ITSID as SUBACCCREDITID, DEBTORCREDITOR.ITSNAME as SUBACCCREDIT,
+case when SALESINVOICE.ITSTOTAL &lt; PREPAYMENTFROM.ITSTOTAL then SALESINVOICE.ITSTOTAL else PREPAYMENTFROM.ITSTOTAL end as CREDIT
+from PREPAYMENTFROM
+join SALESINVOICE on PREPAYMENTFROM.ITSID = SALESINVOICE.PREPAYMENTFROM
+join DEBTORCREDITOR on DEBTORCREDITOR.ITSID = SALESINVOICE.CUSTOMER
+where PREPAYMENTFROM.REVERSEDID is null and SALESINVOICE.REVERSEDID is null and SALESINVOICE.HASMADEACCENTRIES = 0 :WHEREADD
+      </pre>
+
+      <p>Persistable model PaymentFrom consist of:
+        <ul>
+          <li>ADoc fields</li>
+          <li>salesInvoice - SalesInvoice , Not Null</li>
+          <li>accCash - Account, Not null</li>
+          <li>subaccCashType - Integer, Subccount cash type if exist.</li>
+          <li>subaccCashId - Long, Subccount cash ID if exist.</li>
+          <li>subaccCash - String, Subccount cash appearance.</li>
+        </ul>
+        constTypeCode() = 10
+      </p>
+      Method "PaymentFromCashDbtAccRecievCrdt":
+      "PaymentFrom, Debit [AccCash], Credit AccReceivable per DebtorCreditor."
+      Accounting entries source: accounting/journalEntries/PaymentFromCashDbtAccRecievCrdt.sql:
+      <pre style="white-space: pre-wrap;">
+select 10 as SOURCETYPE, PAYMENTFROM.:IDNAME as SOURCEID, PAYMENTFROM.ITSDATE, PAYMENTFROM.ACCCASH as ACCDEBIT,
+SUBACCCASHTYPE as SUBACCDEBITTYPE, SUBACCCASHID as SUBACCDEBITID, SUBACCCASH as SUBACCDEBIT, PAYMENTFROM.ITSTOTAL as DEBIT,
+'AccReceivable' as ACCCREDIT, 2004  as SUBACCCREDITTYPE, DEBTORCREDITOR.ITSID as SUBACCCREDITID, DEBTORCREDITOR.ITSNAME as SUBACCCREDIT, PAYMENTFROM.ITSTOTAL as CREDIT
+from PAYMENTFROM
+join SALESINVOICE on SALESINVOICE.ITSID = PAYMENTFROM.SALESINVOICE
+join DEBTORCREDITOR on DEBTORCREDITOR.ITSID = SALESINVOICE.CUSTOMER
+where PAYMENTFROM.REVERSEDID is null and PAYMENTFROM.HASMADEACCENTRIES = 0 and SALESINVOICE.HASMADEACCENTRIES = 1 :WHEREADD
+      </pre>
+
+      <h5>Method Sales Tax Accrual/Cash.</h5>
+      <p>Models:</p>
+      <p>Account itsId="SALES_TAX_PAYABLE", name="Sales Tax payable", normalBalanceType=CREDIT itsNumber="2310"
+      Subaccounts - Tax</p>
+      <p>Account itsId="SALES_TAX_RECIVABLE", name="Sales Tax recivable", normalBalanceType=DEBIT itsNumber="1310"
+      Subaccounts - Tax</p>
+      <p>Persistable model Tax consist of:
+        <ul>
+          <li>Subaccount fields  implements IHasTypeCode.</li>
+          <li>expense - Expense not null</li>
+          <li>itsPercentage - BigDecimal not null</li>
+          <li>plusAmount - BigDecimal not null</li>
+          <li>dueMethod - EDueMethod ACCURAL/CASH not null</li>
+          <li>itsType - ETaxType INCOME_TAX/SALES_TAX_INITEM/SALES_TAX_OUTITEM/EMPLOYMENT_TAX_EMPLOYEE/EMPLOYMENT_TAX_EMPLOYER/OTHER_TAX, not null</li>
+        </ul>
+        constTypeCode = 2003
+      </p>
+      <p>Persistable model TaxUsed:
+        <ul>
+          <li>ASubaccountUsed fields</li>
+          <li>subaccount - Tax, not null</li>
+        </ul>
+      </p>
+      <p>Persistable model InvItemTaxCategory (goods or service tax category):
+        <ul>
+          <li>APersistableBaseHasName fields</li>
+          <li>itsVersion - Version, changed time algorithm cause check dirty of
+            calculated from it (derived) records</li>
+          <li>List(InvItemTaxCategoryLine) taxes</li>
+          <li>taxesDescription - String , uneditable e.g. "NY Sales Tax 10%"</li>
+        </ul>
+        This model used to assign tax or set of taxes for an goods or service e.g. "NY sales tax 6%"
+        for pizza hot. 
+      </p>
+      <p>Persistable model InvItemTaxCategoryLine:
+        <ul>
+          <li>APersistableBaseHasName fields</li>
+          <li>itsVersion - Version, changed time algorithm cause check dirty of
+            calculated from it (derived) records</li>
+          <li>itsOwner - InvItemTaxCategory, Not Null</li>
+          <li>tax - Tax, Not Null</li>
+          <li>itsPercentage - BigDecimal not null</li>
+        </ul>
+      </p>
+      <p>Persistable model InvItem additionally consist of:
+        <ul>
+          <li>taxCategory - InvItemTaxCategory, nullable.</li>
+        </ul>
+      </p>
+      <p>Persistable model PurchaseInvoice additionally consist of:
+        <ul>
+          <li>taxesLines - List&lt;PurchaseInvoiceTaxLine&gt; list of summary sales taxes (if exists)</li>
+        </ul>
+      </p>
+      <p>Persistable model ADocTaxLine consist of:
+        <ul>
+          <li>APersistableBase fields</li>
+          <li>itsVersion - Long autoincrement algorithm</li>
+          <li>reversedId - Long if reversed</li>
+          <li>tax - Tax, not null</li>
+          <li>itsTotal, BigDecimal, not null</li>
+        </ul>
+      </p>
+      <p>Persistable model PurchaseInvoiceTaxLine consist of:
+        <ul>
+          <li>ADocTaxLine fields</li>
+          <li>itsOwner - PurchaseInvoice, not null</li>
+        </ul>
+      </p>
+      Method "PurInvSalTaxSelfDeductingDbtAccrual":
+      "PurchaseInvoice, Debit SalesTaxFromPurchase per Tax."
+      Accounting entries source: accounting/journalEntries/PurInvSalTaxSelfDeductingDbtAccrual.sql:
+      <pre style="white-space: pre-wrap;">
+select 1 as SOURCETYPE, PURCHASEINVOICE.:IDNAME as SOURCEID, PURCHASEINVOICE.ITSDATE,
+'SalesTaxFromPurchase' as ACCDEBIT, 2003 as SUBACCDEBITTYPE, TAX.ITSID as SUBACCDEBITID, TAX.ITSNAME as SUBACCDEBIT, sum(PURCHASEINVOICETAXLINE.ITSTOTAL) as DEBIT,
+null as ACCCREDIT, null as SUBACCCREDITTYPE, null as SUBACCCREDITID, null as SUBACCCREDIT, 0 as CREDIT
+from PURCHASEINVOICETAXLINE
+join PURCHASEINVOICE on PURCHASEINVOICE.ITSID = PURCHASEINVOICETAXLINE.ITSOWNER
+join TAX on TAX.ITSID = PURCHASEINVOICETAXLINE.TAX
+where PURCHASEINVOICETAXLINE.REVERSEDID is null and PURCHASEINVOICE.REVERSEDID is null and HASMADEACCENTRIES = 0 and TAX.ITSTYPE in (1,2) and TAX.DUEMETHOD=0 :WHEREADD
+group by SOURCETYPE, SOURCEID, ITSDATE, ACCDEBIT, SUBACCDEBITTYPE, SUBACCDEBITID, SUBACCDEBIT, ACCCREDIT, SUBACCCREDITTYPE, SUBACCCREDITID, SUBACCCREDIT
+      </pre>
+
+      <p>Persistable model SalesInvoiceTaxLine consist of:
+        <ul>
+          <li>ADocTaxLine fields</li>
+          <li>itsOwner - SalesInvoice, not null</li>
+        </ul>
+      </p>
+      Method "SalInvSalTaxPayCrdtAccrual":
+      "SalesInvoice, Credit SalesTaxPay per Tax."
+      Accounting entries source: accounting/journalEntries/SalInvSalTaxPayCrdtAccrual.sql:
+      <pre style="white-space: pre-wrap;">
+select 2 as SOURCETYPE, SALESINVOICE.:IDNAME as SOURCEID, SALESINVOICE.ITSDATE,
+null as ACCDEBIT, null as SUBACCDEBITTYPE, null as SUBACCDEBITID, null as SUBACCDEBIT, 0 as DEBIT,
+'SalesTaxPay' as ACCCREDIT, 2003 as SUBACCCREDITTYPE, TAX.ITSID as SUBACCCREDITID, TAX.ITSNAME as SUBACCCREDIT, sum(SALESINVOICETAXLINE.ITSTOTAL) as CREDIT
+from SALESINVOICETAXLINE
+join SALESINVOICE on SALESINVOICE.ITSID = SALESINVOICETAXLINE.ITSOWNER
+join TAX on TAX.ITSID = SALESINVOICETAXLINE.TAX
+where SALESINVOICETAXLINE.REVERSEDID is null and SALESINVOICE.REVERSEDID is null and HASMADEACCENTRIES = 0 and TAX.ITSTYPE in (1,2) and TAX.DUEMETHOD = 0 :WHEREADD
+group by SOURCETYPE, SOURCEID, ITSDATE, ACCDEBIT, SUBACCDEBITTYPE, SUBACCDEBITID, SUBACCDEBIT, ACCCREDIT, SUBACCCREDITTYPE, SUBACCCREDITID, SUBACCCREDIT
+      </pre>
+
+      <h5>Method Cost of Goods Sold FIFO Perpetual (COGSFIFOPERPET).</h5>
+      <p>Models:</p>
+      <p>PurchaseInvoiceLine and Manufacture are source of product/merchandise. They have theRest of their goods.</p>
+      <p>Account COGS.InvItem/InvItemCategory/InvItemType</p>
+      Method "COGSFIFOSOURCEM1S": "source of product/merchandise from documents"
+      COGS draw product source: trade/drawItemFifoSourceM1S.sql, trade/drawItemLifoSourceM1S.sql <br></br>
+      Method "DRAWPURCHASELINEM1":  trade/drawPurchaseLineM1.sql.<br></br>
+      Method "DRAWMANUFACTUREM1": "source of product from Manufacture"
+      Accounting entries source: trade/drawItemManufactureM1.sql:
+      <pre style="white-space: pre-wrap;">
+select 5 as SOURCETYPE, MANUFACTURE.:IDNAME as SOURCEID, null as SOURCEOWNERTYPE, null as SOURCEOWNERID, MANUFACTURE.ITSDATE, THEREST
+from MANUFACTURE
+where REVERSEDID is null and THEREST>0 and INVITEM=:INVITEM and UNITOFMEASURE=:UNITOFMEASURE
+      </pre>
+      <p>Any document that draws Inventory (makes WarehouseEntry of type draw) also makes GogsEntry from sources below</p>
+      <p>Persistable model CogsEntry for FIFO/LIFO consist of:
+        <ul>
+          <li>ADrawItemEntry fields</li>
+        </ul>
+      </p>
+      Method "SalesInvCogsFifoLifoInvCat" for both FIFO/LIFO: "SalesInvoice, COGS FIFO/LIFO, Debit COGS.InvItemCategory Credit Inventory.InvItemCategory"
+      Accounting entries source: accounting/journalEntries/SalesInvCogsFifoLifoInvCat.sql:
+      <pre style="white-space: pre-wrap;">
+select 2 as SOURCETYPE, DRAWINGOWNERID as SOURCEID, ITSDATE,
+'COGS' as ACCDEBIT, 2001 as SUBACCDEBITTYPE, INVITEMCATEGORY.ITSID as SUBACCDEBITID, INVITEMCATEGORY.ITSNAME as SUBACCDEBIT, sum(ITSTOTAL) as DEBIT,
+'Inventory' as ACCCREDIT, 2001 as SUBACCCREDITTYPE, INVITEMCATEGORY.ITSID as SUBACCCREDITID, INVITEMCATEGORY.ITSNAME as SUBACCCREDIT, sum(ITSTOTAL) as CREDIT
+from COGSENTRY
+join INVITEM on INVITEM.ITSID = COGSENTRY.INVITEM
+join INVITEMCATEGORY on INVITEMCATEGORY.ITSID = INVITEM.ITSCATEGORY
+where REVERSEDID is null and DRAWINGTYPE=1002 :WHEREADD
+group by SOURCETYPE, SOURCEID, ITSDATE, ACCDEBIT, SUBACCDEBITTYPE, SUBACCDEBITID, SUBACCDEBIT, ACCCREDIT, SUBACCCREDITTYPE, SUBACCCREDITID, SUBACCCREDIT
+      </pre>
+      Where :WHEREADD can be "and DRAWINGOWNERID=1" to make accounting entries for document.
+      Or "and ITSDATE &gt;= 1459458000000 and ITSDATE &lt;= 1460622396965" to make accounting entries for all documents.
+
+      <h4>Loss/broke/stolen of goods.</h4>
+      <b>For most countries this is a business (income) expense. The document must withdrawal goods from inventory
+        and make COGS accounting entries.</b>
+      <p>Persistable model GoodsLoss consist of:
+        <ul>
+          <li>ADoc fields, implements IDocWarehouse</li>
+          <li>itsLines - List&lt;GoodsLossLine&gt; lines</li>
+        </ul>
+        constTypeCode() = 11
+      </p>
+      <p>Persistable model GoodsLossLine consist of:
+        <ul>
+          <li>AInvItemMovement fields</li>
+          <li>itsOwner - GoodsLoss, Not null</li>
+          <li>warehouseSiteFo - WarehouseSite, nullable  Warehouse site from.
+          If it's empty (null) then withdrawal will be from the first
+          site/s that has the goods, otherwise withdrawal will be exactly from this site.</li>
+          <li>reversedId - Long, ID of reversed/reversing GoodsLossLine</li>
+        </ul>
+        constTypeCode() = 1005
+      </p>
+      Method "GdLossCoglFifoLifoInvCat" for both FIFO/LIFO: "GoodsLoss, COGL FIFO/LIFO, Debit COGL.InvItemCategory Credit Inventory.InvItemCategory"
+      Accounting entries source: accounting/journalEntries/GdLossCoglFifoLifoInvCat.sql:
+      <pre style="white-space: pre-wrap;">
+select 11 as SOURCETYPE, DRAWINGOWNERID as SOURCEID, ITSDATE,
+'COGL' as ACCDEBIT, 2001 as SUBACCDEBITTYPE, INVITEMCATEGORY.ITSID as SUBACCDEBITID, INVITEMCATEGORY.ITSNAME as SUBACCDEBIT, sum(ITSTOTAL) as DEBIT,
+'Inventory' as ACCCREDIT, 2001 as SUBACCCREDITTYPE, INVITEMCATEGORY.ITSID as SUBACCCREDITID, INVITEMCATEGORY.ITSNAME as SUBACCCREDIT, sum(ITSTOTAL) as CREDIT
+from COGSENTRY
+join INVITEM on INVITEM.ITSID = COGSENTRY.INVITEM
+join INVITEMCATEGORY on INVITEMCATEGORY.ITSID = INVITEM.ITSCATEGORY
+where REVERSEDID is null and DRAWINGTYPE=1005 :WHEREADD
+group by SOURCETYPE, SOURCEID, ITSDATE, ACCDEBIT, SUBACCDEBITTYPE, SUBACCDEBITID, SUBACCDEBIT, ACCCREDIT, SUBACCCREDITTYPE, SUBACCCREDITID, SUBACCCREDIT
+      </pre>
+      Where :WHEREADD can be "and DRAWINGOWNERID=1" to make accounting entries for document.
+      Or "and ITSDATE &gt;= 1459458000000 and ITSDATE &lt;= 1460622396965" to make accounting entries for all documents.
+
+      <h4>Sales returns (goods returned by customer to you)</h4>
+      <b>Document must make credit returns payable debit sales returns and sales taxes returns,
+        and Debit Inventory Credit COGS by cost from the sales invoice full report, also load warehouse, and it
+        is a draw item source.
+      </b>
+      <p>Persistable model SalesReturn consist of:
+        <ul>
+          <li>ADocWithTaxes fields, implements IDocWarehouse</li>
+          <li>customer - DebtorCreditor, Not Null</li>
+          <li>itsLines - List&lt;SalesReturnLine&gt; lines</li>
+          <li>taxesLines - List&lt;SalesReturnTaxLine&gt; taxes lines</li>
+        </ul>
+        constTypeCode() = 12
+      </p>
+      <p>Persistable model SalesReturnLine consist of:
+        <ul>
+          <li>AInvItemMovementCostTax fields, implements IDrawItemSource</li>
+          <li>itsPrice - BigDecimal, Not null, must be same as from returned sales invoice</li>
+          <li>itsOwner - SalesReturn, Not null</li>
+          <li>theRest - BigDecimal, Not null, charged by the quantity, draws by sales, loss etc</li>
+          <li>reversedId - Long, ID of reversed/reversing SalesReturnLine</li>
+        </ul>
+        constTypeCode() = 1006
+      </p>
+      <p>Persistable model SalesReturnTaxLine consist of:
+        <ul>
+          <li>ADocTaxLine fields</li>
+          <li>itsOwner - SalesReturn, not null</li>
+        </ul>
+      </p>
+      Method "SalesReturnsDbtReturnPayCrdt": "SalesReturn, Debit SalesReturns.InvItemCategory Credit ReturnsPayable.DebtorCreditor"
+      Accounting entries source: accounting/journalEntries/SalesReturnsDbtReturnPayCrdt.sql:
+      <pre style="white-space: pre-wrap;">
+select 12 as SOURCETYPE, SALESRETURN.:IDNAME as SOURCEID, SALESRETURN.ITSDATE,
+'SalesReturns' as ACCDEBIT, 2001 as SUBACCDEBITTYPE, INVITEMCATEGORY.ITSID as SUBACCDEBITID, INVITEMCATEGORY.ITSNAME as SUBACCDEBIT, sum(SALESRETURNLINE.SUBTOTAL) as DEBIT,
+'ReturnsPayable' as ACCCREDIT, 2004 as SUBACCCREDITTYPE, DEBTORCREDITOR.ITSID as SUBACCCREDITID, DEBTORCREDITOR.ITSNAME as SUBACCCREDIT, sum(SALESRETURNLINE.ITSTOTAL) as CREDIT
+from SALESRETURNLINE
+join SALESRETURN on SALESRETURN.ITSID = SALESRETURNLINE.ITSOWNER
+join INVITEM on INVITEM.ITSID = SALESRETURNLINE.INVITEM
+join INVITEMCATEGORY on INVITEMCATEGORY.ITSID = INVITEM.ITSCATEGORY
+join DEBTORCREDITOR on DEBTORCREDITOR.ITSID = SALESRETURN.CUSTOMER
+where SALESRETURNLINE.REVERSEDID is null and SALESRETURN.REVERSEDID is null and HASMADEACCENTRIES = 0 :WHEREADD
+group by SOURCETYPE, SOURCEID, ITSDATE, ACCDEBIT, SUBACCDEBITTYPE, SUBACCDEBITID, SUBACCDEBIT, ACCCREDIT, SUBACCCREDITTYPE, SUBACCCREDITID, SUBACCCREDIT
+      </pre>
+      Method "SalesRetInvCatDbtCogsCrdt": "SalesReturn, Debit Inventory.InvItemCategory Credit COGS.InvItemCategory"
+      Accounting entries source: accounting/journalEntries/SalesRetInvCatDbtCogsCrdt.sql:
+      <pre style="white-space: pre-wrap;">
+select 12 as SOURCETYPE, SALESRETURN.:IDNAME as SOURCEID, SALESRETURN.ITSDATE,
+'Inventory' as ACCDEBIT, 2001 as SUBACCDEBITTYPE, INVITEMCATEGORY.ITSID as SUBACCDEBITID, INVITEMCATEGORY.ITSNAME as SUBACCDEBIT, sum(SALESRETURNLINE.ITSCOST*SALESRETURNLINE.ITSQUANTITY) as DEBIT,
+'COGS' as ACCCREDIT, 2001 as SUBACCCREDITTYPE, INVITEMCATEGORY.ITSID as SUBACCCREDITID, INVITEMCATEGORY.ITSNAME as SUBACCCREDIT, sum(SALESRETURNLINE.ITSCOST*SALESRETURNLINE.ITSQUANTITY) as CREDIT
+from SALESRETURNLINE
+join SALESRETURN on SALESRETURN.ITSID = SALESRETURNLINE.ITSOWNER
+join INVITEM on INVITEM.ITSID = SALESRETURNLINE.INVITEM
+join INVITEMCATEGORY on INVITEMCATEGORY.ITSID = INVITEM.ITSCATEGORY
+join DEBTORCREDITOR on DEBTORCREDITOR.ITSID = SALESRETURN.CUSTOMER
+where SALESRETURNLINE.REVERSEDID is null and SALESRETURN.REVERSEDID is null and HASMADEACCENTRIES = 0 :WHEREADD
+group by SOURCETYPE, SOURCEID, ITSDATE, ACCDEBIT, SUBACCDEBITTYPE, SUBACCDEBITID, SUBACCDEBIT, ACCCREDIT, SUBACCCREDITTYPE, SUBACCCREDITID, SUBACCCREDIT
+      </pre>
+      Method "SalReturnSalesTaxFromSalReturnsDebitAccrual":
+      "SalesReturn, Debit SalesTaxFromSalReturns per Tax."
+      Accounting entries source: accounting/journalEntries/SalReturnSalesTaxFromSalReturnsDebitAccrual.sql:
+      <pre style="white-space: pre-wrap;">
+select 12 as SOURCETYPE, SALESRETURN.:IDNAME as SOURCEID, SALESRETURN.ITSDATE,
+'SalesTaxFromSalReturns' as ACCDEBIT, 2003 as SUBACCDEBITTYPE, TAX.ITSID as SUBACCDEBITID, TAX.ITSNAME as SUBACCDEBIT, sum(SALESRETURNTAXLINE.ITSTOTAL) as DEBIT,
+null as ACCCREDIT, null as SUBACCCREDITTYPE, null as SUBACCCREDITID, null as SUBACCCREDIT, 0 as CREDIT
+from SALESRETURNTAXLINE
+join SALESRETURN on SALESRETURN.ITSID = SALESRETURNTAXLINE.ITSOWNER
+join TAX on TAX.ITSID = SALESRETURNTAXLINE.TAX
+where SALESRETURNTAXLINE.REVERSEDID is null and SALESRETURN.REVERSEDID is null and HASMADEACCENTRIES = 0 and TAX.ITSTYPE in (1,2) and TAX.DUEMETHOD = 0 :WHEREADD
+group by SOURCETYPE, SOURCEID, ITSDATE, ACCDEBIT, SUBACCDEBITTYPE, SUBACCDEBITID, SUBACCDEBIT, ACCCREDIT, SUBACCCREDITTYPE, SUBACCCREDITID, SUBACCCREDIT
+      </pre>
+
+      <h4>Purchase returns (goods that you returned to vendor(supplier))</h4>
+      <b>Document must make debit ReturnsReceivable per customer credit Inventory per invItemCategory and SalesTaxFromPurchReturns, also withdrawal warehouse, and it
+        is a draw item source (purchase invoice line).
+      </b>
+      <p>Persistable model PurchaseReturn consist of:
+        <ul>
+          <li>ADocWithTaxes fields</li>
+          <li>purchaseInvoice - purchaseInvoice, Not Null</li>
+          <li>itsLines - List&lt;PurchaseReturnLine&gt; lines</li>
+          <li>taxesLines - List&lt;PurchaseReturnTaxLine&gt; taxes lines</li>
+        </ul>
+        constTypeCode() = 13
+      </p>
+      <p>Persistable model PurchaseReturnLine consist of:
+        <ul>
+          <li>APersistableBase fields</li>
+          <li>itsOwner - PurchaseReturn, Not null</li>
+          <li>reversedId - Long, ID of reversed/reversing PurchaseReturnLine</li>
+          <li>purchaseInvoiceLine - PurchaseInvoiceLine, Not null</li>
+          <li>purchInvLnAppearance - String, Not null, Purchase Invoice Line Appearance, automatically filled
+            e.g. PIL ID=1, PI ID=2, 20 Jun 2007, eggs, each, rest was=20, cost=0.0123</li>
+          <li>itsQuantity - BigDecimal, Not null, less or equals theRest in purchaseInvoiceLine</li>
+          <li>subtotal - BigDecimal, Not Null.</li>
+          <li>totalTaxes - BigDecimal, Not Null.</li>
+          <li>taxesDescription - String unchangeable, e.g. "tax1 10%=12, tax2 5%=6".</li>
+          <li>itsTotal - BigDecimal, Not null</li>
+        </ul>
+        constTypeCode() = 1007
+      </p>
+      <p>Persistable model PurchaseReturnTaxLine consist of:
+        <ul>
+          <li>ADocTaxLine fields</li>
+          <li>itsOwner - PurchaseReturn, not null</li>
+        </ul>
+      </p>
+      Method "PurchRetRecievDbtInvCatCrdt": "PurchaseReturn, Debit ReturnsReceivable.DebtorCreditor Credit Inventory.InvItemCategory"
+      Accounting entries source: accounting/journalEntries/PurchRetRecievDbtInvCatCrdt.sql:
+      <pre style="white-space: pre-wrap;">
+select 13 as SOURCETYPE, PURCHASERETURN.:IDNAME as SOURCEID, PURCHASERETURN.ITSDATE,
+'ReturnsReceivable' as ACCDEBIT, 2004 as SUBACCDEBITTYPE, DEBTORCREDITOR.ITSID as SUBACCDEBITID, DEBTORCREDITOR.ITSNAME as SUBACCDEBIT, sum(PURCHASERETURNLINE.ITSTOTAL) as DEBIT,
+'Inventory' as ACCCREDIT, 2001 as SUBACCCREDITTYPE, INVITEMCATEGORY.ITSID as SUBACCCREDITID, INVITEMCATEGORY.ITSNAME as SUBACCCREDIT, sum(PURCHASERETURNLINE.SUBTOTAL) as CREDIT
+from PURCHASERETURNLINE
+join PURCHASERETURN on PURCHASERETURN.ITSID = PURCHASERETURNLINE.ITSOWNER
+join PURCHASEINVOICELINE on PURCHASEINVOICELINE.ITSID = PURCHASERETURNLINE.PURCHASEINVOICELINE
+join INVITEM on INVITEM.ITSID = PURCHASEINVOICELINE.INVITEM
+join INVITEMCATEGORY on INVITEMCATEGORY.ITSID = INVITEM.ITSCATEGORY
+join PURCHASEINVOICE  on PURCHASEINVOICE.ITSID = PURCHASEINVOICELINE.ITSOWNER
+join DEBTORCREDITOR on DEBTORCREDITOR.ITSID = PURCHASEINVOICE.VENDOR
+where PURCHASERETURNLINE.REVERSEDID is null and PURCHASERETURN.REVERSEDID is null and PURCHASERETURN.HASMADEACCENTRIES=0 :WHEREADD
+group by SOURCETYPE, SOURCEID,  PURCHASERETURN.ITSDATE, ACCDEBIT, SUBACCDEBITTYPE, SUBACCDEBITID, SUBACCDEBIT, ACCCREDIT, SUBACCCREDITTYPE, SUBACCCREDITID, SUBACCCREDIT
+      </pre>
+      Method "PurchReturnSalesTaxFromPurchReturnsCreditAccrual":
+      "PurchaseReturn, Credit SalesTaxFromPurchReturns per Tax."
+      Accounting entries source: accounting/journalEntries/PurchReturnSalesTaxFromPurchReturnsCreditAccrual.sql:
+      <pre style="white-space: pre-wrap;">
+select 13 as SOURCETYPE, PURCHASERETURN.:IDNAME as SOURCEID, PURCHASERETURN.ITSDATE,
+null as ACCDEBIT, null as SUBACCDEBITTYPE, null as SUBACCDEBITID, null as SUBACCDEBIT, 0 as DEBIT,
+'SalesTaxFromPurchReturns' as ACCCREDIT, 2003 as SUBACCCREDITTYPE, TAX.ITSID as SUBACCCREDITID, TAX.ITSNAME as SUBACCCREDIT, sum(PURCHASERETURNTAXLINE.ITSTOTAL) as CREDIT
+from PURCHASERETURNTAXLINE
+join PURCHASERETURN on PURCHASERETURN.ITSID=PURCHASERETURNTAXLINE.ITSOWNER
+join TAX on TAX.ITSID=PURCHASERETURNTAXLINE.TAX
+where PURCHASERETURNTAXLINE.REVERSEDID is null and PURCHASERETURN.REVERSEDID is null and HASMADEACCENTRIES=0 and TAX.ITSTYPE in (1,2) and TAX.DUEMETHOD=0 :WHEREADD
+group by SOURCETYPE, SOURCEID, ITSDATE, ACCDEBIT, SUBACCDEBITTYPE, SUBACCDEBITID, SUBACCDEBIT, ACCCREDIT, SUBACCCREDITTYPE, SUBACCCREDITID, SUBACCCREDIT
+      </pre>
+
+      <h5>Employee compensation (payroll)</h5>
+      <p>Persistable model Wage consist of:
+        <ul>
+          <li>ADoc fields</li>
+          <li>employee - Employee, Not Null, e.g. Rob Swallow</li>
+          <li>totalTaxesEmployee - BigDecimal, Not Null, taxes that reduce net wage</li>
+          <li>netWage - BigDecimal, Not Null netWage = itsTotal - totalTaxesEmployee</li>
+          <li>totalTaxesEmployer - BigDecimal, Not Null, taxes that don't reduce net wage</li>
+          <li>itsLines - List&lt;WageLine&gt;</li>
+          <li>taxesLines - List&lt;WageTaxLine&gt;</li>
+          <li>accTaxExpense - Account tax expense (Expenses or InventoryCapitalizedCost), Not Null</li>
+        </ul>
+        constTypeCode() = 6
+      </p>
+      <p>Persistable model WageLine:
+        <ul>
+          <li>APersistableBase fields</li>
+          <li>itsOwner - Wage, Not Null</li>
+          <li>wageType - WageType, Not Null, e.g. direct labor, cooking, pizza delivery, for methods that require labor type (direct/indirect cost of manufacturing)</li>
+          <li>grossWage - BigDecimal, Not Null</li>
+          <li>taxesEmployee - BigDecimal, Not Null</li>
+          <li>accWageExpense - Account wage expense (Expenses or InventoryCapitalizedCost or InventoryDirectCostTmp), Not Null</li>
+          <li>description - String</li>
+        </ul>
+      </p>
+      <p>Persistable model WageTaxLine:
+        <ul>
+          <li>ADocTaxLine fields</li>
+          <li>itsOwner - Wage, Not Null</li>
+          <li>itsPercentage - BigDecimal, Not Null</li>
+          <li>plusAmount - BigDecimal not null</li>
+          <li>allowance - BigDecimal not null</li>
+          <li>description - String</li>
+        </ul>
+      </p>
+      <p>Persistable model Employee:
+        <ul>
+          <li>Subaccount fields  implements IHasTypeCode.</li>
+          <li>taxIdentificationNumber - String, Not Null, tax identification number e.g. SSN for US</li>
+          <li>employeeCategory - EmployeeCategory, Not Null, e.g. Sellers, Accountants etc.</li>
+          <li>dateHire - Date of hire</li>
+          <li>yearWageLines - List&lt;EmployeeYearWage&gt;</li>
+        </ul>
+        constTypeCode() = 2006
+      </p>
+      <p>Persistable model EmployeeYearWage:
+        <ul>
+          <li>APersistableBase fields</li>
+          <li>itsVersion - Long, Version changed time algorithm</li>
+          <li>itsOwner - Employee, not null</li>
+          <li>wageType - WageType, not null</li>
+          <li>totalWageYear - BigDecimal, Not Null, total wage of this type in current year</li>
+        </ul>
+      </p>
+      <p>Persistable model EmployeeUsed:
+        <ul>
+          <li>ASubaccountUsed fields</li>
+          <li>subaccount - Employee, not null</li>
+        </ul>
+      </p>
+      <p>Persistable model EmployeeCategory:
+        <ul>
+          <li>Subaccount fields  implements IHasTypeCode.</li>
+        </ul>
+        constTypeCode() = 2007
+      </p>
+      <p>Persistable model EmployeeCategoryUsed:
+        <ul>
+          <li>ASubaccountUsed fields</li>
+          <li>subaccount - EmployeeCategory, not null</li>
+        </ul>
+      </p>
+      <p>Persistable model WageType:
+        <ul>
+          <li>Subaccount fields  implements IHasTypeCode</li>
+          <li>expense - Expense, not null</li>
+        </ul>
+        constTypeCode() = 2008
+      </p>
+      <p>Persistable model WageTypeUsed:
+        <ul>
+          <li>ASubaccountUsed fields</li>
+          <li>subaccount - WageType, not null</li>
+        </ul>
+      </p>
+      Method "WageEmplCatTaxesExpense":
+      "Wage, EmployeeCategory, Expense, Debit [AccWageExpense].Expense Credit NetWages.EmployeeCategory, and for each tax:
+      Debit [AccTaxExpense].Expense Credit EmploymentTaxes.Tax"
+      Accounting entries source: accounting/journalEntries/WageEmplCatTaxesExpense.sql:
+      <pre style="white-space: pre-wrap;">
+select 6 as SOURCETYPE, WAGE.:IDNAME as SOURCEID, ITSDATE,
+WAGELINE.ACCWAGEEXPENSE as ACCDEBIT, 2009 as SUBACCDEBITTYPE, EXPENSE.ITSID as SUBACCDEBITID, EXPENSE.ITSNAME as SUBACCDEBIT, sum(GROSSWAGE-TAXESEMPLOYEE) as DEBIT,
+'NetWagesPay' as ACCCREDIT, 2007 as SUBACCCREDITTYPE, EMPLOYEECATEGORY.ITSID as SUBACCCREDITID, EMPLOYEECATEGORY.ITSNAME as SUBACCCREDIT, sum(GROSSWAGE-TAXESEMPLOYEE) as CREDIT
+from WAGE 
+join WAGELINE on WAGELINE.ITSOWNER = WAGE.ITSID 
+join WAGETYPE on WAGETYPE.ITSID = WAGELINE.WAGETYPE 
+join EXPENSE on EXPENSE.ITSID = WAGETYPE.EXPENSE 
+join EMPLOYEE on EMPLOYEE.ITSID = WAGE.EMPLOYEE
+join EMPLOYEECATEGORY on EMPLOYEECATEGORY.ITSID = EMPLOYEE.ITSCATEGORY 
+where WAGE.REVERSEDID is null and WAGELINE.REVERSEDID is null :WHEREADD
+group by SOURCETYPE, SOURCEID, ITSDATE, ACCDEBIT, SUBACCDEBITTYPE, SUBACCDEBITID, SUBACCDEBIT, ACCCREDIT, SUBACCCREDITTYPE, SUBACCCREDITID, SUBACCCREDIT
+  
+  union all
+
+select 6 as SOURCETYPE, WAGE.ITSID   as SOURCEID, ITSDATE,
+ACCTAXEXPENSE as ACCDEBIT, 2009 as SUBACCDEBITTYPE, EXPENSE.ITSID as SUBACCDEBITID, EXPENSE.ITSNAME as SUBACCDEBIT, sum(WAGETAXLINE.ITSTOTAL) as DEBIT,
+'EmploymentTaxesPay' as ACCCREDIT, 2003 as SUBACCCREDITTYPE, TAX.ITSID as SUBACCCREDITID, TAX.ITSNAME as SUBACCCREDIT, sum(WAGETAXLINE.ITSTOTAL) as CREDIT
+from WAGE 
+join WAGETAXLINE on WAGE.ITSID = WAGETAXLINE.ITSOWNER 
+join TAX on TAX.ITSID = WAGETAXLINE.TAX
+join EXPENSE on EXPENSE.ITSID = TAX.EXPENSE 
+where WAGETAXLINE.REVERSEDID is null and WAGE.REVERSEDID is null :WHEREADD
+group by SOURCETYPE, SOURCEID, ITSDATE, ACCDEBIT, SUBACCDEBITTYPE, SUBACCDEBITID, SUBACCDEBIT, ACCCREDIT, SUBACCCREDITTYPE, SUBACCCREDITID, SUBACCCREDIT
+      </pre>
+      <p>For automation purpose there is entity WageTaxTable that implements
+      wide used method "Tax table" to estimate tax. So Wage is filled automatically according this table.</p>
+      <p>Persistable model WageTaxTable consist of:
+        <ul>
+          <li>APersistableBaseHasName fields</li>
+          <li>itsVersion - Long, Version changed time algorithm</li>
+          <li>tax - Tax not null</li>
+          <li>description - String</li>
+          <li>itsLines - List&lt;WageTaxTableLine&gt;</li>
+          <li>employees - List&lt;WageTaxTableEmployee&gt;</li>
+          <li>wageTypes - List&lt;WageTaxTableType&gt; Wage Types that are taxable for this tax e.g. Cooking, Sick compensation</li>
+        </ul>
+      </p>
+      <p>Persistable model WageTaxTableLine:
+        <ul>
+          <li>APersistableBase fields</li>
+          <li>itsVersion - Long, Version changed time algorithm</li>
+          <li>itsOwner - WageTaxTable, Not Null</li>
+          <li>allowance - BigDecimal not null</li>
+          <li>wageFrom - BigDecimal, Not Null wage equals or more than...</li>
+          <li>wageTo - BigDecimal, Not Null wage less than...</li>
+          <li>yearWageFrom - BigDecimal, Not Null year wage equals or more than...</li>
+          <li>yearWageTo - BigDecimal, Not Null year wage less than...</li>
+          <li>itsPercentage - BigDecimal, Not Null</li>
+          <li>plusAmount - BigDecimal not null</li>
+        </ul>
+      </p>
+      <p>Persistable model WageTaxTableEmployee:
+        <ul>
+          <li>APersistableBase fields</li>
+          <li>itsVersion - Long, Version changed time algorithm</li>
+          <li>itsOwner - WageTaxTable, Not Null</li>
+          <li>employee - Employee, Not Null, e.g. Rob Swallow</li>
+          <li>allowance - BigDecimal not null</li>
+        </ul>
+      </p>
+      <p>Persistable model WageTaxTableType:
+        <ul>
+          <li>APersistableBase fields</li>
+          <li>itsVersion - Long, Version changed time algorithm</li>
+          <li>itsOwner - WageTaxTable, Not Null</li>
+          <li>wageType - WageType, not null, e.g. Cooking, Sick compensation</li>
+        </ul>
+      </p>
+    
+      <h5>Expenses.</h5>
+      <p>Persistable model Expense:
+        <ul>
+          <li>Subaccount fields  implements IHasTypeCode</li>
+        </ul>
+        constTypeCode() = 2009
+      </p>
+      <p>Persistable model ExpenseUsed:
+        <ul>
+          <li>ASubaccountUsed fields</li>
+          <li>subaccount - Expense, not null</li>
+        </ul>
+      </p>
+
+      <h5>Depreciable, property.</h5>
+      <p>Persistable model Property:
+        <ul>
+          <li>Subaccount fields  implements IHasTypeCode</li>
+        </ul>
+        constTypeCode() = 2010
+      </p>
+      <p>Persistable model PropertyUsed:
+        <ul>
+          <li>ASubaccountUsed fields</li>
+          <li>subaccount - Property, not null</li>
+        </ul>
+      </p>
+
+      <p>Persistable model BankAccount:
+        <ul>
+          <li>Subaccount fields  implements IHasTypeCode</li>
+        </ul>
+        constTypeCode() = 2002
+      </p>
+      <p>Persistable model BankAccountUsed:
+        <ul>
+          <li>ASubaccountUsed fields</li>
+          <li>subaccount - BankAccount, not null</li>
+        </ul>
+      </p>
+
+      <h5>Move items within warehouse/between warehouses</h5>
+      <p>Persistable model MoveItems move items from one site to another,
+        it makes no accounting entries:
+        <ul>
+          <li>APersistableBase fields, implements IHasTypeCode</li>
+          <li>itsVersion - Version, changed time algorithm cause check dirty of
+            calculated from it (derived) records</li>
+          <li>itsDate - Date, Not Null</li>
+          <li>itsLines - List&lt;MoveItemsLine&gt; lines</li>
+          <li>description - String</li>
+        </ul>
+        constTypeCode() = 14
+      </p>
+      <p>Persistable model MoveItemsLine consist of:
+        <ul>
+          <li>AInvItemMovement fields, implements IMakingWarehouseEntry, IOwned</li>
+          <li>itsOwner - GoodsLoss, Not null</li>
+          <li>warehouseSiteFrom - WarehouseSite, Not null</li>
+          <li>warehouseSiteTo - WarehouseSite, Not null</li>
+          <li>reversedId - Long, not used, for reversing just make another line</li>
+          <li>description - String</li>
+        </ul>
+        constTypeCode() = 1008
+      </p>
+      <p>
+        
+      </p>
+      
+      <h5>Beginning inventory</h5>
+      <p>BeginningInventory is document that makes accounting (Debit Inventory only) entries,
+      and its lines make warehouse load entries. Its lines are sources
+      to draw items (sell or loss) with FIFO LIFO method.
+      This document is used when you start NFS "not from scratch", i.e. you are already doing business and have inventory
+      and wont to use this software. If beginning inventory consist of unpaid items then you should
+      make accounting entries by hand (do not use document like PaymentTo).
+      Any way you should make all beginning accounting entries by hand.</p>
+      <p>BeginningInventory:
+        <ul>
+          <li>ADoc fields, implements IDocWarehouse</li>
+          <li>itsLines - List&lt;BeginningInventoryLine&gt; lines</li>
+        </ul>
+        constTypeCode() = 15
+      </p>
+      <p>Persistable model BeginningInventoryLine consist of:
+        <ul>
+          <li>AInvItemMovementCost fields, implements IDrawItemSource, IOwned</li>
+          <li>itsOwner - BeginningInventory, Not null</li>
+          <li>warehouseSite - WarehouseSite, Not null</li>
+          <li>theRest - BigDecimal, Not Null, The rest, charged by the quantity, draws by sales, loss etc.</li>
+          <li>reversedId - Long, ID of reversed/reversing BeginningInventoryLine</li>
+          <li>description - String</li>
+        </ul>
+        constTypeCode() = 1009
+      </p>
+      Accounting method "BeginInvItemCatDbt":
+      "BeginningInventory , Debit Inventory per InvItemCategory."
+      Accounting entries source: accounting/journalEntries/BeginInvItemCatDbt.sql:
+      <pre style="white-space: pre-wrap;">
+select 15 as SOURCETYPE, BEGINNINGINVENTORY.:IDNAME as SOURCEID, BEGINNINGINVENTORY.ITSDATE,
+'Inventory' as ACCDEBIT, 2001 as SUBACCDEBITTYPE, INVITEMCATEGORY.ITSID as SUBACCDEBITID, INVITEMCATEGORY.ITSNAME as SUBACCDEBIT, sum(BEGINNINGINVENTORYLINE.ITSTOTAL) as DEBIT,
+null as ACCCREDIT, null as SUBACCCREDITTYPE, null as SUBACCCREDITID, null as SUBACCCREDIT, 0 as CREDIT
+from BEGINNINGINVENTORYLINE
+join BEGINNINGINVENTORY on BEGINNINGINVENTORY.ITSID = BEGINNINGINVENTORYLINE.ITSOWNER
+join INVITEM on INVITEM.ITSID = BEGINNINGINVENTORYLINE.INVITEM
+join INVITEMCATEGORY on INVITEMCATEGORY.ITSID = INVITEM.ITSCATEGORY
+where BEGINNINGINVENTORYLINE.REVERSEDID is null and BEGINNINGINVENTORY.REVERSEDID is null and HASMADEACCENTRIES = 0 :WHEREADD
+group by SOURCETYPE, SOURCEID, ITSDATE, ACCDEBIT, SUBACCDEBITTYPE, SUBACCDEBITID, SUBACCDEBIT, ACCCREDIT, SUBACCCREDITTYPE, SUBACCCREDITID, SUBACCCREDIT
+      </pre>
+        Method drawBeginningInventoryLineM1: "source of material/product/merchandise from BeginningInventoryLine"
+        Accounting entries source: trade/drawBeginningInventoryLineM1.sql:
+        <pre style="white-space: pre-wrap;">
+select 1009 as SOURCETYPE, BEGINNINGINVENTORYLINE.:IDNAME as SOURCEID, 15 as SOURCEOWNERTYPE, BEGINNINGINVENTORY.ITSID as SOURCEOWNERID, BEGINNINGINVENTORY.ITSDATE, THEREST
+from BEGINNINGINVENTORYLINE
+join BEGINNINGINVENTORY on BEGINNINGINVENTORY.ITSID = BEGINNINGINVENTORYLINE.ITSOWNER
+where BEGINNINGINVENTORYLINE.REVERSEDID is null and THEREST>0 and INVITEM=:INVITEM and UNITOFMEASURE=:UNITOFMEASURE
+        </pre>
+
+      <h5>Purchase of services</h5>
+      <p>Persistable model ServicePurchased consist of:
+        <ul>
+         <li>APersistableBaseHasName fields (Long ID)</li>
+          <li>itsVersion - Version, changed time algorithm cause check dirty of
+            calculated from it (derived) records</li>
+          <li>itsCategory - ServicePurchasedCategory, not null.</li>
+          <li>taxCategory - InvItemTaxCategory, nullable.</li>
+        </ul>
+      </p>
+      <p>Persistable model ServicePurchasedCategory consist of:
+        <ul>
+          <li>AHasNameIdLong</li>
+          <li>expense - Expense, not null</li>
+        </ul>
+      </p>
+      <p>Persistable model PurchaseInvoiceServiceLine consist of:
+        <ul>
+         <li>APersistableBaseHasName fields implements IOwned&lt;PurchaseInvoice&gt;</li>
+          <li>itsVersion - Version,  reliable autoincrement algorithm.</li>
+          <li>itsOwner - PurchaseInvoice, not null.</li>
+          <li>service - ServicePurchased, not null, e.g. "Delivering from NY".</li>
+          <li>accExpense - Account service expense, e.g. Expenses or InventoryCapitalizedCost, Not Null.</li>
+          <li>itsCost - BigDecimal, not null.</li>
+          <li>totalTaxes - BigDecimal, not null.</li>
+          <li>itsTotal - BigDecimal, not null.</li>
+          <li>taxesDescription - String, nullable, Taxes description, uneditable, e.g. "tax1 10%=12, tax2 5%=6".</li>
+          <li>description - String, nullable, description.</li>
+        </ul>
+      </p>
+      <p>Persistable model PurchaseInvoice additionally consist of:
+        <ul>
+          <li>services - List&lt;PurchaseInvoiceServiceLine&gt; list of summary sales taxes (if exists)</li>
+        </ul>
+      </p>
+      Method "accounting/trade/purchaseInvoiceTaxes.sql" that calculate purchase taxes:
+      <pre style="white-space: pre-wrap;">
+select TAX as TAXID,  sum(SUBTOTAL * ITSPERCENTAGE / 100) as TOTALTAX
+from
+(
+  select INVITEM.TAXCATEGORY as TAXCATEGORY, SUBTOTAL
+  from PURCHASEINVOICELINE 
+  join INVITEM on INVITEM.ITSID = PURCHASEINVOICELINE.INVITEM
+  where PURCHASEINVOICELINE.REVERSEDID is null and PURCHASEINVOICELINE.ITSOWNER = :ITSOWNER
+
+  union all
+
+  select SERVICEPURCHASED.TAXCATEGORY as TAXCATEGORY, ITSPRICE as SUBTOTAL
+  from PURCHASEINVOICESERVICELINE 
+  join SERVICEPURCHASED on SERVICEPURCHASED.ITSID = PURCHASEINVOICESERVICELINE.SERVICE
+  where PURCHASEINVOICESERVICELINE.ITSOWNER = :ITSOWNER
+) as ALL_LINES
+join INVITEMTAXCATEGORY on INVITEMTAXCATEGORY.ITSID = TAXCATEGORY
+join INVITEMTAXCATEGORYLINE on INVITEMTAXCATEGORYLINE.ITSOWNER = INVITEMTAXCATEGORY.ITSID
+group by TAX;
+      </pre>
+      Method "accounting/trade/purchaseInvoiceTotals.sql" that calculate purchase totals:
+      <pre style="white-space: pre-wrap;">
+select sum(SUBTOTAL) as SUBTOTAL, sum(TOTALTAXES) as TOTALTAXES
+from
+(
+  select SUBTOTAL, TOTALTAXES
+  from PURCHASEINVOICELINE 
+  where PURCHASEINVOICELINE.REVERSEDID is null and PURCHASEINVOICELINE.ITSOWNER = :ITSOWNER
+
+  union all
+
+  select ITSCOST as SUBTOTAL, TOTALTAXES
+  from PURCHASEINVOICESERVICELINE 
+  where PURCHASEINVOICESERVICELINE.ITSOWNER = :ITSOWNER
+) as ALL_LINES;
+      </pre>
+      <p>
+        Method "PurInvExpenceDbtAccPayCredCrdt":
+        "PurchaseInvoice , Debit AccExpense per ServicePurchasedCategory.Expense, Credit AccPayable per DebtorCreditor."
+        Accounting entries source: accounting/journalEntries/PurInvExpenceDbtAccPayCredCrdt.sql:
+        <pre style="white-space: pre-wrap;">
+  select 1 as SOURCETYPE, PURCHASEINVOICE.:IDNAME as SOURCEID, PURCHASEINVOICE.ITSDATE,
+  PURCHASEINVOICESERVICELINE.ACCEXPENSE as ACCDEBIT, 2009 as SUBACCDEBITTYPE, EXPENSE.ITSID as SUBACCDEBITID, EXPENSE.ITSNAME as SUBACCDEBIT, sum(PURCHASEINVOICESERVICELINE.ITSCOST) as DEBIT,
+  'AccPayable' as ACCCREDIT, 2004 as SUBACCCREDITTYPE, DEBTORCREDITOR.ITSID as SUBACCCREDITID, DEBTORCREDITOR.ITSNAME as SUBACCCREDIT, sum(PURCHASEINVOICESERVICELINE.ITSTOTAL) as CREDIT
+  from PURCHASEINVOICESERVICELINE
+  join PURCHASEINVOICE on PURCHASEINVOICE.ITSID = PURCHASEINVOICESERVICELINE.ITSOWNER
+  join SERVICEPURCHASED on SERVICEPURCHASED.ITSID = PURCHASEINVOICESERVICELINE.SERVICE
+  join SERVICEPURCHASEDCATEGORY on SERVICEPURCHASEDCATEGORY.ITSID = SERVICEPURCHASED.ITSCATEGORY
+  join EXPENSE on EXPENSE.ITSID = SERVICEPURCHASEDCATEGORY.EXPENSE 
+  join DEBTORCREDITOR on DEBTORCREDITOR.ITSID = PURCHASEINVOICE.VENDOR
+  where PURCHASEINVOICE.REVERSEDID is null and HASMADEACCENTRIES = 0 :WHEREADD
+  group by SOURCETYPE, SOURCEID, ITSDATE, ACCDEBIT, SUBACCDEBITTYPE, SUBACCDEBITID, SUBACCDEBIT, ACCCREDIT, SUBACCCREDITTYPE, SUBACCCREDITID, SUBACCCREDIT
+        </pre>
+      </p>
+
+     <h5>Sales of services</h5>
+      <p>Persistable model ServiceToSale consist of:
+        <ul>
+         <li>APersistableBaseHasName fields (Long ID)</li>
+          <li>itsVersion - Version, changed time algorithm cause check dirty of
+            calculated from it (derived) records</li>
+          <li>itsCategory - ServiceToSaleCategory, not null.</li>
+          <li>taxCategory - InvItemTaxCategory, nullable.</li>
+        </ul>
+      </p>
+      <p>Persistable model ServiceToSaleCategory consist of:
+        <ul>
+          <li>Subaccount fields implements IHasTypeCode</li>
+        </ul>
+        constTypeCode() = 2011<br></br>
+        This is subaccount for SalesServices
+      </p>
+      <p>ServiceToSaleCategoryUsed consist of:
+        <ul>
+          <li>ASubaccountUsed fields</li>
+          <li>subaccount - ServiceToSaleCategory, not null</li>
+        </ul>
+      </p>
+      <p>Persistable model SalesInvoiceServiceLine consist of:
+        <ul>
+         <li>APersistableBaseHasName fields implements IOwned&lt;SalesInvoice&gt;</li>
+          <li>itsVersion - Version,  reliable autoincrement algorithm.</li>
+          <li>itsOwner - SSalesInvoice, not null.</li>
+          <li>service - ServiceToSale, not null, e.g. "Delivering from NY".</li>
+          <li>itsPrice - BigDecimal, not null.</li>
+          <li>totalTaxes - BigDecimal, not null.</li>
+          <li>itsTotal - BigDecimal, not null.</li>
+          <li>taxesDescription - String, nullable, Taxes description, uneditable, e.g. "tax1 10%=12, tax2 5%=6".</li>
+          <li>description - String, nullable, description.</li>
+        </ul>
+      </p>
+      <p>Persistable model SalesInvoice additionally consist of:
+        <ul>
+          <li>services - List&lt;SalesInvoiceServiceLine&gt; list of summary sales taxes (if exists)</li>
+        </ul>
+      </p>
+      Method "accounting/trade/salesInvoiceTaxes.sql" that calculate sales taxes:
+      <pre style="white-space: pre-wrap;">
+select TAX as TAXID,  sum(SUBTOTAL * ITSPERCENTAGE / 100) as TOTALTAX
+from
+(
+  select INVITEM.TAXCATEGORY as TAXCATEGORY, SUBTOTAL
+  from SALESINVOICELINE 
+  join INVITEM on INVITEM.ITSID = SALESINVOICELINE.INVITEM
+  where SALESINVOICELINE.REVERSEDID is null and SALESINVOICELINE.ITSOWNER = :ITSOWNER
+
+  union all
+
+  select SERVICETOSALE.TAXCATEGORY as TAXCATEGORY, ITSPRICE as SUBTOTAL
+  from SALESINVOICESERVICELINE 
+  join SERVICETOSALE on SERVICETOSALE.ITSID = SALESINVOICESERVICELINE.SERVICE
+  where SALESINVOICESERVICELINE.ITSOWNER = :ITSOWNER
+) as ALL_LINES
+join INVITEMTAXCATEGORY on INVITEMTAXCATEGORY.ITSID = TAXCATEGORY
+join INVITEMTAXCATEGORYLINE on INVITEMTAXCATEGORYLINE.ITSOWNER = INVITEMTAXCATEGORY.ITSID
+group by TAX;
+      </pre>
+      Method "accounting/trade/salesInvoiceTotals.sql" that calculate sales totals:
+      <pre style="white-space: pre-wrap;">
+select sum(SUBTOTAL) as SUBTOTAL, sum(TOTALTAXES) as TOTALTAXES
+from
+(
+  select SUBTOTAL, TOTALTAXES
+  from SALESINVOICELINE 
+  where SALESINVOICELINE.REVERSEDID is null and SALESINVOICELINE.ITSOWNER = :ITSOWNER
+
+  union all
+
+  select ITSPRICE as SUBTOTAL, TOTALTAXES
+  from SALESINVOICESERVICELINE 
+  where SALESINVOICESERVICELINE.ITSOWNER = :ITSOWNER
+) as ALL_LINES;
+      </pre>
+      <p>
+        Method "SalInvAccRecDbtSalesServicesCatCrdt":
+        "SalesInvoiceServiceLine , Debit AccReievable per DebtorCreditor, Credit SalesServices per ServiceToSaleCategory."
+        Accounting entries source: accounting/journalEntries/SalInvAccRecDbtSalesServicesCatCrdt.sql:
+        <pre style="white-space: pre-wrap;">
+  select 2 as SOURCETYPE, SALESINVOICE.:IDNAME as SOURCEID, SALESINVOICE.ITSDATE,
+  'AccReceivable' as ACCDEBIT, 2004 as SUBACCDEBITTYPE, DEBTORCREDITOR.ITSID as SUBACCDEBITID, DEBTORCREDITOR.ITSNAME as SUBACCDEBIT, sum(SALESINVOICELINE.ITSTOTAL) as DEBIT,
+  'SalesServices' as ACCCREDIT, 2011 as SUBACCCREDITTYPE, SERVICETOSALECATEGORY.ITSID as SUBACCCREDITID, SERVICETOSALECATEGORY.ITSNAME as SUBACCCREDIT, sum(SALESINVOICESERVICELINE.ITSPRICE) as CREDIT,
+  from SALESINVOICESERVICELINE
+  join SALESINVOICE on SALESINVOICE.ITSID = SALESINVOICESERVICELINE.ITSOWNER
+  join SERVICETOSALE on SERVICETOSALE.ITSID = SALESINVOICESERVICELINE.SERVICE
+  join SERVICETOSALECATEGORY on SERVICETOSALECATEGORY.ITSID = SERVICETOSALE.ITSCATEGORY
+  join DEBTORCREDITOR on DEBTORCREDITOR.ITSID = SALESINVOICE.CUSTOMER
+  where SALESINVOICE.REVERSEDID is null and HASMADEACCENTRIES = 0 :WHEREADD
+  group by SOURCETYPE, SOURCEID, ITSDATE, ACCDEBIT, SUBACCDEBITTYPE, SUBACCDEBITID, SUBACCDEBIT, ACCCREDIT, SUBACCCREDITTYPE, SUBACCCREDITID, SUBACCCREDIT
+        </pre>
+      </p>
+      <h5>Persistable model BalanceAt.</h5>
+      <b>For improve performance it store balance at the start of given period (e.g. month),
+      it is also model for balance of a account for any date (balance at start of nearest period + debits/credits).</b>
+      <p>Persistable model BalanceAt consist of:
+        <ul>
+          <li>AHasIdLong - fields</li>
+          <li>itsVersion - Long, Version changed time algorithm.</li>
+          <li>itsDate - Date, Not Null, usually start of month</li>
+          <li>itsAccount - Account e.g Inventory</li>
+          <li>subaccType - Integer Subacccount type, e.g. 2001 - InvItemCategory, 2003 - Tax, 2004 - DebtorCreditor.
+            This is constant entity.constTypeCode();
+          </li>
+          <li>subaccId - Long foreign ID of subaccount</li>
+          <li>subaccount - String e.g. InvItem line1</li>
+          <li>itsBalance - BigDecimal, Not Null.</li>
+        </ul>
+        This model is automatically maintenance by ISrvBalance that replaced old ISrvTrialBalance:
+        <ul>
+          <li>List&lt;TrialBalanceLine&gt; retrieveTrialBalance(Map&lt;String, ?&gt; pAddParam, Date pDate) retrieve report trial balance</li>
+          <li>changeBalanceStorePeriod(EPeriod pPeriod) - Change period of stored balances EPeriod.DAILY/WEEKLY/MONTHLY
+            and switch on "current balances are dirty".
+          </li>
+          <li>EPeriod evalBalanceStorePeriod() - Evaluate current period of stored balances according settings,
+            if it's changed then it switch on "current balances are dirty"</li>
+          <li>BalanceAt evalBalanceAt(Account pAcc, Long pSubaccId, Date pDateFor) - evaluate BalanceAt for pDateFor.
+            If required periodic BalanceAt (and all BalanceAt from start of year) is null or dirty
+            it makes it (they).
+            </li>
+          <li>void handleNewAccountEntry(Account pAcc, Long pSubaccId, Date pDateAt) - handle new accounting entry
+            is created to check dirty of stored balances. 
+          </li>
+          <li>void recalculateAllIfNeed(Date pDateFor) - recalculate if need for all balances for all dates less or equals pDateFor,
+            this method is always invoked by report ledger.
+          </li>
+          <li>void recalculateFor(Account pAcc, Long pSubaccId, Date pDateFor) - forced recalculation all stored balances for this account for all dates less or equals pDateFor.
+            This method usually invoked by account subaccount line service when subaccount is added.
+          </li>
+          <li>void recalculateAll(Date pDateFor, pIsPrepareNeed) - forced recalculation for all balances for all dates less
+            or equals pDateFor, pIsPrepareNeed - if need evaluation store period/start of store</li>
+          <li>Date evalDatePeriodStartFor(Date pDateFor) - Evaluate start of period nearest to pDateFor.</li>
+        </ul>
+      </p>
+      <h4>BalanceAt synchronization.</h4>
+      <b>Check dirty for all accounts method.</b>
+      <p>Persistable model BalanceAtAllDirtyCheck consist of:
+        <ul>
+          <li>AHasIdLong - fields there is only record with ID=1L</li>
+          <li>currentBalanceDate - Date, Not Null (Initialized 01/01/1975.),
+              date of current calculated and stored balances
+              for all accounts e.g. 1 Feb, it is dirty when it's less than
+              leastAccountingEntryDate. After all recalculation:
+              leastAccountingEntryDate = currentBalanceDate</li>
+          <li>leastAccountingEntryDate - Date, Not Null (Initialized 01/01/1975.),
+              the least date of last accounting entry that is made
+              after made of currentBalanceDate e.g. 22 Jan 10:56PM.
+              For improving performance every document when it's accounted
+              its first (dirty check for all accounts) entry change
+              leastAccountingEntryDate to its date of account if it less.
+          </li>
+          <li>dateBalanceStoreStart - Date of start to store balance periodically, this is
+            the first month of the first accounting entry, it maintenance automatically.</li>
+          <li>balanceStorePeriod - EPeriod, Balance store period, not null, EPeriod.DAILY/WEEKLY/MONTHLY.</li>
+          <li>isPeriodChanged - Boolean If period has been changed then all BalanceAt should be deleted.</li>
+        </ul>
+        If leastAccountingEntryDate is less then currentBalanceDate the all balances which itsDate is more than leastAccountingEntryDate is dirty.
+        Every document (except Input accounting) that makes accounting entry should invoke handleNewAccountEntry(Account pAcc, Date pDateAt) for the first its
+        accounting entry, Input accounting - for each one. So it might hit performance if it's check dirty for every account balance. So the best method is use BalanceAtStartOfDirtyCheck for all accounts.
+        BalanceAtDirtyCheck represented in ISrvBalanceAt is persisted into DB after recalculation or when
+        ISrvBalanceAt is released by IAppFctory, it is cheap approach. All methods in ISrvBalanceAt is synchronized, so the most expensive is evalBalanceAt
+        and recalculateAll/For/AllIfNeed. So every document to be accounted should wait while they is running.
+      </p>
+
+      Balance for given account query accounting/balance/queryBalanceAccount.sql:
+<pre style="white-space: pre-wrap;">
+select ACC as ACCID, ACCOUNT.ITSNUMBER, ACCOUNT.ITSNAME, SUBACC, SUBACCID, SUBACCTYPE,
+case when ACCOUNT.NORMALBALANCETYPE = 0 then ALL_RECORDS.DEBIT - ALL_RECORDS.CREDIT
+else 0 end as DEBIT,
+case when ACCOUNT.NORMALBALANCETYPE = 1 then ALL_RECORDS.CREDIT - ALL_RECORDS.DEBIT
+else 0 end as CREDIT
+from
+  (
+    select ACC, SUBACC,  SUBACCID, sum(DEBIT) as DEBIT, sum(CREDIT) as CREDIT
+    from 
+      (
+        select ITSACCOUNT as ACC, SUBACCOUNT as SUBACC,  SUBACCID,
+        case when ACCOUNTIN.NORMALBALANCETYPE = 0 then ITSBALANCE
+        else 0 end as DEBIT,
+        case when ACCOUNTIN.NORMALBALANCETYPE = 1 then ITSBALANCE
+        else 0 end as CREDIT
+        from  BALANCEAT
+        join ACCOUNT as ACCOUNTIN on BALANCEAT.ITSACCOUNT = ACCOUNTIN.ITSID 
+        where ITSACCOUNT=:ACCID and SUBACCOUNT=1 and ITSDATE = :DATE1
+        
+        union all
+
+        select ACCDEBIT as ACC, SUBACCDEBIT as SUBACC,  SUBACCDEBITID as SUBACCID, sum(DEBIT) as DEBIT, 0.00 as CREDIT
+        from  ACCOUNTINGENTRY 
+        where ACCDEBIT=:ACCID and SUBACCDEBITID=1 and ITSDATE &gt;= :DATE1 and ITSDATE &lt;= :DATE2
+        group by ACC,  SUBACC, SUBACCID
+        
+        union all
+        
+        select ACCCREDIT as ACC, SUBACCCREDIT as SUBACC, SUBACCCREDITID as SUBACCID, 0 as DEBIT, sum(CREDIT) as CREDIT
+        from  ACCOUNTINGENTRY 
+        where ACCCREDIT=:ACCID and SUBACCCREDITID=1 and ITSDATE &gt;=:DATE1 and ITSDATE&lt;=:DATE2
+        group by ACC,  SUBACC, SUBACCID
+      ) as UNION_RECORDS
+    group by ACC, SUBACC, SUBACCID
+  ) as ALL_RECORDS
+join ACCOUNT on ALL_RECORDS.ACC = ACCOUNT.ITSID
+order by ACCOUNT.ITSNUMBER, SUBACC;
+</pre>
+Where DATE2 is date of balance, DATE1 is date of BalanceAt that is nearest to DATE2,
+ACCID - account ID, SUBACCDID - subaccount ID.
+
+      <p>SQL query for all accounts and their subaccounts accounting/balance/queryAccounts.sql</p>
+<pre style="white-space: pre-wrap;">
+select ACCOUNT.ITSID, SUBACCOUNTLINE.SUBACCID  
+from ACCOUNT
+left join SUBACCOUNTLINE on SUBACCOUNTLINE.ITSOWNER=ACCOUNT.ITSID 
+where ISUSED=1
+</pre>
+
+      <h5>Trial balance</h5>
+      <p>SQL query accounting/balance/queryBalance.sql:</p>
+      <pre style="white-space: pre-wrap;">
+select ACC as ACCID, ACCOUNT.ITSNUMBER, ACCOUNT.ITSNAME, SUBACC, SUBACCID, SUBACCTYPE,
+case when ACCOUNT.NORMALBALANCETYPE = 0 then ALL_RECORDS.DEBIT - ALL_RECORDS.CREDIT
+else 0 end as DEBIT,
+case when ACCOUNT.NORMALBALANCETYPE = 1 then ALL_RECORDS.CREDIT - ALL_RECORDS.DEBIT
+else 0 end as CREDIT
+from
+  (
+    select ACC, SUBACC,  SUBACCID, sum(DEBIT) as DEBIT, sum(CREDIT) as CREDIT
+    from 
+      (
+        select ITSACCOUNT as ACC, SUBACCOUNT as SUBACC,  SUBACCID,
+        case when ACCOUNTIN.NORMALBALANCETYPE = 0 then ITSBALANCE
+        else 0 end as DEBIT,
+        case when ACCOUNTIN.NORMALBALANCETYPE = 1 then ITSBALANCE
+        else 0 end as CREDIT
+        from  BALANCEAT
+        join ACCOUNT as ACCOUNTIN on BALANCEAT.ITSACCOUNT = ACCOUNTIN.ITSID 
+        where ITSDATE = :DATE1
+        
+        union all
+
+        select ACCDEBIT as ACC, SUBACCDEBIT as SUBACC,  SUBACCDEBITID as SUBACCID, sum(DEBIT) as DEBIT, 0.00 as CREDIT
+        from  ACCOUNTINGENTRY 
+        where ITSDATE &gt;= :DATE1 and ITSDATE &lt;= :DATE2
+        group by ACC,  SUBACC, SUBACCID
+        
+        union all
+        
+        select ACCCREDIT as ACC, SUBACCCREDIT as SUBACC, SUBACCCREDITID as SUBACCID, 0 as DEBIT, sum(CREDIT) as CREDIT
+        from  ACCOUNTINGENTRY 
+        where ITSDATE &gt;= :DATE1 and ITSDATE &lt;= :DATE2
+        group by ACC,  SUBACC, SUBACCID
+      ) as UNION_RECORDS
+    group by ACC, SUBACC, SUBACCID
+  ) as ALL_RECORDS
+join ACCOUNT on ALL_RECORDS.ACC = ACCOUNT.ITSID
+order by ACCOUNT.ITSNUMBER, SUBACC;
+      </pre>
+Where DATE2 is date of balance, DATE1 is date of BalanceAt that is nearest to DATE2
+
+      <h5>Balance sheet</h5>
+      <p>SQL query accounting/balance/queryBalanceSheet.sql:</p>
+      <pre style="white-space: pre-wrap;">
+select ACC as ACCID, ITSNUMBER, ITSTYPE, ACCOUNTNAME,
+case when NORMALBALANCETYPE=0 then ALL_RECORDS.DEBIT-ALL_RECORDS.CREDIT
+else 0 end as DEBIT,
+case when NORMALBALANCETYPE=1 then ALL_RECORDS.CREDIT-ALL_RECORDS.DEBIT
+else 0 end as CREDIT
+from
+  (
+    select ACC, ITSNUMBER, ITSTYPE, NORMALBALANCETYPE, ACCOUNTNAME, sum(DEBIT) as DEBIT, sum(CREDIT) as CREDIT
+    from 
+      (
+        select ITSACCOUNT as ACC, ITSNUMBER, ITSTYPE, NORMALBALANCETYPE, ACCOUNT.ITSNAME as ACCOUNTNAME, 
+        case when ACCOUNT.NORMALBALANCETYPE=0 then ITSBALANCE
+        else 0 end as DEBIT,
+        case when ACCOUNT.NORMALBALANCETYPE=1 then ITSBALANCE
+        else 0 end as CREDIT
+        from  BALANCEAT
+        join ACCOUNT on BALANCEAT.ITSACCOUNT=ACCOUNT.ITSID 
+        where ITSTYPE&lt;3 and ITSDATE=:DATE1
+        
+        union all
+
+        select ACCDEBIT as ACC, ITSNUMBER, ITSTYPE, NORMALBALANCETYPE, ACCOUNT.ITSNAME as ACCOUNTNAME, sum(DEBIT) as DEBIT, 0.00 as CREDIT
+        from  ACCOUNTINGENTRY 
+        join ACCOUNT on ACCOUNTINGENTRY.ACCDEBIT=ACCOUNT.ITSID 
+        where ITSTYPE&lt;3 and ITSDATE&gt;=:DATE1 and ITSDATE&lt;=:DATE2
+        group by ACC, ITSNUMBER, ITSTYPE, NORMALBALANCETYPE, ACCOUNT.ITSNAME
+        
+        union all
+        
+        select ACCCREDIT as ACC, ITSNUMBER, ITSTYPE, NORMALBALANCETYPE, ACCOUNT.ITSNAME as ACCOUNTNAME, 0 as DEBIT, sum(CREDIT) as CREDIT
+        from  ACCOUNTINGENTRY 
+        join ACCOUNT on ACCOUNTINGENTRY.ACCCREDIT=ACCOUNT.ITSID 
+        where ITSTYPE&lt;3 and ITSDATE&gt;=:DATE1 and ITSDATE&lt;=:DATE2
+        group by ACC, ITSTYPE, NORMALBALANCETYPE, ACCOUNT.ITSNAME
+      ) as UNION_RECORDS
+    group by ACC, ITSNUMBER, ITSTYPE, NORMALBALANCETYPE, ACCOUNTNAME
+  ) as ALL_RECORDS
+order by ITSNUMBER;
+      </pre>
+Where DATE2 is date of balance, DATE1 is date of BalanceAt that is nearest to DATE2
+
+<h5>General ledger.</h5>
+Account previous total debit/credit SQL query accounting/ledger/queryPrevious.sql:
+<pre style="white-space: pre-wrap;">
+select ACCOUNT.ITSNAME, SUBACC,
+case when ACCOUNT.NORMALBALANCETYPE=0 then ALL_RECORDS.DEBIT - ALL_RECORDS.CREDIT
+else 0 end as DEBIT,
+case when ACCOUNT.NORMALBALANCETYPE=1 then ALL_RECORDS.CREDIT - ALL_RECORDS.DEBIT
+else 0 end as CREDIT
+from
+  (
+    select ACC, SUBACC, sum(DEBIT) as DEBIT, sum(CREDIT) as CREDIT
+    from 
+      (
+        select ITSACCOUNT as ACC, SUBACCOUNT as SUBACC,
+        case when ACCOUNTIN.NORMALBALANCETYPE=0 then ITSBALANCE
+        else 0 end as DEBIT,
+        case when ACCOUNTIN.NORMALBALANCETYPE=1 then ITSBALANCE
+        else 0 end as CREDIT
+        from  BALANCEAT
+        join ACCOUNT as ACCOUNTIN on BALANCEAT.ITSACCOUNT=ACCOUNTIN.ITSID 
+        where ITSACCOUNT=:ACCID :SUBACC and ITSDATE=:DATEBALANCE
+
+        union all
+
+        select ACCDEBIT as ACC, SUBACCDEBIT as SUBACC, sum(DEBIT) as DEBIT, 0.00 as CREDIT
+        from  ACCOUNTINGENTRY 
+        where ACCOUNTINGENTRY.ACCDEBIT=:ACCID :SUBACCDEBIT and ITSDATE&gt;=:DATEBALANCE and ITSDATE&lt;=:DATE1
+        group by ACC,  SUBACC
+        
+        union all
+        
+        select ACCCREDIT as ACC, SUBACCCREDIT as SUBACC, 0 as DEBIT, sum(CREDIT) as CREDIT
+        from  ACCOUNTINGENTRY 
+        where ACCOUNTINGENTRY.ACCCREDIT=:ACCID :SUBACCCREDIT and ITSDATE&gt;=:DATEBALANCE and ITSDATE&lt;=:DATE1
+        group by ACC, SUBACC
+      ) as UNION_PREVIOUS
+    group by ACC, SUBACC
+) as ALL_RECORDS
+join ACCOUNT on ALL_RECORDS.ACC=ACCOUNT.ITSID
+order by SUBACC;
+</pre>
+Where Date1 is date of start ledger, DATEBALANCE is date of nearest BalanceAtStartOf to Date1
+Account detail entries SQL query accounting/ledger/queryDetail.sql:
+<pre style="white-space: pre-wrap;">
+select * from
+(
+select ITSDATE, SOURCEID, SOURCETYPE, ACCDEBIT as ACC, SUBACCDEBIT as SUBACC, DEBIT as ITSTOTAL, 1 as ISDEBIT,
+ACCCREDIT as CORACC, ACCOUNT.ITSNAME as CORACCNAME, ACCOUNT.ITSNUMBER as CORACCNUMBER, SUBACCCREDIT as CORSUBACC, ACCOUNTINGENTRY.DESCRIPTION 
+from ACCOUNTINGENTRY 
+join ACCOUNT on ACCOUNTINGENTRY.ACCDEBIT = ACCOUNT.ITSID
+where ACCDEBIT=:ACCID :SUBACCDEBIT and ITSDATE &gt;=:DATE1 and ITSDATE&lt;=:DATE2
+
+union all
+
+select ITSDATE, SOURCEID, SOURCETYPE, ACCCREDIT as ACC, SUBACCCREDIT as SUBACC, CREDIT as ITSTOTAL, 0 as ISDEBIT,
+ACCDEBIT as CORACC, ACCOUNT.ITSNAME as CORACCNAME, ACCOUNT.ITSNUMBER as CORACCNUMBER, SUBACCDEBIT as CORSUBACC, ACCOUNTINGENTRY.DESCRIPTION 
+from ACCOUNTINGENTRY 
+join ACCOUNT on ACCOUNTINGENTRY.ACCCREDIT = ACCOUNT.ITSID
+where ACCCREDIT=:ACCID :SUBACCCREDIT and ITSDATE &gt;=:DATE1 and ITSDATE&lt;=:DATE2
+) as UNION_DETAIL
+order by ITSDATE;
+</pre>
+
+      <h5>Database replication, duplicate database to another RDBMS.</h5>
+      <p>The goal is receive full copy of database for another RDBMS e.g. from SQLite database to high load Postgresql.
+        So all tables include DatabaseInfo should be copied. The requesting database must has no any accounting/warehouse entry,
+        any other tables (products, organization ...) will be emptied before inserting.
+        Requesting WEB-app makes series of queries for every entity (they must be listed in replicator/base.xml) ordered according
+        that list.
+      </p>
+      
+      <h5>RDBMS that support BeigeORM</h5>
+      <p>RDBMS must execute with no error SQL statement like this:
+      <pre>
+select 1, null
+union all
+select null, 2
+      </pre>
+      Postgresql can't do this since 2011 see <a href="https://www.postgresql.org/message-id/201104122018.p3CKIlWR042915@wwwmaster.postgresql.org">https://www.postgresql.org/message-id/201104122018.p3CKIlWR042915@wwwmaster.postgresql.org</a>
+      There (in link) is also information that Oracle can't do it too (2011 year). Postgresql requires non-standard null type e.g. null::TEXT or null::INTEGER.
+      </p>
+
+      <h5>Exceptions throw ExceptionWithCode:</h5>
+      <ul>
+        <li>403 - forbidden illegal request</li>
+        <li>1000 - not_yet_implemented</li>
+        <li>1301 - PurchaseInvoice.THERE_IS_NO_GOODS There is no goods in stock</li>
+        <li>1302 - InvItem.INVITEM_SUPPLIER_DIFFER when vendor in invItem vendor taxes is differ</li>
+        <li>1303 - PurchaseInvoice.SOURSE_IS_IN_USE where_is_where_is_withdrawals_from_this_source - There is withdrawals from this source!
+          It arises when theRest != quantity for non-reversed item source;
+        </li>
+      </ul>
+      
+    </section>
+
+  </body>
+
+</document>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document xmlns="http://maven.apache.org/XDOC/2.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
+
+  <properties>
+    <title>Beigesoftware, Beige-Accounting</title>
+   </properties>
+
+  <body>
+
+    <section name="Accounting of goods loss/broke/stole.">
+     <p>
+        At Jan 19 Rob broke 12 eggs. According <a href="https://www.irs.gov/pub/irs-pdf/p538.pdf">IRS Accounting Periods and Methods, page 19 loss of inventory</a>
+        Bob can increase Cost Of Goods Sold with loss cost.
+      </p>
+
+      <p>Bob fill goods loss:
+          <p align="center"><img alt="Beige-Accounting goods loss" style="max-width: 100%" src="images/goods-loss.png" /></p>
+      </p>
+      <p>It makes complex accounting/warehouse/draw goods entries:
+          <p align="center"><img alt="Beige-Accounting goods loss report" style="max-width: 100%" src="images/goods-loss-report.png" /></p>
+      </p>
+
+    </section>
+
+  </body>
+
+</document>

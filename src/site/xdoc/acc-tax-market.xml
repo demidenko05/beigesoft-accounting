@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document xmlns="http://maven.apache.org/XDOC/2.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
+
+  <properties>
+    <title>Beigesoftware, Beige-Accounting</title>
+   </properties>
+
+  <body>
+
+    <section name="Market (business) accounting, import data from tax accounting.">
+      
+      <h4>Market accounting.</h4>
+      <p>
+        IRS demands Bob to keep entries (in either single entry or in double entries accounting system)
+        to estimate his taxes in calendar year period. Bob want to estimate his real business results
+        monthly. Market accounting (double entries system) based on rule:
+        <pre style="white-space: pre-wrap;">
+          Assets - Liabilities = how much does Bob's business cost (he can sold it) = Owner's equity
+        </pre>
+      </p>
+      <b>
+        The most entries from Tax accounting is relevant for Market one. Excluding entries are:
+        <ul>
+          <li>Property deprecation</li>
+          <li>Closing entries (yearly)</li>
+          <li>All bad debts entries</li>
+          <li>Credit inventory capitalized cost entries (yearly).</li>
+        </ul>
+      </b>
+
+      <p>Bob create new Beige Accounting Market in same way as <a href="acc-settings.html">Software installation, accounting settings, chart of accounts, started capital.</a>
+        except "Chart of accounts", "Expenses" and "Started capital". He uses <b>c:\beige-accounting-market</b> folder for market accounting.
+        He edit file <b>c:\beige-accounting-market\webapp\WEB-INF\web.xml</b> with <a href="https://notepad-plus-plus.org/">Notepad++</a> to change database ID:
+      </p>
+      <p align="center"><img style="max-width: 100%" src="images/market-acc-id.png" /></p>
+
+      <h4>Import data from tax accounting.</h4>
+      <p>
+        He launch source (tax) database Tax Beige Accounting: either double click on <b>startup8081.bat</b> or start terminal (CMD in beige-accounting folder) and enter
+        <b>java -jar beige-accounting-ajetty-jar-with-dependencies.jar port=8081</b> (port must not be 8080!).
+        Then he launch market accounting (in <b>beige-accounting-market</b> folder) on port 8080.
+      </p>
+      <p>
+        He use "menu - about" in tax accounting to know its ID:
+      </p>
+      <p align="center"><img style="max-width: 100%" src="images/tax-acc-about.png" /></p>
+      <p>
+        He added Replication accounting method with entries filters:
+      </p>
+      <p align="center"><img style="max-width: 100%" src="images/replication-acc-method.png" /></p>
+      <p>
+        He fill import acc. entries form (WEB-service address is "http://localhost:8081/secure/sendEntities") and press replicate:
+      </p>
+      <p align="center"><img alt="Beige-Accounting import from tax to market(business) accounting" style="max-width: 100%" src="images/import_acc_entries_form.png" /></p>
+      <p>
+        Report of import acc. entries is:
+      </p>
+      <p align="center"><img style="max-width: 100%" src="images/import_acc_entries_result.png" /></p>
+      
+      <h4>Property asset market cost</h4>
+      <p>If you bought something then you can't sold it for the same price. Bob think that he can sold his Ford
+      right now (in January) for 20000 USD, so he report Ford cost loss:</p>
+      <p align="center"><img style="max-width: 100%" src="images/ford_cost_loss.png" /></p>
+
+      <h4>Accounting of bad debts</h4>
+      <p>In opposite to tax accounting Bob want to report loss immediately. Funny coffee shop bad debt is 32.92.
+         But if IRS has approved this bad debt, then Bob's income tax deducting will be roughly 32.92 * 25% = 8.23 (25 is predicted tax rate).
+         So he create new asset account <b>Income Tax Deducting</b>:
+      </p>
+      <p align="center"><img style="max-width: 100%" src="images/income-tax-deducting-acc.png" /></p>
+      <p>Note that ID for account must be a word without spaces maximum 25 letters!</p>
+      <p>Then Bob transfer 8.23 into it, and the rest into <b>Other loses</b>:</p>
+      <p align="center"><img style="max-width: 100%" src="images/acc-market-bad-debt.png" /></p>
+
+      <h4>Closing of inventory capitalized cost monthly.</h4>
+      <p>Bob believes that these expenses should not be capitalized (increased assets). Any asset should has current market cost,
+      and it (cost) never depends of "how much does it cost to you".
+      He just transfer their full amount into <b>Other loses</b> account using trial balance:
+      </p>
+      <p align="center"><img style="max-width: 100%" src="images/acc-market-blnsicc.png" /></p>
+      <p align="center"><img style="max-width: 100%" src="images/market-closing-icc.png" /></p>
+
+      <p>* to be brief sample database <b>bobs-pizza-market.sqlite</b> contains of summary revenue and expenses entries instead of lot of Purchase and Sales invoices,
+      so trial balance on 31 Jan is:</p>
+      <p align="center"><img style="max-width: 100%" src="images/market-trial-jan.png" /></p>
+      
+      <h4>Closing entries monthly, balance sheet.</h4>
+      <p>Bob makes at 31 Jan closing entries into <b>Retained Earnings</b> account:
+      </p>
+      <p align="center"><img alt="Beige-Accounting closing entries" style="max-width: 100%" src="images/market-closing-jan.png" /></p>
+      
+      <p>After that gross revenue is 8998.3308. Bob's income tax roughly is 8998.3308 * 25% = 2249.5827, so Bob transfer
+      it from <b>Retained Earnings</b>:</p>
+      <p align="center"><img style="max-width: 100%" src="images/market-jan-inc-tax.png" /></p>
+      
+      <p>As a result the balance sheet on 31 Jan is:</p>
+      <p align="center"><img style="max-width: 100%" src="images/market-jan-balance.png" /></p>
+      <p>So Bob earn 6748.75 USD in January(*) and his business market cost is 46748.75 USD.</p>
+      <p>* take note that it is a simple example which does not included other taxes and their properly rates.</p>
+      
+      <h4>Accounting of business (trade) name.</h4>
+      <p>In February Bob sell pizza for 37000 USD, expenses is 11000 USD. So gross income = 26000 USD,
+      income tax = 6500 USD (Bob earns 19500 in Feb vs 6750 in Jan). Bob closes February with result: his business market cost is 66248.75.
+      But at this time (Feb 29 evening) a reliable businessman call Bob and ask him that he wants to buy Bob's pizza business for 80000 USD.
+      Bob refuse this offer and report this event (increased business cost for 13751.2492) with new asset account <b>Bob's pizza name</b>:
+      </p>
+      <p align="center"><img alt="Beige-Accounting of business (trade) name" style="max-width: 100%" src="images/market-business-name.png" /></p>
+      <p>Business (trade) name cost always reflect to quantity of customers that prefer its (business maker's) goods or services.</p>
+      <p>So February balance sheet is:</p>
+      <p align="center"><img alt="Beige-Accounting balance sheet" style="max-width: 100%" src="images/market-feb-balance-sheet.png" /></p>
+      <p>* Despite of rough income tax estimation, it would be better to use separate expense accounts for "expenses that deduct income tax" and "that doesn't".</p>
+    </section>
+
+  </body>
+
+</document>

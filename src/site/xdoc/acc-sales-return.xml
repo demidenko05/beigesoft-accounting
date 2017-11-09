@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document xmlns="http://maven.apache.org/XDOC/2.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
+
+  <properties>
+    <title>Beigesoftware, Beige-Accounting</title>
+   </properties>
+
+  <body>
+
+    <section name="Accounting of sales returns.">
+     <p>
+        At Jan 18 Bob sold 4 Pizza with bacon frozen and 4 Pizza with cheese frozen to Funny coffee shop.
+        Bob fill sales invoice (see <a href="acc-selling.html">Accounting of Sales.</a>)
+      </p>
+      <p>
+        At Jan 19 Bob was confirmed what "Funny coffee shop" is bankrupt and he receive sales return 2 Pizza with bacon frozen and 2 Pizza with cheese frozen.
+        Bob print full sales invoice report to figure price and cost which must be same for return:
+        <p align="center"><img style="max-width: 100%" src="images/sales-invoice-for-return.png" /></p>
+      </p>
+
+      <p>Then Bob fill sales return according sales invoice:
+          <p align="center"><img alt="Beige-Accounting sales return" style="max-width: 100%" src="images/sales-return.png" /></p>
+      </p>
+      <p>It make complex accounting/warehouse entries:
+          <p align="center"><img alt="Beige-Accounting sales return report" style="max-width: 100%" src="images/sales-return-report.png" /></p>
+      </p>
+      <p>
+        Sales returns is business expense (deducting income tax).
+        If according law of your country accrual method means that business expense occurs when you received document (prove)
+        even though you haven't received goods yet (in same day), then (in that case) switch off method "SalesReturn, Debit SalesReturns.InvItemCategory Credit ReturnsPayable.DebtorCreditor" in accounting settings and make
+        these deducting income accounting entries by hand.
+      </p>
+
+    </section>
+
+  </body>
+
+</document>

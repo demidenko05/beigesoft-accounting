@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Copyright (c) 2016 Beigesoft ™
+ 
+ Licensed under the GNU General Public License (GPL), Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+ 
+  http://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html
+ -->
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+<comment>Correspondence of field name to is null-able.</comment>
+<entry key="recordsPerTransaction">false</entry>
+<entry key="columnsCount">false</entry>
+<entry key="rememberUnauthorizedUserFor">false</entry>
+<entry key="maxQuantityOfBulkItems">false</entry>
+<entry key="maxQuantityOfTopLevelCatalogs">false</entry>
+<entry key="itemsPerPage">false</entry>
+<entry key="itsVersion">false</entry>
+<entry key="idDatabaseBirth">false</entry>
+<entry key="itsName">false</entry>
+<entry key="itsPath">false</entry>
+<entry key="esubject">false</entry>
+<entry key="etext">false</entry>
+<entry key="userEmail">false</entry>
+<entry key="userPassword">false</entry>
+<entry key="propertyName">false</entry>
+<entry key="propretyValue">false</entry>
+<entry key="itsEmail">false</entry>
+<entry key="itsPassword">false</entry>
+<entry key="sourceDatabaseBirth">false</entry>
+<entry key="requestedDatabaseId">false</entry>
+<entry key="payByDate">false</entry>
+<entry key="itsNumber">false</entry>
+<entry key="sourceId">false</entry>
+<entry key="sourceType">false</entry>
+<entry key="drawingType">false</entry>
+<entry key="drawingId">false</entry>
+<entry key="organization">false</entry>
+<entry key="fileName">false</entry>
+<entry key="useInMethods">false</entry>
+<entry key="setCode">false</entry>
+<entry key="costPrecision">false</entry>
+<entry key="pricePrecision">false</entry>
+<entry key="balancePrecision">false</entry>
+<entry key="quantityPrecision">false</entry>
+<entry key="nameFillWageLinesMethod">false</entry>
+<entry key="subaccExpense">false</entry>
+<entry key="subaccExpenseId">false</entry>
+<entry key="subaccExpenseType">false</entry>
+<entry key="taxCategory">true</entry>
+<entry key="knownCost">true</entry>
+<entry key="warehouseSiteFo">true</entry>
+<entry key="accDebit">true</entry>
+<entry key="accCredit">true</entry>
+<entry key="payByDate">true</entry>
+<entry key="lastDateReplication">true</entry>
+<entry key="numericValue1">true</entry>
+<entry key="numericValue2">true</entry>
+<entry key="previousPrice">true</entry>
+<entry key="priceCategoryCustomer">true</entry>
+<entry key="prepaymentTo">true</entry>
+<entry key="prepaymentFrom">true</entry>
+<entry key="catalogOnStart">true</entry>
+</properties>

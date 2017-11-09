@@ -1,0 +1,37 @@
+select ACCOUNT.ITSNAME, SUBACC,
+case when ACCOUNT.NORMALBALANCETYPE=0 then ALL_RECORDS.DEBIT - ALL_RECORDS.CREDIT
+else 0 end as DEBIT,
+case when ACCOUNT.NORMALBALANCETYPE=1 then ALL_RECORDS.CREDIT - ALL_RECORDS.DEBIT
+else 0 end as CREDIT
+from
+  (
+    select ACC, SUBACC, sum(DEBIT) as DEBIT, sum(CREDIT) as CREDIT
+    from 
+      (
+        select ITSACCOUNT as ACC, SUBACCOUNT as SUBACC,
+        case when ACCOUNTIN.NORMALBALANCETYPE=0 then ITSBALANCE
+        else 0 end as DEBIT,
+        case when ACCOUNTIN.NORMALBALANCETYPE=1 then ITSBALANCE
+        else 0 end as CREDIT
+        from  BALANCEAT
+        join ACCOUNT as ACCOUNTIN on BALANCEAT.ITSACCOUNT=ACCOUNTIN.ITSID 
+        where ITSACCOUNT=:ACCID :SUBACC and ITSDATE=:DATEBALANCE
+
+        union all
+
+        select ACCDEBIT as ACC, SUBACCDEBIT as SUBACC, sum(DEBIT) as DEBIT, 0.00 as CREDIT
+        from  ACCOUNTINGENTRY 
+        where ACCOUNTINGENTRY.ACCDEBIT=:ACCID :SUBACCDEBIT and ITSDATE>=:DATEBALANCE and ITSDATE<=:DATE1
+        group by ACC,  SUBACC
+        
+        union all
+        
+        select ACCCREDIT as ACC, SUBACCCREDIT as SUBACC, 0 as DEBIT, sum(CREDIT) as CREDIT
+        from  ACCOUNTINGENTRY 
+        where ACCOUNTINGENTRY.ACCCREDIT=:ACCID :SUBACCCREDIT and ITSDATE>=:DATEBALANCE and ITSDATE<=:DATE1
+        group by ACC, SUBACC
+      ) as UNION_PREVIOUS
+    group by ACC, SUBACC
+) as ALL_RECORDS
+join ACCOUNT on ALL_RECORDS.ACC=ACCOUNT.ITSID
+order by SUBACC;

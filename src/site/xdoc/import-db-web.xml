@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document xmlns="http://maven.apache.org/XDOC/2.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
+
+  <properties>
+    <title>Beigesoftware, Beige-Accounting</title>
+   </properties>
+
+  <body>
+
+    <section name="Import database with WEB-service.">
+
+      <p>If you decide to move from lite standalone (single user) SQlite version of Beige-Accounting
+      into high load enterprise-ready database MySql, then use WEB-service <b>Import database</b></p>
+      <p>
+        Bob decide to check out this. He install Apache Tomcat and MySql on his notebook. He added user
+        <b>beigeaccounting</b> with password <b>beigeaccounting</b> and create database <b>beigeaccounting</b> into MySql.
+        He download from <a href="https://mvnrepository.com">Maven repository</a> <b>HikariCP</b> version 2.4.3 <b>jar</b>
+        file and <b>mysql-connector-java</b> version 5.1.40. then put them into <b>lib</b>
+        folder of Apache Tomcat.
+        He download file <b>beige-accounting-web.war</b> from <a href="https://sourceforge.net/projects/beige-accounting/">https://sourceforge.net/projects/beige-accounting/</a>
+        and put it into <b>webapps</b> folder of Apache Tomcat.
+        He launch SQlite version Beige Accounting: in terminal (CMD in beige-accounting-ajetty folder) he enter
+        <b>java -jar beige-accounting-ajetty-jar-with-dependencies.jar port=8081</b> (port must not be 8080!) to launch source database.
+        Then he start Tomcat and open address <a href="http://localhost:8080/beige-accounting-web/">http://localhost:8080/beige-accounting-web/</a> (destination database):
+      </p>
+
+      <p align="center"><img style="max-width: 100%" src="images/import-db1.png" /></p>
+     
+      <p>He login as admin with password admin:</p>
+      <p align="center"><img style="max-width: 100%" src="images/import-db2.png" /></p>
+      
+      <p>He enter "URL of WEB-service of another database:" as "http://localhost:8081/secure/sendEntities" and leave user/password fields empty and press "submit":</p>
+      <p align="center"><img style="max-width: 100%" src="images/import-db3.png" /></p>
+      
+      <p>The import report is:</p>
+      <p align="center"><img alt="Beige-Accounting import database" style="max-width: 100%" src="images/import-db4.png" /></p>
+      
+      <p>The data is same:</p>
+      <p align="center"><img style="max-width: 100%" src="images/import-db5.png" /></p>
+      
+    </section>
+
+  </body>
+
+</document>

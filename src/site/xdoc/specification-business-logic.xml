@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document xmlns="http://maven.apache.org/XDOC/2.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
+
+  <properties>
+    <title>Beigesoft business logic programming</title>
+  </properties>
+
+  <body>
+
+    <!-- The body of the document contains a number of sections -->
+    <section name="Beigesoft business logic programming">
+      
+      <h4>Definitions, Goals, Facts and Requirements</h4>
+      <p>Business logic consist of business objects (entities) and processes.</p>
+      <p>Business entity means any complex object that involved in business process.
+        "Object" means "data" while "process" means any action(s) (operation(s)) with it, e.g. "Customer invoice"
+        is entity, that is created and given to "customer" after purchase. So it's involved complex
+        logic include validation, making derived objects like accounting entries, in opposite to simple object like a "note".
+      </p>
+      <p>The main method in the world to create any thing is "part-assemble".
+        Any thing that is maid by human or nature consist of parts (atoms, quarks, gears, etc).</p>
+      <p>A operation may involve sub and additional operations, e.g. save changes of a document prompt check user's permissions
+        and validation and user additionally requires making accounting entries.</p>
+      <p>So business logic must no be implemented as tangled mess. It must use "part-assemble" method.</p>
+      <p>So any operation should has its own (dedicated) service that can be assemble of sub-services,
+        e.g. "SrvSaveCustomerInvoice", "SrvSaveAndAccountCustomerInvoice".</p>
+      <p>Those services can be generic, i.e. can process several types business objects,
+        so it can be used map &lt;Class, String&gt; {Entity class - service name} to assign entity service to entity.</p>
+      <p>Some entities can have no some operations, e.g. "Copy" or "Delete" for immutable objects.</p>
+      <p>Another method to create a thing is using "Abstraction", e.g. two car can have same chassis(body), engine, wheels,
+        drive (e.g. rear) but different transmission AT4/AT5/MT6 etc.
+        It's also known as interface - a think interact/connected with another one through "this abstraction" and knows nothing but interface.
+        Using abstraction and "part-assemble" methods is best approach to create reliable applications.</p>
+      <p>Software that implements (perform) business processes must work without stop (24 hours every day in every week).
+        So it must be able to change (include fixing errors) or add business logic during runtime.
+      </p>
+      
+      
+      <h4>Concrete examples</h4>
+      <p>Designing with using only abstractions without concretes is bad approach.</p>
+      <h5>Example-set #1</h5>
+      <p>Process save changes of document.</p>
+      <p>Process save changes of document and make accounting entries.</p>
+      <p>Process reversing of document - i.e. make document uninfluenced on business, e.g. refuse purchase (not return).</p>
+      <p>Process make accounting entries document, e.g. on press button "account" in document's list.</p>
+      <p>Process bulk prices changes "down to 2% for customers 1-st category"</p>
+      <p>Process bulk prices changes "down to 3% for goods of dairy category"</p>
+      
+      <h5>Purchase a goods BP, online, prepaid, with delivering.</h5>
+      <p>It consist of sub-business processes:
+        <ul>
+          <li>Customer make order.</li>
+          <li>Customer prepaid online - goods has reserved before online payment transaction.</li>
+          <li>Prepayment is confirmed - arranging of delivering.</li>
+          <li>Goods delivering is confirmed</li>
+        </ul>
+        So software should show state of such complex (compound) business process.
+      </p>
+      
+      <h5>Customer invoice</h5>
+      <p>Process save changes of document include sub-process:
+        <ul>
+          <li>Check user permissions</li>
+          <li>Check ability to changes, completed document can't be changed</li>
+          <li>Validation</li>
+          <li>Save to database</li>
+        </ul>
+      </p>
+
+      <h4>Business process service</h4>
+      <p>Its model is <b>org.beigesoft.service.IProcessor:</b>
+        <ul>
+          <li>void process(Map&lt;String, Object&gt; pAddParam, IRequestData pRequestData)</li>
+        </ul>
+        It suitable for composite BP like "bulk price change"
+      </p>
+      
+      <h4>Business entity process service</h4>
+      <p>Its model is <b>org.beigesoft.service.IEntityProcessor:</b>
+        <ul>
+          <li>void process(Map&lt;String, Object&gt; pAddParam, T pEntity, IRequestData pRequestData)</li>
+        </ul>
+        It suitable for simple independent BP like "save document changes", "delete document line"
+      </p>
+      <h5>Programming process request "save changed entity" example (WEB-interface)</h5>
+      <p>User successfully made previous "create entity" or "edit entity" request, then make changes in entity form</p>
+      <p>User press save action - it post request:
+        <ul>
+          <li>requestHandlerName = HandlerEntityRequest (IHandlerRequest)</li>
+          <li>actionsNames = entitySave,entityRetrieve,entitiesPageRetrieve</li>
+          <li>nameEntity e.g. "CustomerInvoice"</li>
+          <li>entity's fields values set include ID</li>
+          <li>underlying entities page parameters</li>
+          <li>nameRenderer = editEntityAfterSaveJson</li>
+        </ul>
+      </p>
+      <p>Generic servlet get from IAppFactory IHandlerRequest by given name,
+        then wrap request into IRequestData delegate to the handler.</p>
+      <p>HandlerEntityRequest delegate ISrvDatabase to start transaction</p>
+      <p>HandlerEntityRequest invoke IPermissionCheck.check(IRequestData) if it not null,
+        if user has no permissions then this service throws exception.</p>
+      <p>Cause there is action started with "entity" HandlerEntityRequest create and fill entity:
+        <ul>
+          <li>it get Entity Factory Name from IHolderForClass.getFor(entityClass)</li>
+          <li>it get Entity IFactorySimple by Name from IFactoryAppBeansByName then delegate creating Entity instance to it</li>
+          <li>it invoke IFillEntityFromReq.fillEntity(pEntity, pRequestData)</li>
+        </ul>
+       </p>
+      <p>HandlerEntityRequest get IEntityProcessor from IHolderForClassByName by name "entitySave" then get it from IFactoryAppBeansByName then delegate entity to it.
+        Process validate and save entity.</p>
+      <p>HandlerEntityRequest get IEntityProcessor from IHolderForClassByName by name "entityRetrieve" then get it from IFactoryAppBeansByName then delegate entity to it.
+        Process refresh entity and put into response.</p>
+      <p>HandlerEntityRequest get IProcessor name from IHolderForClassByName by name "entitiesPageRetrieve" then get it from IFactoryAppBeansByName then delegate entity to it.
+        Process refresh entities page and put into response.</p>
+      <p>HandlerEntityRequest delegate ISrvDatabase to commit transaction</p>
+      <p>If exception has been thrown servlet delegate response to error.jsp, otherwise to editEntityAfterSaveJson.jsp
+        that refresh list and form and show success message.
+      </p>
+      <p>As you can figure request "actionsNames = entitiesPageRetrieve" to retrieve page #2 will be handled
+        at same way exclude creating and filling entity instance.</p>
+      <p>Abstraction and part methods make software flexible and hot-changeable. For example if you decided to add new business process -
+        you can do it with no hassle - just make JSP (hot auto-pluggable), make implementation of IEntityProcessor and compile it,
+        add it to factory by setter and hot-class-loader, add its name by setter to IHolderForClassByName,
+        and finally enjoy with that well done job.
+      </p>
+      
+    </section>
+
+  </body>
+
+</document>

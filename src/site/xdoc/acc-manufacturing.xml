@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document xmlns="http://maven.apache.org/XDOC/2.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
+
+  <properties>
+    <title>Beigesoftware, Beige-Accounting</title>
+   </properties>
+
+  <body>
+
+    <section name="Accounting of manufacturing (producing).">
+
+      <b>Beige-Accounting automatically calculates cost of product = cost of materials
+       plus additional costs (direct labor, packaging etc), this method is widely used in many countries.</b>
+      <p>
+        The main document for accounting of manufacturing expenses is <a href="https://www.irs.gov/businesses/small-businesses-self-employed/capitalization-period-of-direct-and-indirect-costs">IRS Capitalization Period of Direct and Indirect Costs</a>.
+        At Jan 17 Rob made 12 Pizza with bacon frozen and 12 Pizza with cheese frozen. Where are two documents for manufacturing:
+        <ul>
+          <li>Manufacturing process that makes a <b>product in progress</b> by using materials and usually direct labor cost, and makes accounting, draw material and warehouse entries</li>
+          <li>Manufacture. It just transfer completed <b>product in progress</b> into <b>finished product</b>, and makes accounting, draw material and warehouse entries</li>
+        </ul>
+        Bob fill manufacturing process for 12 Pizza with cheese frozen:
+        <p align="center"><img alt="Beige-Accounting manufacturing" style="max-width: 100%" src="images/manufacture-process1.png" /></p>
+        <p>Field <b>Site from</b> in use material line is optional. If it's empty then withdrawal will be from the first warehouse
+        site/s with available item/s.</p>
+        <p>Bob added one half of direct labor cost 45.91 (22.955) from Inventory capitalized cost temporary according Wage full report.
+        After completing and accounting full report is:</p>
+        <p align="center"><img alt="Beige-Accounting manufacturing report" style="max-width: 100%" src="images/manufacture-process2.png" /></p>
+        <p>
+          Then Bob fill and account Manufacture based on Manufacturing process above:
+          <p align="center"><img style="max-width: 100%" src="images/manufacture1.png" /></p>
+          <p align="center"><img style="max-width: 100%" src="images/manufacture2.png" /></p>
+        </p>
+        <p>
+          Bob make same documents for 12 Pizza with bacon frozen.
+        </p>
+      </p>
+
+    </section>
+
+  </body>
+
+</document>

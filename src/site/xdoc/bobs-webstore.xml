@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document xmlns="http://maven.apache.org/XDOC/2.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
+
+  <properties>
+    <title>Beige-software, Beige-Webstore</title>
+   </properties>
+
+  <body>
+
+    <section name="Bob's webstore example.">
+      <h4>Bob's pizza webstore.</h4>
+        <p>
+          Bob decided to use Beige-Webstore (it's included into Beige-Accounting) for selling his pizza.
+        </p>
+        <p>At start it open <b>menu -> Admin -> Webstore-admin</b>. Then he fill trading settings:
+          <p align="center"><img alt="Beige-Webstore settings" style="max-width: 100%" src="images/webstore-settings.png" /></p>
+          He just set webstore name to "Bob's store" and set "Show Logo" to "true" - this is image in the file "static/img/logo-web-store.png".
+        </p>
+        
+        <p>
+          Bob sell frozen and hot pizza to individual buyers and other business-makers. So he add several catalogs into "menu - Catalog of goods":
+          <p align="center"><img alt="Beige-Webstore making catalog of goods" style="max-width: 100%" src="images/webstore-goods-catalogs.png" /></p>
+        </p>
+        <p>To add sub-catalog into catalog bob uses menu <b>Subcatalogs in catalogs</b>:
+          <p align="center"><img alt="Beige-Webstore making catalog of goods" style="max-width: 100%" src="images/webstore-goods-subcatalogs.png" /></p>
+        </p>
+        <p>To add set of goods into catalog Bob uses very useful for big catalog bulk method inside menu <b>Catalog of Goods - Goods</b>.
+          He just filter set of goods then push button <b>Assign catalog (bulk)</b> and set desired catalog for chosen goods.
+          For example to filter all pizza hot with cheese he set filter "name like %cheese%" and "tax category = pizza hot":
+          <p align="center"><img style="max-width: 100%" src="images/webstore-goods-filter.png" /></p>
+          Add those goods to catalog:
+          <p align="center"><img style="max-width: 100%" src="images/webstore-goods-add-to-catalog.png" /></p>
+          It will be report about added/removed to/from catalog goods.
+          <div style="padding: 5px; color: red;">
+            * Warning! Adding already added item will fail whole operation!
+          </div>
+        </p>
+    </section>
+
+  </body>
+
+</document>
