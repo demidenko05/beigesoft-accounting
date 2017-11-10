@@ -243,6 +243,11 @@
       <url>http://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html</url>
       <distribution>repo</distribution>
     </license>
+    <license>
+      <name>DejaVu fonts License</name>
+      <url>https://dejavu-fonts.github.io/License.html</url>
+      <distribution>repo</distribution>
+    </license>
   </licenses>
   
   <scm>
