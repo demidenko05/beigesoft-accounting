@@ -17,6 +17,7 @@ import java.util.Map;
 import org.beigesoft.model.IRequestData;
 import org.beigesoft.persistable.IPersistableBase;
 import org.beigesoft.service.IEntityProcessor;
+import org.beigesoft.orm.processor.PrcEntityPbCopy;
 import org.beigesoft.accounting.service.ISrvAccSettings;
 
 /**
@@ -34,7 +35,7 @@ public class PrcAccEntityPbCopy<RS, T extends IPersistableBase>
   /**
    * <p>EntityPb Copy delegator.</p>
    **/
-  private IEntityProcessor<T, Long> prcEntityPbCopy;
+  private PrcEntityPbCopy<RS, T> prcEntityPbCopy;
 
   /**
    * <p>Business service for accounting settings.</p>
@@ -62,9 +63,9 @@ public class PrcAccEntityPbCopy<RS, T extends IPersistableBase>
   //Simple getters and setters:
   /**
    * <p>Getter for prcEntityPbCopy.</p>
-   * @return PrcEntityPbCopy<RS, T, Long>
+   * @return PrcEntityPbCopy<RS, T>
    **/
-  public final IEntityProcessor<T, Long> getPrcEntityPbCopy() {
+  public final PrcEntityPbCopy<RS, T> getPrcEntityPbCopy() {
     return this.prcEntityPbCopy;
   }
 
@@ -73,7 +74,7 @@ public class PrcAccEntityPbCopy<RS, T extends IPersistableBase>
    * @param pPrcEntityPbCopy reference
    **/
   public final void setPrcEntityPbCopy(
-    final IEntityProcessor<T, Long> pPrcEntityPbCopy) {
+    final PrcEntityPbCopy<RS, T> pPrcEntityPbCopy) {
     this.prcEntityPbCopy = pPrcEntityPbCopy;
   }
 

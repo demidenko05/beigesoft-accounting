@@ -22,6 +22,7 @@ import org.beigesoft.accounting.persistable.PaymentTo;
 import org.beigesoft.accounting.persistable.PrepaymentTo;
 import org.beigesoft.accounting.persistable.PurchaseInvoice;
 import org.beigesoft.accounting.persistable.PurchaseInvoiceLine;
+import org.beigesoft.accounting.persistable.PurchaseInvoiceServiceLine;
 import org.beigesoft.accounting.persistable.PurchaseInvoiceTaxLine;
 
 /**
@@ -89,9 +90,9 @@ public class PrcPurchaseInvoiceSave<RS>
       if (pEntity.getReversedId() != null) {
         //reverse none-reversed lines:
         PurchaseInvoiceLine pil = new PurchaseInvoiceLine();
-        PurchaseInvoice reversedPi = new PurchaseInvoice();
-        reversedPi.setItsId(pEntity.getReversedId());
-        pil.setItsOwner(reversedPi);
+        PurchaseInvoice reversed = new PurchaseInvoice();
+        reversed.setItsId(pEntity.getReversedId());
+        pil.setItsOwner(reversed);
         List<PurchaseInvoiceLine> reversedLines = getSrvOrm().
           retrieveListForField(pAddParam, pil, "itsOwner");
         for (PurchaseInvoiceLine reversedLine : reversedLines) {
@@ -137,10 +138,32 @@ public class PrcPurchaseInvoiceSave<RS>
             getSrvOrm().updateEntity(pAddParam, reversedLine);
           }
         }
+        PurchaseInvoiceServiceLine pisl = new PurchaseInvoiceServiceLine();
+        pisl.setItsOwner(reversed);
+        List<PurchaseInvoiceServiceLine> revServLines = getSrvOrm().
+          retrieveListForField(pAddParam, pisl, "itsOwner");
+        for (PurchaseInvoiceServiceLine reversedLine : revServLines) {
+          if (reversedLine.getReversedId() == null) {
+            PurchaseInvoiceServiceLine reversingLine =
+              new PurchaseInvoiceServiceLine();
+            reversingLine.setIdDatabaseBirth(getSrvOrm().getIdDatabase());
+            reversingLine.setReversedId(reversedLine.getItsId());
+            reversingLine.setService(reversedLine.getService());
+            reversingLine.setAccExpense(reversedLine.getAccExpense());
+            reversingLine.setItsCost(reversedLine.getItsCost().negate());
+            reversingLine.setItsTotal(reversedLine.getItsTotal().negate());
+            reversingLine.setTotalTaxes(reversedLine.getTotalTaxes().negate());
+            reversingLine.setTaxesDescription(reversedLine
+              .getTaxesDescription());
+            reversingLine.setIsNew(true);
+            reversingLine.setItsOwner(pEntity);
+            getSrvOrm().insertEntity(pAddParam, reversingLine);
+            reversedLine.setReversedId(reversingLine.getItsId());
+            getSrvOrm().updateEntity(pAddParam, reversedLine);
+          }
+        }
         PurchaseInvoiceTaxLine pitl = new PurchaseInvoiceTaxLine();
-        PurchaseInvoice reversedEntity = new PurchaseInvoice();
-        reversedEntity.setItsId(pEntity.getReversedId());
-        pitl.setItsOwner(reversedEntity);
+        pitl.setItsOwner(reversed);
         List<PurchaseInvoiceTaxLine> reversedTaxLines = getSrvOrm().
           retrieveListForField(pAddParam, pitl, "itsOwner");
         for (PurchaseInvoiceTaxLine reversedLine : reversedTaxLines) {

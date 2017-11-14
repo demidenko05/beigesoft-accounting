@@ -111,8 +111,7 @@ public class UtlSalesGoodsServiceLine<RS> {
    **/
   public final String lazyGetQuerySalesInvoiceTaxes() throws Exception {
     if (this.querySalesInvoiceTaxes == null) {
-      String flName = "/" + "accounting" + "/" + "trade"
-        + "/" + this.fileQuerySalesInvoiceTaxes;
+      String flName = "/accounting/trade/" + this.fileQuerySalesInvoiceTaxes;
       this.querySalesInvoiceTaxes = loadString(flName);
     }
     return this.querySalesInvoiceTaxes;
@@ -125,8 +124,7 @@ public class UtlSalesGoodsServiceLine<RS> {
    **/
   public final String lazyGetQuerySalesInvoiceTotals() throws Exception {
     if (this.querySalesInvoiceTotals == null) {
-      String flName = "/" + "accounting" + "/" + "trade"
-        + "/" + this.fileQuerySalesInvoiceTotals;
+      String flName = "/accounting/trade/" + this.fileQuerySalesInvoiceTotals;
       this.querySalesInvoiceTotals = loadString(flName);
     }
     return this.querySalesInvoiceTotals;

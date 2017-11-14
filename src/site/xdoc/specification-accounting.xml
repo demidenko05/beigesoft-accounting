@@ -1461,6 +1461,8 @@ where BEGINNINGINVENTORYLINE.REVERSEDID is null and THEREST>0 and INVITEM=:INVIT
         <ul>
          <li>APersistableBaseHasName fields implements IOwned&lt;PurchaseInvoice&gt;</li>
           <li>itsVersion - Version,  reliable autoincrement algorithm.</li>
+          <li>reversedId - Long if reversed</li>
+          <li>tax - Tax, not null</li>
           <li>itsOwner - PurchaseInvoice, not null.</li>
           <li>service - ServicePurchased, not null, e.g. "Delivering from NY".</li>
           <li>accExpense - Account service expense, e.g. Expenses or InventoryCapitalizedCost, Not Null.</li>
@@ -1559,6 +1561,8 @@ from
         <ul>
          <li>APersistableBaseHasName fields implements IOwned&lt;SalesInvoice&gt;</li>
           <li>itsVersion - Version,  reliable autoincrement algorithm.</li>
+          <li>reversedId - Long if reversed</li>
+          <li>tax - Tax, not null</li>
           <li>itsOwner - SSalesInvoice, not null.</li>
           <li>service - ServiceToSale, not null, e.g. "Delivering from NY".</li>
           <li>itsPrice - BigDecimal, not null.</li>

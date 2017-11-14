@@ -17,6 +17,7 @@ import java.util.Map;
 import org.beigesoft.model.IRequestData;
 import org.beigesoft.model.IHasId;
 import org.beigesoft.service.IEntityProcessor;
+import org.beigesoft.orm.processor.PrcEntityCreate;
 import org.beigesoft.accounting.service.ISrvAccSettings;
 
 /**
@@ -33,7 +34,7 @@ public class PrcAccEntityCreate<RS, T extends IHasId<ID>, ID>
   /**
    * <p>Entity create delegator.</p>
    **/
-  private IEntityProcessor<T, ID> prcEntityCreate;
+  private PrcEntityCreate<RS, T, ID> prcEntityCreate;
 
   /**
    * <p>Business service for accounting settings.</p>
@@ -61,9 +62,9 @@ public class PrcAccEntityCreate<RS, T extends IHasId<ID>, ID>
   //Simple getters and setters:
   /**
    * <p>Getter for prcEntityCreate.</p>
-   * @return IEntityProcessor<T, ID>
+   * @return PrcEntityCreate<RS, T, ID>
    **/
-  public final IEntityProcessor<T, ID> getPrcEntityCreate() {
+  public final PrcEntityCreate<RS, T, ID> getPrcEntityCreate() {
     return this.prcEntityCreate;
   }
 
@@ -72,7 +73,7 @@ public class PrcAccEntityCreate<RS, T extends IHasId<ID>, ID>
    * @param pPrcEntityCreate reference
    **/
   public final void setPrcEntityCreate(
-    final IEntityProcessor<T, ID> pPrcEntityCreate) {
+    final PrcEntityCreate<RS, T, ID> pPrcEntityCreate) {
     this.prcEntityCreate = pPrcEntityCreate;
   }
 

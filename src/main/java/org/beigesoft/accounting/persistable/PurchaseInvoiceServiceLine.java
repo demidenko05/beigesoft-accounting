@@ -30,6 +30,11 @@ public class PurchaseInvoiceServiceLine extends APersistableBaseVersion
   implements IOwned<PurchaseInvoice> {
 
   /**
+   * <p>ID of reversed/reversing line.</p>
+   **/
+  private Long reversedId;
+
+  /**
    * <p>ServicePurchased.</p>
    **/
   private ServicePurchased service;
@@ -90,6 +95,22 @@ public class PurchaseInvoiceServiceLine extends APersistableBaseVersion
   }
 
   //Simple getters and setters:
+  /**
+   * <p>Getter for reversedId.</p>
+   * @return Long
+   **/
+  public final Long getReversedId() {
+    return this.reversedId;
+  }
+
+  /**
+   * <p>Setter for reversedId.</p>
+   * @param pReversedId reference
+   **/
+  public final void setReversedId(final Long pReversedId) {
+    this.reversedId = pReversedId;
+  }
+
   /**
    * <p>Getter for service.</p>
    * @return ServicePurchased

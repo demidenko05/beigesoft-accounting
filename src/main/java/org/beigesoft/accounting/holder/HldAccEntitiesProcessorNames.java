@@ -84,6 +84,7 @@ import org.beigesoft.accounting.processor.PrcManufactureGfr;
 import org.beigesoft.accounting.processor.PrcManufactureCopy;
 import org.beigesoft.accounting.processor.PrcPurchaseReturnSave;
 import org.beigesoft.accounting.processor.PrcPurchaseReturnLineSave;
+import org.beigesoft.accounting.processor.PrcPurchaseReturnLineCreate;
 import org.beigesoft.accounting.processor.PrcPurchaseReturnLineCopy;
 import org.beigesoft.accounting.processor.PrcPurchaseReturnLineGfr;
 import org.beigesoft.accounting.processor.PrcGoodsLossSave;
@@ -94,6 +95,8 @@ import org.beigesoft.accounting.processor.PrcSalesInvoiceSave;
 import org.beigesoft.accounting.processor.PrcSalesInvoiceLineCopy;
 import org.beigesoft.accounting.processor.PrcSalesInvoiceLineGfr;
 import org.beigesoft.accounting.processor.PrcSalesInvoiceLineSave;
+import org.beigesoft.accounting.processor.PrcSalesInvoiceServiceLineSave;
+import org.beigesoft.accounting.processor.PrcSalesInvoiceServiceLineDelete;
 import org.beigesoft.accounting.processor.PrcPurchaseInvoiceServiceLineSave;
 import org.beigesoft.accounting.processor.PrcPurchaseInvoiceServiceLineDelete;
 import org.beigesoft.accounting.processor.PrcPurchaseInvoiceLineSave;
@@ -125,6 +128,7 @@ import org.beigesoft.accounting.persistable.MoveItemsLine;
 import org.beigesoft.accounting.persistable.PaymentFrom;
 import org.beigesoft.accounting.persistable.Wage;
 import org.beigesoft.accounting.persistable.PurchaseInvoiceServiceLine;
+import org.beigesoft.accounting.persistable.SalesInvoiceServiceLine;
 import org.beigesoft.accounting.persistable.SalesInvoiceLine;
 import org.beigesoft.accounting.persistable.PurchaseInvoiceLine;
 import org.beigesoft.accounting.persistable.BeginningInventory;
@@ -479,6 +483,8 @@ public class HldAccEntitiesProcessorNames
   protected final String getForFolDelete(final Class<?> pClass) {
     if (PurchaseInvoiceServiceLine.class == pClass) {
       return PrcPurchaseInvoiceServiceLineDelete.class.getSimpleName();
+    } else if (SalesInvoiceServiceLine.class == pClass) {
+      return PrcSalesInvoiceServiceLineDelete.class.getSimpleName();
     } else if (WageTaxLine.class == pClass) {
       return PrcWageTaxLineDelete.class.getSimpleName();
     } else if (InvItemTaxCategoryLine.class == pClass) {
@@ -507,6 +513,8 @@ public class HldAccEntitiesProcessorNames
   protected final String getForFolSave(final Class<?> pClass) {
     if (PurchaseInvoiceServiceLine.class == pClass) {
       return PrcPurchaseInvoiceServiceLineSave.class.getSimpleName();
+    } else if (SalesInvoiceServiceLine.class == pClass) {
+      return PrcSalesInvoiceServiceLineSave.class.getSimpleName();
     } else if (PurchaseReturnLine.class == pClass) {
       return PrcPurchaseReturnLineSave.class.getSimpleName();
     } else if (WageTaxLine.class == pClass) {
@@ -581,6 +589,8 @@ public class HldAccEntitiesProcessorNames
       return PrcAccEntityWithSubaccCreate.class.getSimpleName();
     } else if (pClass == SubaccountLine.class) {
       return PrcSubaccountLineCreate.class.getSimpleName();
+    } else if (pClass == PurchaseReturnLine.class) {
+      return PrcPurchaseReturnLineCreate.class.getSimpleName();
     } else if (pClass == AccountingEntry.class) {
       return PrcAccEntryCreate.class.getSimpleName();
     } else {

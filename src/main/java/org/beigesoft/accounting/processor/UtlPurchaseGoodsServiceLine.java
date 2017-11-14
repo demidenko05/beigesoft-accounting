@@ -111,8 +111,7 @@ public class UtlPurchaseGoodsServiceLine<RS> {
    **/
   public final String lazyGetQueryPurchaseInvoiceTaxes() throws Exception {
     if (this.queryPurchaseInvoiceTaxes == null) {
-      String flName = "/" + "accounting" + "/" + "trade"
-        + "/" + this.fileQueryPurchaseInvoiceTaxes;
+      String flName = "/accounting/trade/" + this.fileQueryPurchaseInvoiceTaxes;
       this.queryPurchaseInvoiceTaxes = loadString(flName);
     }
     return this.queryPurchaseInvoiceTaxes;
@@ -125,8 +124,8 @@ public class UtlPurchaseGoodsServiceLine<RS> {
    **/
   public final String lazyGetQueryPurchaseInvoiceTotals() throws Exception {
     if (this.queryPurchaseInvoiceTotals == null) {
-      String flName = "/" + "accounting" + "/" + "trade"
-        + "/" + this.fileQueryPurchaseInvoiceTotals;
+      String flName = "/accounting/trade/"
+        + this.fileQueryPurchaseInvoiceTotals;
       this.queryPurchaseInvoiceTotals = loadString(flName);
     }
     return this.queryPurchaseInvoiceTotals;

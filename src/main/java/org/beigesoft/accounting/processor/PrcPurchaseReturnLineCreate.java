@@ -13,25 +13,24 @@ package org.beigesoft.accounting.processor;
  */
 
 import java.util.Map;
-import java.math.BigDecimal;
 
 import org.beigesoft.model.IRequestData;
 import org.beigesoft.accounting.persistable.PurchaseReturnLine;
 import org.beigesoft.service.IEntityProcessor;
 
 /**
- * <p>Service that make PurchaseReturnLine copy from DB.</p>
+ * <p>Service that create PurchaseReturnLine.</p>
  *
  * @param <RS> platform dependent record set type
  * @author Yury Demidenko
  */
-public class PrcPurchaseReturnLineCopy<RS>
+public class PrcPurchaseReturnLineCreate<RS>
   implements IEntityProcessor<PurchaseReturnLine, Long> {
 
   /**
-   * <p>Acc-EntityPb Copy delegator.</p>
+   * <p>Acc-Entity Create delegator.</p>
    **/
-  private PrcAccEntityPbCopy<RS, PurchaseReturnLine> prcAccEntityPbCopy;
+  private PrcAccEntityCreate<RS, PurchaseReturnLine, Long> prcAccEntityCreate;
 
   /**
    * <p>Process entity request.</p>
@@ -47,36 +46,29 @@ public class PrcPurchaseReturnLineCopy<RS>
     final Map<String, Object> pAddParam,
       final PurchaseReturnLine pEntityPb,
         final IRequestData pRequestData) throws Exception {
-    PurchaseReturnLine entity = this.prcAccEntityPbCopy
+    PurchaseReturnLine entity = this.prcAccEntityCreate
       .process(pAddParam, pEntityPb, pRequestData);
-    entity.setItsOwner(this.prcAccEntityPbCopy.getPrcEntityPbCopy()
+    entity.setItsOwner(this.prcAccEntityCreate.getPrcEntityCreate()
       .getSrvOrm().retrieveEntity(pAddParam, entity.getItsOwner()));
-    entity.setPurchaseInvoiceLine(null);
-    entity.setPurchInvLnAppearance(null);
-    entity.setItsQuantity(BigDecimal.ZERO);
-    entity.setItsTotal(BigDecimal.ZERO);
-    entity.setTotalTaxes(BigDecimal.ZERO);
-    entity.setSubtotal(BigDecimal.ZERO);
-    entity.setTaxesDescription(null);
     return entity;
   }
 
   //Simple getters and setters:
   /**
-   * <p>Getter for prcAccEntityPbCopy.</p>
-   * @return PrcAccEntityPbCopy<RS, PurchaseReturnLine>
+   * <p>Getter for prcAccEntityCreate.</p>
+   * @return PrcAccEntityCreate<RS, PurchaseReturnLine, Long>
    **/
-  public final PrcAccEntityPbCopy<RS, PurchaseReturnLine>
-    getPrcAccEntityPbCopy() {
-    return this.prcAccEntityPbCopy;
+  public final PrcAccEntityCreate<RS, PurchaseReturnLine, Long>
+    getPrcAccEntityCreate() {
+    return this.prcAccEntityCreate;
   }
 
   /**
-   * <p>Setter for prcAccEntityPbCopy.</p>
-   * @param pPrcAccEntityPbCopy reference
+   * <p>Setter for prcAccEntityCreate.</p>
+   * @param pPrcAccEntityCreate reference
    **/
-  public final void setPrcAccEntityPbCopy(
-    final PrcAccEntityPbCopy<RS, PurchaseReturnLine> pPrcAccEntityPbCopy) {
-    this.prcAccEntityPbCopy = pPrcAccEntityPbCopy;
+  public final void setPrcAccEntityCreate(
+  final PrcAccEntityCreate<RS, PurchaseReturnLine, Long> pPrcAccEntityCreate) {
+    this.prcAccEntityCreate = pPrcAccEntityCreate;
   }
 }

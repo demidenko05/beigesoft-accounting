@@ -22,6 +22,7 @@ import org.beigesoft.accounting.persistable.PaymentFrom;
 import org.beigesoft.accounting.persistable.PrepaymentFrom;
 import org.beigesoft.accounting.persistable.SalesInvoice;
 import org.beigesoft.accounting.persistable.SalesInvoiceLine;
+import org.beigesoft.accounting.persistable.SalesInvoiceServiceLine;
 import org.beigesoft.accounting.persistable.SalesInvoiceTaxLine;
 
 /**
@@ -130,6 +131,29 @@ public class PrcSalesInvoiceSave<RS>
               + " " + getSrvI18n().getMsg("reversing_n")
                 + reversingLine.getIdDatabaseBirth() + "-"
                   + reversingLine.getItsId());
+            reversedLine.setReversedId(reversingLine.getItsId());
+            getSrvOrm().updateEntity(pAddParam, reversedLine);
+          }
+        }
+        SalesInvoiceServiceLine sisl = new SalesInvoiceServiceLine();
+        sisl.setItsOwner(reversed);
+        List<SalesInvoiceServiceLine> revServLines = getSrvOrm().
+          retrieveListForField(pAddParam, sisl, "itsOwner");
+        for (SalesInvoiceServiceLine reversedLine : revServLines) {
+          if (reversedLine.getReversedId() == null) {
+            SalesInvoiceServiceLine reversingLine =
+              new SalesInvoiceServiceLine();
+            reversingLine.setIdDatabaseBirth(getSrvOrm().getIdDatabase());
+            reversingLine.setReversedId(reversedLine.getItsId());
+            reversingLine.setService(reversedLine.getService());
+            reversingLine.setItsPrice(reversedLine.getItsPrice().negate());
+            reversingLine.setItsTotal(reversedLine.getItsTotal().negate());
+            reversingLine.setTotalTaxes(reversedLine.getTotalTaxes().negate());
+            reversingLine.setTaxesDescription(reversedLine
+              .getTaxesDescription());
+            reversingLine.setIsNew(true);
+            reversingLine.setItsOwner(pEntity);
+            getSrvOrm().insertEntity(pAddParam, reversingLine);
             reversedLine.setReversedId(reversingLine.getItsId());
             getSrvOrm().updateEntity(pAddParam, reversedLine);
           }

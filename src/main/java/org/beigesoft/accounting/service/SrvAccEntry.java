@@ -303,10 +303,6 @@ public class SrvAccEntry<RS> implements ISrvAccEntry {
       if (source.getCredit() != null) {
         accEntry.setCredit(source.getCredit().negate());
       }
-      String descr = "";
-      if (pReversing.getDescription() != null) {
-        descr = " " + pReversing.getDescription();
-      }
       accEntry.setDescription(getSrvI18n().getMsg("made_at") + " "
         + getDateFormatter().format(new Date()) + " " + getSrvI18n()
           .getMsg("by") + " " + getSrvI18n().getMsg(pReversing.getClass()
@@ -315,7 +311,7 @@ public class SrvAccEntry<RS> implements ISrvAccEntry {
                 .format(pReversing.getItsDate())
               // reversed from  current DB:
               + ", " + getSrvI18n().getMsg("reversed_entry_n") + source
-            .getIdDatabaseBirth() + "-" + source.getItsId() + descr);
+            .getIdDatabaseBirth() + "-" + source.getItsId());
       accEntry.setReversedId(source.getItsId());
       accEntry.setReversedIdDatabaseBirth(source.getIdDatabaseBirth());
       srvOrm.insertEntity(pAddParam, accEntry);
