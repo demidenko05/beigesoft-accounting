@@ -66,6 +66,11 @@ public class AdditionCostLine extends APersistableBase
   private String description;
 
   /**
+   * <p>ID of reversed/reversing ACL.</p>
+   **/
+  private Long reversedId;
+
+  /**
    * <p>Geter for itsOwner.</p>
    * @return ManufacturingProcess
    **/
@@ -84,6 +89,22 @@ public class AdditionCostLine extends APersistableBase
   }
 
   //Simple getters and setters:
+  /**
+   * <p>Geter for reversedId.</p>
+   * @return Long
+   **/
+  public final Long getReversedId() {
+    return this.reversedId;
+  }
+
+  /**
+   * <p>Setter for reversedId.</p>
+   * @param pReversedId reference
+   **/
+  public final void setReversedId(final Long pReversedId) {
+    this.reversedId = pReversedId;
+  }
+
   /**
    * <p>Geter for accExpense.</p>
    * @return Account

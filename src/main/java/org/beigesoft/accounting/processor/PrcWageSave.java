@@ -69,13 +69,12 @@ public class PrcWageSave<RS> extends APrcAccDocSave<RS, Wage> {
       ISrvFillWageLines srvFillWageLines = (ISrvFillWageLines) this
         .factoryAppBeans.lazyGet(srvFillWgLnNm);
       srvFillWageLines.fillWageLines(pAddParam, pEntity);
-    } else if (pEntity.getReversedId() != null
-      && "makeAccEntries".equals(actionAdd)) {
-      WageLine wl = new WageLine();
-      wl.setItsOwner(pEntity);
-      List<WageLine> wageLines = getSrvOrm().
-        retrieveListForField(pAddParam, wl, "itsOwner");
+    } else if ("makeAccEntries".equals(actionAdd)) {
       if (pEntity.getReversedId() == null) {
+        WageLine wl = new WageLine();
+        wl.setItsOwner(pEntity);
+        List<WageLine> wageLines = getSrvOrm().
+          retrieveListForField(pAddParam, wl, "itsOwner");
         for (WageLine wageLine : wageLines) {
           String whereStr = " where ITSOWNER=" + pEntity.getEmployee()
             .getItsId() + " and WAGETYPE=" + wageLine.getWageType().getItsId();
@@ -99,6 +98,12 @@ public class PrcWageSave<RS> extends APrcAccDocSave<RS, Wage> {
           }
         }
       } else {
+        WageLine wl = new WageLine();
+        Wage reversed = getSrvOrm().
+          retrieveEntityById(pAddParam, Wage.class, pEntity.getReversedId());
+        wl.setItsOwner(reversed);
+        List<WageLine> wageLines = getSrvOrm().
+          retrieveListForField(pAddParam, wl, "itsOwner");
         for (WageLine wageLine : wageLines) {
           String whereStr = " where ITSOWNER=" + pEntity.getEmployee()
             .getItsId() + " and WAGETYPE=" + wageLine.getWageType().getItsId();

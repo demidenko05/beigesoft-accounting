@@ -20,6 +20,7 @@ import org.beigesoft.exception.ExceptionWithCode;
 import org.beigesoft.model.IRequestData;
 import org.beigesoft.accounting.persistable.ManufacturingProcess;
 import org.beigesoft.accounting.persistable.UsedMaterialLine;
+import org.beigesoft.accounting.persistable.AdditionCostLine;
 import org.beigesoft.accounting.persistable.InvItem;
 
 /**
@@ -123,7 +124,40 @@ public class PrcManufacturingProcessSave<RS>
           getSrvOrm().updateEntity(pAddParam, reversedLine);
         }
       }
-      //Addition cost lines make only acc.entries, so nothing to do
+      AdditionCostLine acl = new AdditionCostLine();
+      acl.setItsOwner(reversed);
+      List<AdditionCostLine> reversedAcl = getSrvOrm().
+        retrieveListForField(pAddParam, acl, "itsOwner");
+      for (AdditionCostLine reversedLine : reversedAcl) {
+        if (reversedLine.getReversedId() == null) {
+          AdditionCostLine reversingLine = new AdditionCostLine();
+          reversingLine.setIdDatabaseBirth(getSrvOrm().getIdDatabase());
+          reversingLine.setReversedId(reversedLine.getItsId());
+          reversingLine.setSubaccExpense(reversedLine.getSubaccExpense());
+          reversingLine.setSubaccExpenseId(reversedLine.getSubaccExpenseId());
+          reversingLine.setSubaccExpenseType(reversedLine
+            .getSubaccExpenseType());
+          reversingLine.setAccExpense(reversedLine.getAccExpense());
+          reversingLine.setItsTotal(reversedLine.getItsTotal().negate());
+          reversingLine.setIsNew(true);
+          reversingLine.setItsOwner(pEntity);
+          reversingLine.setDescription(getSrvI18n().getMsg("reversed_n")
+            + reversedLine.getIdDatabaseBirth() + "-"
+              + reversedLine.getItsId()); //local
+          getSrvOrm().insertEntity(pAddParam, reversingLine);
+          String descr;
+          if (reversedLine.getDescription() == null) {
+            descr = "";
+          } else {
+            descr = reversedLine.getDescription();
+          }
+          reversedLine.setDescription(descr
+            + " " + getSrvI18n().getMsg("reversing_n") + reversingLine
+              .getIdDatabaseBirth() + "-" + reversingLine.getItsId());
+          reversedLine.setReversedId(reversingLine.getItsId());
+          getSrvOrm().updateEntity(pAddParam, reversedLine);
+        }
+      }
     }
     if (pEntity.getIsComplete()) { //need to make warehouse entries
       if (pEntity.getItsCost().doubleValue() <= 0) {

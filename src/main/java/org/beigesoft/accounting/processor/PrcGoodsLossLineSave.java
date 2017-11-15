@@ -120,6 +120,9 @@ public class PrcGoodsLossLineSave<RS>
           + " is null and DRAWINGTYPE=1005 and DRAWINGOWNERID="
             + pEntity.getItsOwner().getItsId();
       Double total = getSrvDatabase().evalDoubleResult(query, "ITSTOTAL");
+      if (total == null) {
+        total = 0.0;
+      }
       pEntity.getItsOwner().setItsTotal(BigDecimal.valueOf(total).setScale(
         getSrvAccSettings().lazyGetAccSettings(pAddParam).getCostPrecision(),
           getSrvAccSettings().lazyGetAccSettings(pAddParam).getRoundingMode()));

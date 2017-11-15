@@ -84,6 +84,8 @@ public class PrcManufactureSave<RS>
         throw new ExceptionWithCode(ExceptionWithCode
           .WRONG_PARAMETER, "where_is_withdrawals_from_this_source");
       }
+      reversed.setTheRest(BigDecimal.ZERO);
+      getSrvOrm().updateEntity(pAddParam, reversed);
       pEntity.setTheRest(BigDecimal.ZERO);
     } else {
       pEntity.setTheRest(pEntity.getItsQuantity());

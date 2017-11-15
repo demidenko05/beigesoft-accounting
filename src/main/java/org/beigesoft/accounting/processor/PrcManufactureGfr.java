@@ -13,8 +13,8 @@ package org.beigesoft.accounting.processor;
  */
 
 import java.util.Map;
-import java.math.BigDecimal;
 
+import org.beigesoft.exception.ExceptionWithCode;
 import org.beigesoft.model.IRequestData;
 import org.beigesoft.service.IEntityProcessor;
 import org.beigesoft.accounting.persistable.Manufacture;
@@ -49,8 +49,11 @@ public class PrcManufactureGfr<RS>
         final IRequestData pRequestData) throws Exception {
     Manufacture entity = this.prcAccDocGetForReverse
       .process(pAddParam, pEntity, pRequestData);
-    entity.setItsQuantity(pEntity.getItsQuantity().negate());
-    entity.setTheRest(BigDecimal.ZERO);
+    if (entity.getItsQuantity().compareTo(entity.getTheRest()) != 0) {
+      throw new ExceptionWithCode(ExceptionWithCode
+        .WRONG_PARAMETER, "where_is_withdrawals_from_this_source");
+    }
+    entity.setItsQuantity(entity.getItsQuantity().negate());
     return entity;
   }
 
