@@ -110,6 +110,7 @@ public class PrcAccEntryCreate<RS>
     pEntity.setIsNew(true);
     pEntity.setItsDate(new Date());
     pEntity.setSourceType(this.accountingEntriesTypeCode);
+    pEntity.setSourceDatabaseBirth(doc.getIdDatabaseBirth());
     String docDescription;
     if (doc.getDescription() != null) {
       docDescription = doc.getDescription();

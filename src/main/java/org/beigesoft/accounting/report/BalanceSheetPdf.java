@@ -19,7 +19,6 @@ import java.math.BigDecimal;
 
 import org.beigesoft.doc.model.Document;
 import org.beigesoft.doc.model.DocTable;
-//import org.beigesoft.doc.model.EWraping;
 import org.beigesoft.doc.model.EAlignHorizontal;
 import org.beigesoft.doc.model.EPageSize;
 import org.beigesoft.doc.model.EPageOrientation;
@@ -135,11 +134,15 @@ public class BalanceSheetPdf<RS, WI> implements IBalanceSheetPdf {
       tblBal.getItsCells().get(row * 4 + 1).setFontNumber(1);
       row++;
     }
-    tblBal.getItsCells().get(pBalance.getTotalLinesAssets() * 4 + 4)
+    int totLeabOwnEq = pBalance.getTotalLinesLiabilities()
+      + pBalance.getTotalLinesOwnersEquity();
+    int lastRowIdx = Math.max(pBalance.getTotalLinesAssets() + 1,
+      totLeabOwnEq + 4);
+    tblBal.getItsCells().get(lastRowIdx * 4)
       .setItsContent(this.srvI18n.getMsg("total_assets"));
-    tblBal.getItsCells().get(pBalance.getTotalLinesAssets() * 4 + 5)
+    tblBal.getItsCells().get(lastRowIdx * 4 + 1)
       .setAlignHorizontal(EAlignHorizontal.RIGHT);
-    tblBal.getItsCells().get(pBalance.getTotalLinesAssets() * 4 + 5)
+    tblBal.getItsCells().get(lastRowIdx * 4 + 1)
       .setItsContent(pBalance.getTotalAssets().toString() + " "
         + accSet.getCurrency().getItsName());
     row = 1;
@@ -192,19 +195,17 @@ public class BalanceSheetPdf<RS, WI> implements IBalanceSheetPdf {
       tblBal.getItsCells().get(row * 4 + 3).setFontNumber(1);
       row++;
     }
-    int totLeabOwnEq = pBalance.getTotalLinesLiabilities()
-      + pBalance.getTotalLinesOwnersEquity();
     tblBal.getItsCells().get((totLeabOwnEq + 3) * 4 + 2)
       .setItsContent(this.srvI18n.getMsg("total_oe"));
     tblBal.getItsCells().get((totLeabOwnEq + 3) * 4 + 3)
       .setAlignHorizontal(EAlignHorizontal.RIGHT);
     tblBal.getItsCells().get((totLeabOwnEq + 3) * 4 + 3)
       .setItsContent(pBalance.getTotalOwnersEquity().toString());
-    tblBal.getItsCells().get((totLeabOwnEq + 4) * 4 + 2)
+    tblBal.getItsCells().get(lastRowIdx * 4 + 2)
       .setItsContent(this.srvI18n.getMsg("total_l_oe"));
-    tblBal.getItsCells().get((totLeabOwnEq + 4) * 4 + 3)
+    tblBal.getItsCells().get(lastRowIdx * 4 + 3)
       .setAlignHorizontal(EAlignHorizontal.RIGHT);
-    tblBal.getItsCells().get((totLeabOwnEq + 4) * 4 + 3)
+    tblBal.getItsCells().get(lastRowIdx * 4 + 3)
       .setItsContent(pBalance.getTotalOwnersEquity()
         .add(pBalance.getTotalLiabilities()).toString() + " "
           + accSet.getCurrency().getItsName());

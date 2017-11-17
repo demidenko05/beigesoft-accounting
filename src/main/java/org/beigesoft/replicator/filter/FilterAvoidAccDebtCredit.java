@@ -62,8 +62,8 @@ public class FilterAvoidAccDebtCredit<RS> implements IFilterEntities,
    * @param pAddParam additional params (must present requestedDatabaseId
    * and replicationMethodId of String type (WEB parameters))
    * @return filter e.g. "((ITSID>0 and IDDATABASEBIRTH=2135)
-   * and ((ACCDEBIT isnull or ACCDEBIT not in ('BadDebts'))
-   * and (ACCCREDIT isnull or ACCCREDIT not in ('BadDebts','Property'))))"
+   * and ((ACCDEBIT is null or ACCDEBIT not in ('BadDebts'))
+   * and (ACCCREDIT is null or ACCCREDIT not in ('BadDebts','Property'))))"
    * @throws Exception - an exception
    **/
   @Override
@@ -77,7 +77,7 @@ public class FilterAvoidAccDebtCredit<RS> implements IFilterEntities,
     lazyEvalReplicationMethod(pAddParam);
     StringBuffer filterAvoidAccDbCr = new StringBuffer("");
     if (this.replicationMethod.getExcludeDebitAccounts().size() > 0) {
-      filterAvoidAccDbCr.append(" and ((ACCDEBIT isnull or ACCDEBIT not in (");
+      filterAvoidAccDbCr.append(" and ((ACCDEBIT is null or ACCDEBIT not in (");
       boolean isFirst = true;
       for (ReplExcludeAccountsDebit repExclAccDb
         : this.replicationMethod.getExcludeDebitAccounts()) {
@@ -93,10 +93,10 @@ public class FilterAvoidAccDebtCredit<RS> implements IFilterEntities,
     if (this.replicationMethod.getExcludeCreditAccounts().size() > 0) {
       if (this.replicationMethod.getExcludeDebitAccounts().size() > 0) {
         filterAvoidAccDbCr
-          .append(")) and (ACCCREDIT isnull or ACCCREDIT not in (");
+          .append(")) and (ACCCREDIT is null or ACCCREDIT not in (");
       } else {
         filterAvoidAccDbCr
-          .append(" and (ACCCREDIT isnull or ACCCREDIT not in (");
+          .append(" and (ACCCREDIT is null or ACCCREDIT not in (");
       }
       boolean isFirst = true;
       for (ReplExcludeAccountsCredit repExclAccCr
