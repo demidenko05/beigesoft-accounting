@@ -115,7 +115,10 @@ import org.beigesoft.accounting.processor.PrcAccEntrySaveDescr;
 import org.beigesoft.accounting.processor.PrcMoveItemsLineSave;
 import org.beigesoft.accounting.processor.PrcMoveItemsRetrieve;
 import org.beigesoft.accounting.processor.PrcAccSettingsSave;
+import org.beigesoft.accounting.processor.PrcAccSettingsLineSave;
 import org.beigesoft.accounting.persistable.AccSettings;
+import org.beigesoft.accounting.persistable.AccEntriesSourcesLine;
+import org.beigesoft.accounting.persistable.base.ADrawItemSourcesLine;
 import org.beigesoft.accounting.persistable.AccountingEntries;
 import org.beigesoft.accounting.persistable.AccountingEntry;
 import org.beigesoft.accounting.persistable.Account;
@@ -544,6 +547,9 @@ public class HldAccEntitiesProcessorNames
     } else if (AReplExcludeAccountsDebitCredit.class
       .isAssignableFrom(pClass)) {
       return PrcReplExcludeAccountsDebitCreditSave.class.getSimpleName();
+    } else if (AccEntriesSourcesLine.class == pClass
+      || ADrawItemSourcesLine.class.isAssignableFrom(pClass)) {
+      return PrcAccSettingsLineSave.class.getSimpleName();
     } else {
       if (this.hldAddEntitiesProcessorNames != null) {
         String name = this.hldAddEntitiesProcessorNames

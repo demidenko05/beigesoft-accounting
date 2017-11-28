@@ -12,6 +12,7 @@ package org.beigesoft.accounting.persistable;
  * http://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html
  */
 
+import org.beigesoft.model.IOwned;
 import org.beigesoft.persistable.AHasIdLongVersion;
 import org.beigesoft.accounting.model.EEntriesSourceType;
 import org.beigesoft.accounting.model.EEntriesAccountingType;
@@ -24,7 +25,8 @@ import org.beigesoft.accounting.model.EEntriesAccountingType;
  *
  * @author Yury Demidenko
  */
-public class AccEntriesSourcesLine extends AHasIdLongVersion {
+public class AccEntriesSourcesLine extends AHasIdLongVersion
+  implements IOwned<AccSettings> {
 
   /**
    * <p>Owner AccSettings, not Null.</p>
@@ -77,11 +79,11 @@ public class AccEntriesSourcesLine extends AHasIdLongVersion {
    **/
   private EEntriesAccountingType entriesAccountingType;
 
-  //Simple getters and setters:
   /**
    * <p>Geter for itsOwner.</p>
    * @return AccSettings
    **/
+  @Override
   public final AccSettings getItsOwner() {
     return this.itsOwner;
   }
@@ -90,10 +92,12 @@ public class AccEntriesSourcesLine extends AHasIdLongVersion {
    * <p>Setter for itsOwner.</p>
    * @param pItsOwner reference
    **/
+  @Override
   public final void setItsOwner(final AccSettings pItsOwner) {
     this.itsOwner = pItsOwner;
   }
 
+  //Simple getters and setters:
   /**
    * <p>Geter for sourceType.</p>
    * @return Integer

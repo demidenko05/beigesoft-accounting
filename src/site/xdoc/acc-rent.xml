@@ -10,21 +10,22 @@
   <body>
 
     <section name="Accounting of rent, electricity etc.">
+  <p>Keywords: Accounting of rent, electricity.</p>
 <p>
-  These expenses usually don't require to track payments to its vendor(supplier), and usually they don't include taxes.
+
+  These expenses usually don't requires tracking payments to its vendor(supplier), and usually they don't include taxes.
   So accounting of such expenses is very simple.
-  Bob rent kitchen at Jan 13 with equipment for 1000 per month. The document lease is a prove that says that rent expense is occurred
+  Bob rented kitchen at Jan 13 with equipment for 1000USD per month. The document lease is the prove that says that rent expense is occurred
   at last day of every month for 1000USD even unpaid (accrual method).
   <h4>Accounting of prepaid rent.</h4>
   He prepaid 3000USD for 3 months and made accounting entries:
   <p align="center"><img alt="Beige-Accounting prepaid rent" style="max-width: 100%" src="images/prepaid-rent.png" /></p>
   <p>
-    According <a href="https://www.irs.gov/businesses/small-businesses-self-employed/capitalization-period-of-direct-and-indirect-costs">IRS Capitalization Period of Direct and Indirect Costs</a>
-    rent expenses must be capitalized, so at Jan 31 one month rent is occurred and Bob will makes adjusting entries:
+    One month rent occurred on Jan 31 and Bob will makes adjusting entries (transfer 1000USD from prepayments into gross income (business) expense account <b>5150 Expenses.Rent</b>):
   </p>
-  <p align="center"><img alt="Beige-Accounting rent occurred" style="max-width: 100%" src="images/rent-occurred.png" /></p>
+  <p align="center"><img alt="Beige-Accounting rent occurred prepaid" style="max-width: 100%" src="images/rent-occurred.png" /></p>
   <p>
-    Bob will make same entries in February and March.
+    Bob will makes same entries in February and March.
   </p>
   <h4>Accounting of unpaid rent.</h4>
   <p>
@@ -38,10 +39,10 @@
   <h4>Accounting of paid rent on time.</h4>
   <p>
     When Bob will paid rent on time, he will makes accounting entries:<br></br>
-    <pre>Debit Inventory Capitalized Cost for Rent Credit Cash In Bank for 1000 USD</pre>
+    <pre>Debit Expenses for Rent Credit Cash In Bank for 1000 USD</pre>
   </p>
   <p>
-    If according the law of your country rent expense isn't required to be capitalized then it's used directly gross income (business) expense account <b>5150 Expense.Rent</b> instead of asset account <b>1210 Inventory Capitalized Cost.Rent</b>.
+    If according the law of your country rent expense is required to be capitalized then it's used asset account <b>1210 Inventory Capitalized Cost.Rent</b> instead of <b>Expenses.Rent</b>.
   </p>
 </p>
 

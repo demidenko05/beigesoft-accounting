@@ -142,6 +142,7 @@ import org.beigesoft.accounting.processor.PrcAccEntryCopy;
 import org.beigesoft.accounting.processor.PrcMoveItemsLineSave;
 import org.beigesoft.accounting.processor.PrcMoveItemsRetrieve;
 import org.beigesoft.accounting.processor.PrcAccSettingsSave;
+import org.beigesoft.accounting.processor.PrcAccSettingsLineSave;
 import org.beigesoft.replicator.persistable.
   base.AReplExcludeAccountsDebitCredit;
 import org.beigesoft.accounting.persistable.base.ADocWithTaxes;
@@ -371,6 +372,9 @@ public class FctBnAccEntitiesProcessors<RS>
           } else if (pBeanName
             .equals(PrcAccEntityFolDelete.class.getSimpleName())) {
             proc = createPutPrcAccEntityFolDelete(pAddParam);
+          } else if (pBeanName
+            .equals(PrcAccSettingsLineSave.class.getSimpleName())) {
+            proc = lazyGetPrcAccSettingsLineSave(pAddParam);
           } else if (pBeanName
             .equals(PrcAccEntityFolSave.class.getSimpleName())) {
             proc = lazyGetPrcAccEntityFolSave(pAddParam);
@@ -936,6 +940,36 @@ public class FctBnAccEntitiesProcessors<RS>
     //assigning fully initialized object:
     this.processorsMap
       .put(PrcAccEntityFolDelete.class.getSimpleName(), proc);
+    return proc;
+  }
+
+  /**
+   * <p>Lazy get PrcAccSettingsLineSave.</p>
+   * @param pAddParam additional param
+   * @return requested PrcAccSettingsLineSave
+   * @throws Exception - an exception
+   */
+  protected final PrcAccSettingsLineSave
+    lazyGetPrcAccSettingsLineSave(
+      final Map<String, Object> pAddParam) throws Exception {
+    @SuppressWarnings("unchecked")
+    PrcAccSettingsLineSave<RS, IHasId<Long>> proc =
+      (PrcAccSettingsLineSave<RS, IHasId<Long>>)
+        this.processorsMap
+          .get(PrcAccSettingsLineSave.class.getSimpleName());
+    if (proc == null) {
+      proc = new PrcAccSettingsLineSave<RS, IHasId<Long>>();
+      proc.setSrvAccSettings(getSrvAccSettings());
+      @SuppressWarnings("unchecked")
+      PrcEntityFolSave<RS, IHasId<Long>, Long> procDlg =
+        (PrcEntityFolSave<RS, IHasId<Long>, Long>)
+          this.fctBnEntitiesProcessors
+            .lazyGet(pAddParam, PrcEntityFolSave.class.getSimpleName());
+      proc.setPrcEntityFolSave(procDlg);
+      //assigning fully initialized object:
+      this.processorsMap
+        .put(PrcAccSettingsLineSave.class.getSimpleName(), proc);
+    }
     return proc;
   }
 

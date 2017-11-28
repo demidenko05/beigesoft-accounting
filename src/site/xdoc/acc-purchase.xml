@@ -11,28 +11,49 @@
 
     <section name="Accounting of purchase, prepayments, payments tracking.">
 
+      <p>Keywords: Accounting of purchase, prepayments, sales taxes from purchase, payments tracking.</p>
+
       <h4>Sales taxes payed for raw material (producing USA).</h4>
-      <p>In USA sales taxes paid for material/merchandise is "included into inventory" and they are deducting income tax.
-      Term "included into inventory" means that Inventory(not exactly inventory items costs) include your all capitalized and uncapitalized business expenses (rent, goods cost, taxes, etc),
-      and capitalized deducting income amount is calculated by equation,
-      see <a href="acc-bobs-taxes.html">Accounting of business owner taxes, retained earnings.</a>.
-      According <a href="https://www.irs.gov/pub/irs-pdf/p535.pdf">IRS 535 Business Expenses</a> sales taxes that Bob paid for materials
-      are business expenses.
-      IRS say that taxes (exclude Taxes assessed on the basis of income, I guess these are Bob's taxes) are Indirect Costs Required to be Capitalized.
-      So Bob should set accounting settings "Extract sales taxes from purchase" to true,
-      and set "is used" to true for method "PurchaseInvoice, Debit SalesTaxFromPurchase per Tax."
-      Also set "is used" asset account <b>Sales Tax From Purchase</b>.
-      Then fill inventory item tax category and set sales tax for each material.
-      Purchase invoice will extract taxes cost into <b>Sales Tax From Purchase</b>.
-      Then Bob can transfer amount from <b>Sales Tax From Purchase</b> to <b>Inventory Capitalized Cost</b>.
+      <p>According <a href="https://www.irs.gov/pub/irs-pdf/p535.pdf">IRS 535 Business Expenses, Page 18</a> sales taxes that Bob paid for materials
+      are business expenses (sales taxes are included into material cost),  i.e. they are deducting income tax:
+<pre style="white-space: pre-wrap;">
+...
+Any sales tax you pay on a service for your business, or on the purchase or use of property
+in your business is treated as part of the cost of the service or property.
+If the service or the cost or use of the property is a deductible business expense,
+you can deduct the tax as part of that service or cost.
+If the property is merchandise bought for resale, the sales tax is part of the cost of the merchandise.
+...
+  * I think here term "property" also means materials and supplies (as well as merchandise), any way for any seller these all means "goods/merchandise".
+  * term "deduct an expense" means that you can deduct its cost (part or whole) from gross income, so as a result the tax is decreased.
+  deducting in double entry system usually makes with:
+  Credit [An Asset Account] Debit [An Temporary Gross Income Expense Account] for deducting amount
+  at the end of accounting period all temporary gross income expenses/revenues accounts are closed on gross income account (or directly on retaining earnings/loses)
+</pre>  
+        That is sales taxes from purchase is included into inventory and they become expenses automatically as part of Cost Of Goods Sold (method FIFO in this case).
+        So Bob should set accounting settings "Extract sales taxes from purchase" to No,
+        and set "is used" to No for method "PurchaseInvoice, Debit SalesTaxFromPurchase per Tax.":
+          <p align="center"><img alt="Beige-Accounting settings - sales taxes from purchase" style="max-width: 100%" src="images/settings-sales-tax-from-purchase.png" /></p>
+        Also he should set "is used" to No asset account <b>Sales Tax From Purchase</b>.
+        Then he should fill inventory item tax category and set sales tax for each material.
+        Purchase invoice will extracts taxes cost into <b>Sales Tax From Purchase</b> account.
       </p>
-      <p>Sales taxes due to buyer for your goods/service are extracted from sales revenue and they are not deducting your income tax,
-      this is rule for all countries.</p>
-      <p>For many other countries sales taxes (e.g. VAT) is always extracted from goods/service cost and they are deducting themselves.</p>
+      <p>
+        If you have to use different method to account sales tax from purchase,
+        then set accounting settings "Extract sales taxes from purchase" to Yes,
+        and set "is used" to Yes for method "PurchaseInvoice, Debit SalesTaxFromPurchase per Tax."
+        Also you should set "is used" to true asset account <b>Sales Tax From Purchase</b>.
+        This is required in case of using "inventory capitalized costs" method (for USA example <a href="https://www.irs.gov/pub/irs-pdf/p538.pdf">IRS 538, Page 18 Uniform Capitalization Rules</a>).
+        Capitalized cost became expenses partially depends of ending inventory.
+        For example a factory produces 1000 notebook, they cost (capitalized) is 20000, at the end of period 900 notebooks are sold.
+        So 90% of costs (18000) is deducting the tax, the rest 2000 remained on assets.
+      </p>
+      <p>For many other countries sales taxes (e.g. VAT) from purchases is always extracted from goods/service cost and they are deducting themselves (taxes from sales, not deducting income tax).</p>
+      <p>Sales taxes imposed on the buyer from your sales of your goods/service are extracted from sales revenue, and you have to pay them, this rule is applied in all countries.</p>
 
       <p>Here is used fake sales tax 6% for goods with cheese (only for example purpose)!</p>
       
-      <p>To apply sales tax for a material/merchandise you should:
+      <p>To apply sales tax for a material/merchandise/service you should:
         <p>1. Add <b>Item Tax Category</b> e.g.:
           <p align="center"><img alt="Beige-Accounting merchandise sales tax category" style="max-width: 100%" src="images/item-tax-category.png" /></p>
         </p>
@@ -42,38 +63,39 @@
       </p>
       
       <h4>Prepayments</h4>
-      <p>At 14 Jan Bob prepaid goods to Carlo's grocery:
+      <p>Bob has prepaid goods to Carlo's grocery on 14 Jan:
           <p align="center"><img alt="Beige-Accounting prepayment for purchase" style="max-width: 100%" src="images/prepayment-for-purchase.png" /></p>
       </p>
-      <p>It make simple accounting entries:
+      <p>"Prepayment for purchase" has made simple accounting entries:
           <p align="center"><img alt="Beige-Accounting prepayment for purchase report" style="max-width: 100%" src="images/prepayment-for-purchase-report.png" /></p>
       </p>
 
       <p>
         After a document is accounted you can't change it, you can only reverse it
-        and change description of its accounting entries. Beige-Accounting is designed for high load,
+        and can change description of its accounting entries. Beige-Accounting is designed for high load job,
         this kind of software requires accuracy, otherwise you will get mess-up quickly. Just make database backup more frequently.
       </p>
       
       <h4>Purchase</h4>
       <p>
-        Bob bought at Jan 15 pizza ingredients and fill purchase invoice then account it:
+        Bob has bought pizza ingredients on Jan 15 then has filled purchase invoice then has accounted it:
         <p align="center"><img alt="Beige-Accounting purchase invoice" style="max-width: 100%" src="images/purchase1.png" /></p>
         <p>Field <b>pay by date</b> is optional.</p>
         <p align="center">full report  is:</p>
         <p align="center"><img alt="Beige-Accounting purchase invoice report" style="max-width: 100%" src="images/purchase2.png" /></p>
-        As you can see purchase invoice make accounting record prepayments to account payable. Only prepayment per invoice is allowed,
-        otherwise you should either make prepayments and payments tracking "by hand" or divide prepayment by pieces.
+        <p>* As you can see purchase invoice automatically makes accounting record prepayments to account payable. Only prepayment per invoice is allowed (has implemented),
+        otherwise you should make prepayments and payments tracking "by hand".</p>
+        <p>* You also can see that sales tax for cheese is included into its cost, i.e. it is not extracted.</p>
       </p>
 
       <h4>Payments tracking</h4>
-      <p>At 15 Jan Bob paid the rest to Carlo's grocery for purchase invoice#1:
+      <p>Bob has paid the rest to Carlo's grocery for purchase invoice#1 on 15 Jan:
           <p align="center"><img alt="Beige-Accounting payment for purchase" style="max-width: 100%" src="images/payment-for-purchase.png" /></p>
       </p>
-      <p>It make simple accounting entries:
+      <p>Document "Payment for purchase" has made simple accounting entries:
           <p align="center"><img alt="Beige-Accounting payment for purchase report" style="max-width: 100%" src="images/payment-for-purchase-report.png" /></p>
       </p>
-      <p>After what purchase invoice payment tracking fields in list have changed:
+      <p>Purchase invoice's payment's tracking fields in the list are changed after that:
           <p align="center"><img alt="Beige-Accounting payment for purchase tracking" style="max-width: 100%" src="images/purchase-payment-tracking.png" /></p>
       </p>
 

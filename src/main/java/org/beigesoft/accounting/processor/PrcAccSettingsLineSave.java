@@ -15,18 +15,25 @@ package org.beigesoft.accounting.processor;
 import java.util.Map;
 
 import org.beigesoft.model.IRequestData;
+import org.beigesoft.model.IHasId;
 import org.beigesoft.service.IEntityProcessor;
 import org.beigesoft.accounting.service.ISrvAccSettings;
-import org.beigesoft.accounting.persistable.AccSettings;
 
 /**
- * <p>Service that save AccSettings into DB and in cache.</p>
+ * <p>Service that save accounting settings line
+ *  and refresh settings in the cache.</p>
  *
  * @param <RS> platform dependent record set type
+ * @param <T> entity type
  * @author Yury Demidenko
  */
-public class PrcAccSettingsSave<RS>
-  implements IEntityProcessor<AccSettings, Long> {
+public class PrcAccSettingsLineSave<RS, T extends IHasId<Long>>
+  implements IEntityProcessor<T, Long> {
+
+  /**
+   * <p>Entity FOL Save delegator.</p>
+   **/
+  private IEntityProcessor<T, Long> prcEntityFolSave;
 
   /**
    * <p>Business service for accounting settings.</p>
@@ -43,18 +50,34 @@ public class PrcAccSettingsSave<RS>
    * @throws Exception - an exception
    **/
   @Override
-  public final AccSettings process(
+  public final T process(
     final Map<String, Object> pAddParam,
-      final AccSettings pEntity,
-        final IRequestData pRequestData) throws Exception {
-    srvAccSettings.saveAccSettings(pAddParam, pEntity);
+      final T pEntity, final IRequestData pRequestData) throws Exception {
+    T result = this.prcEntityFolSave.process(pAddParam, pEntity, pRequestData);
+    this.srvAccSettings.clearAccSettings(pAddParam);
     pRequestData.setAttribute("accSettings",
       this.srvAccSettings.lazyGetAccSettings(pAddParam));
-    return pEntity;
+    return result;
   }
 
-
   //Simple getters and setters:
+  /**
+   * <p>Getter for prcEntityFolSave.</p>
+   * @return PrcEntityFolSave<RS, T, Long>
+   **/
+  public final IEntityProcessor<T, Long> getPrcEntityFolSave() {
+    return this.prcEntityFolSave;
+  }
+
+  /**
+   * <p>Setter for prcEntityFolSave.</p>
+   * @param pPrcEntityFolSave reference
+   **/
+  public final void setPrcEntityFolSave(
+    final IEntityProcessor<T, Long> pPrcEntityFolSave) {
+    this.prcEntityFolSave = pPrcEntityFolSave;
+  }
+
   /**
    * <p>Getter for srvAccSettings.</p>
    * @return ISrvAccSettings

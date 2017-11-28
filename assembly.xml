@@ -22,6 +22,9 @@
         <include>/findbug-exclude.xml</include>
         <include>/checkstyle-suppressions.xml</include>
       </includes>
+      <excludes>
+        <exclude>/src/site/resources/images/**</exclude>
+      </excludes>
     </fileSet>
   </fileSets>
 </assembly>

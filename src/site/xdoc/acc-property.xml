@@ -11,18 +11,19 @@
 
     <section name="Accounting of property.">
       
-      <p>Bob bought Ford TRANSIT CONNECT at Jan.12 2016 for 22000USD. He made accounting entries:
+      <p>Keywords: Accounting of property.</p>
+
+      <p>Bob has bought Ford at Jan.12 2016 for 22000USD. He has made accounting entries:
         <p align="center"><img alt="Beige-Accounting property bought" style="max-width: 100%" src="images/ford-bought.png" /></p>
         <p align="center">So first trial balance as at Jan.12.2016 is:</p>
         <p align="center"><img style="max-width: 100%" src="images/trial-balance1.png" /></p>
 
-        He should use MACRS method to depricate it according <a href="https://www.irs.gov/pub/irs-pdf/p946.pdf">IRS Publication 946</a>.
-        This is listed property used 100% for business purpose, so he elect GDS (General Depreciation System).
-        This is 5­year property. He elect  200% declining balance method (DL).
-        He should use half-year convention (HY), so he should use Table A-1.
+        He should use MACRS method for it deprecation according to <a href="https://www.irs.gov/pub/irs-pdf/p946.pdf">IRS Publication 946</a>.
+        This is listed property used 100% for business purpose, so he elected GDS (General Depreciation System).
+        This is 5­year property. He elected 200% declining balance method (DL).
+        He should uses half-year convention (HY), so he should uses Table A-1.
         According this table deprecation is 20% for the first year i.e. 4400USD is deducting
-        from  Bob's 2016 Income Tax. According  <a href="https://www.irs.gov/businesses/small-businesses-self-employed/capitalization-period-of-direct-and-indirect-costs">IRS Capitalization Period of Direct and Indirect Costs</a>
-        he should include deprecation into inventory addition (capitalized) cost, so 31 December 2016 Bob's will make accounting records:
+        from  Bob's 2016 Income Tax. So 31 December 2016 Bob's will transfer 4400USD from asset account <b>Property</b> into gross income (business) expense account <b>5150 Expenses.Property Deprecation</b>:
         <p align="center"><img style="max-width: 100%" alt="Beige-Accounting property deprecation" src="images/ford-deprication.png" /></p>
       </p>
     </section>
