@@ -10,38 +10,38 @@
   <body>
 
     <section name="Accounting of business owner taxes, retained earnings.">
+    <p>Keywords: Accounting of business owner taxes, retained earnings.</p>
 <p>
   There are three Income Tax methods used in all countries:
   <ul>
     <li>income tax = rate * (business revenues - business expenses - allowances), and usually accrued method</li>
     <li>income tax = rate * (business revenues - allowances), and usually cash method</li>
-    <li>income tax = fixed amount</li>
+    <li>income tax = fixed amount (e.g. 500USD per month.)</li>
   </ul> 
   Accrued means that business revenue/expense is occurred when you bought or sold something (goods, services, rent etc) even unpaid.
   Cash - when you earn money or paid ones, but not prepayments, i.e. for already sold/purchase goods/service.
-  According <a href="https://www.irs.gov/pub/irs-pdf/p583.pdf">IRS 583 Starting a business</a> page 6
+  According <a href="https://www.irs.gov/pub/irs-pdf/p583.pdf">IRS 583 Starting a business, page 6</a>
   Bob as sole proprietor should pays Income Tax, Self-employment tax. He should pays estimated income tax
-  by April 18 (see Form 1040-ES). For manufacturing (according <a href="https://www.irs.gov/businesses/small-businesses-self-employed/capitalization-period-of-direct-and-indirect-costs">IRS Capitalization Period of Direct and Indirect Costs</a>)
-  direct business expenses such as cost of goods sold is made automatically
-  directly on gross income (business) expense account <b>Cost Of Goods Sold (COGS)</b>. All other expenses is accounted on asset account
-  <b>Inventory capitalized cost (ICC)</b>. To calculate amount of <b>Inventory capitalized cost</b> to be expense
-  it's used trial balance at the start and the end of the year and this equation:
-  <pre style="white-space: pre-wrap;">
-    1. Simplified Production Absorption Ratio = (ICC end - ICC start) / (Inventory end - Inventory start + COGS end)
-    2. ICC amount to be expense = (ICC end - ICC start) - Inventory end * Simplified Production Absorption Ratio
-  </pre>
-  Bob's balance is zero at the start. For example at the end of the year Inventory = 1500USD, COGS = 240000USD,
-  ICC = 25000USD. So Bob will makes accounting entries Debit COGS Additional Credit ICC
-  for whole ICC = 25000 - 1500 * 25000 /(1500 + 240000) = 24844.72USD
-  <p>Bob should makes several accounting entries for each type of expense (ICC - rent, payroll tax1, etc) by using Simplified Production Absorption Ratio.</p>
+  by April 18 (see Form 1040-ES).
 </p>
   
+  <h4>Capitalized cost method.</h4>
+  <p>Manufacturing (Producing) business activity often (in many countries) are subject of method "capitalized cost".
+    For USA see <a href="https://www.irs.gov/pub/irs-pdf/p538.pdf">IRS 538, Page 18 Uniform Capitalization Rules</a>.
+    According this method the most business expenses are required to be capitalized (i.e. placed into assets).
+    For USA these expenses are - rent, electricity, indirect labor, property deprecation, sales tax from purchases etc.
+    Part of those costs (or whole total) are deducting the tax at the end of period, and that "part" depends of starting and ending inventory (product).
+    For example a factory has 0 notebooks at start and it has produced 1000 notebooks.
+    They costs (capitalized) is 20000, and these costs are placed on asset accounts.
+    At the end of period 900 notebooks are sold.
+    So 90% of costs (18000) is deducting the tax, the rest 2000 is remained on assets.</p>
+
   <h4>Bob's earnings.</h4>
   <p>After Bob has made all business revenues and expenses his gross income is:
     <pre style="white-space:pre-wrap">
       gross income = sum(gross income revenue accounts) - sum(gross income expense accounts)
     </pre>
-    His Self-employment tax is also none-capitalized cost and gross income expense.
+    His Self-employment tax is also gross income expense.
     <p>
       The final closing accounting entries are:
       <ul>
@@ -52,7 +52,7 @@
     </p>
   </p>
   
-    </section>
+</section>
 
   </body>
 

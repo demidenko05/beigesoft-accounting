@@ -127,7 +127,7 @@ public class PrcSalesReturnLineSave<RS>
       BigDecimal totalTaxes = BigDecimal.ZERO;
       String taxesDescription = "";
       if (getSrvAccSettings().lazyGetAccSettings(pAddParam)
-        .getIsExtractSalesTaxFromPurchase()
+        .getIsExtractSalesTaxFromSales()
           && pEntity.getInvItem().getTaxCategory() != null) {
         List<InvItemTaxCategoryLine> pstl = getSrvOrm()
           .retrieveListWithConditions(pAddParam,
@@ -193,7 +193,7 @@ public class PrcSalesReturnLineSave<RS>
         add(pEntity.getItsOwner().getTotalTaxes()));
       getSrvOrm().updateEntity(pAddParam, pEntity.getItsOwner());
       if (getSrvAccSettings().lazyGetAccSettings(pAddParam)
-        .getIsExtractSalesTaxFromPurchase()) {
+        .getIsExtractSalesTaxFromSales()) {
         updateTaxLines(pAddParam,  pEntity.getItsOwner());
       }
     } else {

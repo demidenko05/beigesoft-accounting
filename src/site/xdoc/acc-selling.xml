@@ -10,22 +10,23 @@
   <body>
 
     <section name="Accounting of sales, prepayments, payments tracking.">
+    <p>Keywords: Accounting of sales, payments tracking software.</p>
       <p>
-        At Jan 16 Bob receive 50USD prepayment from Seven Eleven.
-        Bob fill Prepayment From:
+        16 Bob received on Jan 50USD prepayment from Mini Market.
+        Bob has filled Prepayment From:
         <p align="center"><img alt="Beige-Accounting prepayment for sales" style="max-width: 100%" src="images/prepayment-for-sales.png" /></p>
         <p align="center">After accounting full report is:</p>
         <p align="center"><img alt="Beige-Accounting prepayment for sales report" style="max-width: 100%" src="images/prepayment-for-sales-report.png" /></p>
       </p>
       <p>
-        At Jan 17 Bob sold 6 Pizza with bacon frozen and 6 Pizza with cheese frozen to Seven Eleven.
-        Bob fill Sales invoice:
+        Bob has sold on Jan 17 6 Pizza with bacon frozen and 6 Pizza with cheese frozen to Mini Market.
+        Bob has filled Sales invoice:
         <p align="center"><img alt="Beige-Accounting sales invoice" style="max-width: 100%" src="images/sales1.png" /></p>
         <p align="center">After accounting full report is:</p>
         <p align="center"><img alt="Beige-Accounting sales invoice report" style="max-width: 100%" src="images/sales2.png" /></p>
       </p>
       <p>
-        After that Bob makes in accounting settings precision for trial balance to 4 then print it:
+        After that Bob has changed in accounting settings precision for trial balance to 4 then printed it:
         <p align="center"><img style="max-width: 100%" src="images/trial-balance2.png" /></p>
       </p>
       <p>
@@ -34,21 +35,21 @@
       </p>
       <p>
         As you can see Bob made another mistake. He set Sales date less than Manufacture date for that pizza, so
-        balance of Inventory.Pizza Cheese Frozen is -22.986 at 4:42 PM because it(pizza) was made at 6:40 PM.
-        So it's reasonable to make database copy more frequently, he need to copy beigeaccounting.sqlite
+        balance of Inventory.Pizza Cheese Frozen is -23.5788 at 4:42 PM because it(pizza) was made at 6:40 PM.
+        So it's reasonable to make database copy more frequently, he needs to copy beigeaccounting.sqlite
         by file explorer without exiting from accounting (on Android he should do it in the Database manager).
         Otherwise he should reverse whole document. For warehouse document date means nothing cause warehouse
         entries use current time. And you can't draw a product or material if it doesn't exist in warehouse.
       </p>
 
       <h4>Payments tracking</h4>
-      <p>At 18 Jan Bob receive the rest 48.76 from Seven Eleven for sales invoice #1:
+      <p>Bob received on 18 Jan the rest 48.76 from Mini Market for sales invoice #1:
           <p align="center"><img alt="Beige-Accounting payment for sales" style="max-width: 100%" src="images/payment-for-sales.png" /></p>
       </p>
       <p>It make simple accounting entries:
           <p align="center"><img alt="Beige-Accounting payment for sales report" style="max-width: 100%" src="images/payment-for-sales-report.png" /></p>
       </p>
-      <p>After what sales invoice payment tracking fields in list have changed:
+      <p>After what sales invoice's payment tracking fields in the list are changed:
           <p align="center"><img alt="Beige-Accounting payment for sales tracking" style="max-width: 100%" src="images/sales-payment-tracking.png" /></p>
       </p>
       <p>You can use filter for fields <b>Payment total</b> and <b>Pay by date</b> to report payments for sales:

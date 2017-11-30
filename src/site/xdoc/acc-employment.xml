@@ -10,71 +10,80 @@
   <body>
 
     <section name="Accounting of employment (payroll).">
+      
+      <p>Keywords: Accounting of employment, payroll.</p>
+      
 <b>Beige-Accounting has implemented widely used in many countries tax table percentage method for automatically calculation wage taxes.</b>
 <p>It implements automatically calculation <b>wage tax = tax percent (according tables) * (gross wage - all allowances per payment)</b>. This is simple method used in USA.
 In other countries it's used little more complex method <b>allowances per year</b> which it hasn't implemented automatically yet.
 </p>
 <p>
-  Bob hire Rob Swallow as a cook. According <a href="https://www.irs.gov/pub/irs-pdf/p583.pdf">IRS Starting a business</a>
-  and <a href="https://www.irs.gov/businesses/small-businesses-self-employed/capitalization-period-of-direct-and-indirect-costs">IRS Capitalization Period of Direct and Indirect Costs</a>
-  he must include direct labor cost into inventory i.e. <b>cost of pizza = cost of material + cook's wage</b>,
-  i.e. Bob have to pay Rob daily to calculate pizza cost.
-  Addition capitalized cost such as rent and pizza delivery accounts on separate account "Inventory capitalized cost".
-  Bob use <a href="https://www.irs.gov/pub/irs-pdf/p15.pdf">IRS Publication 15</a> (<b>IRS-ETG</b>) to account employment federal taxes and
+  Bob has hired Rob Swallow as a cook.
+  Bob uses <a href="https://www.irs.gov/pub/irs-pdf/p15.pdf">IRS Publication 15</a> (<b>IRS-ETG</b>) to accounts employment federal taxes and
   <a href="https://www.tax.ny.gov/pdf/publications/withholding/nys50_t_nys.pdf">NYS New York State Withholding Tax</a> for state ones.
+</p>
   <p>
     1. Federal Income Tax from employee wage.
-    Rob fill form W-4 and got two withholding allowances. Bob elect percentage method, so according Table 5 (page 42 of <b>IRS-ETG</b>)
-    allowance daily is 15.6 * 2 = 31.2. Bob should use table 8 (page 45 of <b>IRS-ETG</b>) to withhold Federal Income tax,
-    so he fill Employment -  Wage tax table according it:
+    Rob has filled form W-4 and got two withholding allowances. Bob has elected percentage method, so according Table 5 (page 42 of <b>IRS-ETG</b>)
+    allowance daily is 15.6 * 2 = 31.2. Bob should uses table 8 (page 45 of <b>IRS-ETG</b>) to withhold Federal Income tax,
+    so he has filled Employment -  Wage tax table according it:
     <p align="center"><img alt="Beige-Accounting tax percentage method" style="max-width: 100%" src="images/wtt-federal-income.png" /></p>
   </p>
   <p>
     2. Medicare Tax from employee wage.
     According <b>IRS-ETG</b> its rate is 1.45%,
-    so he fill new Wage tax table:
+    so he has filled new Wage tax table:
     <p align="center"><img style="max-width: 100%" src="images/wtt-meducare.png" /></p>
   </p>
   <p>
     3. Social Security Tax from employee wage.
     According <b>IRS-ETG</b> its rate is 6.2% with year wage limit 118500 USD,
-    so he fill new Wage tax table:
+    he has filled SST Wage tax table:
     <p align="center"><img style="max-width: 100%" src="images/wtt-ss.png" /></p>
   </p>
   <p>
     4. Federal Unemployment Tax from EMPLOYER. Be sure to set its type properly (from employee or employer).
     According <b>IRS-ETG</b> its rate is 6% with year wage limit 7000 USD,
-    so he fill new Wage tax table:
+    so he has filled FUTA Wage tax table:
     <p align="center"><img style="max-width: 100%" src="images/wtt-futa.png" /></p>
   </p>
   <p>
-    1. New York Income Tax from employee wage.
+    5. New York Income Tax from employee wage.
     According <a href="https://www.tax.ny.gov/pdf/publications/withholding/nys50_t_nys.pdf">NYS New York State Withholding Tax</a>
-    Rob's two allowances by form W-4 give him daily allowance 36.15 (Table-A on page 14). Bob use table II-E (page 17)
-    to figure NY Income tax, so he fill new Wage tax table according it:
+    Rob's two allowances by form W-4 give him daily allowance 36.15 (Table-A on page 14). Bob uses table II-E (page 17)
+    to figures NY Income tax, so he has filled NY Income Wage tax table according it:
     <p align="center"><img style="max-width: 100%" src="images/wtt-ny-income.png" /></p>
   </p>
   <p>
-    At Jan 17 Rob makes 12 Pizza with bacon Frozen and 12 Pizza with cheese Frozen then deliver them to customers.
-    Bob fill Wage document for 60 USD gross for cooking
-    and 20 USD for delivering. He set tax account expense to <b>Inventory capitalized cost</b> (according <a href="https://www.irs.gov/businesses/small-businesses-self-employed/capitalization-period-of-direct-and-indirect-costs">IRS Capitalization Period of Direct and Indirect Costs</a>),
-    then press <b>save</b>, then add two wage lines for cooking (account <b>Inventory direct cost temporary</b>) and delivery (ICC), then press fill button to fill taxes, then account document:
+    Rob has made on Jan 17 12 Pizza with bacon Frozen and 12 Pizza with cheese Frozen then has delivered them to customers.
+    Bob has filled Wage document for 60 USD gross for cooking
+    and 20 USD for delivering. He set tax account expense to <b>5105 Expenses</b>,
+    then press <b>save</b>, then added wage line for cooking (account <b>Inventory direct cost temporary</b> for direct labor cost):
+    <p align="center"><img alt="Beige-Accounting payroll" style="max-width: 100%" src="images/wage-line-direct.png" /></p>
+    <p>and delivery (<b>5105 Expenses</b> for indirect labor cost), then press fill button to fill taxes, then account document:</p>
     <p align="center"><img alt="Beige-Accounting payroll" style="max-width: 100%" src="images/wage1.png" /></p>
     <p align="center"><img alt="Beige-Accounting payroll report" style="max-width: 100%" src="images/wage2.png" /></p>
     <p>
       As you can see cooking(direct labor) wage is accounted separately of delivery(indirect labor) one.
+      For manufacturing direct labor cost (as well as cost of materials) are usually included into cost of the final product.
+      Make sure: "is it true" for your tax rules.
     </p>
   </p>
+<p>
   I guess that you noticed that Bob made mistake, he forget about NY unemployment tax (<a href="https://labor.ny.gov/ui/employerinfo/quarterly-reporting.shtm">NY SUTA requirements and limit</a>
   <a href="https://labor.ny.gov/ui/bpta/contribution-rates.shtm">NY SUTA rate</a>
   <a href="https://www.tax.ny.gov/pdf/publications/withholding/nys50.pdf">NY SUTA instructions.</a>).
-  So you should make sure that you made all properly according law your of your country. Just call to your Tax Bureau (Service) and ask them.
-  Otherwise if you made mistake then you will get penalty, e.g. if you deduct your income tax with wrong cost of goods sold.
-  You have to make (and keep) records that shows these properly calculations according <a href="https://www.irs.gov/pub/irs-pdf/p583.pdf">IRS 583 Starting a business</a> page 12.
+  So you should make sure that you made all properly according the law of your country. Just call to your Tax Bureau (Service) and ask them.
+  Otherwise if you made mistake then you will get penalty, e.g. if you deduct your income tax with wrong cost of goods sold (deducting expense is greater than you can prove).
+  You have to make (and keep) records that shows these properly calculations according <a href="https://www.irs.gov/pub/irs-pdf/p583.pdf">IRS 583 Starting a business, page 12</a>.
   Beige-Accounting respect this, in addition it makes many records automatically (COGS, employment taxes, sales taxes, etc)
   and reports to prove your business expenses.
 </p>
 
+<p>
+  Trial balance after that is:
+    <p align="center"><img alt="Beige-Accounting payroll balance" style="max-width: 100%" src="images/balance-payroll.png" /></p>
+</p>
 <p>
   To use more complex method <b>allowances per year</b> don't fill allowances in tax tables. Fill allowance in wage tax line by hand.
   For example Jim Gold got 2000 EUR allowances per year for Income tax 12%. He is paid for 1500EUR monthly, so tax lines will be:

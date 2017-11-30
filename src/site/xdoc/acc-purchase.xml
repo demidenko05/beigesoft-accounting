@@ -45,8 +45,8 @@ If the property is merchandise bought for resale, the sales tax is part of the c
         Also you should set "is used" to true asset account <b>Sales Tax From Purchase</b>.
         This is required in case of using "inventory capitalized costs" method (for USA example <a href="https://www.irs.gov/pub/irs-pdf/p538.pdf">IRS 538, Page 18 Uniform Capitalization Rules</a>).
         Capitalized cost became expenses partially depends of ending inventory.
-        For example a factory produces 1000 notebook, they cost (capitalized) is 20000, at the end of period 900 notebooks are sold.
-        So 90% of costs (18000) is deducting the tax, the rest 2000 remained on assets.
+        For example a factory has produced 1000 notebook, they cost (capitalized) is 20000, at the end of period 900 notebooks are sold.
+        So 90% of costs (18000) is deducting the tax, the rest 2000 is remained on assets.
       </p>
       <p>For many other countries sales taxes (e.g. VAT) from purchases is always extracted from goods/service cost and they are deducting themselves (taxes from sales, not deducting income tax).</p>
       <p>Sales taxes imposed on the buyer from your sales of your goods/service are extracted from sales revenue, and you have to pay them, this rule is applied in all countries.</p>

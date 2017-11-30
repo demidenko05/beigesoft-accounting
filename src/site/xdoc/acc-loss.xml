@@ -10,12 +10,13 @@
   <body>
 
     <section name="Accounting of goods loss/broke/stole.">
+    <p>Keywords: Accounting of goods loss, broke, stole.</p>
      <p>
-        At Jan 19 Rob broke 12 eggs. According <a href="https://www.irs.gov/pub/irs-pdf/p538.pdf">IRS Accounting Periods and Methods, page 19 loss of inventory</a>
+        Rob broke on Jan 19 12 eggs. According <a href="https://www.irs.gov/pub/irs-pdf/p538.pdf">IRS Accounting Periods and Methods, page 19 loss of inventory</a>
         Bob can increase Cost Of Goods Sold with loss cost.
       </p>
 
-      <p>Bob fill goods loss:
+      <p>Bob has filled goods loss:
           <p align="center"><img alt="Beige-Accounting goods loss" style="max-width: 100%" src="images/goods-loss.png" /></p>
       </p>
       <p>It makes complex accounting/warehouse/draw goods entries:

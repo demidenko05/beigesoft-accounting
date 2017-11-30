@@ -11,11 +11,12 @@
 
     <section name="Accounting of bad debts.">
 
+      <p>Keywords: Accounting of bad debts.</p>
       <p>
-        "Funny coffee shop" is bankrupt. The balance show the debt:
+        "Funny coffee shop" is bankrupt. The balance shows the debt:
         <p align="center"><img style="max-width: 100%" src="images/balance-debt.png" /></p>
         <p>
-          At Jan 20 Bob transfer debt amount with accounting entries into asset account "Bad Debts":
+          Bob has transferred on Jan 20 debt amount with accounting entries into asset account "Bad Debts":
         </p>
         <p align="center"><img style="max-width: 100%" src="images/bad-debts-asset.png" /></p>
         <p>
@@ -23,8 +24,7 @@
         <p align="center"><img style="max-width: 100%" src="images/balance-debt-asset.png" /></p>
         </p>
       </p>
-      <p>When Bob will received document from IRS what this debt is approved then Bob will transfer this amount into income expense account
-      and deduct his income.</p>
+      <p>When Bob will received document from IRS what this debt is approved then Bob will transferred this amount into income expense account.</p>
     </section>
 
   </body>
