@@ -11,35 +11,37 @@
 
     <section name="Import database with WEB-service.">
 
-      <p>If you decide to move from lite standalone (single user) SQlite version of Beige-Accounting
+      <p>If you decided to move from lite standalone (single user) SQlite version of Beige-Accounting
       into high load enterprise-ready database MySql, then use WEB-service <b>Import database</b></p>
       <p>
-        Bob decide to check out this. He install Apache Tomcat and MySql on his notebook. He added user
-        <b>beigeaccounting</b> with password <b>beigeaccounting</b> and create database <b>beigeaccounting</b> into MySql.
-        He download from <a href="https://mvnrepository.com">Maven repository</a> <b>HikariCP</b> version 2.4.3 <b>jar</b>
-        file and <b>mysql-connector-java</b> version 5.1.40. then put them into <b>lib</b>
-        folder of Apache Tomcat.
-        He download file <b>beige-accounting-web.war</b> from <a href="https://sourceforge.net/projects/beige-accounting/">https://sourceforge.net/projects/beige-accounting/</a>
+        Bob decided to checks out this. He installed Apache Tomcat and MySql according <a href="https://github.com/demidenko05/beigesoft-accounting-weboio">https://github.com/demidenko05/beigesoft-accounting-weboio README.txt</a>.
+        He download file <b>beigesoft-accounting-weboio.war</b> from  central Maven repository <a href="https://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.beigesoft%22">https://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.beigesoft%22</a>
         and put it into <b>webapps</b> folder of Apache Tomcat.
-        He launch SQlite version Beige Accounting: in terminal (CMD in beige-accounting-ajetty folder) he enter
-        <b>java -jar beige-accounting-ajetty-jar-with-dependencies.jar port=8081</b> (port must not be 8080!) to launch source database.
-        Then he start Tomcat and open address <a href="http://localhost:8080/beige-accounting-web/">http://localhost:8080/beige-accounting-web/</a> (destination database):
-      </p>
-
+        He launched SQlite version Beige Accounting on 8081 port. Source local database:</p>
       <p align="center"><img style="max-width: 100%" src="images/import-db1.png" /></p>
      
-      <p>He login as admin with password admin:</p>
+      <p>
+        Then he started Tomcat and opened address <a href="http://localhost:8080/beigesoft-accounting-weboio/">http://localhost:8080/beigesoft-accounting-weboio/</a>
+        Destination database (cloud version):</p>
       <p align="center"><img style="max-width: 100%" src="images/import-db2.png" /></p>
       
-      <p>He enter "URL of WEB-service of another database:" as "http://localhost:8081/secure/sendEntities" and leave user/password fields empty and press "submit":</p>
+      <p>He entered "URL of WEB-service of another database:" as "http://localhost:8081/secure/sendEntities" and leaved user/password fields empty then pressed "submit":</p>
       <p align="center"><img style="max-width: 100%" src="images/import-db3.png" /></p>
       
       <p>The import report is:</p>
       <p align="center"><img alt="Beige-Accounting import database" style="max-width: 100%" src="images/import-db4.png" /></p>
       
-      <p>The data is same:</p>
+      <p>The data is the same:</p>
       <p align="center"><img style="max-width: 100%" src="images/import-db5.png" /></p>
       
+      <p>For real cloud WEB-application <b>http://localhost:8081</b> is not available, so you have two choices:
+      <ul>
+        <li>Make MySql copy in local computer, then restore backup on remote cloud database with MySql backup software</li>
+        <li>Make SQlite version internet accessible - non-localhost i.e. public it on cloud (it MUST be only HTTPS(encrypted) accessible),
+         but at first you MUST switch on JDBC (or other) authentication in SQLite version and add users with strong passwords,
+         see <a href="https://github.com/demidenko05/beigesoft-webcrud">https://github.com/demidenko05/beigesoft-webcrud</a> that uses SQlite and JDBC authentication for Apache Tomcat standard.</li>
+      </ul>
+      </p>
     </section>
 
   </body>

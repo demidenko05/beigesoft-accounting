@@ -13,56 +13,60 @@
 
       <p>
         In real life a user usually starts to use an accounting software when he/she already has been doing his/her business.
-        Assuming that Bob start to use Beige Accounting at 21 Jan 2016 with the same (as describing early) accounting results.
-        He used single entry accounting software, he just write records in Excel. So results is:
+        Assuming that Bob started to use Beige Accounting on 21 Jan 2016 with the same (as describing in previous articles) accounting results.
+        He has been using single entry accounting software, he just writes records in spreadsheet. So results are:
       </p>
       <p align="center"><img style="max-width: 100%" src="images/nfs-excel.png" /></p>
       
-      <p>As you can see only Rob's wage and taxes are liabilities and Bob's income tax expenses i.e. 
-      they should be recorded as symmetric double entries. All others is recorded as single asymmetric entry.
+      <p>As you can see only Rob's wage and taxes are liabilities and Bob's income tax expenses at the same time i.e. 
+      they should be recorded as symmetric double entries. All others are recorded as single asymmetric entries.
       To record Inventory you should use document <b>Beginning Inventory</b>.
       </p>
       
-      <p>Bob start use Beige Accounting in same way as <a href="acc-settings.html">Software installation, accounting settings, chart of accounts, started capital.</a>
-        except "Started capital". He makes accounting entries "Started capital", "Prepaid Rent", "Debtors/creditors",
+      <p>Bob started using Beige Accounting in same way as <a href="acc-settings.html">Software installation, accounting settings, chart of accounts, started capital.</a>
+        except "Started capital". He made accounting entries "Started capital", "Prepaid Rent", "Debtors/creditors",
         "Property", "Cash":
       </p>
       <p align="center"><img style="max-width: 100%" src="images/acc-beginning1.png" /></p>
       
-      <p>Then Bob makes symmetric accounting entries "Beginning Rob's wage and taxes":
+      <p>Then Bob made symmetric accounting entries "Beginning Rob's wage and taxes":
       </p>
       <p align="center"><img style="max-width: 100%" src="images/acc-beginning2.png" /></p>
       
-      <p>Then Bob makes asymmetric accounting entries "Beginning Sales, Sales returns, COGS, Goods looses":
+      <p>Then Bob made asymmetric accounting entries "Beginning Sales, Sales returns, COGS, Goods loses":
       </p>
       <p align="center"><img style="max-width: 100%" src="images/acc-beginning3.png" /></p>
       
-      <p>Then Bob makes asymmetric accounting entries "Beginning Sales tax fake":
+      <p>Then Bob made asymmetric accounting entries "Beginning Sales tax fake":
       </p>
       <p align="center"><img style="max-width: 100%" src="images/acc-beginning4.png" /></p>
       
-      <p>Then Bob makes "Beginning Inventory" document for source "Purchase #1 Jan 15 2016 11:31 AM":
+      <p>Then Bob made "Beginning Inventory" document for source " Purchase #1-1 Jan 15 2016 3:26 PM":
       </p>
       <p align="center"><img style="max-width: 100%" src="images/acc-beginning5.png" /></p>
       
-      <p>Then Bob makes "Beginning Inventory" document for source "Manufacture # 2, Jan 17 2016 3:23 PM":
+      <p>Then Bob made "Beginning Inventory" document for source "Manufacture # 1-1, Jan 17 2016 6:40 PM":
       </p>
-      <p align="center"><img style="max-width: 100%" src="images/acc-beginning6.png" /></p>
+      <p align="center"><img style="max-width: 100%" src="images/acc-beginning61.png" /></p>
       
-      <p>Finally Bob makes "Beginning Inventory" document for source " Sales return #1 Jan 19 2016 4:23 PM":
+      <p>Then Bob made "Beginning Inventory" document for source "Manufacture # 1-2, Jan 17 2016 6:50 PM":
+      </p>
+      <p align="center"><img style="max-width: 100%" src="images/acc-beginning62.png" /></p>
+      
+      <p>Finally Bob made "Beginning Inventory" document for source "Sales return #1-1 Jan 19 2016 9:45 AM":
       </p>
       <p align="center"><img style="max-width: 100%" src="images/acc-beginning7.png" /></p>
 
-      <p>Trial balances in database "from scratch" and database "not from scratch" are same (except little rounding error):
+      <p>Trial balances in database "from scratch" and database "not from scratch" are same (except little rounding errors in both databases):
       </p>
-      <p align="center"><img style="max-width: 100%" src="images/nfs-balance1.png" /></p>
-      <p align="center"><img style="max-width: 100%" src="images/nfs-balance2.png" /></p>
+      <p align="center"><img style="max-width: 100%" src="images/nfs-balance.png" /></p>
 
-      <p>Warehouse in database "from scratch" and database "not from scratch" are same:
+      <p>Warehouse in database "from scratch" and database "not from scratch" almost same
+      except mistake - "pizza cheese frozen" must be in "	Cabinet#2":
       </p>
       <p align="center"><img style="max-width: 100%" src="images/nfs-warehouse.png" /></p>
 
-      <p>But ledger in database "from scratch" and database "not from scratch" are not same, e.g. <b>Inventory</b>:
+      <p>Ledger in database "from scratch" and database "not from scratch" are different, e.g. <b>Inventory</b>:
       </p>
       <p align="center"><img style="max-width: 100%" src="images/nfs-ledger1.png" /></p>
       <p align="center"><img style="max-width: 100%" src="images/nfs-ledger2.png" /></p>

@@ -127,7 +127,8 @@ public class PrcBeginningInventoryLineSave<RS>
       Double total = getSrvDatabase().evalDoubleResult(query, "ITSTOTAL");
       BigDecimal totalBdcm = BigDecimal.valueOf(total);
       pEntity.getItsOwner().setItsTotal(totalBdcm.setScale(
-        getSrvAccSettings().lazyGetAccSettings(pAddParam).getCostPrecision()));
+        getSrvAccSettings().lazyGetAccSettings(pAddParam).getCostPrecision(),
+          getSrvAccSettings().lazyGetAccSettings(pAddParam).getRoundingMode()));
       getSrvOrm().updateEntity(pAddParam, pEntity.getItsOwner());
       pAddParam.put("nextEntity", pEntity.getItsOwner());
       pAddParam.put("nameOwnerEntity",
