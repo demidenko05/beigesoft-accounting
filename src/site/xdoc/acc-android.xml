@@ -28,19 +28,23 @@
   <p align="center"><img style="max-width: 100%" src="images/android-data1.png" /></p>
   <p align="center"><img style="max-width: 100%" src="images/android-data2.png" /></p>
   <p align="center"><img style="max-width: 100%" src="images/android-balance.png" /></p>
-  <p>He can create new purchase:</p>
+  <p>He can create new purchase invoice:</p>
   <p align="center"><img style="max-width: 100%" src="images/android-purchaseline.png" /></p>
   <br></br>
-  <p>Screenshots from virtual Nexus 10 Android 7:</p>
-  <p align="center"><img style="max-width: 100%" src="images/android-vn10-a7-lsales.png" /></p>
+  <p>Screenshots from virtual Nexus 10 Android 7 (api24):</p>
   <p align="center"><img style="max-width: 100%" src="images/android-vn10-a7-balance.png" /></p>
+  <p>Chrome asks for permission of public storage to download file (balance.pdf).
+    It's seems that this file will be accessible to other applications that have permission to the storage,
+    but Chrome does it delicate - it "hides, passes to the PDF-viewer then deletes" downloaded file,
+    so you can't find it (file) in the storage.
+    Maybe Chrome does it more properly (for files that has default application) - it uses private storage to downloads PDF then passes it to the viewer.</p>
+  <p align="center"><img style="max-width: 100%" src="images/android7-chrome-storage.png" /></p>
+  <p align="center"><img style="max-width: 100%" src="images/android7-invoice.png" /></p>
   <br></br>
-  <p>Screenshots from virtual Nexus 10 Android 6:</p>
-  <p align="center"><img style="max-width: 100%" src="images/android-vn10-a6-dbmanager.png" /></p>
-  <p align="center"><img style="max-width: 100%" src="images/android-vn10-a6-mprocess.png" /></p>
-  <br></br>
-  <p>Screenshots from virtual Nexus 10 Android 5.0.1:</p>
-  <p align="center"><img style="max-width: 100%" src="images/android-vn10-a501-debtorscreditors.png" /></p>
+  <p>Screenshots from virtual Nexus 9 Android 6 (api23):</p>
+  <p align="center"><img style="max-width: 100%" src="images/android-vn9-a6-dbmanager.png" /></p>
+  <p align="center"><img style="max-width: 100%" src="images/android-vn9-a6-accentries.png" /></p>
+  <p align="center"><img style="max-width: 100%" src="images/android-vn9-a6-salesinv.png" /></p>
   
 </p>
 
