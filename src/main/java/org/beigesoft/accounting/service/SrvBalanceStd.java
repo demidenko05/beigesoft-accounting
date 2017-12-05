@@ -83,6 +83,16 @@ public class SrvBalanceStd<RS> implements ISrvBalance {
   private String queryBalanceAccount;
 
   /**
+   * <p>Initialized date constant.</p>
+   **/
+  private final long initDateLong = 157766400000L;
+
+  /**
+   * <p>Initialized date constant.</p>
+   **/
+  private final Date initDate = new Date(this.initDateLong);
+
+  /**
    * <p>minimum constructor.</p>
    **/
   public SrvBalanceStd() {
@@ -122,9 +132,9 @@ public class SrvBalanceStd<RS> implements ISrvBalance {
     if (!lazyGetBalanceAtAllDirtyCheck(pAddParam).getBalanceStorePeriod()
       .equals(pPeriod)) {
       getLogger().info(null, SrvBalanceStd.class,
-        "changing period from " + lazyGetBalanceAtAllDirtyCheck(pAddParam)
+        "changing period from " + this.balanceAtAllDirtyCheck
           .getBalanceStorePeriod() + " to " + pPeriod);
-      lazyGetBalanceAtAllDirtyCheck(pAddParam).setBalanceStorePeriod(pPeriod);
+      this.balanceAtAllDirtyCheck.setBalanceStorePeriod(pPeriod);
       if (!getSrvAccSettings().lazyGetAccSettings(pAddParam)
         .getBalanceStorePeriod().equals(pPeriod)) {
         getSrvAccSettings().lazyGetAccSettings(pAddParam)
@@ -132,11 +142,11 @@ public class SrvBalanceStd<RS> implements ISrvBalance {
         getSrvAccSettings().saveAccSettings(pAddParam, getSrvAccSettings()
           .lazyGetAccSettings(pAddParam));
       }
-      lazyGetBalanceAtAllDirtyCheck(pAddParam)
-        .setCurrentBalanceDate(new Date(157766400000L));
-      lazyGetBalanceAtAllDirtyCheck(pAddParam).setIsPeriodChanged(true);
+      this.balanceAtAllDirtyCheck
+        .setCurrentBalanceDate(initDate);
+      this.balanceAtAllDirtyCheck.setIsPeriodChanged(true);
       getSrvOrm()
-        .updateEntity(pAddParam, lazyGetBalanceAtAllDirtyCheck(pAddParam));
+        .updateEntity(pAddParam, this.balanceAtAllDirtyCheck);
     }
   }
 
@@ -154,17 +164,19 @@ public class SrvBalanceStd<RS> implements ISrvBalance {
       .equals(getSrvAccSettings().lazyGetAccSettings(pAddParam)
         .getBalanceStorePeriod())) {
       getLogger().info(null, SrvBalanceStd.class,
-        "changing period from " + lazyGetBalanceAtAllDirtyCheck(pAddParam)
+        "changing period from " + this.balanceAtAllDirtyCheck
           .getBalanceStorePeriod() + " to " + getSrvAccSettings()
             .lazyGetAccSettings(pAddParam).getBalanceStorePeriod());
-      lazyGetBalanceAtAllDirtyCheck(pAddParam)
+      this.balanceAtAllDirtyCheck
         .setBalanceStorePeriod(getSrvAccSettings().lazyGetAccSettings(pAddParam)
           .getBalanceStorePeriod());
-      lazyGetBalanceAtAllDirtyCheck(pAddParam).setIsPeriodChanged(true);
-      lazyGetBalanceAtAllDirtyCheck(pAddParam)
-        .setCurrentBalanceDate(new Date(157766400000L));
+      this.balanceAtAllDirtyCheck.setIsPeriodChanged(true);
+      this.balanceAtAllDirtyCheck
+        .setCurrentBalanceDate(initDate);
+      getSrvOrm()
+        .updateEntity(pAddParam, this.balanceAtAllDirtyCheck);
     }
-    return lazyGetBalanceAtAllDirtyCheck(pAddParam).getBalanceStorePeriod();
+    return this.balanceAtAllDirtyCheck.getBalanceStorePeriod();
   }
 
   /**
@@ -206,11 +218,13 @@ public class SrvBalanceStd<RS> implements ISrvBalance {
       if (getLogger().getIsShowDebugMessagesFor(getClass())) {
         getLogger().debug(null, SrvBalanceStd.class,
           "changing least last entry date from "
-            + lazyGetBalanceAtAllDirtyCheck(pAddParam)
+            + this.balanceAtAllDirtyCheck
               .getLeastAccountingEntryDate() + " to " + pDateAt);
       }
-      lazyGetBalanceAtAllDirtyCheck(pAddParam)
+      this.balanceAtAllDirtyCheck
         .setLeastAccountingEntryDate(pDateAt);
+      getSrvOrm()
+        .updateEntity(pAddParam, this.balanceAtAllDirtyCheck);
     }
   }
 
@@ -228,11 +242,39 @@ public class SrvBalanceStd<RS> implements ISrvBalance {
     evalBalanceStorePeriod(pAddParam);
     evalDateBalanceStoreStart(pAddParam);
     Date datePeriodStartFor = evalDatePeriodStartFor(pAddParam, pDateFor);
-    if (datePeriodStartFor.getTime() > lazyGetBalanceAtAllDirtyCheck(pAddParam)
-      .getCurrentBalanceDate().getTime()
-        || lazyGetBalanceAtAllDirtyCheck(pAddParam)
+    Calendar calCurrYear = Calendar.getInstance();
+    calCurrYear.setTime(getSrvAccSettings().lazyGetAccSettings(pAddParam)
+      .getCurrentAccYear());
+    calCurrYear.set(Calendar.MONTH, 0);
+    calCurrYear.set(Calendar.DAY_OF_MONTH, 1);
+    calCurrYear.set(Calendar.HOUR_OF_DAY, 0);
+    calCurrYear.set(Calendar.MINUTE, 0);
+    calCurrYear.set(Calendar.SECOND, 0);
+    calCurrYear.set(Calendar.MILLISECOND, 0);
+    Calendar calStBl = Calendar.getInstance();
+    calStBl.setTime(this.balanceAtAllDirtyCheck.getDateBalanceStoreStart());
+    calStBl.set(Calendar.MONTH, 0);
+    calStBl.set(Calendar.DAY_OF_MONTH, 1);
+    calStBl.set(Calendar.HOUR_OF_DAY, 0);
+    calStBl.set(Calendar.MINUTE, 0);
+    calStBl.set(Calendar.SECOND, 0);
+    calStBl.set(Calendar.MILLISECOND, 0);
+    if (calCurrYear.getTime().getTime() < calStBl.getTime().getTime()
+      || this.balanceAtAllDirtyCheck
           .getLeastAccountingEntryDate()
-            .getTime() < lazyGetBalanceAtAllDirtyCheck(pAddParam)
+            .getTime() < this.balanceAtAllDirtyCheck
+              .getDateBalanceStoreStart().getTime()) {
+      this.balanceAtAllDirtyCheck
+        .setCurrentBalanceDate(initDate);
+      this.balanceAtAllDirtyCheck
+        .setDateBalanceStoreStart(initDate);
+      evalDateBalanceStoreStart(pAddParam);
+      recalculateAll(pAddParam, pDateFor, false);
+    } else if (datePeriodStartFor.getTime() > this.balanceAtAllDirtyCheck
+      .getCurrentBalanceDate().getTime()
+        || this.balanceAtAllDirtyCheck
+          .getLeastAccountingEntryDate()
+            .getTime() < this.balanceAtAllDirtyCheck
               .getCurrentBalanceDate().getTime()) {
       recalculateAll(pAddParam, pDateFor, false);
     }
@@ -276,30 +318,30 @@ public class SrvBalanceStd<RS> implements ISrvBalance {
       evalBalanceStorePeriod(pAddParam);
       evalDateBalanceStoreStart(pAddParam);
     }
-    if (lazyGetBalanceAtAllDirtyCheck(pAddParam).getIsPeriodChanged()) {
+    if (this.balanceAtAllDirtyCheck.getIsPeriodChanged()) {
       getLogger().info(null, SrvBalanceStd.class,
         "deleting all stored balances cause period has changed");
       getSrvDatabase().executeDelete(BalanceAt.class.getSimpleName()
         .toUpperCase(), null);
-      lazyGetBalanceAtAllDirtyCheck(pAddParam).setIsPeriodChanged(false);
+      this.balanceAtAllDirtyCheck.setIsPeriodChanged(false);
     }
     Date date;
-    if (lazyGetBalanceAtAllDirtyCheck(pAddParam).getLeastAccountingEntryDate()
-          .getTime() < lazyGetBalanceAtAllDirtyCheck(pAddParam)
+    if (this.balanceAtAllDirtyCheck.getLeastAccountingEntryDate()
+          .getTime() < this.balanceAtAllDirtyCheck
             .getCurrentBalanceDate().getTime()) {
       //recalculate from start;
       date = evalDateNextPeriodStart(pAddParam,
-        lazyGetBalanceAtAllDirtyCheck(pAddParam).getDateBalanceStoreStart());
+        this.balanceAtAllDirtyCheck.getDateBalanceStoreStart());
       getLogger().info(null, SrvBalanceStd.class,
         "recalculating balances from start " + date + " <- "
-        + lazyGetBalanceAtAllDirtyCheck(pAddParam).getDateBalanceStoreStart());
+        + this.balanceAtAllDirtyCheck.getDateBalanceStoreStart());
     } else {
       //recalculate from current end;
       date = evalDateNextPeriodStart(pAddParam,
-        lazyGetBalanceAtAllDirtyCheck(pAddParam).getCurrentBalanceDate());
+        this.balanceAtAllDirtyCheck.getCurrentBalanceDate());
       getLogger().info(null, SrvBalanceStd.class,
         "recalculating balances from current end " + date + " <- "
-          + lazyGetBalanceAtAllDirtyCheck(pAddParam).getCurrentBalanceDate());
+          + this.balanceAtAllDirtyCheck.getCurrentBalanceDate());
     }
     Date lastBalanceStoredDate = date;
     do {
@@ -346,19 +388,19 @@ public class SrvBalanceStd<RS> implements ISrvBalance {
       "last stored balance date " + lastBalanceStoredDate + ", date for "
         + pDateFor);
     if (lastBalanceStoredDate.getTime() > pDateFor.getTime()) {
-      lazyGetBalanceAtAllDirtyCheck(pAddParam)
+      this.balanceAtAllDirtyCheck
         .setCurrentBalanceDate(lastBalanceStoredDate);
     } else {
-      lazyGetBalanceAtAllDirtyCheck(pAddParam).setCurrentBalanceDate(pDateFor);
+      this.balanceAtAllDirtyCheck.setCurrentBalanceDate(pDateFor);
     }
-      lazyGetBalanceAtAllDirtyCheck(pAddParam)
-        .setLeastAccountingEntryDate(lazyGetBalanceAtAllDirtyCheck(pAddParam)
+      this.balanceAtAllDirtyCheck
+        .setLeastAccountingEntryDate(this.balanceAtAllDirtyCheck
           .getCurrentBalanceDate());
     getSrvOrm()
-      .updateEntity(pAddParam, lazyGetBalanceAtAllDirtyCheck(pAddParam));
+      .updateEntity(pAddParam, this.balanceAtAllDirtyCheck);
     getLogger().info(null, SrvBalanceStd.class,
       "recalculation end BalanceAtAllDirtyCheck is "
-        + lazyGetBalanceAtAllDirtyCheck(pAddParam));
+        + this.balanceAtAllDirtyCheck);
   }
 
   /**
@@ -485,28 +527,54 @@ public class SrvBalanceStd<RS> implements ISrvBalance {
     final Map<String, Object> pAddParam) throws Exception {
     Date dateBalanceStoreStart = lazyGetBalanceAtAllDirtyCheck(pAddParam)
       .getDateBalanceStoreStart();
-    Date leastAccountingEntryDate = lazyGetBalanceAtAllDirtyCheck(pAddParam)
+    Date leastAccountingEntryDate = this.balanceAtAllDirtyCheck
       .getLeastAccountingEntryDate();
-    if (dateBalanceStoreStart.getTime() == 157766400000L
-      && leastAccountingEntryDate.getTime() == 157766400000L) {
-      //the first time with no acc-entries, it's start of current year:
+    if (dateBalanceStoreStart.getTime() == this.initDateLong
+      && leastAccountingEntryDate.getTime() == this.initDateLong) {
+      //the first time with no acc-entries, it's start of current ACC year:
       Calendar cal = Calendar.getInstance();
-      cal.setTime(new Date());
+      cal.setTime(getSrvAccSettings().lazyGetAccSettings(pAddParam)
+        .getCurrentAccYear());
       cal.set(Calendar.MONTH, 0);
       cal.set(Calendar.DAY_OF_MONTH, 1);
       cal.set(Calendar.HOUR_OF_DAY, 0);
       cal.set(Calendar.MINUTE, 0);
       cal.set(Calendar.SECOND, 0);
       cal.set(Calendar.MILLISECOND, 0);
-      lazyGetBalanceAtAllDirtyCheck(pAddParam)
+      this.balanceAtAllDirtyCheck
         .setDateBalanceStoreStart(cal.getTime());
-    } else if (dateBalanceStoreStart.getTime() == 157766400000L
-      && leastAccountingEntryDate.getTime() > 157766400000L) {
-      //the first time with acc-entries, it's start nearest period to least:
-      lazyGetBalanceAtAllDirtyCheck(pAddParam).setDateBalanceStoreStart(
-        evalDatePeriodStartFor(pAddParam, leastAccountingEntryDate));
+      getSrvOrm()
+        .updateEntity(pAddParam, this.balanceAtAllDirtyCheck);
+    } else if (dateBalanceStoreStart.getTime() == this.initDateLong
+      && leastAccountingEntryDate.getTime() > this.initDateLong) {
+      //there is at least 1 acc entry
+      //the start is start of nearest period to the first acc entry:
+      Long dateFirstEntryLong = this.srvDatabase
+        .evalLongResult("select min(ITSDATE) as MINIMUMDATE "
+          + "from ACCOUNTINGENTRY where REVERSEDID is null;", "MINIMUMDATE");
+      if (dateFirstEntryLong == null) {
+        //e.g. dirty reversed acc entry
+        getLogger().info(null, SrvBalanceStd.class,
+    "There is no single acc entry, so use current acc year for start balance!");
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(getSrvAccSettings().lazyGetAccSettings(pAddParam)
+          .getCurrentAccYear());
+        cal.set(Calendar.MONTH, 0);
+        cal.set(Calendar.DAY_OF_MONTH, 1);
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        this.balanceAtAllDirtyCheck
+          .setDateBalanceStoreStart(cal.getTime());
+      } else {
+        this.balanceAtAllDirtyCheck.setDateBalanceStoreStart(
+          evalDatePeriodStartFor(pAddParam, new Date(dateFirstEntryLong)));
+      }
+      getSrvOrm()
+        .updateEntity(pAddParam, this.balanceAtAllDirtyCheck);
     }
-    return lazyGetBalanceAtAllDirtyCheck(pAddParam).getDateBalanceStoreStart();
+    return this.balanceAtAllDirtyCheck.getDateBalanceStoreStart();
    }
 
   /**
