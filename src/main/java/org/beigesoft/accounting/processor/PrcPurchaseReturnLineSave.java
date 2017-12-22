@@ -215,7 +215,7 @@ public class PrcPurchaseReturnLineSave<RS>
         add(pEntity.getItsOwner().getTotalTaxes()));
       getSrvOrm().updateEntity(pAddParam, pEntity.getItsOwner());
       if (getSrvAccSettings().lazyGetAccSettings(pAddParam)
-        .getIsExtractSalesTaxFromSales()) {
+        .getIsExtractSalesTaxFromPurchase()) {
         updateTaxLines(pAddParam, pEntity.getItsOwner());
       }
     } else {

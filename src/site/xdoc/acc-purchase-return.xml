@@ -11,6 +11,8 @@
 
     <section name="Accounting of purchase returns.">
 
+     <p>Keywords: Accounting of purchase returns.</p>
+
       <p>On 16 Jan Bob found what 12 eggs and 1 pound of cheese is not fresh.
         At first he switched off method "PurchaseReturn, Credit SalesTaxFromPurchReturns per Tax." in the accounting settings.
         Then he has made purchase return to Carlo's grocery:

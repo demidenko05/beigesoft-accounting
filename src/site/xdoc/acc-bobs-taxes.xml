@@ -26,15 +26,19 @@
 </p>
   
   <h4>Capitalized cost method.</h4>
-  <p>Manufacturing (Producing) business activity often (in many countries) are subject of method "capitalized cost".
+  <p>Manufacturing (Producing) business activity often (in many countries) is subject of method "capitalized cost".
     For USA see <a href="https://www.irs.gov/pub/irs-pdf/p538.pdf">IRS 538, Page 18 Uniform Capitalization Rules</a>.
     According this method the most business expenses are required to be capitalized (i.e. placed into assets).
     For USA these expenses are - rent, electricity, indirect labor, property deprecation, sales tax from purchases etc.
-    Part of those costs (or whole total) are deducting the tax at the end of period, and that "part" depends of starting and ending inventory (product).
+    Part of those costs (or whole total) are deducting the tax at the end of period, and that "part" depends of starting and ending inventory (product direct cost).
+    The law provides the equation (formula) to calculate this "part" and in USA it's called "Simplified Production Absorption Ratio".
     For example a factory has 0 notebooks at start and it has produced 1000 notebooks.
-    They costs (capitalized) is 20000, and these costs are placed on asset accounts.
-    At the end of period 900 notebooks are sold.
-    So 90% of costs (18000) is deducting the tax, the rest 2000 is remained on assets.</p>
+    They costs (product) is 100000 (100 each).
+    Assume that warehouse rent expenses are required to be capitalized, and its costs are placed on asset accounts e.g. InventoryCapitalaizedCost.Rent,
+    and at the end of period Rent expenses are 9000.
+    At the end of period 900 notebooks are sold (90%), so ending inventory is 10000.
+    Assume that formula of "part to be expense" is (TotalPeriod - InventoryEnd)/TotalPeriod = (100000 - 10000)/100000 = 0.9,
+    so 0.9 of capitalized costs Rent 8100 is deducting the tax, the rest 900 is remained on assets.</p>
 
   <h4>Bob's earnings.</h4>
   <p>After Bob has made all business revenues and expenses his gross income is:

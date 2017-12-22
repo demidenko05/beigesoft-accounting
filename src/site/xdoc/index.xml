@@ -18,9 +18,9 @@
       
       <h3>Products:</h3>
 
-      <h4>Beige-Accounting</h4>
+      <h4>Beigesoft ™ Accounting</h4>
             
-      <p>Beige Accounting is JEE-WEB based Accounting software.</p>
+      <p>Beigesoft ™ Accounting is JEE-WEB based Accounting software.</p>
       <p>
         It works as:
         <ul>
@@ -49,9 +49,10 @@
         <a href="bobs-pizza.html">See Beige Accounting Bob's Pizza example.</a>
       </p>
       <p>
-        Beige-Accounting for MS Windows/Mac/*Nix - <b>beige-accounting-ajetty.zip</b>, for Android - <b></b> you can find in <a href="https://sourceforge.net/projects/beige-accounting/">https://sourceforge.net/projects/beige-accounting/</a>
-      </p>
-      <p>Beige Accounting for Android - <b>beige-accounting-android-1.1.3.apk</b> you can find in central Maven repository <a href="https://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.beigesoft%22">https://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.beigesoft%22</a>.</p>
+        Beige-Accounting for MS Windows/Mac/*Nix <b>beigesoft-accountingoio-ajetty.bin.zip</b>,
+       for Android <b>beige-accountingoio-android.apk</b>
+       and cloud version <b>beigesoft-accounting-weboio.war</b>
+       you can find in central Maven repository <a href="https://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.beigesoft%22">https://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.beigesoft%22</a> or <a href="http://central.maven.org/maven2/org/beigesoft/">http://central.maven.org/maven2/org/beigesoft/</a>
       <p>Beige-Accounting doesn't comply new rules <a href="https://play.google.com/about/privacy-security/personal-sensitive/">https://play.google.com/about/privacy-security/personal-sensitive/</a>
         that is sqlite archived non-encrypted databases are stored in "not-secure" place,
         it also doesn't uses encrypted (HTTPS) connection (although A-Jetty is not available through network).
@@ -70,6 +71,22 @@
           <li>The Apache Software License, Version 2.0 - http://www.apache.org/licenses/LICENSE-2.0.txt</li>
         </ul>
       </p>
+
+        <h4>Beigesoft ™ PDF Writer.</h4>
+              
+        <p>This is light-weight (all JARs size is about 250KB), international friendly and fast PDF writer.
+         It's cross-platform writer - Standard Java and Android.</p>
+              
+        <p>Benefits:</p>
+        <ul>
+          <li>Ready for high load job. Speed test (thread per invoice) results shows that making 100 invoices (3pages each) takes less than 4 seconds on ordinal notebook. Invoice file size is 26KB cause embed TTF font has only used characters.</li>
+          <li>There are not 3-d party libraries. Beigesoft ™ Document Writer, Swing/Android graphics libraries, Logger are licensed under free GPLv2. Every day English language is polluted with new words that duplicate old ones, and old words are polluted with new meanings, so there are "free open source software" that are actually non-free.
+            In other hand there are free software that have not noticed that "it has dependencies with non-three licenses" (truly free license always means "forever").</li>
+        </ul>
+        Although Beigesoft ™ PDF Writer hasn't yet implemented graphic charts and other features, and it has no visual editor, it's really enough to create complex black and white (include non-masked RGB images) business reports quickly.
+        Visual editor is planned to be the same as MS Word or LibreOffice Writer. Here are PDF files for example:
+        <a href="https://docs.google.com/viewer?a=v&amp;pid=sites&amp;srcid=ZGVmYXVsdGRvbWFpbnxiZWlnZXNvZnR3YXJlfGd4OjM3YTU4MWFmNDNiYzZmYjk">Invoice sample</a> <a href="https://docs.google.com/viewer?a=v&amp;pid=sites&amp;srcid=ZGVmYXVsdGRvbWFpbnxiZWlnZXNvZnR3YXJlfGd4OjNhZDczYWU4OWE2MDU3ODQ">Счет-фактура</a> <a href="https://docs.google.com/viewer?a=v&amp;pid=sites&amp;srcid=ZGVmYXVsdGRvbWFpbnxiZWlnZXNvZnR3YXJlfGd4OjE4MTA3ODM1NTg3MTAyNzQ">Платежное поручение</a>
+
       <h4>A-Jetty</h4>
       <p>A-Jetty is Jetty 9.2 adapted for Android, it can run precompiled JSP/JSTL.</p>
       <p>Features:
@@ -92,23 +109,14 @@
       </p>
       <p>Releases of A-Jetty, A-Tomcat and A-Javabeans you can find in <a href="https://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.github.demidenko05%22">Central Maven Repository: search com.github.demidenko05.</a></p>
       
-      <h4>Beige-ORM</h4>
+      <h4>Beigesoft ™ ORM</h4>
       <p>Beige-ORM is lightweight multiplatform (Android Java and standard Java 7+) ORM library.
       </p>
       <p>It supports Postgresql, MySql, H2 and SQlite (adding a new RDBMS is very simple task).</p>
-      <p>For mapping it use standard Java XML properties files.</p>
+      <p>For mapping it uses standard Java XML properties files.</p>
       <p>It has implemented optimistic locking by version (autoincrement and last changed time).</p>
-      <p>For updating (not inserting) entity with complex ID you have to make WHERE clause with this ID by hand, but it take no time or problems e.g. WarehouseRest with complex ID {itemId, siteId, unitOfMeasureId}:
-        <pre style="white-space: pre-wrap;">
-    if (wr.getIsNew()) {
-      getSrvOrm().insertEntity(wr);
-    } else {
-      String where = "INVITEM=" + wr.getInvItem().getItsId()
-        + " and WAREHOUSESITE=" + wr.getWarehouseSite().getItsId()
-           + " and UNITOFMEASURE=" + wr.getUnitOfMeasure().getItsId();
-      getSrvOrm().updateEntityWhere(wr, where);
-    }
-        </pre>
+      <p>Since version 1.1.4 it supports automatically (create, insert, update) complex models e.g. WarehouseRests {WarewouseSite, Item, UnitOfMeasure, quantity} where triple (WarewouseSite, Item, UnitOfMeasure) is composite ID.
+        Another example GoodsRating{Goods, rating} where Goods is primary and foreign ID.
       </p>
       <p>
         It retrieve almost full model through 2 level. E.g. an retrieved Invoice has already retrieved Customer(1st level),
@@ -123,11 +131,11 @@
       <p>
         It never retrieved owned entities-list, e.g. InvoiceLines, you should do it explicitly:
         <pre style="white-space: pre-wrap;">
-    customerInvoice.setItsLines(getSrvOrm()
-      .retrieveEntityOwnedlist(CustomerInvoiceLine.class,
-        CustomerInvoice.class, customerInvoice.getItsId()));
+        SalesInvoiceLine sil = new SalesInvoiceLine();
+        sil.setItsOwner(salesInvoice);
+        salesInvoice.setItsLines(getSrvOrm().retrieveListForField(pAddParam, sil, "itsOwner"));
         </pre>
-        These lines is retrieved also through 2 level by big SQL query.
+        These lines are retrieved also through 2 level by big SQL query.
       </p>
       <p>Standard ORM use lazy-initialization of model by default. So they retrieve model by several SQL queries
         and JDBC connection used during whole HTTP request-response. This is no good for performance. Beige-ORM retrieve 
