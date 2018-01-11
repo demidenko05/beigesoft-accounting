@@ -1,9 +1,13 @@
-site: http://www.beigesoft.org
-or https://sites.google.com/site/beigesoftware
+site: https://sites.google.com/site/beigesoftware
 
 Beigesoft ™ Accounting library.
 
 It implements accounting models and services, e.g. AccountingEntry, SalesInvoice, service that fill payroll taxes according tax percentage table, etc.
+
+Version 1.1.5:
+Fixed purchase return sales tax non-extracted.
+Added JAR signing.
+Fixed crossplatform file.separator.
 
 licenses:
 GNU General Public License version 2

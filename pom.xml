@@ -8,7 +8,7 @@
   <name>Beigesoft ™ Accounting library.</name>
 
   <description>It implements accounting models and services, e.g. AccountingEntry, SalesInvoice, service that fill payroll taxes according tax percentage table, etc.</description>
-  <url>http://www.beigesoft.org</url>
+  <url>https://sites.google.com/site/beigesoftware</url>
   <inceptionYear>2016</inceptionYear>
 
   <properties>
@@ -52,6 +52,30 @@
           </plugin>
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-jarsigner-plugin</artifactId>
+            <version>1.4</version>
+            <executions>
+              <execution>
+                <id>signing</id>
+                <goals>
+                  <goal>sign</goal>
+                </goals>
+                <phase>verify</phase>
+                <inherited>true</inherited>
+                <configuration>
+                  <archiveDirectory />
+                  <includes>
+                    <include>target${file.separator}*.jar</include>
+                  </includes>
+                  <storepass>${signpass}</storepass>
+                  <keypass>${signpass}</keypass>
+                  <alias>${signalias}</alias>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-gpg-plugin</artifactId>
             <version>1.6</version>
             <executions>
@@ -62,8 +86,8 @@
                   <goal>sign</goal>
                 </goals>
                 <configuration>
-                  <keyname>48E407CA</keyname>
-                  <passphraseServerId>48E407CA</passphraseServerId>
+                  <keyname>${gpgkeyname}</keyname>
+                  <passphraseServerId>${gpgkeyname}</passphraseServerId>
                 </configuration>
               </execution>
             </executions>
@@ -139,17 +163,17 @@
     <dependency>
       <groupId>org.beigesoft</groupId>
       <artifactId>beigesoft-replicator</artifactId>
-      <version>1.1.4</version>
+      <version>1.1.5-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.beigesoft</groupId>
       <artifactId>beigesoft-orm</artifactId>
-      <version>1.1.4</version>
+      <version>1.1.5-SNAPSHOT</version>
     </dependency>
     <dependency>
      <groupId>org.beigesoft</groupId>
      <artifactId>beige-pdfwriter</artifactId>
-     <version>1.0.0</version>
+     <version>1.0.1-SNAPSHOT</version>
     </dependency>
     <dependency>
      <groupId>junit</groupId>
