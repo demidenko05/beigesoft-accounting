@@ -11,9 +11,7 @@
 
     <!-- The body of the document contains a number of sections -->
     <section name="Beige-Software overview">
-      
-      <p>If it's slow, then try <a href="https://sites.google.com/site/beigesoftware">https://sites.google.com/site/beigesoftware</a></p>
-      
+            
       <p>Keywords: Java, open source software, free software, accounting software, reporting tools, PDF creator, Jetty for Android, ORM software, JSP, JSTL, JSON, AJAX.</p>
       
       <h3>Products:</h3>
@@ -48,27 +46,33 @@
       <p>
         <a href="bobs-pizza.html">See Beige Accounting Bob's Pizza example.</a>
       </p>
-      <p>
-        Beige-Accounting for MS Windows/Mac/*Nix <b>beigesoft-accountingoio-ajetty.bin.zip</b>,
-       for Android <b>beige-accountingoio-android.apk</b>
-       and cloud version <b>beigesoft-accounting-weboio.war</b>
-       you can find in central Maven repository <a href="https://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.beigesoft%22">https://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.beigesoft%22</a> or <a href="http://central.maven.org/maven2/org/beigesoft/">http://central.maven.org/maven2/org/beigesoft/</a>
-      <p>Beige-Accounting doesn't comply new rules <a href="https://play.google.com/about/privacy-security/personal-sensitive/">https://play.google.com/about/privacy-security/personal-sensitive/</a>
-        that is sqlite archived non-encrypted databases are stored in "not-secure" place,
-        it also doesn't uses encrypted (HTTPS) connection (although A-Jetty is not available through network).
-        So Beige-Accounting was unpublished form Play Store, but it still available as APK installation file.
-        For security reasons you should not install software from non-trusted sources.
+      <p>Since version 1.1.5 Beige-Accounting standalone versions are always in secure enabled mode,
+        that is it uses encrypted (HTTPS) connection, it requires strong password for authorization,
+        it also uses encryption (modern algorithm RSA with 2048bit key and 256bit AES) for safe
+        file (SQLite databases) exchanging between computers/tablets, e.g. accountant can send encrypted SQLite database to business owner, and no one can decrypt it except owner.
       </p>
       <p>
-        Source code of Beige-Accounting you can find in <a href="https://github.com/demidenko05/beige-software">https://github.com/demidenko05/beige-software</a>
+        Beige-Accounting for MS Windows/Mac/*Nix <b>beigesoft-accountingoio-ajetty.bin.zip</b> and
+        cloud version <b>beigesoft-accounting-weboio.war</b> and other products
+        you can find in central Maven repository <a href="https://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.beigesoft%22">https://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.beigesoft%22</a>
+        or <a href="https://repo1.maven.org/maven2/org/beigesoft/beigesoft-accountingoio-ajetty/">https://repo1.maven.org/maven2/org/beigesoft/beigesoft-accountingoio-ajetty/</a>
       </p>
-      <p>Releases you can find in <a href="https://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.beigesoft%22">Central Maven Repository: search org.beigesoft.</a></p>
+      <p>Beige-Accounting for Android comply rules
+        <a href="https://play.google.com/about/privacy-security/personal-sensitive/">https://play.google.com/about/privacy-security/personal-sensitive/</a>,
+        so you can find it in Google Play-Store.</p>
+      <p>
+        Source code of Beige-Accounting and other products you can find in <a href="https://github.com/demidenko05">https://github.com/demidenko05</a>
+      </p>
       <p>
         Licenses:
         <ul>
           <li>GNU General Public License version 2 - http://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html</li>
           <li>The Eclipse Public License, Version 1.0 - http://www.eclipse.org/legal/epl-v10.html</li>
           <li>The Apache Software License, Version 2.0 - http://www.apache.org/licenses/LICENSE-2.0.txt</li>
+          <li>CDDL + GPLv2 with classpath exception - https://javaee.github.io/glassfish/LICENSE</li>
+          <li>MIT License - https://github.com/twbs/bootstrap/blob/master/LICENSE</li>
+          <li>DejaVu fonts by Bitstream - https://dejavu-fonts.github.io/License.html</li>
+          <li>SIL OPEN FONT LICENSE Version 1.1 - http://scripts.sil.org/cms/scripts/page.php?item_id=OFL_web</li>
         </ul>
       </p>
 
@@ -104,10 +108,6 @@
         Using JSP(JSTL) allow you to create exactly multiplatform WEB-applications cause A-Jetty can run them.
         The best way of using A-Jetty is use it as embedded server in standalone WEB-application.
       </p>
-      <p>
-        Source code of A-Jetty, A-Tomcat and their dependence A-Javabeans you can find in <a href="https://github.com/demidenko05">https://github.com/demidenko05</a>
-      </p>
-      <p>Releases of A-Jetty, A-Tomcat and A-Javabeans you can find in <a href="https://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.github.demidenko05%22">Central Maven Repository: search com.github.demidenko05.</a></p>
       
       <h4>Beigesoft ™ ORM</h4>
       <p>Beige-ORM is lightweight multiplatform (Android Java and standard Java 7+) ORM library.
@@ -221,12 +221,7 @@
     Instead of create a lot of files to describe every class and its fields it use describing by type, by name,
     e.g. setting "java.lang.Integer"-"INTEGER NOT NULL" will be assigned for every field of this type. Beige-ORM,
     Beige-WEB, Beige-Replicator use it.</p>
-      
-      <p>
-        Source code of this software you can find also in <a href="https://github.com/demidenko05/beige-software">https://github.com/demidenko05/beige-software</a>
-      </p>
-      <p>Releases you can find in <a href="https://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.beigesoft%22">Central Maven Repository: search org.beigesoft.</a></p>
-      
+            
     </section>
 
   </body>

@@ -13,6 +13,7 @@
 
 <p>Keywords: Accounting software free.</p>
 
+
 <p>Bob Brown from NY decided to start his own pizza business as sole proprietor.
 Bob's Pizza makes frozen pizza, so according <a href="https://www.tax.ny.gov/pubs_and_bulls/tg_bulletins/st/food_sold_by_food_stores.htm">NYS. sales taxable food</a>
 he isn't a Sales Tax Vendor.
@@ -31,27 +32,92 @@ Bob has read <a href="https://www.irs.gov/pub/irs-pdf/p583.pdf">IRS 583 Starting
   You are able to make full database copy from SQlite database into high load (enterprise ready) MySql
   by using WEB-service (see <a href="import-db-web.html">Import database with WEB-service</a>).
 </p>
+<p>* for Android see <a href="acc-android.html">Beige-Accounting on Android.</a></p>
 <p>
   Bob installed Java (Oracle) and Google Chrome on his notebook (Chromium or Opera will do too). 
-  Bob downloaded file <b>beigesoft-accountingoio-ajetty-bin.zip</b> from  central Maven repository <a href="https://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.beigesoft%22">https://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.beigesoft%22</a>.
-  He extracted ZIP archive then started JAR file <b>beige-accounting-ajetty-jar-with-dependencies.jar</b> by double click on it.
-  You can start any JAR (if it's made as executable) in command line (synonyms - "terminal", "command prompt", "power shell") by type command:  
-  <b>java -jar beige-accounting-ajetty-jar-with-dependencies.jar</b>
+  Bob downloaded file <b>beigesoft-accountingoio-ajetty-bin.zip</b> from  central Maven repository <a href="https://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.beigesoft%22">https://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.beigesoft%22</a>
+  or <a href="https://repo1.maven.org/maven2/org/beigesoft/beigesoft-accountingoio-ajetty/">https://repo1.maven.org/maven2/org/beigesoft/beigesoft-accountingoio-ajetty/</a>.
+  He extracted ZIP archive then launched JAR file <b> beigesoft-accountingoio-ajetty-jar-with-dependencies.jar</b> by double click on it or right click and choose Java.
+  You can start any executable JAR from command line (synonyms - "terminal", "command prompt", "power shell") by type command:  
+  <b>java -jar beigesoft-accountingoio-ajetty-jar-with-dependencies.jar</b>
 </p>
   Bob should see window like this:
   <p align="center"><img alt="Beige-Accounting start" style="max-width: 100%" src="images/beige-acc-start.png" /></p>
+<p>
+  Since version 1.1.5 Beige-Accounting standalone versions are always in secure enabled mode,
+  that is it uses encrypted (HTTPS) connection, it requires strong password for authorization,
+  it also uses encryption (modern algorithm RSA with 2048bit key and 256bit AES) for safe
+  file (SQlite databases) exchanging between computers/tablets.
+  So you should think of strong password and A-Jetty number (it should be different from A-Jetty on another computer/tablet).
+</p>
+<p>
+To make strong and ease to remember password use method similar to this:
+  <ol>
+    <li>use at least 3 words, e.g. raccoon eat stone</li>
+    <li>change these words with a rule e.g. "last letter to thirst position upper case" e.g. Nraccoo Tea Eston</li>
+    <li>add several digits, e.g. result is "NraccooTeaEston165" or "165NraccooTeaEston" or "165NraccooTeaEston165"...</li>
+  </ol>
+</p>
+<p>
+  Bob enter new A-Jetty number, new password, confirm it, then he push button <b>Start</b>.
+  If you got error (see title):
+  <p align="center"><img alt="Beige-Accounting start error" style="max-width: 100%" src="images/ajetty-start-error.png" /></p>
+  then see starter.log file in application folder. If it's saying:
+  <pre style="white-space:pre-wrap">
+...org.bouncycastle.operator.OperatorCreationException: unable to create OutputEncryptor: JCE cannot authenticate the provider BC...
+  </pre>
+  then you should install Bouncy Castle crypto-provider in static way:
+  <ol>
+    <li>download bcprov-jdk15on-1.59.jar from <a href="https://repo1.maven.org/maven2/org/bouncycastle/bcprov-jdk15on/1.59/">https://repo1.maven.org/maven2/org/bouncycastle/bcprov-jdk15on/1.59/</a>
+    and bcpkix-jdk15on-1.59.jar from <a href="https://repo1.maven.org/maven2/org/bouncycastle/bcpkix-jdk15on/1.59/">https://repo1.maven.org/maven2/org/bouncycastle/bcpkix-jdk15on/1.59/</a></li>
+    <li>put them into [java-home]/lib/ext e.g. "C:\Program Files (x86)\Java\jre[version#8]\lib\ext" (change [version#8] to yours)</li>
+    <li>add entry "security.provider.[next_number]=org.bouncycastle.jce.provider.BouncyCastleProvider" into [JAVA_HOME]/lib/security/java.security</li>
+  </ol>
+  On MS Windows copy java.security to your documents folder, edit it then copy back into "C:\Program Files (x86)\Java\jre[version#8]\lib\security".
+  <br></br>
+  This is part of java.security for example:
+  <pre style="white-space:pre-wrap">
+...
+security.provider.8=org.jcp.xml.dsig.internal.dom.XMLDSigRI
+security.provider.9=sun.security.smartcardio.SunPCSC
+security.provider.10=sun.security.mscapi.SunMSCAPI
+security.provider.11=org.bouncycastle.jce.provider.BouncyCastleProvider
+...
+  </pre>
+  If starter.log saying:
+  <pre style="white-space:pre-wrap">
+...org.bouncycastle.operator.OperatorCreationException: unable to create OutputEncryptor: Illegal key size or default parameters...
+  </pre>
+  then you should install "Java Cryptography Extension (JCE) Unlimited Strength Jurisdiction Policy Files for Java 8" into
+  folder [JAVA_HOME]/lib/security. For MS Windows you can find these files in folder "C:\Program Files (x86)\Java\jre[version#8]\lib\security\policy\unlimited",
+  otherwise download these from Oracle HTTPS web-site.
+  Encryption with strong keys (long size) protects you (your information) from scams, so any law must protect you too.
+</p>
 
 <p>
-  Then he push button <b>Start</b>, after database has been created (it may takes several minutes for the first time to create database)
-  he push button <b>http://localhost:8080</b> - default browser will opened this address.
-  At first Bob changed organization name in accounting settings:
+  After A-Jetty has been successfully started (it may takes several minutes for the first time to create database) button with HTTPS address has been appeared:
+  <p align="center"><img alt="Beige-Accounting started" style="max-width: 100%" src="images/ajettystarted.png" /></p>
+</p>
+<p>
+  A-Jetty Certificate Authority certificate <b>ajetty-ca.pem</b> will be at the application folder. At the first start you have to install it
+  as trusted Certificate Authority in the browser. On Chrome push Menu -> Settings -> Advanced -> Manage certificates -> AUTHORITIES and push button <b>IMPORT</b>:
+  <p align="center"><img alt="Beige-Accounting install CA certificate" style="max-width: 100%" src="images/installcaweb1.png" /></p>
+  <p align="center"><img alt="Beige-Accounting install CA certificate" style="max-width: 100%" src="images/installcaweb2.png" /></p>
+  Certificate Authorities that aren't signed by global trusted CA are often used to create private (non-public) intranets, using digital signatures inside organization and its partners.
+  Here A-Jetty CA is used to create HTTPS intranet inside only computer and for safe file exchanging between your computers/tablets...
+</p>
+<p>  
+  After installing certificate <b>ajetty-ca.pem</b> on web-browser Bob pushed button <b>https://localhost:8443/bsa8443</b> - default browser will opened this address.
+  At first time empty database requires to add the first (only) user with strong password, so Bob added himself:
+  <p align="center"><img alt="Beige-Accounting adding first user" style="max-width: 100%" src="images/accadduser.png" /></p>
+  At first Bob changed organization name in accounting settings, he selected Menu -> Appearance - > Standard -> Accounting -> Accounting settings:
   <p align="center"><img alt="Beige-Accounting settings" style="max-width: 100%" src="images/acc-settings.png" /></p>
   Bob agreed all other settings include cost precision 4 digit places to reduce rounding error.
   Setting <b>Current accounting year</b> used for restricting year in new document or accounting entry.
 </p>
 
 <h4>Chart of accounts.</h4>
-<p>Bob change names of two accounts "started capital" and "retained earnings" and "is used" for his needs.
+<p>Bob changed names of two accounts "started capital" and "retained earnings" and "is used" for his needs.
   Property "is used" means that whether account will presents in picker and in reports.
   Using subaccounts is simple way to manage your chart of accounts. Bob added subaccounts taxes, properties, bank accounts, etc. Expenses screenshot:
   <p align="center"><img alt="Beige-Accounting accounting subaccounts expenses" style="max-width: 100%" src="images/subaccounts-expenses.png" /></p>
@@ -170,7 +236,7 @@ Bob has read <a href="https://www.irs.gov/pub/irs-pdf/p583.pdf">IRS 583 Starting
           Accounts Receivable
         </td>
         <td>
-          Funny coffee shop
+          Mini-market
         </td>
         <td>
           
@@ -198,7 +264,7 @@ Bob has read <a href="https://www.irs.gov/pub/irs-pdf/p583.pdf">IRS 583 Starting
           
         </td>
         <td>
-          Mini-market
+          Funny coffee shop
         </td>
         <td>
           
@@ -475,7 +541,7 @@ Bob has read <a href="https://www.irs.gov/pub/irs-pdf/p583.pdf">IRS 583 Starting
           
         </td>
         <td>
-          
+          Property deprecable.
         </td>
       </tr>
     
@@ -863,7 +929,7 @@ Bob has read <a href="https://www.irs.gov/pub/irs-pdf/p583.pdf">IRS 583 Starting
           3250
         </td>
         <td>
-          Retained loses
+          Retained looses
         </td>
         <td>
           
@@ -1230,6 +1296,30 @@ Bob has read <a href="https://www.irs.gov/pub/irs-pdf/p583.pdf">IRS 583 Starting
           
         </td>
         <td>
+          Medicare withholding
+        </td>
+        <td>
+          
+        </td>
+        <td>
+          
+        </td>
+        <td>
+          
+        </td>
+      </tr>
+    
+      <tr>
+        <td>
+          
+        </td>
+        <td>
+          
+        </td>
+        <td>
+          
+        </td>
+        <td>
           Social Security withholding
         </td>
         <td>
@@ -1265,61 +1355,12 @@ Bob has read <a href="https://www.irs.gov/pub/irs-pdf/p583.pdf">IRS 583 Starting
         <td>
           
         </td>
-      </tr>
-    
-      <tr>
-        <td>
-          
-        </td>
-        <td>
-          
-        </td>
-        <td>
-          
-        </td>
-        <td>
-          State Unemployment Tax withholding
-        </td>
-        <td>
-          
-        </td>
-        <td>
-          
-        </td>
-        <td>
-          
-        </td>
-      </tr>
-    
-      <tr>
-        <td>
-          
-        </td>
-        <td>
-          
-        </td>
-        <td>
-          
-        </td>
-        <td>
-          Medicare withholding
-        </td>
-        <td>
-          
-        </td>
-        <td>
-          
-        </td>
-        <td>
-          
-        </td>
-      </tr>
-    
+      </tr>    
   </table>
     </p>
 
 <h4>Started capital.</h4>
-<p>At Jan.10 2016 Bob opened checking account #12125686 in Bank and deposit 40000USD. He make the first accounting entries from Menu Accounting - Input accounting Entries:
+<p>At Jan 10 2016 Bob opened checking account #12125686 in Bank and deposit 40000USD. He make the first accounting entries from Menu Accounting -> Input accounting Entries:
   <p align="center"><img alt="Beige-Accounting started capital" style="max-width: 100%" src="images/started-capital.png" /></p>
 </p>
 
@@ -1336,15 +1377,33 @@ Bob has read <a href="https://www.irs.gov/pub/irs-pdf/p583.pdf">IRS 583 Starting
   </ul>
 </p>
 
-<h4>Install Beige-Accounting on Android.</h4>
-Beige-Accounting doesn't comply new rules <a href="https://play.google.com/about/privacy-security/personal-sensitive/">https://play.google.com/about/privacy-security/personal-sensitive/</a>
-that is sqlite archived non-encrypted databases are stored in "not-secure" place,
-it also doesn't uses encrypted (HTTPS) connection (although A-Jetty is not available through network).
-So Beige-Accounting was unpublished form Play Store, but it still available as APK installation file in central Maven repository <a href="https://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.beigesoft%22">https://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.beigesoft%22</a>.
-SQlite and Java are already installed on Android. Last Android versions already have HTML5 dialog ready browser, otherwise install Chrome.
-Then you can install Beige Accounting APK file.
-After start it push button "Start" to start A-Jetty server, then push button "http://localhost:8080", default browser will be
-opened this address. If chrome isn't default browser, then make it default.
+<h4>Running Beige-Accounting in "protected from light scamware" mode.</h4>
+<p>
+  Light scamware is software that can poison a standard application or it is any harmful-script, e.g script on HTML page.
+  Light scamware is running under your regular account and can read file system that you can read.
+  On *nix OS (Linux...) you can run Beige Accounting under another account in terminal. To do this:
+  <ol>
+    <li>Open terminal and login as ROOT user - command "su"</li>
+    <li>As ROOT add new user "accountant" with password - commands "useradd accountant" and "passwd accountant"</li>
+    <li>Add shared folder for file exchange: "mkdir /file-exch" and "chmod o+w /file-exch"</li>
+    <li>Install file manager Midnight Commandor (mc)</li>
+    <li>Exit from ROOT - "exit"</li>
+    <li>Copy <b>beigesoft-accountingoio-ajetty-bin.zip</b> into <b>/file-exch</b> by using any file manager</li>
+    <li>In terminal login as accountant - "su -l accountant"</li>
+    <li>Use file manager Midnight mc to install (unpack) Beige Accounting</li>
+  </ol>
+  Screenshots:
+  <p align="center"><img style="max-width: 100%" src="images/commandline1.png" /></p>
+  <p align="center"><img style="max-width: 100%" src="images/commandline2.png" /></p>
+</p>
+<p>
+  To start Beige Accounting in "command line mode" run: "java -jar beigesoft-accountingoio-ajetty-jar-with-dependencies.jar cli":
+  <p align="center"><img style="max-width: 100%" src="images/commandline3.png" /></p>
+</p>
+<p>As a result you (and possible light scamware) can't reach "accountant" files:
+  <p align="center"><img style="max-width: 100%" src="images/commandline4.png" /></p>
+</p>
+
     </section>
 
   </body>

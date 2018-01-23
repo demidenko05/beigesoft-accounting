@@ -10,8 +10,6 @@
   <body>
 
     <section name="Beige-Accounting Bob's pizza example.">
-
-      <p>If it's slow, then try <a href="https://sites.google.com/site/beigesoftware/bobspizza">https://sites.google.com/site/beigesoftware/bobs-pizza</a></p>
       
       <h4>Topics:</h4>      
       
@@ -20,7 +18,7 @@
       </h5>
       
       <h5>
-        <a href="acc-property.html">Accounting of property.</a>
+        <a href="acc-property.html">Accounting of predicable property.</a>
       </h5>
 
       <h5>
@@ -76,7 +74,7 @@
       </h5>
 
       <h5>
-        <a href="acc-tax-market.html">Market (business) accounting, import data from tax accounting.</a>
+        <a href="acc-tax-market.html">Market (Mark To Market) accounting, import data from tax accounting.</a>
       </h5>
 
       <h5>
