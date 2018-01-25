@@ -12,20 +12,36 @@
     <section name="Beige-Accounting on Android.">
 
     <p>Keywords: Accounting software for Android.</p>
-
 <p>
   This is same WEB application based on embedded A-Jetty for Android.
+  New Beige-Accounting for Android comply rules <a href="https://play.google.com/about/privacy-security/personal-sensitive/">https://play.google.com/about/privacy-security/personal-sensitive/</a>,
+  i.e. private data (SQLite database, private log files, key-store with keys for encryption) are in private application storage,
+  all other applications can't read this files. Beige Accounting uses encryption to make HTTPS connection and to backup encrypted SQLite databases and logs.
+  These encrypted files are stored on external storage, all other application can't decrypt them.
+</p>
+<p>
   Bob decided to try this application on his Android smartphone.
   He installed Google Chrome.
-  Then he installed the last APK Beige Accounting from central Maven repository <a href="https://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.beigesoft%22">https://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.beigesoft%22</a>.
-  He started it then push button "Start" to start A-Jetty server. Then he push button "http://localhost:8080", chrome browser will be
-  opened this address. If you can't set chrome as default browser, then type this address by hand in it (these screenshots from Samsung DUOS Android 4.2.2):
+  Then he installed Beige Accounting from Play Store. He started it in the same way as described in <a href="acc-settings.html">Software installation...</a>.
   <p align="center"><img style="max-width: 100%" src="images/android-start.png" /></p>
+  Files <b>ajetty-ca.pem</b> and <b>ajetty-file-exch777.kpub</b> will be at the root of external storage.
+  To install A-Jetty CA certificate select Settings -> Security -> Install certificate from storage
+  (you will be forced to set screen locking - PIN with/without fingerprint, if you haven't it yet):
+  <p align="center"><img style="max-width: 100%" src="images/android-ca.png" /></p>
+  You can find this certificate in Security -> Trusted Credentials -> User:
+  <p align="center"><img style="max-width: 100%" src="images/android-ca1.png" /></p>
+  <p align="center"><img style="max-width: 100%" src="images/android-ca2.png" /></p>
   <p>Start menu is:</p>
   <p align="center"><img style="max-width: 100%" src="images/android-start-menu.png" /></p>
-  <p>He uploaded database as bobspizza.sqlite
-  into Google Drive from his notebook then downloaded it on smartphone then moved it into "BeigeAccountingBackup" directory.
-  Then he opened Database manager and restored bobspizza.sqlite as current database.</p>
+  <p>To send SQLite database from notebook to smartphone Bob copied public key <b>ajetty-file-exch777.kpub</b> from smartphone to notebook folder
+  <b>/home/accountant/beigesoft-accountingoio-ajetty/pub-exch</b>:
+    <p align="center"><img style="max-width: 100%" src="images/copypubtonote.png" /></p>
+    then Bob opened Database Manager, checked SHA1 fingerprint of public key A-Jetty777, then pressed <b>backup</b>:
+    <p align="center"><img style="max-width: 100%" src="images/backupto777.png" /></p>
+    then he copied 4 encrypted files and notebook A-Jetty public key <b>ajetty-file-exch444.kpub</b> into smartphone public backup folder:
+    <p align="center"><img style="max-width: 100%" src="images/copytoandroid.png" /></p>
+  </p>
+  Then Bob restored database on smartphone:
   <p align="center"><img style="max-width: 100%" src="images/android-dbmanager.png" /></p>
   <p align="center">He looks at the same data:</p>
   <p align="center"><img style="max-width: 100%" src="images/android-data1.png" /></p>
