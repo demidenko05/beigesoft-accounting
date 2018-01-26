@@ -19,15 +19,35 @@
         Bob decided to checks out this. He installed Apache Tomcat and MySql according <a href="https://github.com/demidenko05/beigesoft-accounting-weboio">https://github.com/demidenko05/beigesoft-accounting-weboio README.txt</a>.
         He download file <b>beigesoft-accounting-weboio.war</b> from  central Maven repository <a href="https://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.beigesoft%22">https://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.beigesoft%22</a>
         and put it into <b>webapps</b> folder of Apache Tomcat.
-        He launched SQlite version Beige Accounting on 8081 port. Source local database:</p>
+        Bob installed Bouncy Castle crypto-provider in static way (see <a href="acc-settings.html">Software installation...</a>),
+        then he copied <b>ajettykeystore.444</b> file into <b>[tomcat-home]/conf</b> folder and uncommented and changed SSL connector in <b>[tomcat-home]/conf/server.xml</b>:
+        <pre style="white-space:pre-wrap">
+    &lt;Connector port="8443" protocol="org.apache.coyote.http11.Http11Protocol"
+       maxThreads="150" SSLEnabled="true" scheme="https" secure="true"
+       keyAlias="AJettyHttps444"
+       keystoreFile="conf/ajettykeystore.444"
+       keystorePass="**************"
+       keystoreType="PKCS12"
+       keystoreProvider="BC" 
+       clientAuth="false" sslProtocol="TLS" /&gt;
+        </pre>
+        Bob check out what he can not read <b>server.xml</b> file under his regular account, cause this file hold keystore password.
+      </p>
+      <p>
+        Bob added <b>ajetty-ca.pem</b> into Java trusted CA keystore:
+        <pre style="white-space:pre-wrap">
+keytool -import -trustcacerts -alias ajettyca -file "ajetty-ca.pem" -keystore /usr/lib/jvm/java-1.8.0-openjdk/jre/lib/security/cacerts
+        </pre>
+        The default password to this keystore is <b>changeit</b>. Adding CA certificate to this keystore requires ROOT permission,
+        so do not worry about keystore password. Never use this keystore to store private keys!
+      </p>
+      <p>
+        He launched SQlite version Beige Accounting on 8444 port. Source local database:</p>
       <p align="center"><img style="max-width: 100%" src="images/import-db1.png" /></p>
      
       <p>
-        Then he started Tomcat and opened address <a href="http://localhost:8080/beigesoft-accounting-weboio/">http://localhost:8080/beigesoft-accounting-weboio/</a>
-        Destination database (cloud version):</p>
-      <p align="center"><img style="max-width: 100%" src="images/import-db2.png" /></p>
-      
-      <p>He entered "URL of WEB-service of another database:" as "http://localhost:8081/secure/sendEntities" and leaved user/password fields empty then pressed "submit":</p>
+        Then he started Tomcat and opened address <a href="https://localhost:8443/beigesoft-accounting-weboio/">https://localhost:8443/beigesoft-accounting-weboio/</a>
+        He selected Menu -> Admin -> Import database, then  entered "URL of WEB-service of another database:" as "localhost:8444/bsa8444/secure/sendEntities" and filled user/password fields empty then pressed "submit":</p>
       <p align="center"><img style="max-width: 100%" src="images/import-db3.png" /></p>
       
       <p>The import report is:</p>
@@ -36,11 +56,10 @@
       <p>The data is the same:</p>
       <p align="center"><img style="max-width: 100%" src="images/import-db5.png" /></p>
       
-      <p>For real cloud WEB-application <b>http://localhost:8081</b> is not available, so you have two choices:
+      <p>For real cloud (internet) WEB-application intranet WEB-server <b>https://localhost:8443/bsa8443</b> is not available, so you have two options:
       <ul>
-        <li>Make MySql copy in local computer, then restore backup on remote cloud database with MySql backup software</li>
+        <li>Make MySql database backup in local computer, then restore backup on remote cloud database with MySql backup software</li>
         <li>Make SQlite version internet accessible - non-localhost i.e. public it on cloud (it MUST be only HTTPS(encrypted) accessible),
-         but at first you MUST switch on JDBC (or other) authentication in SQLite version and add users with strong passwords,
          see <a href="https://github.com/demidenko05/beigesoft-webcrud">https://github.com/demidenko05/beigesoft-webcrud</a> that uses SQlite and JDBC authentication for Apache Tomcat standard.</li>
       </ul>
       </p>

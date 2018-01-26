@@ -17,7 +17,9 @@
   New Beige-Accounting for Android comply rules <a href="https://play.google.com/about/privacy-security/personal-sensitive/">https://play.google.com/about/privacy-security/personal-sensitive/</a>,
   i.e. private data (SQLite database, private log files, key-store with keys for encryption) are in private application storage,
   all other applications can't read this files. Beige Accounting uses encryption to make HTTPS connection and to backup encrypted SQLite databases and logs.
-  These encrypted files are stored on external storage, all other application can't decrypt them.
+  These encrypted files are stored on shared storage (where photos, files...), all other application can't decrypt them.
+  But when you print PDF reports then Chrome will downloaded them into shared <b>Download</b> folder and any application that has permission to shared storage can read this file,
+  i.e. not only PDF viewer.
 </p>
 <p>
   Bob decided to try this application on his Android smartphone.
@@ -36,10 +38,19 @@
   <p>To send SQLite database from notebook to smartphone Bob copied public key <b>ajetty-file-exch777.kpub</b> from smartphone to notebook folder
   <b>/home/accountant/beigesoft-accountingoio-ajetty/pub-exch</b>:
     <p align="center"><img style="max-width: 100%" src="images/copypubtonote.png" /></p>
+  </p>
+  <p>
     then Bob opened Database Manager, checked SHA1 fingerprint of public key A-Jetty777, then pressed <b>backup</b>:
     <p align="center"><img style="max-width: 100%" src="images/backupto777.png" /></p>
     then he copied 4 encrypted files and notebook A-Jetty public key <b>ajetty-file-exch444.kpub</b> into smartphone public backup folder:
     <p align="center"><img style="max-width: 100%" src="images/copytoandroid.png" /></p>
+    These files are:
+    <ul>
+      <li>beigeaccounting.sqlten - database that is encrypted with 256bit AES session symmetric key.</li>
+      <li>beigeaccounting.sqlten.sig - encrypted database signature that is made with A-Jetty444 private 2048bit RSA key</li>
+      <li>beigeaccounting.sqlten.sken - 256bit AES session symmetric key that is encrypted with A-Jetty777 public 2048bit RSA key, this file can be decrypted only with A-Jetty777 RSA private key</li>
+      <li>beigeaccounting.sqlten.sken.sig - encrypted AES key signature that is made with A-Jetty444 private 2048bit RSA key</li>
+    </ul>
   </p>
   Then Bob restored database on smartphone:
   <p align="center"><img style="max-width: 100%" src="images/android-dbmanager.png" /></p>
@@ -50,20 +61,15 @@
   <p>He can create new purchase invoice:</p>
   <p align="center"><img style="max-width: 100%" src="images/android-purchaseline.png" /></p>
   <br></br>
-  <p>Screenshots from virtual Nexus 10 Android 7 (api24):</p>
-  <p align="center"><img style="max-width: 100%" src="images/android-vn10-a7-balance.png" /></p>
-  <p>Chrome asks for permission of public storage to download file (balance.pdf).
-    It's seems that this file will be accessible to other applications that have permission to the storage,
-    but Chrome does it delicate - it "hides, passes to the PDF-viewer then deletes" downloaded file,
-    so you can't find it (file) in the storage.
-    Maybe Chrome does it more properly (for files that has default application) - it uses private storage to downloads PDF then passes it to the viewer.</p>
-  <p align="center"><img style="max-width: 100%" src="images/android7-chrome-storage.png" /></p>
-  <p align="center"><img style="max-width: 100%" src="images/android7-invoice.png" /></p>
-  <br></br>
-  <p>Screenshots from virtual Nexus 9 Android 6 (api23):</p>
-  <p align="center"><img style="max-width: 100%" src="images/android-vn9-a6-dbmanager.png" /></p>
-  <p align="center"><img style="max-width: 100%" src="images/android-vn9-a6-accentries.png" /></p>
-  <p align="center"><img style="max-width: 100%" src="images/android-vn9-a6-salesinv.png" /></p>
+  <p>Screenshots from virtual Nexus 9 Android Oreo 8.0 (API-26):</p>
+  <p align="center"><img style="max-width: 100%" src="images/avd26start.png" /></p>
+  <p align="center"><img style="max-width: 100%" src="images/avd26addca1.png" /></p>
+  <p align="center"><img style="max-width: 100%" src="images/avd26addca2.png" /></p>
+  <p align="center"><img style="max-width: 100%" src="images/avd26dbmanager.png" /></p>
+  <p align="center"><img style="max-width: 100%" src="images/avd26tbalance.png" /></p>
+  <p align="center"><img style="max-width: 100%" src="images/avd26invoicepdf.png" /></p>
+  <p align="center"><img style="max-width: 100%" src="images/avd26accenties.png" /></p>
+  <p align="center"><img style="max-width: 100%" src="images/avd26salinv.png" /></p>
   
 </p>
 
