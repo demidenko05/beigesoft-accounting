@@ -9,15 +9,15 @@
 
   <body>
 
-    <section name="Market (financial) accounting, import data from tax accounting.">
-      <p>Keywords: Financial accounting Vs. Tax accounting, import data from tax accounting, accounting of business (trade) name.</p>
-      <h4>Market(financial) accounting.</h4>
+    <section name="Mark to Market (financial) accounting, import data from tax accounting.">
+      <p>Keywords: Mark To Market accounting Vs. Tax accounting, import data from tax accounting, accounting of business (trade) name.</p>
+      <h4>Mark to Market(financial) accounting.</h4>
       <p>
         The law (IRS) demands Bob to keeps entries (in either single entry or in double entries accounting system)
         to estimates his taxes in calendar year period. Bob wants to estimates his real business results
         monthly. Market accounting (double entries system) based on rule:
         <pre style="white-space: pre-wrap;">
-          Assets - Liabilities = how much does Bob's business cost (he can sold it) = Owner's equity
+          Assets - Liabilities = current market value of Bob's business (How much he can sold it right now) = Owner's equity
         </pre>
       </p>
       <b>
@@ -29,17 +29,22 @@
         </ul>
       </b>
 
-      <p>Bob created new Beige Accounting Market in same way as <a href="acc-settings.html">Software installation, accounting settings, chart of accounts, started capital.</a>
-        except "Chart of accounts", "Expenses" and "Started capital". He copied new copy of <b>beige-accounting</b> in new folder,
-        then (before starting and creating new database) he edited XML file <b>\WEB-INF\web.xml</b> to change new database ID into 2:
+      <p>Bob unpack files from <b>beigesoft-accountingoio-ajetty-bin.zip</b> into new folder <b>accounting-market</b>,
+        then he copied keystore form <b>accounting-tax</b>:
+      <p align="center"><img style="max-width: 100%" src="images/market-acc-ks.png" /></p>
       </p>
-      <p align="center"><img style="max-width: 100%" src="images/market-acc-id.png" /></p>
-      <p>You can use any editor e.g. <a href="https://notepad-plus-plus.org/">Notepad++</a>, <a href="https://www.geany.org/">Geany</a> etc.</p>
+      <p>
+        Then (before starting and creating new database) he edited XML file <b>\WEB-INF\web.xml</b> to change new database ID into 2:
+        <p align="center"><img style="max-width: 100%" src="images/market-acc-id.png" /></p>
+      </p>
+      <p>Bob started using Beige Accounting Market in the same way as described in <a href="acc-settings.html">Software installation, accounting settings, chart of accounts, started capital.</a>,
+        except "Chart of accounts", "Expenses" and "Started capital".
+      </p>
 
       <h4>Import data from tax accounting.</h4>
       <p>
-        He launched source (tax) database Tax Beige Accounting on port 8081.
-        Then he launched market accounting on port 8081, new market database will be created with ID=2.
+        He launched source (tax) database Tax Beige Accounting on port 8443.
+        Then he launched market accounting on port 8444, new market database will be created with ID=2.
       </p>
       <p>
         He uses "menu - about" to know database ID:
@@ -50,7 +55,7 @@
       </p>
       <p align="center"><img style="max-width: 100%" src="images/replication-acc-method.png" /></p>
       <p>
-        He filled import acc. entries form (WEB-service address is "http://localhost:8081/secure/sendEntities") and pressed replicate:
+        He filled import acc. entries form (WEB-service address is "https://localhost:8443/bsa8443/secure/sendEntities", then fill user and password that matched to Tax database) and pressed replicate:
       </p>
       <p align="center"><img alt="Beige-Accounting import from tax to market(business) accounting" style="max-width: 100%" src="images/import_acc_entries_form.png" /></p>
       <p>
