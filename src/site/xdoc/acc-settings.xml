@@ -1385,7 +1385,7 @@ security.provider.11=org.bouncycastle.jce.provider.BouncyCastleProvider
   On *nix OS (Linux...) you can run Beige Accounting under another account in terminal. To do this:
   <ol>
     <li>Open terminal and login as ROOT user - command "su"</li>
-    <li>As ROOT add new user "accountant" with password - commands "useradd accountant" and "passwd accountant"</li>
+    <li>As ROOT add new user "accountant" with password - commands "useradd -m -U accountant" and "passwd accountant"</li>
     <li>Add shared folder for file exchange: "mkdir /file-exch" and "chmod o+w /file-exch"</li>
     <li>Install file manager Midnight Commandor (mc)</li>
     <li>Exit from ROOT - "exit"</li>
@@ -1397,17 +1397,25 @@ security.provider.11=org.bouncycastle.jce.provider.BouncyCastleProvider
   <p align="center"><img style="max-width: 100%" src="images/commandline1.png" /></p>
   <p align="center"><img style="max-width: 100%" src="images/commandline2.png" /></p>
 </p>
+<p>On Ubuntu Linux and Mac OS account <b>root</b> is disabled, and your regular account is able to invoke <b>sudo</b> command, so do that above (only root part) as:
+  <pre>
+$ sudo useradd -m -U accountant
+$ sudo passwd accountant
+$ sudo mkdir /file-exch
+$ sudo chmod o+w /file-exch
+  </pre>
+</p>
 <p>
   To start Beige Accounting in "command line mode" run: "java -jar beigesoft-accountingoio-ajetty-jar-with-dependencies.jar cli":
   <p align="center"><img style="max-width: 100%" src="images/commandline3.png" /></p>
 </p>
-<p>As a result you (and possible light scamware, e.g. if your web-browser has allowed scamscript from HTML page read your file system) can't reach "accountant" files:
+<p>As a result you (and possible light scamware, e.g. if your web-browser has allowed scamscript from HTML page read your file system) can't read "accountant" files:
   <p align="center"><img style="max-width: 100%" src="images/commandline4.png" /></p>
 </p>
 <p>
   Light scamware can try to attempt to match your password and stole your data by making HTTP requests. But you are protected with strong password and maximum 5 fail login attempts per session:
   <p align="center"><img style="max-width: 100%" src="images/loginprotect1.png" /></p>
-  <p>you should check secure.log periodically:</p>
+  <p>you should check <b>secure.log</b> periodically:</p>
   <p align="center"><img style="max-width: 100%" src="images/loginprotect2.png" /></p>
   
 </p>

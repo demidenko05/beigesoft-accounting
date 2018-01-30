@@ -10,7 +10,7 @@
   <body>
 
     <section name="Bob's webstore example.">
-      <h4>Bob's pizza webstore.</h4>
+      <h4>Bob's pizza webstore (DRAFT).</h4>
         <p>
           Bob decided to use Beige-Webstore (it's included into Beige-Accounting) for selling his pizza.
         </p>
@@ -33,9 +33,45 @@
           Add those goods to catalog:
           <p align="center"><img style="max-width: 100%" src="images/webstore-goods-add-to-catalog.png" /></p>
           It will be report about added/removed to/from catalog goods.
-          <div style="padding: 5px; color: red;">
-            * Warning! Adding already added item will fail whole operation!
-          </div>
+        </p>
+        <p>Then Bob added <b>Pickup place</b>:
+          <p align="center"><img style="max-width: 100%" src="images/webstore-pickpl.png" /></p>
+        </p>
+        <p>Then Bob added <b>Goods availability</b>:
+          <p align="center"><img style="max-width: 100%" src="images/webstore-goodsavail.png" /></p>
+          Property <b>is always</b> means that customers can order this goods without availability checking.
+        </p>
+        <p>Then Bob added <b>Group of specifics of item</b>:
+          <p align="center"><img style="max-width: 100%" src="images/webstore-grspecitm.png" /></p>
+        </p>
+        <p>Then Bob added <b>Specifics of item</b>:
+          <p align="center"><img style="max-width: 100%" src="images/webstore-specitm.png" /></p>
+        </p>
+        <p>Then Bob added <b>Goods specifics</b> for every goods (actually image):
+          <p align="center"><img style="max-width: 100%" src="images/webstore-goodsspec.png" /></p>
+        </p>
+        <p>Then Bob added <b>Price category of goods/service</b>:
+          <p align="center"><img style="max-width: 100%" src="images/webstore-pricecatgoods.png" /></p>
+        </p>
+        <p>Then Bob added <b>Price category of buyers</b>:
+          <p align="center"><img style="max-width: 100%" src="images/webstore-pricecatbuyer.png" /></p>
+        </p>
+        <p>Then Bob added <b>Price category</b>:
+          <p align="center"><img style="max-width: 100%" src="images/webstore-pricecat.png" /></p>
+        </p>
+        <p>Then Bob assign <b>Price of goods</b> for every goods:
+          <p align="center"><img style="max-width: 100%" src="images/webstore-pricegoods.png" /></p>
+        </p>
+        <p>After data has been completed Bob push <b>Refresh goods in list</b>:
+          <p align="center"><img style="max-width: 100%" src="images/webstore-refreshgoodslist.png" /></p>
+        </p>
+        <p>Resulting webstore screenshots:
+          <p align="center"><img style="max-width: 100%" src="images/webstore1.png" /></p>
+          <p align="center"><img style="max-width: 100%" src="images/webstore2.png" /></p>
+          <p align="center"><img style="max-width: 100%" src="images/webstore3.png" /></p>
+          <p align="center"><img style="max-width: 100%" src="images/bebstoremobile1.png" /></p>
+          <p align="center"><img style="max-width: 100%" src="images/bebstoremobile2.png" /></p>
+          <p align="center"><img style="max-width: 100%" src="images/bebstoremobile3.png" /></p>
         </p>
     </section>
 

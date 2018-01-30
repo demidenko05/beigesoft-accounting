@@ -42,6 +42,7 @@
       </p>
 
       <h4>Import data from tax accounting.</h4>
+      <p>To use WEB-services on intranet (localhost) Bob installed Bouncy Castle Crypto Provider and A-Jetty CA certificate as described in <a href="import-db-web.html">Import database with WEB-service.</a></p>
       <p>
         He launched source (tax) database Tax Beige Accounting on port 8443.
         Then he launched market accounting on port 8444, new market database will be created with ID=2.

@@ -373,13 +373,13 @@ public class InvoiceReportPdf<RS, WI>
       .addDocTableNoBorder(doc, 1, 3);
     tblRez.getItsCells().get(0).setFontNumber(1);
     tblRez.getItsCells().get(0).setItsContent(this.srvI18n.getMsg("subtotal")
-      + ": " + inv.getSubtotal());
+      + ": " + inv.getSubtotal() + " " + accSet.getCurrency().getItsName());
     tblRez.getItsCells().get(1).setFontNumber(1);
     tblRez.getItsCells().get(1).setItsContent(this.srvI18n.getMsg("totalTaxes")
-      + ": " + inv.getTotalTaxes());
+      + ": " + inv.getTotalTaxes() + " " + accSet.getCurrency().getItsName());
     tblRez.getItsCells().get(2).setFontNumber(1);
     tblRez.getItsCells().get(2).setItsContent(this.srvI18n.getMsg("itsTotal")
-      + ": " + inv.getItsTotal());
+      + ": " + inv.getItsTotal() + " " + accSet.getCurrency().getItsName());
     tblRez.setAlignHorizontal(EAlignHorizontal.RIGHT);
     docMaker.makeDocTableWrapping(tblRez);
     docMaker.addPagination(doc);

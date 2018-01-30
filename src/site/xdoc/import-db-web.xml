@@ -38,6 +38,10 @@
         <pre style="white-space:pre-wrap">
 keytool -import -trustcacerts -alias ajettyca -file "ajetty-ca.pem" -keystore /usr/lib/jvm/java-1.8.0-openjdk/jre/lib/security/cacerts
         </pre>
+  * on MS Windows open Power Shell as ADMIN in beige-accounting folder and run:
+        <pre style="white-space:pre-wrap">
+  &amp; "C:\Program Files (x86)\Java\jre[version#8]\bin\keytool.exe" -import -trustcacerts -alias ajettyca -file "ajetty-ca.pem" -keystore "C:\Program Files (x86)\Java\jre[version#8]\lib\security\cacerts"
+        </pre>        
         The default password to this keystore is <b>changeit</b>. Adding CA certificate to this keystore requires ROOT permission,
         so do not worry about keystore password. Never use this keystore to store private keys!
       </p>
