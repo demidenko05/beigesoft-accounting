@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document xmlns="http://maven.apache.org/XDOC/2.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
+
+  <properties>
+    <title>Beigesoft™ Accounting Privacy Policy</title>
+   </properties>
+
+  <body>
+
+  <section name="Beigesoft™ Accounting Privacy Policy">
+
+<h4 align="center">Beigesoft™ Accounting Privacy Policy</h4>
+<h5 align="center">All Beige-Accounting versions</h5>
+<p>  
+  Beigesoft-Accounting collects (stores) your data only inside database file.
+</p>
+<p>
+  If you set option <b>Show debug messages</b> to <b>ON</b> and <b>Debug detail level</b> to equals or grater than <b>30000</b>
+  then log files <b>beige-accounting0.log</b> and <b>beige-accounting1.log</b> will contain sensitive data.
+  In that case if you are going to send these log files to a programmer (who customize this application)
+  then you must remove sensitive data from these files.
+</p>
+<p>
+  This is WEB-application, so you should use the last version of WEB-browser. You should avoid to install any WEB-browser plugins.
+</p>
+
+<h5 align="center"> Beige-Accounting standalone versions</h5>
+<p>These versions are based on embedded private A-Jetty WEB-server.
+  This private WEB-server is not available from outside your computer (or Android device).
+  These versions require authorization with strong password (created by you).
+  They allow maximum 6 fail login attempts. You should periodically check file <b>secure.log</b>
+  These versions use modern encryption algorithms with strong keys for HTTPS connection and for safe encrypted file exchanging.
+  These are multi-database versions, you can create new and switch database from WEB-interface.
+</p>
+
+<h5 align="center"> Beige-Accounting on embedded A-Jetty for standard computer</h5>
+<p>
+  Your data is in <b>webapp/beigeaccounting.sqlite</b>.
+  You are able to copy (backup) database to a private place by using standard file manager.
+  Keystore with secret keys for encryption is in <b>ks</b> folder. It is protected with strong password (created by you).
+  You should set strong password for your OS account. It's advisable to set startup BIOS password on your computer. 
+</p>
+
+<h5 align="center"> Beige-Accounting on embedded A-Jetty for Android</h5>
+<p>
+  Your data (SQLite databases), beige-accounting.log, secure.log, keystore (with secret keys) is in private application storage.
+  There is no way to read these from there. Only this application can read and write these files.
+  You can lost your data if you forget password (for keystore or/and application),
+  so you should backup database and log files from WEB-interface.
+  This requires Beige-Accounting standalone version on another computer (or Android device),
+  cause application encrypts files with public key from another Beige-Accounting.
+  Only another Beige-Accounting (whose public key used for encryption) can decrypts these encrypted files.
+  Avoid to print PDF file if Google Chrome download them into shared storage (download folder), cause any other application
+  that has permissions to this storage can read your PDF file. At least avoid to install any additional applications that requires permission to the storage,
+  already installed PDF viewer will do.
+</p>
+
+<h5 align="center"> Beige-Accounting cloud version</h5>
+<p>
+  Cloud (Internet available) version is more difficult to keep your data private, so use it only when it's necessary.
+  You must yourself handle strong passwords and reliable HTTPS connection.
+</p>
+
+
+    </section>
+
+  </body>
+
+</document>

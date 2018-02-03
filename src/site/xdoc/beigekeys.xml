@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document xmlns="http://maven.apache.org/XDOC/2.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
+
+  <properties>
+    <title>Beigesoft™ digital signatures</title>
+   </properties>
+
+  <body>
+
+  <section name="Beigesoft™ digital signatures">
+
+<h4 align="center">Beigesoft™ digital signatures</h4>
+<p>  
+  GPG key:
+  <ul>
+    <li>name: ADFD46A0</li>
+    <li>fingerprint: 0344 B8AC CF1A 098E 158E  B661 16B5 B1CA ADFD 46A0</li>
+  </ul>
+  This key is used ONLY for signing Beigesoft files ONLY in central MAVEN repository.
+</p>
+<p>
+  To check GPG signature you should install <b>GnuPG</b> and use command for any ASC file <b>gpg --with-fingerprint [file-name].asc</b>, e.g.
+  <pre style="white-space:pre-wrap">
+$ gpg --with-fingerprint beigesoft-accountingoio-ajetty-bin.zip.asc
+  </pre>
+  You should check that fingerprint is match to this one.
+</p>
+<p>
+  Key to sign JAR/APK file:
+  <ul>
+    <li>Serial number: 4507171e</li>
+    <li>fingerprint MD5:  07:33:19:D0:39:78:C2:CE:42:56:9E:06:2F:76:2C:95</li>
+    <li>fingerprint SHA1: 21:78:63:F7:79:6F:E4:F1:68:34:CB:0C:44:D6:C9:9D:50:E6:BE:8F</li>
+    <li>fingerprint SHA256: 1F:9A:32:B7:4A:37:8F:C6:0E:E4:46:2A:72:0E:C0:DB:D2:A7:CB:3C:FB:02:B2:32:CB:7D:66:B1:2C:28:8D:C3</li>
+  </ul>
+  This key is used ONLY for signing Beigesoft JAR/APK files ONLY in central MAVEN repository and Google Play.
+</p>
+<p>
+  To check JAR/APK signature use command <b>jarsigner -verify -verbose -certs [file-name].jar/apk</b>, e.g.:
+<pre style="white-space:pre-wrap">
+$ jarsigner -verify -verbose -certs beigesoft-accountingoio-ajetty-jar-with-dependencies.jar
+</pre>
+  To check key fingerprint you should unpack <b>BEIGESOF.RSA</b> that is inside JAR/APK META-INF folder (JAR and APK is actually ZIP archives)
+  then run command:
+<pre style="white-space:pre-wrap">
+  $ keytool -printcert -file BEIGESOF.RSA
+</pre>
+For MS Windows you should open power shell and run commands like this:
+<pre style="white-space:pre-wrap">
+&amp; "C:\Program Files (x86)\Java\jre[version#8]\bin\jarsigner.exe" -verify -verbose -certs beigesoft-accountingoio-ajetty-jar-with-dependencies.jar
+&amp; "C:\Program Files (x86)\Java\jre[version#8]\bin\keytool.exe" -printcert -file BEIGESOF.RSA
+</pre>
+For *Nix (and MAC OS) you should use terminal to run these commands. If you did not set <b>JAVA-HOME/bin</b> in the <b>PATH</b> environment variable
+then you should type full Java path in the commands.
+</p>
+    </section>
+
+  </body>
+
+</document>

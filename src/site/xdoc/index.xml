@@ -22,8 +22,8 @@
       <p>
         It works as:
         <ul>
-          <li>Standalone web-app on embedded A-Jetty for standard Java (Ms Windows, Mac, Nix...).</li>
-          <li>Standalone web-app on embedded A-Jetty on Android.</li>
+          <li>Standalone WEB-application on embedded private WEB-server A-Jetty for standard Java (Ms Windows, Mac, *Nix...).</li>
+          <li>Standalone WEB-application on embedded A-Jetty for Android.</li>
           <li>Standard JEE web-application on any JEE server (cloud).</li>
         </ul>
       </p>
@@ -43,6 +43,8 @@
           <li>and more.</li>
         </ul>
       </p>
+      <p><a href="privacypolicy.html">See Beige Accounting Privacy Policy.</a></p>
+      <p><a href="beigekeys.html">See Beigesoft™ digital signatures.</a></p>
       <p>
         <a href="bobs-pizza.html">See Beige Accounting Bob's Pizza example.</a>
       </p>
