@@ -21,9 +21,12 @@
   This key is used ONLY for signing Beigesoft files ONLY in central MAVEN repository.
 </p>
 <p>
-  To check GPG signature you should install <b>GnuPG</b> and use command for any ASC file <b>gpg --with-fingerprint [file-name].asc</b>, e.g.
+  You can find this public key on <a href="http://pgp.mit.edu/">http://pgp.mit.edu/</a> or <a href="pgp-adfd46ao.txt">download pgp-adfd46ao.txt</a>
+</p>
+<p>
+  To check GPG signature you should install <b>GnuPG</b> and use command for any ASC file <b>gpg --verify [file-name].asc</b>, e.g.
   <pre style="white-space:pre-wrap">
-$ gpg --with-fingerprint beigesoft-accountingoio-ajetty-bin.zip.asc
+$ gpg --verify beigesoft-accountingoio-ajetty-bin.zip.asc
   </pre>
   You should check that fingerprint is match to this one.
 </p>
