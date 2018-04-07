@@ -11,7 +11,7 @@
 
     <section name="Accounting of purchase, prepayments, payments tracking.">
 
-      <p>Keywords: Accounting of purchase, prepayments, sales taxes from purchase, payments tracking.</p>
+      <p>Keywords: Accounting of purchase, prepayments, sales taxes from purchase, payments tracking, bank reconciliation.</p>
 
       <h4>Sales taxes payed for raw material (producing USA).</h4>
       <p>According <a href="https://www.irs.gov/pub/irs-pdf/p535.pdf">IRS 535 Business Expenses, Page 18</a> sales taxes that Bob paid for materials
@@ -97,6 +97,22 @@ If the property is merchandise bought for resale, the sales tax is part of the c
           <p align="center"><img alt="Beige-Accounting payment for purchase tracking" style="max-width: 100%" src="images/purchase-payment-tracking.png" /></p>
       </p>
 
+      <h4>Bank reconciliation</h4>
+      <p>When bank account balance in your accounting system (software or book) is not same as in the bank (in the bank statement),
+        then you have to make adjusting entries. This is called "bank reconciliation".
+        For example yesterday you had received check for 500USD from customer "Firm A" and made accounting entry:
+        <pre>
+Debit CashInBank.Account#243443354 for 500USD Credit AccountsReceivable.FirmA for 500USD
+        </pre>
+        After that your bank account balance is 10000USD (in your accounting system).
+        Today you have received the bank statement that is saying that the check was rejected and you was charged for 10USD additionally cause that "wrong check"
+        and the balance is 9490USD.
+        So you have to make two adjusting entries:
+        <pre>
+Credit CashInBank.Account#243443354 for 500USD Debit AccountsReceivable.FirmA for 500USD
+Credit CashInBank.Account#243443354 for 10USD Debit Expenses.BankExpenses for 10USD
+        </pre>
+      </p>
 
     </section>
 

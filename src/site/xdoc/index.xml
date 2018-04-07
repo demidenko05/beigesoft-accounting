@@ -12,7 +12,7 @@
     <!-- The body of the document contains a number of sections -->
     <section name="Beige-Software overview">
             
-      <p>Keywords: Java, open source software, free software, accounting software, reporting tools, PDF creator, Jetty for Android, ORM software, JSP, JSTL, JSON, AJAX.</p>
+      <p>Keywords: Java open source software, free accounting software, Java reporting tools, PDF creator, Java PDF library, Jetty for Android, Java ORM library, JSP, JSTL, JSON, AJAX.</p>
       
       <h3>Products:</h3>
 
@@ -225,7 +225,7 @@
     Beige-WEB, Beige-Replicator use it.</p>
             
     <p>
-      * Address http:beigesoft.org was switched off for security (safety) reasons.
+      * Address http://www.beigesoft.org was switched off for security (safety) reasons.
       HTML page come to your browser by passing through several intermediate Internet servers.
       If any intermediate server is affected by harmful software then it can change content and inject harmful script into HTML page
       because HTTP is an unencrypted transport.
