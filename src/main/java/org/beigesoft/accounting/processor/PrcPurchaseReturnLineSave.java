@@ -27,6 +27,7 @@ import org.beigesoft.model.IRecordSet;
 import org.beigesoft.service.ISrvOrm;
 import org.beigesoft.service.ISrvDatabase;
 import org.beigesoft.accounting.model.ETaxType;
+import org.beigesoft.accounting.persistable.PurchaseInvoice;
 import org.beigesoft.accounting.persistable.PurchaseInvoiceLine;
 import org.beigesoft.accounting.persistable.PurchaseReturn;
 import org.beigesoft.accounting.persistable.PurchaseReturnLine;
@@ -97,57 +98,76 @@ public class PrcPurchaseReturnLineSave<RS>
       final PurchaseReturnLine pEntity,
         final IRequestData pRequestData) throws Exception {
     if (pEntity.getIsNew()) {
-      if (pEntity.getItsQuantity().doubleValue() == 0) {
-        throw new ExceptionWithCode(ExceptionWithCode.WRONG_PARAMETER,
-          "Quantity is 0!" + pAddParam.get("user"));
-      }
-      if (pEntity.getItsQuantity().doubleValue() < 0
-        && pEntity.getReversedId() == null) {
-        throw new ExceptionWithCode(ExceptionWithCode.WRONG_PARAMETER,
-          "Reversed Line is null!" + pAddParam.get("user"));
-      }
-      if (pEntity.getPurchaseInvoiceLine() == null) {
-        throw new ExceptionWithCode(ExceptionWithCode.WRONG_PARAMETER,
-          "wrong_purchaseInvoiceLine");
-      }
-      pEntity.setItsQuantity(pEntity.getItsQuantity().setScale(
-        getSrvAccSettings().lazyGetAccSettings(pAddParam)
-          .getQuantityPrecision(), getSrvAccSettings()
-            .lazyGetAccSettings(pAddParam).getRoundingMode()));
       //BeigeORM refresh:
-      pEntity.setPurchaseInvoiceLine(getSrvOrm()
-        .retrieveEntity(pAddParam, pEntity.getPurchaseInvoiceLine()));
       pEntity.setItsOwner(getSrvOrm()
         .retrieveEntity(pAddParam, pEntity.getItsOwner()));
+      PurchaseInvoice purchaseInvoice = getSrvOrm().retrieveEntity(pAddParam,
+        pEntity.getItsOwner().getPurchaseInvoice());
       // optimistic locking (dirty check):
       Long ownerVersion = Long.valueOf(pRequestData
         .getParameter(PurchaseReturn.class.getSimpleName() + ".ownerVersion"));
       pEntity.getItsOwner().setItsVersion(ownerVersion);
-      if (pEntity.getPurchaseInvoiceLine() == null) {
-        throw new ExceptionWithCode(ExceptionWithCode.WRONG_PARAMETER,
-          "wrong_purchaseInvoiceLine");
-      }
-      pEntity.setPurchInvLnAppearance(getSrvI18n().getMsg(PurchaseInvoiceLine
-        .class.getSimpleName() + "short") + " #" + pEntity
-          .getPurchaseInvoiceLine().getIdDatabaseBirth() + "-" //local
-            + pEntity.getPurchaseInvoiceLine().getItsId() + ", " + pEntity
-          .getPurchaseInvoiceLine().getInvItem().getItsName() + ", " + pEntity
-            .getPurchaseInvoiceLine().getUnitOfMeasure().getItsName() + ", "
-          + getSrvI18n().getMsg("itsCost") + "=" + pEntity
-            .getPurchaseInvoiceLine().getItsCost() + ", " + getSrvI18n()
-          .getMsg("rest_was") + "=" + pEntity.getPurchaseInvoiceLine()
-            .getTheRest());
-      pEntity.setSubtotal(pEntity.getItsQuantity().multiply(pEntity
-        .getPurchaseInvoiceLine().getItsCost()).setScale(getSrvAccSettings()
-          .lazyGetAccSettings(pAddParam).getPricePrecision(),
-            getSrvAccSettings().lazyGetAccSettings(pAddParam)
-              .getRoundingMode()));
-      BigDecimal totalTaxes = BigDecimal.ZERO;
-      if (getSrvAccSettings().lazyGetAccSettings(pAddParam)
-        .getIsExtractSalesTaxFromPurchase()) {
+      if (pEntity.getReversedId() != null) {
+        PurchaseReturnLine reversed = getSrvOrm().retrieveEntityById(
+          pAddParam, PurchaseReturnLine.class, pEntity.getReversedId());
+        if (reversed.getReversedId() != null) {
+          throw new ExceptionWithCode(ExceptionWithCode.FORBIDDEN,
+            "Attempt to double reverse" + pAddParam.get("user"));
+        }
+        pEntity.setWarehouseSiteFo(reversed.getWarehouseSiteFo());
+        pEntity.setPurchaseInvoiceLine(reversed.getPurchaseInvoiceLine());
+        pEntity.setPurchInvLnAppearance(reversed.getPurchInvLnAppearance());
+        pEntity.setTaxesDescription(reversed.getTaxesDescription());
+        pEntity.setTotalTaxes(reversed.getTotalTaxes().negate());
+        pEntity.setItsQuantity(reversed.getItsQuantity().negate());
+        pEntity.setSubtotal(reversed.getSubtotal().negate());
+        pEntity.setItsTotal(reversed.getItsTotal().negate());
+        getSrvOrm().insertEntity(pAddParam, pEntity);
+        reversed.setReversedId(pEntity.getItsId());
+        getSrvOrm().updateEntity(pAddParam, reversed);
+        srvWarehouseEntry.reverseDraw(pAddParam, pEntity);
+        srvUseMaterialEntry.reverseDraw(pAddParam, pEntity,
+          pEntity.getItsOwner().getItsDate(),
+            pEntity.getItsOwner().getItsId());
+      } else {
+        if (pEntity.getItsQuantity().doubleValue() == 0) {
+          throw new ExceptionWithCode(ExceptionWithCode.WRONG_PARAMETER,
+            "Quantity is 0!" + pAddParam.get("user"));
+        }
+        if (pEntity.getPurchaseInvoiceLine() == null) {
+          throw new ExceptionWithCode(ExceptionWithCode.WRONG_PARAMETER,
+            "wrong_purchaseInvoiceLine");
+        }
+        //BeigeORM refresh:
+        pEntity.setPurchaseInvoiceLine(getSrvOrm()
+          .retrieveEntity(pAddParam, pEntity.getPurchaseInvoiceLine()));
+        pEntity.setPurchInvLnAppearance(getSrvI18n().getMsg(PurchaseInvoiceLine
+          .class.getSimpleName() + "short") + " #" + pEntity
+            .getPurchaseInvoiceLine().getIdDatabaseBirth() + "-" //local
+              + pEntity.getPurchaseInvoiceLine().getItsId() + ", " + pEntity
+            .getPurchaseInvoiceLine().getInvItem().getItsName() + ", " + pEntity
+              .getPurchaseInvoiceLine().getUnitOfMeasure().getItsName() + ", "
+            + getSrvI18n().getMsg("itsCost") + "=" + pEntity
+              .getPurchaseInvoiceLine().getItsCost() + ", " + getSrvI18n()
+            .getMsg("rest_was") + "=" + pEntity.getPurchaseInvoiceLine()
+              .getTheRest());
+        //rounding:
+        pEntity.setItsQuantity(pEntity.getItsQuantity().setScale(
+          getSrvAccSettings().lazyGetAccSettings(pAddParam)
+            .getQuantityPrecision(), getSrvAccSettings()
+              .lazyGetAccSettings(pAddParam).getRoundingMode()));
+        pEntity.setSubtotal(pEntity.getItsQuantity().multiply(pEntity
+          .getPurchaseInvoiceLine().getItsCost()).setScale(getSrvAccSettings()
+            .lazyGetAccSettings(pAddParam).getPricePrecision(),
+              getSrvAccSettings().lazyGetAccSettings(pAddParam)
+                .getRoundingMode()));
+        BigDecimal totalTaxes = BigDecimal.ZERO;
         String taxesDescription = "";
-        if (pEntity.getPurchaseInvoiceLine().getInvItem()
-          .getTaxCategory() != null) {
+        if (!purchaseInvoice.getVendor().getIsForeigner()
+          && getSrvAccSettings().lazyGetAccSettings(pAddParam)
+            .getIsExtractSalesTaxFromPurchase()
+            && pEntity.getPurchaseInvoiceLine().getInvItem()
+              .getTaxCategory() != null) {
           List<InvItemTaxCategoryLine> pstl = getSrvOrm()
             .retrieveListWithConditions(pAddParam,
               InvItemTaxCategoryLine.class, "where ITSOWNER="
@@ -158,7 +178,7 @@ public class PrcPurchaseReturnLineSave<RS>
           int i = 0;
           for (InvItemTaxCategoryLine pst : pstl) {
             if (ETaxType.SALES_TAX_OUTITEM.equals(pst.getTax().getItsType())
-              || ETaxType.SALES_TAX_INITEM.equals(pst.getTax().getItsType())) {
+            || ETaxType.SALES_TAX_INITEM.equals(pst.getTax().getItsType())) {
               BigDecimal addTx = pEntity.getSubtotal().multiply(pst
                 .getItsPercentage()).divide(bigDecimal100, getSrvAccSettings()
                   .lazyGetAccSettings(pAddParam).getPricePrecision(),
@@ -168,36 +188,22 @@ public class PrcPurchaseReturnLineSave<RS>
               if (i++ > 0) {
                 sb.append(", ");
               }
-              sb.append(pst.getTax().getItsName() + " " + pst.getItsPercentage()
-                + "%=" + addTx);
+              sb.append(pst.getTax().getItsName() + " "
+                + pst.getItsPercentage() + "%=" + addTx);
             }
           }
           taxesDescription = sb.toString();
         }
         pEntity.setTaxesDescription(taxesDescription);
         pEntity.setTotalTaxes(totalTaxes);
-      }
-      pEntity.setItsTotal(pEntity.getSubtotal().add(totalTaxes));
-      getSrvOrm().insertEntity(pAddParam, pEntity);
-      if (pEntity.getReversedId() != null) {
-        PurchaseReturnLine reversed = getSrvOrm().retrieveEntityById(
-          pAddParam, PurchaseReturnLine.class, pEntity.getReversedId());
-        if (reversed.getReversedId() != null) {
-          throw new ExceptionWithCode(ExceptionWithCode.FORBIDDEN,
-            "Attempt to double reverse" + pAddParam.get("user"));
-        }
-        reversed.setReversedId(pEntity.getItsId());
-        getSrvOrm().updateEntity(pAddParam, reversed);
-        srvWarehouseEntry.reverseDraw(pAddParam, pEntity);
-        srvUseMaterialEntry.reverseDraw(pAddParam, pEntity,
-          pEntity.getItsOwner().getItsDate(),
-            pEntity.getItsOwner().getItsId());
-      } else {
+        pEntity.setItsTotal(pEntity.getSubtotal().add(totalTaxes));
+        getSrvOrm().insertEntity(pAddParam, pEntity);
         srvWarehouseEntry.withdrawal(pAddParam, pEntity,
           pEntity.getWarehouseSiteFo());
         srvUseMaterialEntry.withdrawalFrom(pAddParam, pEntity,
           pEntity.getPurchaseInvoiceLine(), pEntity.getItsQuantity());
       }
+      //owner update:
       String query =
       "select sum(SUBTOTAL) as SUBTOTAL, sum(TOTALTAXES) as TOTALTAXES from"
         + " PURCHASERETURNLINE where ITSOWNER="
@@ -214,10 +220,7 @@ public class PrcPurchaseReturnLineSave<RS>
       pEntity.getItsOwner().setItsTotal(pEntity.getItsOwner().getSubtotal().
         add(pEntity.getItsOwner().getTotalTaxes()));
       getSrvOrm().updateEntity(pAddParam, pEntity.getItsOwner());
-      if (getSrvAccSettings().lazyGetAccSettings(pAddParam)
-        .getIsExtractSalesTaxFromPurchase()) {
-        updateTaxLines(pAddParam, pEntity.getItsOwner());
-      }
+      updateTaxLines(pAddParam, pEntity.getItsOwner(), purchaseInvoice);
     } else {
       throw new ExceptionWithCode(ExceptionWithCode.FORBIDDEN,
         "Attempt to update sales invoice line by " + pAddParam.get("user"));
@@ -234,55 +237,65 @@ public class PrcPurchaseReturnLineSave<RS>
    * <p>Update invoice Tax Lines.</p>
    * @param pAddParam additional param
    * @param pItsOwner PurchaseReturn
+   * @param pPurchaseInvoice PurchaseInvoice
    * @throws Exception - an exception
    **/
   public final void updateTaxLines(final Map<String, Object> pAddParam,
-    final PurchaseReturn pItsOwner) throws Exception {
+    final PurchaseReturn pItsOwner,
+      final PurchaseInvoice pPurchaseInvoice) throws Exception {
     List<PurchaseReturnTaxLine> citl = getSrvOrm().retrieveListWithConditions(
         pAddParam, PurchaseReturnTaxLine.class, "where ITSOWNER="
           + pItsOwner.getItsId());
-    String query = lazyGetQueryPurchaseReturnLineTaxes().replace(":ITSOWNER",
-      pItsOwner.getItsId().toString());
-    int countUpdatedSitl = 0;
-    IRecordSet<RS> recordSet = null;
-    try {
-      recordSet = getSrvDatabase().retrieveRecords(query);
-      if (recordSet.moveToFirst()) {
-        do {
-          Long taxId = recordSet.getLong("TAXID");
-          Double totalTax = recordSet.getDouble("TOTALTAX");
-          PurchaseReturnTaxLine cit;
-          if (citl.size() > countUpdatedSitl) {
-            cit = citl.get(countUpdatedSitl);
-            countUpdatedSitl++;
-          } else {
-            cit = new PurchaseReturnTaxLine();
-            cit.setIdDatabaseBirth(this.srvOrm.getIdDatabase());
-            cit.setItsOwner(pItsOwner);
-            cit.setIsNew(true);
-          }
-          Tax tax = new Tax();
-          tax.setItsId(taxId);
-          cit.setTax(tax);
-          cit.setItsTotal(BigDecimal.valueOf(totalTax).setScale(
-            getSrvAccSettings().lazyGetAccSettings(pAddParam)
-              .getPricePrecision(), getSrvAccSettings()
-                .lazyGetAccSettings(pAddParam).getRoundingMode()));
-          if (cit.getIsNew()) {
-            getSrvOrm().insertEntity(pAddParam, cit);
-          } else {
-            getSrvOrm().updateEntity(pAddParam, cit);
-          }
-        } while (recordSet.moveToNext());
+    if (!pPurchaseInvoice.getVendor().getIsForeigner()
+      && getSrvAccSettings().lazyGetAccSettings(pAddParam)
+        .getIsExtractSalesTaxFromPurchase()) {
+      String query = lazyGetQueryPurchaseReturnLineTaxes().replace(":ITSOWNER",
+        pItsOwner.getItsId().toString());
+      int countUpdatedSitl = 0;
+      IRecordSet<RS> recordSet = null;
+      try {
+        recordSet = getSrvDatabase().retrieveRecords(query);
+        if (recordSet.moveToFirst()) {
+          do {
+            Long taxId = recordSet.getLong("TAXID");
+            Double totalTax = recordSet.getDouble("TOTALTAX");
+            PurchaseReturnTaxLine cit;
+            if (citl.size() > countUpdatedSitl) {
+              cit = citl.get(countUpdatedSitl);
+              countUpdatedSitl++;
+            } else {
+              cit = new PurchaseReturnTaxLine();
+              cit.setIdDatabaseBirth(this.srvOrm.getIdDatabase());
+              cit.setItsOwner(pItsOwner);
+              cit.setIsNew(true);
+            }
+            Tax tax = new Tax();
+            tax.setItsId(taxId);
+            cit.setTax(tax);
+            cit.setItsTotal(BigDecimal.valueOf(totalTax).setScale(
+              getSrvAccSettings().lazyGetAccSettings(pAddParam)
+                .getPricePrecision(), getSrvAccSettings()
+                  .lazyGetAccSettings(pAddParam).getRoundingMode()));
+            if (cit.getIsNew()) {
+              getSrvOrm().insertEntity(pAddParam, cit);
+            } else {
+              getSrvOrm().updateEntity(pAddParam, cit);
+            }
+          } while (recordSet.moveToNext());
+        }
+      } finally {
+        if (recordSet != null) {
+          recordSet.close();
+        }
       }
-    } finally {
-      if (recordSet != null) {
-        recordSet.close();
+      if (countUpdatedSitl < citl.size()) {
+        for (int j = countUpdatedSitl; j < citl.size(); j++) {
+          getSrvOrm().deleteEntity(pAddParam, citl.get(j));
+        }
       }
-    }
-    if (countUpdatedSitl < citl.size()) {
-      for (int j = countUpdatedSitl; j < citl.size(); j++) {
-        getSrvOrm().deleteEntity(pAddParam, citl.get(j));
+    } else if (citl.size() > 0) {
+      for (PurchaseReturnTaxLine prtln : citl) {
+        getSrvOrm().deleteEntity(pAddParam, prtln);
       }
     }
   }

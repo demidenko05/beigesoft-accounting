@@ -68,7 +68,9 @@ public class PrcPurchaseInvoiceServiceLineSave<RS>
       throw new ExceptionWithCode(ExceptionWithCode.WRONG_PARAMETER,
         "cost_less_or_eq_zero::" + pAddParam.get("user"));
     }
-    //SQL refresh:
+    // Beige-Orm refresh:
+    pEntity.setItsOwner(getSrvOrm()
+      .retrieveEntity(pAddParam, pEntity.getItsOwner()));
     pEntity.setService(getSrvOrm()
       .retrieveEntity(pAddParam, pEntity.getService()));
     //rounding:
@@ -78,9 +80,10 @@ public class PrcPurchaseInvoiceServiceLineSave<RS>
           .lazyGetAccSettings(pAddParam).getRoundingMode()));
     BigDecimal totalTaxes = BigDecimal.ZERO;
     String taxesDescription = "";
-    if (getSrvAccSettings().lazyGetAccSettings(pAddParam)
-      .getIsExtractSalesTaxFromPurchase()
-        && pEntity.getService().getTaxCategory() != null) {
+    if (!pEntity.getItsOwner().getVendor().getIsForeigner()
+      && getSrvAccSettings().lazyGetAccSettings(pAddParam)
+        .getIsExtractSalesTaxFromPurchase()
+          && pEntity.getService().getTaxCategory() != null) {
       List<InvItemTaxCategoryLine> pstl = getSrvOrm()
         .retrieveListWithConditions(pAddParam,
           InvItemTaxCategoryLine.class, "where ITSOWNER="
@@ -114,9 +117,6 @@ public class PrcPurchaseInvoiceServiceLineSave<RS>
     } else {
       getSrvOrm().updateEntity(pAddParam, pEntity);
     }
-    // Beige-Orm refresh:
-    pEntity.setItsOwner(getSrvOrm()
-      .retrieveEntity(pAddParam, pEntity.getItsOwner()));
     // optimistic locking (dirty check):
     Long ownerVersion = Long.valueOf(pRequestData
       .getParameter(PurchaseInvoice.class.getSimpleName() + ".ownerVersion"));

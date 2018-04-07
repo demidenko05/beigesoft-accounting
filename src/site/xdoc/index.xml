@@ -224,6 +224,12 @@
     e.g. setting "java.lang.Integer"-"INTEGER NOT NULL" will be assigned for every field of this type. Beige-ORM,
     Beige-WEB, Beige-Replicator use it.</p>
             
+    <p>
+      * Address http:beigesoft.org was switched off for security (safety) reasons.
+      HTML page come to your browser by passing through several intermediate Internet servers.
+      If any intermediate server is affected by harmful software then it can change content and inject harmful script into HTML page
+      because HTTP is an unencrypted transport.
+    </p>
     </section>
 
   </body>

@@ -98,10 +98,7 @@ public class UtlSalesGoodsServiceLine<RS> {
     pItsOwner.setItsTotal(pItsOwner.getSubtotal().
       add(pItsOwner.getTotalTaxes()));
     getSrvOrm().updateEntity(pAddParam, pItsOwner);
-    if (getSrvAccSettings().lazyGetAccSettings(pAddParam)
-      .getIsExtractSalesTaxFromSales()) {
-      updateTaxLines(pAddParam, pItsOwner);
-    }
+    updateTaxLines(pAddParam, pItsOwner);
   }
 
   /**
@@ -170,46 +167,53 @@ public class UtlSalesGoodsServiceLine<RS> {
           + pOwner.getItsId());
     String query = lazyGetQuerySalesInvoiceTaxes().replace(":ITSOWNER",
       pOwner.getItsId().toString());
-    int countUpdatedSitl = 0;
-    IRecordSet<RS> recordSet = null;
-    try {
-      recordSet = getSrvDatabase().retrieveRecords(query);
-      if (recordSet.moveToFirst()) {
-        do {
-          Long taxId = recordSet.getLong("TAXID");
-          Double totalTax = recordSet.getDouble("TOTALTAX");
-          SalesInvoiceTaxLine sit;
-          if (sitl.size() > countUpdatedSitl) {
-            sit = sitl.get(countUpdatedSitl);
-            countUpdatedSitl++;
-          } else {
-            sit = new SalesInvoiceTaxLine();
-            sit.setItsOwner(pOwner);
-            sit.setIsNew(true);
-            sit.setIdDatabaseBirth(this.srvOrm.getIdDatabase());
-          }
-          Tax tax = new Tax();
-          tax.setItsId(taxId);
-          sit.setTax(tax);
-          sit.setItsTotal(BigDecimal.valueOf(totalTax).setScale(
-            getSrvAccSettings().lazyGetAccSettings(pAddParam)
-              .getPricePrecision(), getSrvAccSettings()
-                .lazyGetAccSettings(pAddParam).getRoundingMode()));
-          if (sit.getIsNew()) {
-            getSrvOrm().insertEntity(pAddParam, sit);
-          } else {
-            getSrvOrm().updateEntity(pAddParam, sit);
-          }
-        } while (recordSet.moveToNext());
+    if (!pOwner.getCustomer().getIsForeigner() && getSrvAccSettings()
+      .lazyGetAccSettings(pAddParam).getIsExtractSalesTaxFromSales()) {
+      int countUpdatedSitl = 0;
+      IRecordSet<RS> recordSet = null;
+      try {
+        recordSet = getSrvDatabase().retrieveRecords(query);
+        if (recordSet.moveToFirst()) {
+          do {
+            Long taxId = recordSet.getLong("TAXID");
+            Double totalTax = recordSet.getDouble("TOTALTAX");
+            SalesInvoiceTaxLine sit;
+            if (sitl.size() > countUpdatedSitl) {
+              sit = sitl.get(countUpdatedSitl);
+              countUpdatedSitl++;
+            } else {
+              sit = new SalesInvoiceTaxLine();
+              sit.setItsOwner(pOwner);
+              sit.setIsNew(true);
+              sit.setIdDatabaseBirth(this.srvOrm.getIdDatabase());
+            }
+            Tax tax = new Tax();
+            tax.setItsId(taxId);
+            sit.setTax(tax);
+            sit.setItsTotal(BigDecimal.valueOf(totalTax).setScale(
+              getSrvAccSettings().lazyGetAccSettings(pAddParam)
+                .getPricePrecision(), getSrvAccSettings()
+                  .lazyGetAccSettings(pAddParam).getRoundingMode()));
+            if (sit.getIsNew()) {
+              getSrvOrm().insertEntity(pAddParam, sit);
+            } else {
+              getSrvOrm().updateEntity(pAddParam, sit);
+            }
+          } while (recordSet.moveToNext());
+        }
+      } finally {
+        if (recordSet != null) {
+          recordSet.close();
+        }
       }
-    } finally {
-      if (recordSet != null) {
-        recordSet.close();
+      if (countUpdatedSitl < sitl.size()) {
+        for (int j = countUpdatedSitl; j < sitl.size(); j++) {
+          getSrvOrm().deleteEntity(pAddParam, sitl.get(j));
+        }
       }
-    }
-    if (countUpdatedSitl < sitl.size()) {
-      for (int j = countUpdatedSitl; j < sitl.size(); j++) {
-        getSrvOrm().deleteEntity(pAddParam, sitl.get(j));
+    } else if (sitl.size() > 0) {
+      for (SalesInvoiceTaxLine sitln : sitl) {
+        getSrvOrm().deleteEntity(pAddParam, sitln);
       }
     }
   }

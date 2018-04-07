@@ -399,6 +399,7 @@
           <li>regState - String, if exist</li>
           <li>regCity - String, if exist</li>
           <li>regPhone - String, if exist</li>
+          <li>isForeigner - Boolean, not null, false default. If sales taxes must be omitted for this buyer/vendor.</li>
         </ul>
         constTypeCode() = 2004<br></br>
       </p>
@@ -854,6 +855,19 @@ where PAYMENTFROM.REVERSEDID is null and PAYMENTFROM.HASMADEACCENTRIES = 0 and S
       </pre>
 
       <h5>Method Sales Tax Accrual/Cash.</h5>
+
+      <p>Sales taxes imposed on the buyer that seller must collect and pay.
+        This is for case when buyer that bought goods/service "is in the country/state where this sales taxes must be paid".
+        Foreigners travelers can refund sales taxes when they leaves the country. E-Commerce is still the growing sphere business that often dials with foreigner buyers that bought goods in a WEB-shop
+        and have delivered them by mail. In that case overseas (foreigner) buyers must not pay "foreign" sales taxes.
+        To implements this logic DebtorCreditor has isForeigner property.
+        If DebtorCreditor is foreigner then sales taxes will be omitted for both sales (foreigner buyers) and purchase (foreigner vendors).
+        If you bought a merchandise from overseas then you have not to pay "foreign" sales taxes,
+        but you usually have to pay "native" sales taxes as if you bought this merchandise from the nearest shop.
+        If vendor in purchase invoice is marked as "foreigner" then sales taxes (native) will be omitted. 
+        Services Utl(Purchase/Sales)GoodsServiceLine/Prc(Purchase/Sales)(Invoice/Return)(Service)LineSave implements "omitting taxes if customer/vendor is foreign".
+      </p>
+
       <p>Models:</p>
       <p>Account itsId="SALES_TAX_PAYABLE", name="Sales Tax payable", normalBalanceType=CREDIT itsNumber="2310"
       Subaccounts - Tax</p>

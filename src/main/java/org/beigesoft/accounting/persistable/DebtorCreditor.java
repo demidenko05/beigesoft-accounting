@@ -79,6 +79,12 @@ public class DebtorCreditor extends ASubaccount {
   private String description;
 
   /**
+   * <p>Not null, false default.
+   * If sales taxes must be omitted for this buyer/vendor.</p>
+   **/
+  private Boolean isForeigner;
+
+  /**
    * <p>OOP friendly Constant of code type.</p>
    * @return 2004
    **/
@@ -264,5 +270,21 @@ public class DebtorCreditor extends ASubaccount {
   public final void setTaxIdentificationNumber(
     final String pTaxIdentificationNumber) {
     this.taxIdentificationNumber = pTaxIdentificationNumber;
+  }
+
+  /**
+   * <p>Getter for isForeigner.</p>
+   * @return Boolean
+   **/
+  public final Boolean getIsForeigner() {
+    return this.isForeigner;
+  }
+
+  /**
+   * <p>Setter for isForeigner.</p>
+   * @param pIsForeigner reference
+   **/
+  public final void setIsForeigner(final Boolean pIsForeigner) {
+    this.isForeigner = pIsForeigner;
   }
 }

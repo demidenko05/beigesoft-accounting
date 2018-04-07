@@ -98,10 +98,7 @@ public class UtlPurchaseGoodsServiceLine<RS> {
     pItsOwner.setItsTotal(pItsOwner.getSubtotal().
       add(pItsOwner.getTotalTaxes()));
     getSrvOrm().updateEntity(pAddParam, pItsOwner);
-    if (getSrvAccSettings().lazyGetAccSettings(pAddParam)
-      .getIsExtractSalesTaxFromPurchase()) {
-      updateTaxLines(pAddParam, pItsOwner);
-    }
+    updateTaxLines(pAddParam, pItsOwner);
   }
 
   /**
@@ -170,47 +167,54 @@ public class UtlPurchaseGoodsServiceLine<RS> {
     pit.setItsOwner(pItsOwner);
     List<PurchaseInvoiceTaxLine> pitl = getSrvOrm()
       .retrieveListForField(pAddParam, pit, "itsOwner");
-    String query = lazyGetQueryPurchaseInvoiceTaxes().replace(":ITSOWNER",
-      pItsOwner.getItsId().toString());
-    int countUpdatedSitl = 0;
-    IRecordSet<RS> recordSet = null;
-    try {
-      recordSet = getSrvDatabase().retrieveRecords(query);
-      if (recordSet.moveToFirst()) {
-        do {
-          Long taxId = recordSet.getLong("TAXID");
-          Double totalTax = recordSet.getDouble("TOTALTAX");
-          if (pitl.size() > countUpdatedSitl) {
-            pit = pitl.get(countUpdatedSitl);
-            countUpdatedSitl++;
-          } else {
-            pit = new PurchaseInvoiceTaxLine();
-            pit.setItsOwner(pItsOwner);
-            pit.setIsNew(true);
-            pit.setIdDatabaseBirth(this.srvOrm.getIdDatabase());
-          }
-          Tax tax = new Tax();
-          tax.setItsId(taxId);
-          pit.setTax(tax);
-          pit.setItsTotal(BigDecimal.valueOf(totalTax).setScale(
-            getSrvAccSettings().lazyGetAccSettings(pAddParam)
-              .getPricePrecision(), getSrvAccSettings()
-                .lazyGetAccSettings(pAddParam).getRoundingMode()));
-          if (pit.getIsNew()) {
-            getSrvOrm().insertEntity(pAddParam, pit);
-          } else {
-            getSrvOrm().updateEntity(pAddParam, pit);
-          }
-        } while (recordSet.moveToNext());
+    if (!pItsOwner.getVendor().getIsForeigner() && getSrvAccSettings()
+      .lazyGetAccSettings(pAddParam).getIsExtractSalesTaxFromPurchase()) {
+      String query = lazyGetQueryPurchaseInvoiceTaxes().replace(":ITSOWNER",
+        pItsOwner.getItsId().toString());
+      int countUpdatedSitl = 0;
+      IRecordSet<RS> recordSet = null;
+      try {
+        recordSet = getSrvDatabase().retrieveRecords(query);
+        if (recordSet.moveToFirst()) {
+          do {
+            Long taxId = recordSet.getLong("TAXID");
+            Double totalTax = recordSet.getDouble("TOTALTAX");
+            if (pitl.size() > countUpdatedSitl) {
+              pit = pitl.get(countUpdatedSitl);
+              countUpdatedSitl++;
+            } else {
+              pit = new PurchaseInvoiceTaxLine();
+              pit.setItsOwner(pItsOwner);
+              pit.setIsNew(true);
+              pit.setIdDatabaseBirth(this.srvOrm.getIdDatabase());
+            }
+            Tax tax = new Tax();
+            tax.setItsId(taxId);
+            pit.setTax(tax);
+            pit.setItsTotal(BigDecimal.valueOf(totalTax).setScale(
+              getSrvAccSettings().lazyGetAccSettings(pAddParam)
+                .getPricePrecision(), getSrvAccSettings()
+                  .lazyGetAccSettings(pAddParam).getRoundingMode()));
+            if (pit.getIsNew()) {
+              getSrvOrm().insertEntity(pAddParam, pit);
+            } else {
+              getSrvOrm().updateEntity(pAddParam, pit);
+            }
+          } while (recordSet.moveToNext());
+        }
+      } finally {
+        if (recordSet != null) {
+          recordSet.close();
+        }
       }
-    } finally {
-      if (recordSet != null) {
-        recordSet.close();
+      if (countUpdatedSitl < pitl.size()) {
+        for (int j = countUpdatedSitl; j < pitl.size(); j++) {
+          getSrvOrm().deleteEntity(pAddParam, pitl.get(j));
+        }
       }
-    }
-    if (countUpdatedSitl < pitl.size()) {
-      for (int j = countUpdatedSitl; j < pitl.size(); j++) {
-        getSrvOrm().deleteEntity(pAddParam, pitl.get(j));
+    } else if (pitl.size() > 0) {
+      for (PurchaseInvoiceTaxLine pitln : pitl) {
+        getSrvOrm().deleteEntity(pAddParam, pitln);
       }
     }
   }
