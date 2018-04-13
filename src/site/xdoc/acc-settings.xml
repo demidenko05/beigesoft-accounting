@@ -1398,7 +1398,7 @@ security.provider.11=org.bouncycastle.jce.provider.BouncyCastleProvider
   <p align="center"><img style="max-width: 100%" src="images/commandline2.png" /></p>
 </p>
 <p>On Ubuntu Linux and Mac OS account <b>root</b> is disabled, and your regular account is able to invoke <b>sudo</b> command, so do that above (only root part) as:
-  <pre>
+  <pre style="white-space: pre-wrap;">
 $ sudo useradd -m -U accountant
 $ sudo passwd accountant
 $ sudo mkdir /file-exch

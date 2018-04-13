@@ -101,14 +101,14 @@ If the property is merchandise bought for resale, the sales tax is part of the c
       <p>When bank account balance in your accounting system (software or book) is not same as in the bank (in the bank statement),
         then you have to make adjusting entries. This is called "bank reconciliation".
         For example yesterday you had received check for 500USD from customer "Firm A" and made accounting entry:
-        <pre>
+        <pre style="white-space: pre-wrap;">
 Debit CashInBank.Account#243443354 for 500USD Credit AccountsReceivable.FirmA for 500USD
         </pre>
         After that your bank account balance is 10000USD (in your accounting system).
         Today you have received the bank statement that is saying that the check was rejected and you was charged for 10USD additionally cause that "wrong check"
         and the balance is 9490USD.
         So you have to make two adjusting entries:
-        <pre>
+        <pre style="white-space: pre-wrap;">
 Credit CashInBank.Account#243443354 for 500USD Debit AccountsReceivable.FirmA for 500USD
 Credit CashInBank.Account#243443354 for 10USD Debit Expenses.BankExpenses for 10USD
         </pre>

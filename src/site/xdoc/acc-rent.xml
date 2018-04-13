@@ -34,12 +34,12 @@
   <p align="center"><img alt="Beige-Accounting rent occurred unpaid" style="max-width: 100%" src="images/rent-occurred-unpaid.png" /></p>
   <p>
     When Bob will paid rent for April, he will makes accounting entries:<br></br>
-    <pre>Debit Accrued Payable for Rent Credit Cash In Bank for 1000 USD</pre>
+    <pre style="white-space: pre-wrap;">Debit Accrued Payable for Rent Credit Cash In Bank for 1000 USD</pre>
   </p>
   <h4>Accounting of paid rent on time.</h4>
   <p>
     When Bob will paid rent on time, he will makes accounting entries:<br></br>
-    <pre>Debit Expenses for Rent Credit Cash In Bank for 1000 USD</pre>
+    <pre style="white-space: pre-wrap;">Debit Expenses for Rent Credit Cash In Bank for 1000 USD</pre>
   </p>
   <p>
     If according the law of your country rent expense is required to be capitalized then it's used asset account <b>1210 Inventory Capitalized Cost.Rent</b> instead of <b>Expenses.Rent</b>.

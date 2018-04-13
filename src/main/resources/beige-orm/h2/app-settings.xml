@@ -12,8 +12,8 @@
 <properties>
 <comment>App properties</comment>
 <entry key="title">Beige Accounting</entry>
-<entry key="databaseVersion">5</entry>
-<entry key="appVersion">1.1.5</entry>
+<entry key="databaseVersion">6</entry>
+<entry key="appVersion">1.1.6</entry>
 <entry key="useSubFolder">h2</entry>
 <entry key="jdbcDriverClass">org.h2.Driver</entry>
 <entry key="dataSourceClassName">org.h2.jdbcx.JdbcDataSource</entry>
