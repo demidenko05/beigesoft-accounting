@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
- Copyright (c) 2016 Beigesoft ™
+ Copyright (c) 2017 Beigesoft ™
  
  Licensed under the GNU General Public License (GPL), Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -11,8 +11,19 @@
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
 <comment>Correspondence of class types to id definition. ORDER is essential, the LAST value will be used.</comment>
-<entry key="org.beigesoft.persistable.AHasIdLong">bigint unsigned not null primary key</entry>
-<entry key="org.beigesoft.accounting.persistable.SubaccountLine">serial primary key</entry>
-<entry key="org.beigesoft.accounting.persistable.BalanceAt">serial primary key</entry>
+<!--Only ID by hand-->
+<entry key="org.beigesoft.accounting.persistable.base.ASubaccount">bigint unsigned not null primary key</entry>
+<entry key="org.beigesoft.accounting.persistable.base.ADrawItemSourcesLine">bigint unsigned not null primary key</entry>
+<entry key="org.beigesoft.accounting.persistable.AccEntriesSourcesLine">bigint unsigned not null primary key</entry>
+<entry key="org.beigesoft.accounting.persistable.AccSettings">bigint unsigned not null primary key</entry>
+<entry key="org.beigesoft.accounting.persistable.BalanceAtAllDirtyCheck">bigint unsigned not null primary key</entry>
+<entry key="org.beigesoft.accounting.persistable.Currency">bigint unsigned not null primary key</entry>
+<entry key="org.beigesoft.accounting.persistable.CogsMethod">bigint unsigned not null primary key</entry>
+<entry key="org.beigesoft.accounting.persistable.InvItemType">bigint unsigned not null primary key</entry>
+<entry key="org.beigesoft.accounting.persistable.ServicePurchasedCategory">bigint unsigned not null primary key</entry>
+<entry key="org.beigesoft.accounting.persistable.UnitOfMeasure">bigint unsigned not null primary key</entry>
+<entry key="org.beigesoft.accounting.persistable.WageTaxesMethod">bigint unsigned not null primary key</entry>
+<entry key="org.beigesoft.accounting.persistable.Warehouse">bigint unsigned not null primary key</entry>
+<entry key="org.beigesoft.accounting.persistable.WarehouseSite">bigint unsigned not null primary key</entry>
 </properties>
 

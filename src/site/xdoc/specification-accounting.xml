@@ -112,7 +112,7 @@
       
       <p>Persistable model Currency consist of:
         <ul>
-          <li>AHasNameIdLong fields</li>
+          <li>AHasNameIdLong fields (ID by hand)</li>
         </ul>
       </p>
       <p>Persistable model AccountingEntry consist of:
@@ -197,7 +197,7 @@
       </p>
       <p>Base model Subaccount consist of:
         <ul>
-          <li>AHasNameIdLong fields, implements IHasTypeCode</li>
+          <li>AHasNameIdLong fields, implements IHasTypeCode (ID by hand)</li>
           <li>itsVersion - Version, changed time algorithm cause check dirty of
             calculated from it (derived) records</li>
         </ul>
@@ -289,7 +289,7 @@
       and balancePrecision. balancePrecision uses just in balance report, it never round data in database.</p>
       <p>It consist of:
         <ul>
-          <li>itsId - Long, Not Null, PK</li>
+          <li>itsId - Long, Not Null, PK (ID by hand)</li>
           <li>itsVersion - Version, changed time algorithm.</li>
           <li>isExtractSalesTaxFromSales - Boolean, Not Null, if sales tax vendor sales taxes fields will be appeared in sales invoice, and taxes will be extracted into SalesTaxPayable</li>
           <li>isExtractSalesTaxFromPurchase - Boolean, Not Null, if sales tax vendor sales taxes fields will be appeared in purchase invoice, and taxes will be extracted into SalesTaxFromPurchase,
@@ -324,7 +324,7 @@
         and balancePrecision. balancePrecision uses just in balance report, it never round data in database.</p>
         Model AccEntriesSourcesLine consist of:
         <ul>
-          <li>itsId - Long, Not Null, PK</li>
+          <li>itsId - Long, Not Null, PK (ID by hand)</li>
           <li>itsVersion - Version, changed time algorithm</li>
           <li>sourceType - Integer, Not Null, source type code e.g. 1 - PurchaseInvoice</li>
           <li>setCode - String, Not Null, source set code for this sourceType, e.g. "NoSalesTaxsubAccInvItemCategory"
@@ -359,7 +359,7 @@
         </ul>
         Model CogsMethod consist of:
         <ul>
-          <li>itsId - Long, Not Null, PK</li>
+          <li>itsId - Long, Not Null, PK (ID by hand)</li>
           <li>itsVersion - Version, changed time algorithm cause check dirty of
             calculated from it (derived) records</li>
           <li>itsName - String, Not null, unchangeable, "FIFO perpetual"</li>
@@ -440,7 +440,7 @@
       </p>
       <p>Persistable model InvItemType consist of:
         <ul>
-          <li>AHasNameIdLongVersion fields</li>
+          <li>AHasNameIdLongVersion fields (ID by hand)</li>
         </ul>
         Merchandise or stock in trade,
         Raw materials, Work in process, Finished products, Supplies that physically
@@ -458,7 +458,7 @@
       </p>
       <p>UnitOfMeasure:
         <ul>
-          <li>AHasNameIdLongVersion fields.</li>
+          <li>AHasNameIdLongVersion fields (ID by hand).</li>
           <li>itsVersion - Version, changed time algorithm cause check dirty of
             calculated from it (derived) records</li>
           <li>itsName - string not null</li>
@@ -1467,7 +1467,7 @@ where BEGINNINGINVENTORYLINE.REVERSEDID is null and THEREST>0 and INVITEM=:INVIT
       </p>
       <p>Persistable model ServicePurchasedCategory consist of:
         <ul>
-          <li>AHasNameIdLong</li>
+          <li>AHasNameIdLong (ID by hand)</li>
           <li>expense - Expense, not null</li>
         </ul>
       </p>
@@ -1691,7 +1691,7 @@ from
       <b>Check dirty for all accounts method.</b>
       <p>Persistable model BalanceAtAllDirtyCheck consist of:
         <ul>
-          <li>AHasIdLong - fields there is only record with ID=1L</li>
+          <li>AHasIdLong - fields there is only record with ID=1L (ID by hand)</li>
           <li>currentBalanceDate - Date, Not Null (Initialized 01/01/1975.),
               date of current calculated and stored balances
               for all accounts e.g. 1 Feb, it is dirty when it's less than
