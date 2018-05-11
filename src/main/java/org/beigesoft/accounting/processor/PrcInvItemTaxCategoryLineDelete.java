@@ -20,7 +20,6 @@ import org.beigesoft.service.IEntityProcessor;
 import org.beigesoft.service.ISrvOrm;
 import org.beigesoft.accounting.persistable.InvItemTaxCategoryLine;
 import org.beigesoft.accounting.persistable.InvItemTaxCategory;
-import org.beigesoft.accounting.persistable.InvItem;
 import org.beigesoft.accounting.service.ISrvAccSettings;
 
 /**
@@ -61,14 +60,14 @@ public class PrcInvItemTaxCategoryLineDelete<RS>
       .retrieveEntity(pAddParam, pEntity.getItsOwner()));
     // optimistic locking (dirty check):
     Long ownerVersion = Long.valueOf(pRequestData
-      .getParameter(InvItem.class.getSimpleName()
+      .getParameter(InvItemTaxCategory.class.getSimpleName()
         + ".ownerVersion"));
     pEntity.getItsOwner().setItsVersion(ownerVersion);
     getSrvOrm().deleteEntity(pAddParam, pEntity);
     updateInvItemTaxCategory(pAddParam, pEntity.getItsOwner());
     pAddParam.put("nextEntity", pEntity.getItsOwner());
     pAddParam.put("nameOwnerEntity",
-      InvItem.class.getSimpleName());
+      InvItemTaxCategory.class.getSimpleName());
     pRequestData.setAttribute("accSettings",
       this.srvAccSettings.lazyGetAccSettings(pAddParam));
     return null;

@@ -38,7 +38,7 @@ public class PrcSalesReturnLineGfr<RS>
    * @param pAddParam additional param, e.g. return this line's
    * document in "nextEntity" for farther process
    * @param pRequestData Request Data
-   * @param pEntity Entity to process
+   * @param pEntityPb Entity to process
    * @return Entity processed for farther process or null
    * @throws Exception - an exception
    **/
