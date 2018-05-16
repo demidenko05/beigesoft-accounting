@@ -12,6 +12,11 @@
 <properties>
 <comment>Base replicator/persister properties</comment>
 <entry key="classes">org.beigesoft.persistable.DatabaseInfo,<!--make sure ORDER of entities!!!-->
+  org.beigesoft.persistable.Languages,
+  org.beigesoft.persistable.Countries,
+  org.beigesoft.persistable.DecimalSeparator,
+  org.beigesoft.persistable.DecimalGroupSeparator,
+  org.beigesoft.persistable.LangPreferences,
   org.beigesoft.accounting.persistable.Expense,
   org.beigesoft.accounting.persistable.ExpenseUsed,
   org.beigesoft.accounting.persistable.Account,

@@ -23,4 +23,26 @@ import org.beigesoft.persistable.AHasNameIdLongVersion;
  */
 public class Currency extends AHasNameIdLongVersion {
 
+  /**
+   * <p>Sign e.g. $</p>
+   **/
+  private String itsSign;
+
+  //Simple getters and setters:
+
+  /**
+   * <p>Getter for itsSign.</p>
+   * @return String
+   **/
+  public final String getItsSign() {
+    return this.itsSign;
+  }
+
+  /**
+   * <p>Setter for itsSign.</p>
+   * @param pItsSign reference
+   **/
+  public final void setItsSign(final String pItsSign) {
+    this.itsSign = pItsSign;
+  }
 }

@@ -113,6 +113,7 @@
       <p>Persistable model Currency consist of:
         <ul>
           <li>AHasNameIdLong fields (ID by hand)</li>
+          <li>itsSign - String(6) nullable, e.g. $</li>
         </ul>
       </p>
       <p>Persistable model AccountingEntry consist of:

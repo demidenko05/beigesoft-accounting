@@ -12,6 +12,7 @@
 <properties>
 <comment>Correspondence of class types to id definition. ORDER is essential, the LAST value will be used.</comment>
 <!--Only ID by hand-->
+<entry key="org.beigesoft.persistable.AI18nFeature">char(6) not null primary key</entry>
 <entry key="org.beigesoft.accounting.persistable.base.ASubaccount">bigint unsigned not null primary key</entry>
 <entry key="org.beigesoft.accounting.persistable.base.ADrawItemSourcesLine">bigint unsigned not null primary key</entry>
 <entry key="org.beigesoft.accounting.persistable.AccEntriesSourcesLine">bigint unsigned not null primary key</entry>
