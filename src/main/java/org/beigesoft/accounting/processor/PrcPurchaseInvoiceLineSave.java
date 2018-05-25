@@ -177,8 +177,6 @@ public class PrcPurchaseInvoiceLineSave<RS>
         .updateOwner(pAddParam, pEntity.getItsOwner());
       pAddParam.put("nextEntity", pEntity.getItsOwner());
       pAddParam.put("nameOwnerEntity", PurchaseInvoice.class.getSimpleName());
-      pRequestData.setAttribute("accSettings",
-        this.srvAccSettings.lazyGetAccSettings(pAddParam));
       return null;
     } else {
       throw new ExceptionWithCode(ExceptionWithCode.FORBIDDEN,

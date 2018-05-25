@@ -15,6 +15,8 @@ package org.beigesoft.accounting.holder;
 import java.util.Map;
 import java.util.HashMap;
 
+import org.beigesoft.holder.IHolderForClassByName;
+import org.beigesoft.orm.processor.PrcEntitiesPage;
 import org.beigesoft.accounting.persistable.Account;
 import org.beigesoft.accounting.persistable.AdditionCostLine;
 import org.beigesoft.accounting.persistable.SubaccountLine;
@@ -22,8 +24,6 @@ import org.beigesoft.accounting.persistable.PrepaymentTo;
 import org.beigesoft.accounting.persistable.PrepaymentFrom;
 import org.beigesoft.accounting.persistable.PaymentTo;
 import org.beigesoft.accounting.persistable.PaymentFrom;
-import org.beigesoft.holder.IHolderForClassByName;
-import org.beigesoft.accounting.processor.PrcAccEntitiesPage;
 import org.beigesoft.accounting.processor.PrcPageWithSubaccTypes;
 
 /**
@@ -67,7 +67,7 @@ public class HldAccProcessorNames
             || pClass == Account.class) {
         return PrcPageWithSubaccTypes.class.getSimpleName();
       } else {
-        return PrcAccEntitiesPage.class.getSimpleName();
+        return PrcEntitiesPage.class.getSimpleName();
       }
     }
     if (this.hldAddProcessorNames != null) {

@@ -30,37 +30,22 @@ import org.beigesoft.settings.IMngSettings;
 import org.beigesoft.service.ISrvOrm;
 import org.beigesoft.service.ISrvDatabase;
 import org.beigesoft.orm.processor.PrcEntityPbDelete;
-import org.beigesoft.orm.processor.PrcEntityDelete;
 import org.beigesoft.orm.processor.PrcEntityFfolDelete;
 import org.beigesoft.orm.processor.PrcEntityFfolSave;
-import org.beigesoft.orm.processor.PrcEntityFolDelete;
 import org.beigesoft.orm.processor.PrcEntityFolSave;
 import org.beigesoft.orm.processor.PrcEntityPbCopy;
 import org.beigesoft.orm.processor.PrcEntityCopy;
-import org.beigesoft.orm.processor.PrcEntityPbSave;
 import org.beigesoft.orm.processor.PrcEmailMsgSave;
-import org.beigesoft.orm.processor.PrcEntitySave;
 import org.beigesoft.orm.processor.PrcEntityRetrieve;
 import org.beigesoft.orm.processor.PrcEntityPbEditDelete;
 import org.beigesoft.orm.processor.PrcEntityCreate;
 import org.beigesoft.orm.factory.FctBnEntitiesProcessors;
-import org.beigesoft.accounting.processor.PrcAccEntityPbDelete;
-import org.beigesoft.accounting.processor.PrcAccEntityDelete;
-import org.beigesoft.accounting.processor.PrcAccEntityFolDelete;
-import org.beigesoft.accounting.processor.PrcAccEntityFolSave;
 import org.beigesoft.accounting.processor.PrcAccEntityPbWithSubaccCopy;
-import org.beigesoft.accounting.processor.PrcAccEntityPbCopy;
 import org.beigesoft.accounting.processor.PrcAccEntityWithSubaccCopy;
-import org.beigesoft.accounting.processor.PrcAccEntityCopy;
-import org.beigesoft.accounting.processor.PrcAccEntityPbSave;
-import org.beigesoft.accounting.processor.PrcAccEntitySave;
-import org.beigesoft.accounting.processor.PrcAccEntityRetrieve;
 import org.beigesoft.accounting.processor.PrcAccEntityWithSubaccRetrieve;
-import org.beigesoft.accounting.processor.PrcAccEntityPbEditDelete;
 import org.beigesoft.accounting.processor.PrcAccEntityPbWithSubaccEditDelete;
 import org.beigesoft.accounting.processor.PrcSubaccountLineCreate;
 import org.beigesoft.accounting.processor.PrcAccEntityWithSubaccCreate;
-import org.beigesoft.accounting.processor.PrcAccEntityCreate;
 import org.beigesoft.accounting.processor.PrcAccDocRetrieve;
 import org.beigesoft.accounting.processor.PrcAccDocWithSubaccRetrieve;
 import org.beigesoft.accounting.processor.PrcAccDocCogsRetrieve;
@@ -116,7 +101,6 @@ import org.beigesoft.accounting.processor.PrcUsedMaterialLineCopy;
 import org.beigesoft.accounting.processor.PrcUsedMaterialLineGfr;
 import org.beigesoft.accounting.processor.PrcPurchaseReturnSave;
 import org.beigesoft.accounting.processor.PrcPurchaseReturnLineSave;
-import org.beigesoft.accounting.processor.PrcPurchaseReturnLineCreate;
 import org.beigesoft.accounting.processor.PrcPurchaseReturnLineCopy;
 import org.beigesoft.accounting.processor.PrcPurchaseReturnLineGfr;
 import org.beigesoft.accounting.processor.PrcBeginningInventorySave;
@@ -315,9 +299,6 @@ public class FctBnAccEntitiesProcessors<RS>
         proc = this.processorsMap.get(pBeanName);
         if (proc == null) {
           if (pBeanName
-            .equals(PrcAccEntityRetrieve.class.getSimpleName())) {
-            proc = lazyGetPrcAccEntityRetrieve(pAddParam);
-          } else if (pBeanName
             .equals(PrcAccEntryCopy.class.getSimpleName())) {
             proc = lazyGetPrcAccEntryCopy(pAddParam);
           } else if (pBeanName
@@ -348,12 +329,6 @@ public class FctBnAccEntitiesProcessors<RS>
           } else if (pBeanName
             .equals(PrcAccEntityWithSubaccCreate.class.getSimpleName())) {
             proc = createPutPrcAccEntityWithSubaccCreate(pAddParam);
-          } else if (pBeanName
-            .equals(PrcAccEntityCreate.class.getSimpleName())) {
-            proc = lazyGetPrcAccEntityCreate(pAddParam);
-          } else if (pBeanName
-            .equals(PrcAccEntityDelete.class.getSimpleName())) {
-            proc = createPutPrcAccEntityDelete(pAddParam);
           } else if (pBeanName.equals(PrcSalesInvoiceServiceLineDelete
             .class.getSimpleName())) {
             proc = createPutPrcSalesInvoiceServiceLineDelete(pAddParam);
@@ -361,29 +336,17 @@ public class FctBnAccEntitiesProcessors<RS>
             .class.getSimpleName())) {
             proc = createPutPrcPurchaseInvoiceServiceLineDelete(pAddParam);
           } else if (pBeanName
-            .equals(PrcAccEntityPbDelete.class.getSimpleName())) {
-            proc = lazyGetPrcAccEntityPbDelete(pAddParam);
-          } else if (pBeanName
             .equals(PrcEntityFfolDelete.class.getSimpleName())) {
             proc = createPutPrcEntityFfolDelete(pAddParam);
           } else if (pBeanName
             .equals(PrcEntityFfolSave.class.getSimpleName())) {
             proc = createPutPrcEntityFfolSave(pAddParam);
           } else if (pBeanName
-            .equals(PrcAccEntityFolDelete.class.getSimpleName())) {
-            proc = createPutPrcAccEntityFolDelete(pAddParam);
-          } else if (pBeanName
             .equals(PrcAccSettingsLineSave.class.getSimpleName())) {
             proc = lazyGetPrcAccSettingsLineSave(pAddParam);
           } else if (pBeanName
-            .equals(PrcAccEntityFolSave.class.getSimpleName())) {
-            proc = lazyGetPrcAccEntityFolSave(pAddParam);
-          } else if (pBeanName
             .equals(PrcPurchaseReturnLineGfr.class.getSimpleName())) {
             proc = lazyGetPrcPurchaseReturnLineGfr(pAddParam);
-          } else if (pBeanName
-            .equals(PrcPurchaseReturnLineCreate.class.getSimpleName())) {
-            proc = lazyGetPrcPurchaseReturnLineCreate(pAddParam);
           } else if (pBeanName
             .equals(PrcPurchaseReturnLineCopy.class.getSimpleName())) {
             proc = lazyGetPrcPurchaseReturnLineCopy(pAddParam);
@@ -460,20 +423,8 @@ public class FctBnAccEntitiesProcessors<RS>
             .equals(PrcAccDocGetForReverse.class.getSimpleName())) {
             proc = lazyGetPrcAccDocGetForReverse(pAddParam);
           } else if (pBeanName
-            .equals(PrcAccEntityPbCopy.class.getSimpleName())) {
-            proc = lazyGetPrcAccEntityPbCopy(pAddParam);
-          } else if (pBeanName
             .equals(PrcAccEntityWithSubaccCopy.class.getSimpleName())) {
             proc = createPutPrcAccEntityWithSubaccCopy(pAddParam);
-          } else if (pBeanName
-            .equals(PrcAccEntityCopy.class.getSimpleName())) {
-            proc = lazyGetPrcAccEntityCopy(pAddParam);
-          } else if (pBeanName
-            .equals(PrcAccEntityPbSave.class.getSimpleName())) {
-            proc = createPutPrcAccEntityPbSave(pAddParam);
-          } else if (pBeanName
-            .equals(PrcAccEntityPbEditDelete.class.getSimpleName())) {
-            proc = lazyGetPrcAccEntityPbEditDelete(pAddParam);
           } else if (pBeanName
             .equals(PrcAccEntityPbWithSubaccEditDelete.class.getSimpleName())) {
             proc = createPutPrcAccEntityPbWithSubaccEditDelete(pAddParam);
@@ -609,18 +560,20 @@ public class FctBnAccEntitiesProcessors<RS>
           } else if (pBeanName
             .equals(PrcPrepaymentToCopy.class.getSimpleName())) {
             proc = createPutPrcPrepaymentToCopy(pAddParam);
-          } else if (pBeanName
-            .equals(PrcAccEntitySave.class.getSimpleName())) {
-            proc = createPutPrcAccEntitySave(pAddParam);
-          } else if (this.additionalEpf != null) {
-            proc = this.additionalEpf.lazyGet(pAddParam, pBeanName);
+          } else {
+            proc = this.fctBnEntitiesProcessors.lazyGet(pAddParam, pBeanName);
           }
         }
       }
     }
     if (proc == null) {
-      throw new ExceptionWithCode(ExceptionWithCode.CONFIGURATION_MISTAKE,
-        "There is no entity processor with name " + pBeanName);
+      if (this.additionalEpf != null) {
+        proc = this.additionalEpf.lazyGet(pAddParam, pBeanName);
+      }
+      if (proc == null) {
+        throw new ExceptionWithCode(ExceptionWithCode.CONFIGURATION_MISTAKE,
+          "There is no entity processor with name " + pBeanName);
+      }
     }
     return proc;
   }
@@ -652,7 +605,8 @@ public class FctBnAccEntitiesProcessors<RS>
     IEntityProcessor<AReplExcludeAccountsDebitCredit, Long>
       prcAccEntityFolSave =
         (IEntityProcessor<AReplExcludeAccountsDebitCredit, Long>)
-          lazyGetPrcAccEntityFolSave(pAddParam);
+          this.fctBnEntitiesProcessors
+            .lazyGet(pAddParam, PrcEntityFolSave.class.getSimpleName());
     proc.setPrcEntityFolSave(prcAccEntityFolSave);
     //assigning fully initialized object:
     this.processorsMap
@@ -712,7 +666,8 @@ public class FctBnAccEntitiesProcessors<RS>
     @SuppressWarnings("unchecked")
     IEntityProcessor<SubaccountLine, Long> procDlg =
       (IEntityProcessor<SubaccountLine, Long>)
-        lazyGetPrcAccEntityCreate(pAddParam);
+        this.fctBnEntitiesProcessors
+          .lazyGet(pAddParam, PrcEntityCreate.class.getSimpleName());
     proc.setPrcAccEntityCreate(procDlg);
     proc.setSrvTypeCode(getSrvTypeCode());
     proc.setSrvOrm(getSrvOrm());
@@ -734,44 +689,15 @@ public class FctBnAccEntitiesProcessors<RS>
     PrcAccEntityWithSubaccCreate<RS, IHasId<Object>, Object> proc =
       new PrcAccEntityWithSubaccCreate<RS, IHasId<Object>, Object>();
     @SuppressWarnings("unchecked")
-    PrcAccEntityCreate<RS, IHasId<Object>, Object> procDlg =
-      lazyGetPrcAccEntityCreate(pAddParam);
+    PrcEntityCreate<RS, IHasId<Object>, Object> procDlg =
+      (PrcEntityCreate<RS, IHasId<Object>, Object>)
+        this.fctBnEntitiesProcessors
+          .lazyGet(pAddParam, PrcEntityCreate.class.getSimpleName());
     proc.setPrcAccEntityCreate(procDlg);
     proc.setSrvTypeCode(getSrvTypeCode());
     //assigning fully initialized object:
     this.processorsMap
       .put(PrcAccEntityWithSubaccCreate.class.getSimpleName(), proc);
-    return proc;
-  }
-
-  /**
-   * <p>Lazy get PrcAccEntityCreate.</p>
-   * @param pAddParam additional param
-   * @return requested PrcAccEntityCreate
-   * @throws Exception - an exception
-   */
-  protected final PrcAccEntityCreate
-    lazyGetPrcAccEntityCreate(
-      final Map<String, Object> pAddParam) throws Exception {
-    @SuppressWarnings("unchecked")
-    PrcAccEntityCreate<RS, IHasId<Object>, Object> proc =
-      (PrcAccEntityCreate<RS, IHasId<Object>, Object>)
-        this.processorsMap
-          .get(PrcAccEntityCreate.class.getSimpleName());
-    if (proc == null) {
-      proc =
-        new PrcAccEntityCreate<RS, IHasId<Object>, Object>();
-      proc.setSrvAccSettings(getSrvAccSettings());
-      @SuppressWarnings("unchecked")
-      PrcEntityCreate<RS, IHasId<Object>, Object> procDlg =
-        (PrcEntityCreate<RS, IHasId<Object>, Object>)
-          this.fctBnEntitiesProcessors
-            .lazyGet(pAddParam, PrcEntityCreate.class.getSimpleName());
-      proc.setPrcEntityCreate(procDlg);
-      //assigning fully initialized object:
-      this.processorsMap
-        .put(PrcAccEntityCreate.class.getSimpleName(), proc);
-    }
     return proc;
   }
 
@@ -789,7 +715,8 @@ public class FctBnAccEntitiesProcessors<RS>
     @SuppressWarnings("unchecked")
     IEntityProcessor<SalesInvoiceServiceLine, Long> procDlg =
       (IEntityProcessor<SalesInvoiceServiceLine, Long>)
-        lazyGetPrcAccEntityPbDelete(pAddParam);
+        this.fctBnEntitiesProcessors
+          .lazyGet(pAddParam, PrcEntityPbDelete.class.getSimpleName());
     proc.setSrvOrm(getSrvOrm());
     proc.setPrcAccEntityPbDelete(procDlg);
     proc.setUtlSalesGoodsServiceLine(
@@ -814,7 +741,8 @@ public class FctBnAccEntitiesProcessors<RS>
     @SuppressWarnings("unchecked")
     IEntityProcessor<PurchaseInvoiceServiceLine, Long> procDlg =
       (IEntityProcessor<PurchaseInvoiceServiceLine, Long>)
-        lazyGetPrcAccEntityPbDelete(pAddParam);
+        this.fctBnEntitiesProcessors
+          .lazyGet(pAddParam, PrcEntityPbDelete.class.getSimpleName());
     proc.setSrvOrm(getSrvOrm());
     proc.setPrcAccEntityPbDelete(procDlg);
     proc.setUtlPurchaseGoodsServiceLine(
@@ -822,60 +750,6 @@ public class FctBnAccEntitiesProcessors<RS>
     //assigning fully initialized object:
     this.processorsMap
       .put(PrcPurchaseInvoiceServiceLineDelete.class.getSimpleName(), proc);
-    return proc;
-  }
-
-  /**
-   * <p>Get PrcAccEntityPbDelete (create and put into map).</p>
-   * @param pAddParam additional param
-   * @return requested PrcAccEntityPbDelete
-   * @throws Exception - an exception
-   */
-  protected final PrcAccEntityPbDelete
-    lazyGetPrcAccEntityPbDelete(
-      final Map<String, Object> pAddParam) throws Exception {
-    @SuppressWarnings("unchecked")
-    PrcAccEntityPbDelete<RS, IPersistableBase> proc =
-      (PrcAccEntityPbDelete<RS, IPersistableBase>)
-        this.processorsMap
-          .get(PrcAccEntityPbDelete.class.getSimpleName());
-    if (proc == null) {
-      proc = new PrcAccEntityPbDelete<RS, IPersistableBase>();
-      proc.setSrvAccSettings(getSrvAccSettings());
-      @SuppressWarnings("unchecked")
-      PrcEntityPbDelete<RS, IPersistableBase> procDlg =
-        (PrcEntityPbDelete<RS, IPersistableBase>)
-          this.fctBnEntitiesProcessors
-            .lazyGet(pAddParam, PrcEntityPbDelete.class.getSimpleName());
-      proc.setPrcEntityPbDelete(procDlg);
-      //assigning fully initialized object:
-      this.processorsMap
-        .put(PrcAccEntityPbDelete.class.getSimpleName(), proc);
-    }
-    return proc;
-  }
-
-  /**
-   * <p>Get PrcAccEntityDelete (create and put into map).</p>
-   * @param pAddParam additional param
-   * @return requested PrcAccEntityDelete
-   * @throws Exception - an exception
-   */
-  protected final PrcAccEntityDelete<RS, IHasId<Object>, Object>
-    createPutPrcAccEntityDelete(
-      final Map<String, Object> pAddParam) throws Exception {
-    PrcAccEntityDelete<RS, IHasId<Object>, Object> proc =
-      new PrcAccEntityDelete<RS, IHasId<Object>, Object>();
-    proc.setSrvAccSettings(getSrvAccSettings());
-    @SuppressWarnings("unchecked")
-    PrcEntityDelete<RS, IHasId<Object>, Object> procDlg =
-      (PrcEntityDelete<RS, IHasId<Object>, Object>)
-        this.fctBnEntitiesProcessors
-          .lazyGet(pAddParam, PrcEntityDelete.class.getSimpleName());
-    proc.setPrcEntityDelete(procDlg);
-    //assigning fully initialized object:
-    this.processorsMap
-      .put(PrcAccEntityDelete.class.getSimpleName(), proc);
     return proc;
   }
 
@@ -920,30 +794,6 @@ public class FctBnAccEntitiesProcessors<RS>
   }
 
   /**
-   * <p>Get PrcAccEntityFolDelete (create and put into map).</p>
-   * @param pAddParam additional param
-   * @return requested PrcAccEntityFolDelete
-   * @throws Exception - an exception
-   */
-  protected final PrcAccEntityFolDelete<RS, IHasId<Object>, Object>
-    createPutPrcAccEntityFolDelete(
-      final Map<String, Object> pAddParam) throws Exception {
-    PrcAccEntityFolDelete<RS, IHasId<Object>, Object> proc =
-      new PrcAccEntityFolDelete<RS, IHasId<Object>, Object>();
-    proc.setSrvAccSettings(getSrvAccSettings());
-    @SuppressWarnings("unchecked")
-    PrcEntityFolDelete<RS, IHasId<Object>, Object> procDlg =
-      (PrcEntityFolDelete<RS, IHasId<Object>, Object>)
-        this.fctBnEntitiesProcessors
-          .lazyGet(pAddParam, PrcEntityFolDelete.class.getSimpleName());
-    proc.setPrcEntityFolDelete(procDlg);
-    //assigning fully initialized object:
-    this.processorsMap
-      .put(PrcAccEntityFolDelete.class.getSimpleName(), proc);
-    return proc;
-  }
-
-  /**
    * <p>Lazy get PrcAccSettingsLineSave.</p>
    * @param pAddParam additional param
    * @return requested PrcAccSettingsLineSave
@@ -974,36 +824,6 @@ public class FctBnAccEntitiesProcessors<RS>
   }
 
   /**
-   * <p>Lazy get PrcAccEntityFolSave.</p>
-   * @param pAddParam additional param
-   * @return requested PrcAccEntityFolSave
-   * @throws Exception - an exception
-   */
-  protected final PrcAccEntityFolSave
-    lazyGetPrcAccEntityFolSave(
-      final Map<String, Object> pAddParam) throws Exception {
-    @SuppressWarnings("unchecked")
-    PrcAccEntityFolSave<RS, IHasId<Object>, Object> proc =
-      (PrcAccEntityFolSave<RS, IHasId<Object>, Object>)
-        this.processorsMap
-          .get(PrcAccEntityFolSave.class.getSimpleName());
-    if (proc == null) {
-      proc = new PrcAccEntityFolSave<RS, IHasId<Object>, Object>();
-      proc.setSrvAccSettings(getSrvAccSettings());
-      @SuppressWarnings("unchecked")
-      PrcEntityFolSave<RS, IHasId<Object>, Object> procDlg =
-        (PrcEntityFolSave<RS, IHasId<Object>, Object>)
-          this.fctBnEntitiesProcessors
-            .lazyGet(pAddParam, PrcEntityFolSave.class.getSimpleName());
-      proc.setPrcEntityFolSave(procDlg);
-      //assigning fully initialized object:
-      this.processorsMap
-        .put(PrcAccEntityFolSave.class.getSimpleName(), proc);
-    }
-    return proc;
-  }
-
-  /**
    * <p>Get PrcPurchaseReturnLineGfr (create and put into map).</p>
    * @param pAddParam additional param
    * @return requested PrcPurchaseReturnLineGfr
@@ -1020,39 +840,14 @@ public class FctBnAccEntitiesProcessors<RS>
     if (proc == null) {
       proc = new PrcPurchaseReturnLineGfr<RS>();
       @SuppressWarnings("unchecked")
-      PrcAccEntityPbCopy<RS, PurchaseReturnLine> procDlg =
-        lazyGetPrcAccEntityPbCopy(pAddParam);
+      PrcEntityPbCopy<RS, PurchaseReturnLine> procDlg =
+        (PrcEntityPbCopy<RS, PurchaseReturnLine>)
+          this.fctBnEntitiesProcessors
+            .lazyGet(pAddParam, PrcEntityPbCopy.class.getSimpleName());
       proc.setPrcAccEntityPbCopy(procDlg);
       //assigning fully initialized object:
       this.processorsMap
         .put(PrcPurchaseReturnLineGfr.class.getSimpleName(), proc);
-    }
-    return proc;
-  }
-
-  /**
-   * <p>Get PrcPurchaseReturnLineCreate (create and put into map).</p>
-   * @param pAddParam additional param
-   * @return requested PrcPurchaseReturnLineCreate
-   * @throws Exception - an exception
-   */
-  protected final PrcPurchaseReturnLineCreate
-    lazyGetPrcPurchaseReturnLineCreate(
-      final Map<String, Object> pAddParam) throws Exception {
-    @SuppressWarnings("unchecked")
-    PrcPurchaseReturnLineCreate<RS> proc =
-      (PrcPurchaseReturnLineCreate<RS>)
-        this.processorsMap
-          .get(PrcPurchaseReturnLineCreate.class.getSimpleName());
-    if (proc == null) {
-      proc = new PrcPurchaseReturnLineCreate<RS>();
-      @SuppressWarnings("rawtypes")
-      PrcAccEntityCreate procDlg =
-        lazyGetPrcAccEntityCreate(pAddParam);
-      proc.setPrcAccEntityCreate(procDlg);
-      //assigning fully initialized object:
-      this.processorsMap
-        .put(PrcPurchaseReturnLineCreate.class.getSimpleName(), proc);
     }
     return proc;
   }
@@ -1074,8 +869,10 @@ public class FctBnAccEntitiesProcessors<RS>
     if (proc == null) {
       proc = new PrcPurchaseReturnLineCopy<RS>();
       @SuppressWarnings("unchecked")
-      PrcAccEntityPbCopy<RS, PurchaseReturnLine> procDlg =
-        lazyGetPrcAccEntityPbCopy(pAddParam);
+      PrcEntityPbCopy<RS, PurchaseReturnLine> procDlg =
+        (PrcEntityPbCopy<RS, PurchaseReturnLine>)
+          this.fctBnEntitiesProcessors
+            .lazyGet(pAddParam, PrcEntityPbCopy.class.getSimpleName());
       proc.setPrcAccEntityPbCopy(procDlg);
       //assigning fully initialized object:
       this.processorsMap
@@ -1101,8 +898,10 @@ public class FctBnAccEntitiesProcessors<RS>
     if (proc == null) {
       proc = new PrcSalesReturnLineGfr<RS>();
       @SuppressWarnings("unchecked")
-      PrcAccEntityPbCopy<RS, SalesReturnLine> procDlg =
-        lazyGetPrcAccEntityPbCopy(pAddParam);
+      PrcEntityPbCopy<RS, SalesReturnLine> procDlg =
+        (PrcEntityPbCopy<RS, SalesReturnLine>)
+          this.fctBnEntitiesProcessors
+            .lazyGet(pAddParam, PrcEntityPbCopy.class.getSimpleName());
       proc.setPrcAccEntityPbCopy(procDlg);
       //assigning fully initialized object:
       this.processorsMap
@@ -1128,8 +927,10 @@ public class FctBnAccEntitiesProcessors<RS>
     if (proc == null) {
       proc = new PrcSalesReturnLineCopy<RS>();
       @SuppressWarnings("unchecked")
-      PrcAccEntityPbCopy<RS, SalesReturnLine> procDlg =
-        lazyGetPrcAccEntityPbCopy(pAddParam);
+      PrcEntityPbCopy<RS, SalesReturnLine> procDlg =
+        (PrcEntityPbCopy<RS, SalesReturnLine>)
+          this.fctBnEntitiesProcessors
+            .lazyGet(pAddParam, PrcEntityPbCopy.class.getSimpleName());
       proc.setPrcAccEntityPbCopy(procDlg);
       //assigning fully initialized object:
       this.processorsMap
@@ -1155,8 +956,10 @@ public class FctBnAccEntitiesProcessors<RS>
     if (proc == null) {
       proc = new PrcUsedMaterialLineGfr<RS>();
       @SuppressWarnings("unchecked")
-      PrcAccEntityPbCopy<RS, UsedMaterialLine> procDlg =
-        lazyGetPrcAccEntityPbCopy(pAddParam);
+      PrcEntityPbCopy<RS, UsedMaterialLine> procDlg =
+        (PrcEntityPbCopy<RS, UsedMaterialLine>)
+          this.fctBnEntitiesProcessors
+            .lazyGet(pAddParam, PrcEntityPbCopy.class.getSimpleName());
       proc.setPrcAccEntityPbCopy(procDlg);
       //assigning fully initialized object:
       this.processorsMap
@@ -1182,8 +985,10 @@ public class FctBnAccEntitiesProcessors<RS>
     if (proc == null) {
       proc = new PrcUsedMaterialLineCopy<RS>();
       @SuppressWarnings("unchecked")
-      PrcAccEntityPbCopy<RS, UsedMaterialLine> procDlg =
-        lazyGetPrcAccEntityPbCopy(pAddParam);
+      PrcEntityPbCopy<RS, UsedMaterialLine> procDlg =
+        (PrcEntityPbCopy<RS, UsedMaterialLine>)
+          this.fctBnEntitiesProcessors
+            .lazyGet(pAddParam, PrcEntityPbCopy.class.getSimpleName());
       proc.setPrcAccEntityPbCopy(procDlg);
       //assigning fully initialized object:
       this.processorsMap
@@ -1207,8 +1012,7 @@ public class FctBnAccEntitiesProcessors<RS>
       this.processorsMap
         .get(PrcMoveItemsLineSave.class.getSimpleName());
     if (proc == null) {
-      proc =
-        new PrcMoveItemsLineSave<RS>();
+      proc = new PrcMoveItemsLineSave<RS>();
       proc.setSrvAccSettings(getSrvAccSettings());
       proc.setSrvOrm(getSrvOrm());
       proc.setSrvWarehouseEntry(getSrvWarehouseEntry());
@@ -1234,8 +1038,7 @@ public class FctBnAccEntitiesProcessors<RS>
       this.processorsMap
         .get(PrcUsedMaterialLineSave.class.getSimpleName());
     if (proc == null) {
-      proc =
-        new PrcUsedMaterialLineSave<RS>();
+      proc = new PrcUsedMaterialLineSave<RS>();
       proc.setSrvAccSettings(getSrvAccSettings());
       proc.setSrvOrm(getSrvOrm());
       proc.setSrvWarehouseEntry(getSrvWarehouseEntry());
@@ -1265,8 +1068,10 @@ public class FctBnAccEntitiesProcessors<RS>
     if (proc == null) {
       proc = new PrcGoodsLossLineGfr<RS>();
       @SuppressWarnings("unchecked")
-      PrcAccEntityPbCopy<RS, GoodsLossLine> procDlg =
-        lazyGetPrcAccEntityPbCopy(pAddParam);
+      PrcEntityPbCopy<RS, GoodsLossLine> procDlg =
+        (PrcEntityPbCopy<RS, GoodsLossLine>)
+          this.fctBnEntitiesProcessors
+            .lazyGet(pAddParam, PrcEntityPbCopy.class.getSimpleName());
       proc.setPrcAccEntityPbCopy(procDlg);
       //assigning fully initialized object:
       this.processorsMap
@@ -1292,8 +1097,10 @@ public class FctBnAccEntitiesProcessors<RS>
     if (proc == null) {
       proc = new PrcGoodsLossLineCopy<RS>();
       @SuppressWarnings("unchecked")
-      PrcAccEntityPbCopy<RS, GoodsLossLine> procDlg =
-        lazyGetPrcAccEntityPbCopy(pAddParam);
+      PrcEntityPbCopy<RS, GoodsLossLine> procDlg =
+        (PrcEntityPbCopy<RS, GoodsLossLine>)
+          this.fctBnEntitiesProcessors
+            .lazyGet(pAddParam, PrcEntityPbCopy.class.getSimpleName());
       proc.setPrcAccEntityPbCopy(procDlg);
       //assigning fully initialized object:
       this.processorsMap
@@ -1317,8 +1124,7 @@ public class FctBnAccEntitiesProcessors<RS>
       this.processorsMap
         .get(PrcGoodsLossLineSave.class.getSimpleName());
     if (proc == null) {
-      proc =
-        new PrcGoodsLossLineSave<RS>();
+      proc = new PrcGoodsLossLineSave<RS>();
       proc.setSrvAccSettings(getSrvAccSettings());
       proc.setSrvOrm(getSrvOrm());
       proc.setSrvWarehouseEntry(getSrvWarehouseEntry());
@@ -1348,8 +1154,10 @@ public class FctBnAccEntitiesProcessors<RS>
     if (proc == null) {
       proc = new PrcSalesInvoiceLineGfr<RS>();
       @SuppressWarnings("unchecked")
-      PrcAccEntityPbCopy<RS, SalesInvoiceLine> procDlg =
-        lazyGetPrcAccEntityPbCopy(pAddParam);
+      PrcEntityPbCopy<RS, SalesInvoiceLine> procDlg =
+        (PrcEntityPbCopy<RS, SalesInvoiceLine>)
+          this.fctBnEntitiesProcessors
+            .lazyGet(pAddParam, PrcEntityPbCopy.class.getSimpleName());
       proc.setPrcAccEntityPbCopy(procDlg);
       //assigning fully initialized object:
       this.processorsMap
@@ -1375,8 +1183,10 @@ public class FctBnAccEntitiesProcessors<RS>
     if (proc == null) {
       proc = new PrcSalesInvoiceLineCopy<RS>();
       @SuppressWarnings("unchecked")
-      PrcAccEntityPbCopy<RS, SalesInvoiceLine> procDlg =
-        lazyGetPrcAccEntityPbCopy(pAddParam);
+      PrcEntityPbCopy<RS, SalesInvoiceLine> procDlg =
+        (PrcEntityPbCopy<RS, SalesInvoiceLine>)
+          this.fctBnEntitiesProcessors
+            .lazyGet(pAddParam, PrcEntityPbCopy.class.getSimpleName());
       proc.setPrcAccEntityPbCopy(procDlg);
       //assigning fully initialized object:
       this.processorsMap
@@ -1400,8 +1210,7 @@ public class FctBnAccEntitiesProcessors<RS>
       this.processorsMap
         .get(PrcSalesInvoiceLineSave.class.getSimpleName());
     if (proc == null) {
-      proc =
-        new PrcSalesInvoiceLineSave<RS>();
+      proc = new PrcSalesInvoiceLineSave<RS>();
       proc.setSrvAccSettings(getSrvAccSettings());
       proc.setSrvOrm(getSrvOrm());
       proc.setSrvWarehouseEntry(getSrvWarehouseEntry());
@@ -1432,8 +1241,10 @@ public class FctBnAccEntitiesProcessors<RS>
     if (proc == null) {
       proc = new PrcBeginningInventoryLineGfr<RS>();
       @SuppressWarnings("unchecked")
-      PrcAccEntityPbCopy<RS, BeginningInventoryLine> procDlg =
-        lazyGetPrcAccEntityPbCopy(pAddParam);
+      PrcEntityPbCopy<RS, BeginningInventoryLine> procDlg =
+        (PrcEntityPbCopy<RS, BeginningInventoryLine>)
+          this.fctBnEntitiesProcessors
+            .lazyGet(pAddParam, PrcEntityPbCopy.class.getSimpleName());
       proc.setPrcAccEntityPbCopy(procDlg);
       //assigning fully initialized object:
       this.processorsMap
@@ -1459,8 +1270,10 @@ public class FctBnAccEntitiesProcessors<RS>
     if (proc == null) {
       proc = new PrcBeginningInventoryLineCopy<RS>();
       @SuppressWarnings("unchecked")
-      PrcAccEntityPbCopy<RS, BeginningInventoryLine> procDlg =
-        lazyGetPrcAccEntityPbCopy(pAddParam);
+      PrcEntityPbCopy<RS, BeginningInventoryLine> procDlg =
+        (PrcEntityPbCopy<RS, BeginningInventoryLine>)
+          this.fctBnEntitiesProcessors
+            .lazyGet(pAddParam, PrcEntityPbCopy.class.getSimpleName());
       proc.setPrcAccEntityPbCopy(procDlg);
       //assigning fully initialized object:
       this.processorsMap
@@ -1484,8 +1297,7 @@ public class FctBnAccEntitiesProcessors<RS>
       this.processorsMap
         .get(PrcBeginningInventoryLineSave.class.getSimpleName());
     if (proc == null) {
-      proc =
-        new PrcBeginningInventoryLineSave<RS>();
+      proc = new PrcBeginningInventoryLineSave<RS>();
       proc.setSrvAccSettings(getSrvAccSettings());
       proc.setSrvOrm(getSrvOrm());
       proc.setSrvWarehouseEntry(getSrvWarehouseEntry());
@@ -1514,8 +1326,10 @@ public class FctBnAccEntitiesProcessors<RS>
     if (proc == null) {
       proc = new PrcPurchaseInvoiceLineGfr<RS>();
       @SuppressWarnings("unchecked")
-      PrcAccEntityPbCopy<RS, PurchaseInvoiceLine> procDlg =
-        lazyGetPrcAccEntityPbCopy(pAddParam);
+      PrcEntityPbCopy<RS, PurchaseInvoiceLine> procDlg =
+        (PrcEntityPbCopy<RS, PurchaseInvoiceLine>)
+          this.fctBnEntitiesProcessors
+            .lazyGet(pAddParam, PrcEntityPbCopy.class.getSimpleName());
       proc.setPrcAccEntityPbCopy(procDlg);
       //assigning fully initialized object:
       this.processorsMap
@@ -1541,8 +1355,10 @@ public class FctBnAccEntitiesProcessors<RS>
     if (proc == null) {
       proc = new PrcPurchaseInvoiceLineCopy<RS>();
       @SuppressWarnings("unchecked")
-      PrcAccEntityPbCopy<RS, PurchaseInvoiceLine> procDlg =
-        lazyGetPrcAccEntityPbCopy(pAddParam);
+      PrcEntityPbCopy<RS, PurchaseInvoiceLine> procDlg =
+        (PrcEntityPbCopy<RS, PurchaseInvoiceLine>)
+          this.fctBnEntitiesProcessors
+            .lazyGet(pAddParam, PrcEntityPbCopy.class.getSimpleName());
       proc.setPrcAccEntityPbCopy(procDlg);
       //assigning fully initialized object:
       this.processorsMap
@@ -1566,8 +1382,7 @@ public class FctBnAccEntitiesProcessors<RS>
       this.processorsMap
         .get(PrcPurchaseInvoiceLineSave.class.getSimpleName());
     if (proc == null) {
-      proc =
-        new PrcPurchaseInvoiceLineSave<RS>();
+      proc = new PrcPurchaseInvoiceLineSave<RS>();
       proc.setSrvAccSettings(getSrvAccSettings());
       proc.setSrvOrm(getSrvOrm());
       proc.setSrvWarehouseEntry(getSrvWarehouseEntry());
@@ -1597,8 +1412,10 @@ public class FctBnAccEntitiesProcessors<RS>
     if (proc == null) {
       proc = new PrcAccEntityPbWithSubaccCopy<RS, IPersistableBase>();
       @SuppressWarnings("unchecked")
-      PrcAccEntityPbCopy<RS, IPersistableBase> procDlg =
-        lazyGetPrcAccEntityPbCopy(pAddParam);
+      PrcEntityPbCopy<RS, IPersistableBase> procDlg =
+        (PrcEntityPbCopy<RS, IPersistableBase>)
+          this.fctBnEntitiesProcessors
+            .lazyGet(pAddParam, PrcEntityPbCopy.class.getSimpleName());
       proc.setPrcAccEntityPbCopy(procDlg);
       proc.setSrvTypeCode(getSrvTypeCode());
       //assigning fully initialized object:
@@ -1623,14 +1440,13 @@ public class FctBnAccEntitiesProcessors<RS>
         this.processorsMap
           .get(PrcAccDocGetForReverse.class.getSimpleName());
     if (proc == null) {
-      proc =
-        new PrcAccDocGetForReverse<RS, IDoc>();
-      proc.setSrvAccSettings(getSrvAccSettings());
+      proc = new PrcAccDocGetForReverse<RS, IDoc>();
       proc.setSrvOrm(getSrvOrm());
       @SuppressWarnings("unchecked")
       IEntityProcessor<IDoc, Long> procDlg =
         (IEntityProcessor<IDoc, Long>)
-          lazyGetPrcAccEntityPbCopy(pAddParam);
+          this.fctBnEntitiesProcessors
+            .lazyGet(pAddParam, PrcEntityPbCopy.class.getSimpleName());
       proc.setPrcAccEntityPbCopy(procDlg);
       //assigning fully initialized object:
       this.processorsMap
@@ -1658,7 +1474,8 @@ public class FctBnAccEntitiesProcessors<RS>
       @SuppressWarnings("unchecked")
       IEntityProcessor<ADocWithTaxes, Long> procDlg =
         (IEntityProcessor<ADocWithTaxes, Long>)
-          lazyGetPrcAccEntityPbCopy(pAddParam);
+          this.fctBnEntitiesProcessors
+            .lazyGet(pAddParam, PrcEntityPbCopy.class.getSimpleName());
       proc.setPrcAccEntityPbCopy(procDlg);
       //assigning fully initialized object:
       this.processorsMap
@@ -1687,7 +1504,8 @@ public class FctBnAccEntitiesProcessors<RS>
       @SuppressWarnings("unchecked")
       IEntityProcessor<ADocWithTaxesPayments, Long> procDlg =
         (IEntityProcessor<ADocWithTaxesPayments, Long>)
-          lazyGetPrcAccEntityPbCopy(pAddParam);
+          this.fctBnEntitiesProcessors
+            .lazyGet(pAddParam, PrcEntityPbCopy.class.getSimpleName());
       proc.setPrcAccEntityPbCopy(procDlg);
       //assigning fully initialized object:
       this.processorsMap
@@ -1726,37 +1544,6 @@ public class FctBnAccEntitiesProcessors<RS>
   }
 
   /**
-   * <p>Lazy get PrcAccEntityPbCopy.</p>
-   * @param pAddParam additional param
-   * @return requested PrcAccEntityPbCopy
-   * @throws Exception - an exception
-   */
-  protected final PrcAccEntityPbCopy
-    lazyGetPrcAccEntityPbCopy(
-      final Map<String, Object> pAddParam) throws Exception {
-    @SuppressWarnings("unchecked")
-    PrcAccEntityPbCopy<RS, IPersistableBase> proc =
-      (PrcAccEntityPbCopy<RS, IPersistableBase>)
-        this.processorsMap
-          .get(PrcAccEntityPbCopy.class.getSimpleName());
-    if (proc == null) {
-      proc =
-        new PrcAccEntityPbCopy<RS, IPersistableBase>();
-      proc.setSrvAccSettings(getSrvAccSettings());
-      @SuppressWarnings("unchecked")
-      PrcEntityPbCopy<RS, IPersistableBase> procDlg =
-        (PrcEntityPbCopy<RS, IPersistableBase>)
-          this.fctBnEntitiesProcessors
-            .lazyGet(pAddParam, PrcEntityPbCopy.class.getSimpleName());
-      proc.setPrcEntityPbCopy(procDlg);
-      //assigning fully initialized object:
-      this.processorsMap
-        .put(PrcAccEntityPbCopy.class.getSimpleName(), proc);
-    }
-    return proc;
-  }
-
-  /**
    * <p>Get PrcAccEntityWithSubaccCopy (create and put into map).</p>
    * @param pAddParam additional param
    * @return requested PrcAccEntityWithSubaccCopy
@@ -1767,68 +1554,16 @@ public class FctBnAccEntitiesProcessors<RS>
       final Map<String, Object> pAddParam) throws Exception {
     PrcAccEntityWithSubaccCopy<RS, IHasId<Object>, Object> proc =
       new PrcAccEntityWithSubaccCopy<RS, IHasId<Object>, Object>();
-    PrcAccEntityCopy<RS, IHasId<Object>, Object> procDlg =
-      lazyGetPrcAccEntityCopy(pAddParam);
+    @SuppressWarnings("unchecked")
+    PrcEntityCopy<RS, IHasId<Object>, Object> procDlg =
+      (PrcEntityCopy<RS, IHasId<Object>, Object>)
+        this.fctBnEntitiesProcessors
+          .lazyGet(pAddParam, PrcEntityCopy.class.getSimpleName());
     proc.setPrcAccEntityCopy(procDlg);
     proc.setSrvTypeCode(getSrvTypeCode());
     //assigning fully initialized object:
     this.processorsMap
       .put(PrcAccEntityWithSubaccCopy.class.getSimpleName(), proc);
-    return proc;
-  }
-
-  /**
-   * <p>Lazy get PrcAccEntityCopy.</p>
-   * @param pAddParam additional param
-   * @return requested PrcAccEntityCopy
-   * @throws Exception - an exception
-   */
-  protected final PrcAccEntityCopy<RS, IHasId<Object>, Object>
-    lazyGetPrcAccEntityCopy(
-      final Map<String, Object> pAddParam) throws Exception {
-    @SuppressWarnings("unchecked")
-    PrcAccEntityCopy<RS, IHasId<Object>, Object> proc =
-      (PrcAccEntityCopy<RS, IHasId<Object>, Object>)
-        this.processorsMap
-          .get(PrcAccEntityCopy.class.getSimpleName());
-    if (proc == null) {
-      proc =
-        new PrcAccEntityCopy<RS, IHasId<Object>, Object>();
-      proc.setSrvAccSettings(getSrvAccSettings());
-      @SuppressWarnings("unchecked")
-      PrcEntityCopy<RS, IHasId<Object>, Object> procDlg =
-        (PrcEntityCopy<RS, IHasId<Object>, Object>)
-          this.fctBnEntitiesProcessors
-            .lazyGet(pAddParam, PrcEntityCopy.class.getSimpleName());
-      proc.setPrcEntityCopy(procDlg);
-      //assigning fully initialized object:
-      this.processorsMap
-        .put(PrcAccEntityCopy.class.getSimpleName(), proc);
-    }
-    return proc;
-  }
-
-  /**
-   * <p>Get PrcAccEntityPbSave (create and put into map).</p>
-   * @param pAddParam additional param
-   * @return requested PrcAccEntityPbSave
-   * @throws Exception - an exception
-   */
-  protected final PrcAccEntityPbSave<RS, IPersistableBase>
-    createPutPrcAccEntityPbSave(
-      final Map<String, Object> pAddParam) throws Exception {
-    PrcAccEntityPbSave<RS, IPersistableBase> proc =
-      new PrcAccEntityPbSave<RS, IPersistableBase>();
-    proc.setSrvAccSettings(getSrvAccSettings());
-    @SuppressWarnings("unchecked")
-    PrcEntityPbSave<RS, IPersistableBase> procDlg =
-      (PrcEntityPbSave<RS, IPersistableBase>)
-        this.fctBnEntitiesProcessors
-          .lazyGet(pAddParam, PrcEntityPbSave.class.getSimpleName());
-    proc.setPrcEntityPbSave(procDlg);
-    //assigning fully initialized object:
-    this.processorsMap
-      .put(PrcAccEntityPbSave.class.getSimpleName(), proc);
     return proc;
   }
 
@@ -1866,8 +1601,7 @@ public class FctBnAccEntitiesProcessors<RS>
       this.processorsMap
         .get(PrcSalesInvoiceServiceLineSave.class.getSimpleName());
     if (proc == null) {
-      proc =
-        new PrcSalesInvoiceServiceLineSave<RS>();
+      proc = new PrcSalesInvoiceServiceLineSave<RS>();
       proc.setSrvAccSettings(getSrvAccSettings());
       proc.setSrvOrm(getSrvOrm());
       proc.setUtlSalesGoodsServiceLine(
@@ -1894,8 +1628,7 @@ public class FctBnAccEntitiesProcessors<RS>
       this.processorsMap
         .get(PrcPurchaseInvoiceServiceLineSave.class.getSimpleName());
     if (proc == null) {
-      proc =
-        new PrcPurchaseInvoiceServiceLineSave<RS>();
+      proc = new PrcPurchaseInvoiceServiceLineSave<RS>();
       proc.setSrvAccSettings(getSrvAccSettings());
       proc.setSrvOrm(getSrvOrm());
       proc.setUtlPurchaseGoodsServiceLine(
@@ -1922,8 +1655,7 @@ public class FctBnAccEntitiesProcessors<RS>
       this.processorsMap
         .get(PrcPurchaseReturnLineSave.class.getSimpleName());
     if (proc == null) {
-      proc =
-        new PrcPurchaseReturnLineSave<RS>();
+      proc = new PrcPurchaseReturnLineSave<RS>();
       proc.setSrvAccSettings(getSrvAccSettings());
       proc.setSrvOrm(getSrvOrm());
       proc.setSrvI18n(getSrvI18n());
@@ -1952,8 +1684,7 @@ public class FctBnAccEntitiesProcessors<RS>
       this.processorsMap
         .get(PrcWageTaxLineDelete.class.getSimpleName());
     if (proc == null) {
-      proc =
-        new PrcWageTaxLineDelete<RS>();
+      proc = new PrcWageTaxLineDelete<RS>();
       proc.setSrvAccSettings(getSrvAccSettings());
       proc.setSrvOrm(getSrvOrm());
       proc.setSrvDatabase(getSrvDatabase());
@@ -1979,8 +1710,7 @@ public class FctBnAccEntitiesProcessors<RS>
       this.processorsMap
         .get(PrcWageTaxLineSave.class.getSimpleName());
     if (proc == null) {
-      proc =
-        new PrcWageTaxLineSave<RS>();
+      proc = new PrcWageTaxLineSave<RS>();
       proc.setSrvAccSettings(getSrvAccSettings());
       proc.setSrvOrm(getSrvOrm());
       proc.setSrvDatabase(getSrvDatabase());
@@ -2006,8 +1736,7 @@ public class FctBnAccEntitiesProcessors<RS>
       this.processorsMap
         .get(PrcWageLineDelete.class.getSimpleName());
     if (proc == null) {
-      proc =
-        new PrcWageLineDelete<RS>();
+      proc = new PrcWageLineDelete<RS>();
       proc.setSrvAccSettings(getSrvAccSettings());
       proc.setSrvOrm(getSrvOrm());
       proc.setSrvDatabase(getSrvDatabase());
@@ -2033,8 +1762,7 @@ public class FctBnAccEntitiesProcessors<RS>
       this.processorsMap
         .get(PrcWageLineSave.class.getSimpleName());
     if (proc == null) {
-      proc =
-        new PrcWageLineSave<RS>();
+      proc = new PrcWageLineSave<RS>();
       proc.setSrvAccSettings(getSrvAccSettings());
       proc.setSrvOrm(getSrvOrm());
       proc.setSrvDatabase(getSrvDatabase());
@@ -2060,8 +1788,7 @@ public class FctBnAccEntitiesProcessors<RS>
       this.processorsMap
         .get(PrcSalesReturnLineSave.class.getSimpleName());
     if (proc == null) {
-      proc =
-        new PrcSalesReturnLineSave<RS>();
+      proc = new PrcSalesReturnLineSave<RS>();
       proc.setSrvAccSettings(getSrvAccSettings());
       proc.setSrvOrm(getSrvOrm());
       proc.setSrvDatabase(getSrvDatabase());
@@ -2085,8 +1812,7 @@ public class FctBnAccEntitiesProcessors<RS>
     UtlSalesGoodsServiceLine<RS> proc =
       this.utlSalesGoodsServiceLine;
     if (proc == null) {
-      proc =
-        new UtlSalesGoodsServiceLine<RS>();
+      proc = new UtlSalesGoodsServiceLine<RS>();
       proc.setSrvAccSettings(getSrvAccSettings());
       proc.setSrvOrm(getSrvOrm());
       proc.setSrvDatabase(getSrvDatabase());
@@ -2108,8 +1834,7 @@ public class FctBnAccEntitiesProcessors<RS>
     UtlPurchaseGoodsServiceLine<RS> proc =
       this.utlPurchaseGoodsServiceLine;
     if (proc == null) {
-      proc =
-        new UtlPurchaseGoodsServiceLine<RS>();
+      proc = new UtlPurchaseGoodsServiceLine<RS>();
       proc.setSrvAccSettings(getSrvAccSettings());
       proc.setSrvOrm(getSrvOrm());
       proc.setSrvDatabase(getSrvDatabase());
@@ -2134,9 +1859,7 @@ public class FctBnAccEntitiesProcessors<RS>
       this.processorsMap
         .get(PrcSalesReturnSave.class.getSimpleName());
     if (proc == null) {
-      proc =
-        new PrcSalesReturnSave<RS>();
-      proc.setSrvAccSettings(getSrvAccSettings());
+      proc = new PrcSalesReturnSave<RS>();
       proc.setSrvAccEntry(getSrvAccEntry());
       proc.setSrvOrm(getSrvOrm());
       proc.setSrvI18n(getSrvI18n());
@@ -2166,9 +1889,7 @@ public class FctBnAccEntitiesProcessors<RS>
       this.processorsMap
         .get(PrcGoodsLossSave.class.getSimpleName());
     if (proc == null) {
-      proc =
-        new PrcGoodsLossSave<RS>();
-      proc.setSrvAccSettings(getSrvAccSettings());
+      proc = new PrcGoodsLossSave<RS>();
       proc.setSrvAccEntry(getSrvAccEntry());
       proc.setSrvOrm(getSrvOrm());
       proc.setSrvI18n(getSrvI18n());
@@ -2197,8 +1918,7 @@ public class FctBnAccEntitiesProcessors<RS>
       this.processorsMap
         .get(PrcAccSettingsSave.class.getSimpleName());
     if (proc == null) {
-      proc =
-        new PrcAccSettingsSave<RS>();
+      proc = new PrcAccSettingsSave<RS>();
       proc.setSrvAccSettings(getSrvAccSettings());
       //assigning fully initialized object:
       this.processorsMap
@@ -2222,9 +1942,7 @@ public class FctBnAccEntitiesProcessors<RS>
       this.processorsMap
         .get(PrcSalesInvoiceSave.class.getSimpleName());
     if (proc == null) {
-      proc =
-        new PrcSalesInvoiceSave<RS>();
-      proc.setSrvAccSettings(getSrvAccSettings());
+      proc = new PrcSalesInvoiceSave<RS>();
       proc.setSrvAccEntry(getSrvAccEntry());
       proc.setSrvOrm(getSrvOrm());
       proc.setSrvI18n(getSrvI18n());
@@ -2255,7 +1973,6 @@ public class FctBnAccEntitiesProcessors<RS>
     if (proc == null) {
       proc =
         new PrcManufactureSave<RS>();
-      proc.setSrvAccSettings(getSrvAccSettings());
       proc.setSrvAccEntry(getSrvAccEntry());
       proc.setSrvOrm(getSrvOrm());
       proc.setSrvI18n(getSrvI18n());
@@ -2283,7 +2000,8 @@ public class FctBnAccEntitiesProcessors<RS>
     @SuppressWarnings("unchecked")
     IEntityProcessor<Manufacture, Long> procDlg =
       (IEntityProcessor<Manufacture, Long>)
-        lazyGetPrcAccEntityPbCopy(pAddParam);
+        this.fctBnEntitiesProcessors
+          .lazyGet(pAddParam, PrcEntityPbCopy.class.getSimpleName());
     proc.setPrcAccEntityPbCopy(procDlg);
     //assigning fully initialized object:
     this.processorsMap
@@ -2330,7 +2048,6 @@ public class FctBnAccEntitiesProcessors<RS>
     if (proc == null) {
       proc =
         new PrcManufacturingProcessSave<RS>();
-      proc.setSrvAccSettings(getSrvAccSettings());
       proc.setSrvAccEntry(getSrvAccEntry());
       proc.setSrvOrm(getSrvOrm());
       proc.setSrvI18n(getSrvI18n());
@@ -2437,7 +2154,6 @@ public class FctBnAccEntitiesProcessors<RS>
     if (proc == null) {
       proc =
         new PrcInvItemTaxCategoryLineDelete<RS>();
-      proc.setSrvAccSettings(getSrvAccSettings());
       proc.setSrvOrm(getSrvOrm());
       //assigning fully initialized object:
       this.processorsMap
@@ -2463,7 +2179,6 @@ public class FctBnAccEntitiesProcessors<RS>
     if (proc == null) {
       proc =
         new PrcInvItemTaxCategoryLineSave<RS>();
-      proc.setSrvAccSettings(getSrvAccSettings());
       proc.setSrvOrm(getSrvOrm());
       //assigning fully initialized object:
       this.processorsMap
@@ -2489,7 +2204,6 @@ public class FctBnAccEntitiesProcessors<RS>
     if (proc == null) {
       proc =
         new PrcPurchaseReturnSave<RS>();
-      proc.setSrvAccSettings(getSrvAccSettings());
       proc.setSrvAccEntry(getSrvAccEntry());
       proc.setSrvOrm(getSrvOrm());
       proc.setSrvI18n(getSrvI18n());
@@ -2520,7 +2234,6 @@ public class FctBnAccEntitiesProcessors<RS>
     if (proc == null) {
       proc =
         new PrcBeginningInventorySave<RS>();
-      proc.setSrvAccSettings(getSrvAccSettings());
       proc.setSrvAccEntry(getSrvAccEntry());
       proc.setSrvOrm(getSrvOrm());
       proc.setSrvI18n(getSrvI18n());
@@ -2552,7 +2265,6 @@ public class FctBnAccEntitiesProcessors<RS>
     if (proc == null) {
       proc =
         new PrcPurchaseInvoiceSave<RS>();
-      proc.setSrvAccSettings(getSrvAccSettings());
       proc.setSrvAccEntry(getSrvAccEntry());
       proc.setSrvOrm(getSrvOrm());
       proc.setSrvI18n(getSrvI18n());
@@ -2578,7 +2290,6 @@ public class FctBnAccEntitiesProcessors<RS>
       final Map<String, Object> pAddParam) throws Exception {
     PrcPrepaymentFromSave<RS> proc =
       new PrcPrepaymentFromSave<RS>();
-    proc.setSrvAccSettings(getSrvAccSettings());
     proc.setSrvAccEntry(getSrvAccEntry());
     proc.setSrvOrm(getSrvOrm());
     proc.setSrvI18n(getSrvI18n());
@@ -2646,7 +2357,6 @@ public class FctBnAccEntitiesProcessors<RS>
       final Map<String, Object> pAddParam) throws Exception {
     PrcPrepaymentToSave<RS> proc =
       new PrcPrepaymentToSave<RS>();
-    proc.setSrvAccSettings(getSrvAccSettings());
     proc.setSrvAccEntry(getSrvAccEntry());
     proc.setSrvOrm(getSrvOrm());
     proc.setSrvI18n(getSrvI18n());
@@ -2714,7 +2424,6 @@ public class FctBnAccEntitiesProcessors<RS>
       final Map<String, Object> pAddParam) throws Exception {
     PrcPaymentFromSave<RS> proc =
       new PrcPaymentFromSave<RS>();
-    proc.setSrvAccSettings(getSrvAccSettings());
     proc.setSrvAccEntry(getSrvAccEntry());
     proc.setSrvOrm(getSrvOrm());
     proc.setSrvI18n(getSrvI18n());
@@ -2780,8 +2489,7 @@ public class FctBnAccEntitiesProcessors<RS>
   protected final PrcWageSave<RS>
     createPutPrcWageSave(
       final Map<String, Object> pAddParam) throws Exception {
-    PrcWageSave<RS> proc =
-      new PrcWageSave<RS>();
+    PrcWageSave<RS> proc = new PrcWageSave<RS>();
     proc.setSrvAccSettings(getSrvAccSettings());
     proc.setSrvAccEntry(getSrvAccEntry());
     proc.setSrvOrm(getSrvOrm());
@@ -2830,7 +2538,8 @@ public class FctBnAccEntitiesProcessors<RS>
     @SuppressWarnings("unchecked")
     IEntityProcessor<Wage, Long> procDlg =
       (IEntityProcessor<Wage, Long>)
-        lazyGetPrcAccEntityPbCopy(pAddParam);
+        this.fctBnEntitiesProcessors
+          .lazyGet(pAddParam, PrcEntityPbCopy.class.getSimpleName());
     proc.setPrcAccEntityPbCopy(procDlg);
     //assigning fully initialized object:
     this.processorsMap
@@ -2849,7 +2558,6 @@ public class FctBnAccEntitiesProcessors<RS>
       final Map<String, Object> pAddParam) throws Exception {
     PrcPaymentToSave<RS> proc =
       new PrcPaymentToSave<RS>();
-    proc.setSrvAccSettings(getSrvAccSettings());
     proc.setSrvAccEntry(getSrvAccEntry());
     proc.setSrvOrm(getSrvOrm());
     proc.setSrvI18n(getSrvI18n());
@@ -2907,30 +2615,6 @@ public class FctBnAccEntitiesProcessors<RS>
   }
 
   /**
-   * <p>Get PrcAccEntitySave (create and put into map).</p>
-   * @param pAddParam additional param
-   * @return requested PrcAccEntitySave
-   * @throws Exception - an exception
-   */
-  protected final PrcAccEntitySave<RS, IHasId<Object>, Object>
-    createPutPrcAccEntitySave(
-      final Map<String, Object> pAddParam) throws Exception {
-    PrcAccEntitySave<RS, IHasId<Object>, Object> proc =
-      new PrcAccEntitySave<RS, IHasId<Object>, Object>();
-    proc.setSrvAccSettings(getSrvAccSettings());
-    @SuppressWarnings("unchecked")
-    PrcEntitySave<RS, IHasId<Object>, Object> procDlg =
-      (PrcEntitySave<RS, IHasId<Object>, Object>)
-        this.fctBnEntitiesProcessors
-          .lazyGet(pAddParam, PrcEntitySave.class.getSimpleName());
-    proc.setPrcEntitySave(procDlg);
-    //assigning fully initialized object:
-    this.processorsMap
-      .put(PrcAccEntitySave.class.getSimpleName(), proc);
-    return proc;
-  }
-
-  /**
    * <p>Get PrcAccEntityPbWithSubaccEditDelete (create and put into map).</p>
    * @param pAddParam additional param
    * @return requested PrcAccEntityPbWithSubaccEditDelete
@@ -2941,44 +2625,16 @@ public class FctBnAccEntitiesProcessors<RS>
       final Map<String, Object> pAddParam) throws Exception {
     PrcAccEntityPbWithSubaccEditDelete<RS, IPersistableBase> proc =
       new PrcAccEntityPbWithSubaccEditDelete<RS, IPersistableBase>();
-    PrcAccEntityPbEditDelete<RS, IPersistableBase> procDlg =
-      lazyGetPrcAccEntityPbEditDelete(pAddParam);
+    @SuppressWarnings("unchecked")
+    PrcEntityPbEditDelete<RS, IPersistableBase> procDlg =
+      (PrcEntityPbEditDelete<RS, IPersistableBase>)
+        this.fctBnEntitiesProcessors
+          .lazyGet(pAddParam, PrcEntityPbEditDelete.class.getSimpleName());
     proc.setPrcAccEntityPbEditDelete(procDlg);
     proc.setSrvTypeCode(getSrvTypeCode());
     //assigning fully initialized object:
     this.processorsMap
       .put(PrcAccEntityPbWithSubaccEditDelete.class.getSimpleName(), proc);
-    return proc;
-  }
-
-  /**
-   * <p>Get PrcAccEntityPbEditDelete (create and put into map).</p>
-   * @param pAddParam additional param
-   * @return requested PrcAccEntityPbEditDelete
-   * @throws Exception - an exception
-   */
-  protected final PrcAccEntityPbEditDelete<RS, IPersistableBase>
-    lazyGetPrcAccEntityPbEditDelete(
-      final Map<String, Object> pAddParam) throws Exception {
-    @SuppressWarnings("unchecked")
-    PrcAccEntityPbEditDelete<RS, IPersistableBase> proc =
-      (PrcAccEntityPbEditDelete<RS, IPersistableBase>)
-        this.processorsMap
-          .get(PrcAccEntityPbEditDelete.class.getSimpleName());
-    if (proc == null) {
-      proc =
-        new PrcAccEntityPbEditDelete<RS, IPersistableBase>();
-      proc.setSrvAccSettings(getSrvAccSettings());
-      @SuppressWarnings("unchecked")
-      PrcEntityPbEditDelete<RS, IPersistableBase> procDlg =
-        (PrcEntityPbEditDelete<RS, IPersistableBase>)
-          this.fctBnEntitiesProcessors
-            .lazyGet(pAddParam, PrcEntityPbEditDelete.class.getSimpleName());
-      proc.setPrcEntityPbEditDelete(procDlg);
-      //assigning fully initialized object:
-      this.processorsMap
-        .put(PrcAccEntityPbEditDelete.class.getSimpleName(), proc);
-    }
     return proc;
   }
 
@@ -2997,8 +2653,7 @@ public class FctBnAccEntitiesProcessors<RS>
         this.processorsMap
           .get(PrcAccEntrySave.class.getSimpleName());
     if (proc == null) {
-      proc =
-        new PrcAccEntrySave<RS>();
+      proc = new PrcAccEntrySave<RS>();
       proc.setSrvAccSettings(getSrvAccSettings());
       proc.setSrvOrm(getSrvOrm());
       proc.setSrvDatabase(getSrvDatabase());
@@ -3025,9 +2680,7 @@ public class FctBnAccEntitiesProcessors<RS>
         this.processorsMap
           .get(PrcAccEntryCopy.class.getSimpleName());
     if (proc == null) {
-      proc =
-        new PrcAccEntryCopy<RS>();
-      proc.setSrvAccSettings(getSrvAccSettings());
+      proc = new PrcAccEntryCopy<RS>();
       proc.setSrvOrm(getSrvOrm());
       proc.setMngUvdSettings(getMngUvdSettings());
       proc.setSrvDate(getSrvDate());
@@ -3057,9 +2710,7 @@ public class FctBnAccEntitiesProcessors<RS>
         this.processorsMap
           .get(PrcAccEntryCreate.class.getSimpleName());
     if (proc == null) {
-      proc =
-        new PrcAccEntryCreate<RS>();
-      proc.setSrvAccSettings(getSrvAccSettings());
+      proc = new PrcAccEntryCreate<RS>();
       proc.setSrvOrm(getSrvOrm());
       proc.setMngUvdSettings(getMngUvdSettings());
       proc.setSrvDate(getSrvDate());
@@ -3089,9 +2740,7 @@ public class FctBnAccEntitiesProcessors<RS>
         this.processorsMap
           .get(PrcInpAccEntriesRetrieve.class.getSimpleName());
     if (proc == null) {
-      proc =
-        new PrcInpAccEntriesRetrieve<RS>();
-      proc.setSrvAccSettings(getSrvAccSettings());
+      proc = new PrcInpAccEntriesRetrieve<RS>();
       proc.setSrvOrm(getSrvOrm());
       proc.setMngUvdSettings(getMngUvdSettings());
       proc.setSrvDate(getSrvDate());
@@ -3124,7 +2773,8 @@ public class FctBnAccEntitiesProcessors<RS>
       @SuppressWarnings("unchecked")
       IEntityProcessor<IHasId<Object>, Object> procDlg =
         (IEntityProcessor<IHasId<Object>, Object>)
-          lazyGetPrcAccEntityRetrieve(pAddParam);
+          this.fctBnEntitiesProcessors
+            .lazyGet(pAddParam, PrcEntityRetrieve.class.getSimpleName());
       proc.setPrcAccEntityRetrieve(procDlg);
       proc.setSrvTypeCode(getSrvTypeCode());
       //assigning fully initialized object:
@@ -3177,7 +2827,8 @@ public class FctBnAccEntitiesProcessors<RS>
       @SuppressWarnings("unchecked")
       IEntityProcessor<MoveItems, Long> delegate =
         (IEntityProcessor<MoveItems, Long>)
-          lazyGetPrcAccEntityRetrieve(pAddParam);
+          this.fctBnEntitiesProcessors
+            .lazyGet(pAddParam, PrcEntityRetrieve.class.getSimpleName());
       proc.setPrcAccEntityRetrieve(delegate);
       //assigning fully initialized object:
       this.processorsMap
@@ -3290,41 +2941,12 @@ public class FctBnAccEntitiesProcessors<RS>
       proc.setSrvAccEntry(getSrvAccEntry());
       @SuppressWarnings("unchecked")
       IEntityProcessor<IDoc, Long> delegate = (IEntityProcessor<IDoc, Long>)
-        lazyGetPrcAccEntityRetrieve(pAddParam);
+        this.fctBnEntitiesProcessors
+          .lazyGet(pAddParam, PrcEntityRetrieve.class.getSimpleName());
       proc.setPrcAccEntityRetrieve(delegate);
       //assigning fully initialized object:
       this.processorsMap
         .put(PrcAccDocRetrieve.class.getSimpleName(), proc);
-    }
-    return proc;
-  }
-
-  /**
-   * <p>Lazy get PrcAccEntityRetrieve.</p>
-   * @param pAddParam additional param
-   * @return requested PrcAccEntityRetrieve
-   * @throws Exception - an exception
-   */
-  protected final PrcAccEntityRetrieve
-    lazyGetPrcAccEntityRetrieve(
-      final Map<String, Object> pAddParam) throws Exception {
-    @SuppressWarnings("unchecked")
-    PrcAccEntityRetrieve<RS, IHasId<Object>, Object> proc =
-      (PrcAccEntityRetrieve<RS, IHasId<Object>, Object>)
-        this.processorsMap
-          .get(PrcAccEntityRetrieve.class.getSimpleName());
-    if (proc == null) {
-      proc = new PrcAccEntityRetrieve<RS, IHasId<Object>, Object>();
-      proc.setSrvAccSettings(getSrvAccSettings());
-      @SuppressWarnings("unchecked")
-      PrcEntityRetrieve<RS, IHasId<Object>, Object> procDlg =
-        (PrcEntityRetrieve<RS, IHasId<Object>, Object>)
-          this.fctBnEntitiesProcessors
-            .lazyGet(pAddParam, PrcEntityRetrieve.class.getSimpleName());
-      proc.setPrcEntityRetrieve(procDlg);
-      //assigning fully initialized object:
-      this.processorsMap
-        .put(PrcAccEntityRetrieve.class.getSimpleName(), proc);
     }
     return proc;
   }

@@ -14,7 +14,7 @@ package org.beigesoft.accounting.report;
 
 
 import java.io.OutputStream;
-import java.util.HashMap;
+import java.util.Map;
 import java.util.Date;
 
 import org.beigesoft.model.IRequestData;
@@ -59,13 +59,15 @@ public class HndlBalancePdfReq<RS> implements IHndlFileReportReq {
 
   /**
    * <p>Handle file-report request.</p>
+   * @param pReqVars Request scoped variables
    * @param pRequestData Request Data
    * @param pSous servlet output stream
    * @throws Exception - an exception
    */
   @Override
-  public final void handle(final IRequestData pRequestData,
-    final OutputStream pSous) throws Exception {
+  public final void handle(final Map<String, Object> pReqVars,
+    final IRequestData pRequestData,
+      final OutputStream pSous) throws Exception {
     try {
       this.srvDatabase.setIsAutocommit(false);
       this.srvDatabase.
@@ -73,10 +75,9 @@ public class HndlBalancePdfReq<RS> implements IHndlFileReportReq {
       this.srvDatabase.beginTransaction();
       Date date2 = srvDate
         .fromIso8601DateTimeNoTz(pRequestData.getParameter("date2"), null);
-      HashMap<String, Object> addParam = new HashMap<String, Object>();
       BalanceSheet balanceSheet = getSrvBalanceSheet()
-        .retrieveBalance(addParam, date2);
-      this.balanceSheetPdf.makeReport(addParam, balanceSheet, pSous);
+        .retrieveBalance(pReqVars, date2);
+      this.balanceSheetPdf.makeReport(pReqVars, balanceSheet, pSous);
       this.srvDatabase.commitTransaction();
     } catch (Exception ex) {
       this.srvDatabase.rollBackTransaction();

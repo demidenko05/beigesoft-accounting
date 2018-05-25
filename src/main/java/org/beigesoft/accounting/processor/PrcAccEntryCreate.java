@@ -28,7 +28,6 @@ import org.beigesoft.settings.IMngSettings;
 import org.beigesoft.service.ISrvOrm;
 import org.beigesoft.accounting.persistable.AccountingEntry;
 import org.beigesoft.accounting.persistable.AccountingEntries;
-import org.beigesoft.accounting.service.ISrvAccSettings;
 
 /**
  * <p>Service that create AccountingEntry for doc AccountingEntries.</p>
@@ -43,11 +42,6 @@ public class PrcAccEntryCreate<RS>
    * <p>ORM service.</p>
    **/
   private ISrvOrm<RS> srvOrm;
-
-  /**
-   * <p>Business service for accounting settings.</p>
-   **/
-  private ISrvAccSettings srvAccSettings;
 
   /**
    * <p>Manager UVD settings.</p>
@@ -121,8 +115,6 @@ public class PrcAccEntryCreate<RS>
       .getSimpleName() + "short") + " #" + doc.getIdDatabaseBirth() + "-"
         + doc.getItsId() + ", " + getDateFormatter().format(doc.getItsDate())
           + ". " + docDescription); //only local allowed
-    pRequestData.setAttribute("accSettings",
-      this.srvAccSettings.lazyGetAccSettings(pAddParam));
     pEntity.setIsNew(true);
     pRequestData.setAttribute("entity", pEntity);
     pRequestData.setAttribute("AccountingEntriesVersion", doc.getItsVersion());
@@ -158,22 +150,6 @@ public class PrcAccEntryCreate<RS>
    **/
   public final void setSrvOrm(final ISrvOrm<RS> pSrvOrm) {
     this.srvOrm = pSrvOrm;
-  }
-
-  /**
-   * <p>Getter for srvAccSettings.</p>
-   * @return ISrvAccSettings
-   **/
-  public final ISrvAccSettings getSrvAccSettings() {
-    return this.srvAccSettings;
-  }
-
-  /**
-   * <p>Setter for srvAccSettings.</p>
-   * @param pSrvAccSettings reference
-   **/
-  public final void setSrvAccSettings(final ISrvAccSettings pSrvAccSettings) {
-    this.srvAccSettings = pSrvAccSettings;
   }
 
   /**

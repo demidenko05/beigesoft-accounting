@@ -12,7 +12,7 @@ package org.beigesoft.accounting.report;
  * http://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html
  */
 
-import java.util.HashMap;
+import java.util.Map;
 import java.util.Date;
 
 import org.beigesoft.model.IRequestData;
@@ -53,11 +53,12 @@ public class SrvReqBalanceSheet<RS> implements IHandlerRequest {
 
   /**
    * <p>Handle request.</p>
+   * @param pReqVars Request scoped variables
    * @param pRequestData Request Data
    * @throws Exception - an exception
    */
   @Override
-  public final void handle(
+  public final void handle(final Map<String, Object> pReqVars,
     final IRequestData pRequestData) throws Exception {
     try {
       this.srvDatabase.setIsAutocommit(false);
@@ -66,12 +67,11 @@ public class SrvReqBalanceSheet<RS> implements IHandlerRequest {
       this.srvDatabase.beginTransaction();
       Date date2 = srvDate
         .fromIso8601DateTimeNoTz(pRequestData.getParameter("date2"), null);
-      HashMap<String, Object> addParam = new HashMap<String, Object>();
       BalanceSheet balanceSheet = getSrvBalanceSheet()
-        .retrieveBalance(addParam, date2);
+        .retrieveBalance(pReqVars, date2);
       pRequestData.setAttribute("balanceSheet", balanceSheet);
       pRequestData.setAttribute("accSettings", srvAccSettings
-        .lazyGetAccSettings(addParam));
+        .lazyGetAccSettings(pReqVars));
       this.srvDatabase.commitTransaction();
     } catch (Exception ex) {
       this.srvDatabase.rollBackTransaction();

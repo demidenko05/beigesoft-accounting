@@ -21,21 +21,21 @@ import org.beigesoft.holder.IHolderForClassByName;
 import org.beigesoft.orm.processor.PrcEntityFfolDelete;
 import org.beigesoft.orm.processor.PrcEntityFfolSave;
 import org.beigesoft.orm.processor.PrcEmailMsgSave;
-import org.beigesoft.accounting.processor.PrcAccEntityPbDelete;
-import org.beigesoft.accounting.processor.PrcAccEntityDelete;
-import org.beigesoft.accounting.processor.PrcAccEntityFolDelete;
-import org.beigesoft.accounting.processor.PrcAccEntityFolSave;
-import org.beigesoft.accounting.processor.PrcAccEntityPbCopy;
-import org.beigesoft.accounting.processor.PrcAccEntityCopy;
+import org.beigesoft.orm.processor.PrcEntityRetrieve;
+import org.beigesoft.orm.processor.PrcEntityPbEditDelete;
+import org.beigesoft.orm.processor.PrcEntityDelete;
+import org.beigesoft.orm.processor.PrcEntityFolDelete;
+import org.beigesoft.orm.processor.PrcEntityPbDelete;
+import org.beigesoft.orm.processor.PrcEntityCreate;
+import org.beigesoft.orm.processor.PrcEntityFolSave;
+import org.beigesoft.orm.processor.PrcEntityPbCopy;
+import org.beigesoft.orm.processor.PrcEntitySave;
+import org.beigesoft.orm.processor.PrcEntityPbSave;
+import org.beigesoft.orm.processor.PrcEntityCopy;
 import org.beigesoft.accounting.processor.PrcAccEntityPbWithSubaccCopy;
 import org.beigesoft.accounting.processor.PrcAccEntityWithSubaccCopy;
-import org.beigesoft.accounting.processor.PrcAccEntityPbSave;
-import org.beigesoft.accounting.processor.PrcAccEntitySave;
-import org.beigesoft.accounting.processor.PrcAccEntityRetrieve;
-import org.beigesoft.accounting.processor.PrcAccEntityPbEditDelete;
 import org.beigesoft.accounting.processor.PrcSubaccountLineCreate;
 import org.beigesoft.accounting.processor.PrcAccEntityWithSubaccCreate;
-import org.beigesoft.accounting.processor.PrcAccEntityCreate;
 import org.beigesoft.accounting.processor.PrcAccEntityWithSubaccRetrieve;
 import org.beigesoft.accounting.processor.PrcAccEntityPbWithSubaccEditDelete;
 import org.beigesoft.accounting.processor.PrcAccDocRetrieve;
@@ -84,7 +84,6 @@ import org.beigesoft.accounting.processor.PrcManufactureGfr;
 import org.beigesoft.accounting.processor.PrcManufactureCopy;
 import org.beigesoft.accounting.processor.PrcPurchaseReturnSave;
 import org.beigesoft.accounting.processor.PrcPurchaseReturnLineSave;
-import org.beigesoft.accounting.processor.PrcPurchaseReturnLineCreate;
 import org.beigesoft.accounting.processor.PrcPurchaseReturnLineCopy;
 import org.beigesoft.accounting.processor.PrcPurchaseReturnLineGfr;
 import org.beigesoft.accounting.processor.PrcGoodsLossSave;
@@ -302,7 +301,7 @@ public class HldAccEntitiesProcessorNames
     } else if (pClass == AdditionCostLine.class) {
       return PrcAccEntityPbWithSubaccCopy.class.getSimpleName();
     } else if (IPersistableBase.class.isAssignableFrom(pClass)) {
-      return PrcAccEntityPbCopy.class.getSimpleName();
+      return PrcEntityPbCopy.class.getSimpleName();
     } else {
       if (this.hldAddEntitiesProcessorNames != null) {
         String name = this.hldAddEntitiesProcessorNames
@@ -311,7 +310,7 @@ public class HldAccEntitiesProcessorNames
           return name;
         }
       }
-      return PrcAccEntityCopy.class.getSimpleName();
+      return PrcEntityCopy.class.getSimpleName();
     }
   }
 
@@ -349,7 +348,7 @@ public class HldAccEntitiesProcessorNames
           return name;
         }
       }
-      return PrcAccEntityRetrieve.class.getSimpleName();
+      return PrcEntityRetrieve.class.getSimpleName();
     }
   }
 
@@ -394,7 +393,7 @@ public class HldAccEntitiesProcessorNames
     } else if (AccountingEntry.class == pClass) {
       return PrcAccEntrySaveDescr.class.getSimpleName();
     } else if (IPersistableBase.class.isAssignableFrom(pClass)) {
-      return PrcAccEntityPbSave.class.getSimpleName();
+      return PrcEntityPbSave.class.getSimpleName();
     } else {
       if (this.hldAddEntitiesProcessorNames != null) {
         String name = this.hldAddEntitiesProcessorNames
@@ -403,7 +402,7 @@ public class HldAccEntitiesProcessorNames
           return name;
         }
       }
-      return PrcAccEntitySave.class.getSimpleName();
+      return PrcEntitySave.class.getSimpleName();
     }
   }
 
@@ -504,7 +503,7 @@ public class HldAccEntitiesProcessorNames
           return name;
         }
       }
-      return PrcAccEntityFolDelete.class.getSimpleName();
+      return PrcEntityFolDelete.class.getSimpleName();
     }
   }
 
@@ -558,7 +557,7 @@ public class HldAccEntitiesProcessorNames
           return name;
         }
       }
-      return PrcAccEntityFolSave.class.getSimpleName();
+      return PrcEntityFolSave.class.getSimpleName();
     }
   }
 
@@ -576,9 +575,9 @@ public class HldAccEntitiesProcessorNames
       }
     }
     if (IPersistableBase.class.isAssignableFrom(pClass)) {
-      return PrcAccEntityPbDelete.class.getSimpleName();
+      return PrcEntityPbDelete.class.getSimpleName();
     } else {
-      return PrcAccEntityDelete.class.getSimpleName();
+      return PrcEntityDelete.class.getSimpleName();
     }
   }
 
@@ -595,8 +594,6 @@ public class HldAccEntitiesProcessorNames
       return PrcAccEntityWithSubaccCreate.class.getSimpleName();
     } else if (pClass == SubaccountLine.class) {
       return PrcSubaccountLineCreate.class.getSimpleName();
-    } else if (pClass == PurchaseReturnLine.class) {
-      return PrcPurchaseReturnLineCreate.class.getSimpleName();
     } else if (pClass == AccountingEntry.class) {
       return PrcAccEntryCreate.class.getSimpleName();
     } else {
@@ -607,7 +604,7 @@ public class HldAccEntitiesProcessorNames
           return name;
         }
       }
-      return PrcAccEntityCreate.class.getSimpleName();
+      return PrcEntityCreate.class.getSimpleName();
     }
   }
 
@@ -626,7 +623,7 @@ public class HldAccEntitiesProcessorNames
     } else if (pClass == AccountingEntries.class) {
       return PrcInpAccEntriesRetrieve.class.getSimpleName();
     } else if (IPersistableBase.class.isAssignableFrom(pClass)) {
-      return PrcAccEntityPbEditDelete.class.getSimpleName();
+      return PrcEntityPbEditDelete.class.getSimpleName();
     } else {
       if (this.hldAddEntitiesProcessorNames != null) {
         String name = this.hldAddEntitiesProcessorNames
@@ -635,7 +632,7 @@ public class HldAccEntitiesProcessorNames
           return name;
         }
       }
-      return PrcAccEntityRetrieve.class.getSimpleName();
+      return PrcEntityRetrieve.class.getSimpleName();
     }
   }
 

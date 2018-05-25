@@ -87,8 +87,6 @@ public class PrcAdditionCostLineDelete<RS>
     pAddParam.put("nextEntity", pEntity.getItsOwner());
     pAddParam.put("nameOwnerEntity",
       ManufacturingProcess.class.getSimpleName());
-    pRequestData.setAttribute("accSettings",
-      this.srvAccSettings.lazyGetAccSettings(pAddParam));
     return null;
   }
 

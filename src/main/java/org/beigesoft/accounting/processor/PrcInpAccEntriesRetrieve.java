@@ -26,7 +26,6 @@ import org.beigesoft.settings.IMngSettings;
 import org.beigesoft.service.ISrvOrm;
 import org.beigesoft.accounting.persistable.AccountingEntries;
 import org.beigesoft.accounting.persistable.AccountingEntry;
-import org.beigesoft.accounting.service.ISrvAccSettings;
 
 /**
  * <p>Service that retrieve input accounting entries for print/
@@ -65,11 +64,6 @@ public class PrcInpAccEntriesRetrieve<RS>
   private IHolderForClassByName<String> fieldConverterNamesHolder;
 
   /**
-   * <p>Business service for accounting settings.</p>
-   **/
-  private ISrvAccSettings srvAccSettings;
-
-  /**
    * <p>AccountingEntries type code.</p>
    **/
   private final Integer accountingEntriesTypeCode =
@@ -91,8 +85,6 @@ public class PrcInpAccEntriesRetrieve<RS>
         final IRequestData pRequestData) throws Exception {
     AccountingEntries entity = this.srvOrm.retrieveEntity(pAddParam, pEntity);
     entity.setIsNew(false);
-    pRequestData.setAttribute("accSettings",
-      this.srvAccSettings.lazyGetAccSettings(pAddParam));
     pRequestData.setAttribute("entity", entity);
     pRequestData.setAttribute("mngUvds", this.mngUvdSettings);
     pRequestData.setAttribute("srvOrm", this.srvOrm);
@@ -202,21 +194,5 @@ public class PrcInpAccEntriesRetrieve<RS>
   public final void setFieldConverterNamesHolder(
     final IHolderForClassByName<String> pFieldConverterNamesHolder) {
     this.fieldConverterNamesHolder = pFieldConverterNamesHolder;
-  }
-
-  /**
-   * <p>Getter for srvAccSettings.</p>
-   * @return ISrvAccSettings
-   **/
-  public final ISrvAccSettings getSrvAccSettings() {
-    return this.srvAccSettings;
-  }
-
-  /**
-   * <p>Setter for srvAccSettings.</p>
-   * @param pSrvAccSettings reference
-   **/
-  public final void setSrvAccSettings(final ISrvAccSettings pSrvAccSettings) {
-    this.srvAccSettings = pSrvAccSettings;
   }
 }

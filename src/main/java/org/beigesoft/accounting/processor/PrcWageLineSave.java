@@ -85,8 +85,6 @@ public class PrcWageLineSave<RS>
     updateOwner(pAddParam, pEntity);
     pAddParam.put("nextEntity", pEntity.getItsOwner());
     pAddParam.put("nameOwnerEntity", Wage.class.getSimpleName());
-    pRequestData.setAttribute("accSettings",
-      this.srvAccSettings.lazyGetAccSettings(pAddParam));
     return null;
   }
 

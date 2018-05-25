@@ -20,8 +20,8 @@ import org.beigesoft.model.IRequestData;
 import org.beigesoft.service.ISrvI18n;
 import org.beigesoft.service.ISrvOrm;
 import org.beigesoft.accounting.persistable.IDoc;
-import org.beigesoft.accounting.service.ISrvAccSettings;
 import org.beigesoft.accounting.service.ISrvAccEntry;
+import org.beigesoft.accounting.service.ISrvAccSettings;
 import org.beigesoft.service.IEntityProcessor;
 
 /**
@@ -50,14 +50,14 @@ public abstract class APrcAccDocSave<RS, T extends IDoc>
   private DateFormat dateFormatter;
 
   /**
-   * <p>Business service for accounting settings.</p>
-   **/
-  private ISrvAccSettings srvAccSettings;
-
-  /**
    * <p>Business service for accounting entries.</p>
    **/
   private ISrvAccEntry srvAccEntry;
+
+  /**
+   * <p>Business service for accounting settings.</p>
+   **/
+  private ISrvAccSettings srvAccSettings;
 
   /**
    * <p>Process entity request.</p>
@@ -161,8 +161,6 @@ public abstract class APrcAccDocSave<RS, T extends IDoc>
       this.srvAccEntry.makeEntries(pAddParam, pEntity);
     }
     makeOtherEntries(pAddParam, pEntity, pRequestData, isNew);
-    pRequestData.setAttribute("accSettings",
-      this.srvAccSettings.lazyGetAccSettings(pAddParam));
     return pEntity;
   }
   //To override:
@@ -259,22 +257,6 @@ public abstract class APrcAccDocSave<RS, T extends IDoc>
   }
 
   /**
-   * <p>Getter for srvAccSettings.</p>
-   * @return ISrvAccSettings
-   **/
-  public final ISrvAccSettings getSrvAccSettings() {
-    return this.srvAccSettings;
-  }
-
-  /**
-   * <p>Setter for srvAccSettings.</p>
-   * @param pSrvAccSettings reference
-   **/
-  public final void setSrvAccSettings(final ISrvAccSettings pSrvAccSettings) {
-    this.srvAccSettings = pSrvAccSettings;
-  }
-
-  /**
    * <p>Getter for srvAccEntry.</p>
    * @return ISrvAccEntry
    **/
@@ -288,5 +270,21 @@ public abstract class APrcAccDocSave<RS, T extends IDoc>
    **/
   public final void setSrvAccEntry(final ISrvAccEntry pSrvAccEntry) {
     this.srvAccEntry = pSrvAccEntry;
+  }
+
+  /**
+   * <p>Getter for srvAccSettings.</p>
+   * @return ISrvAccSettings
+   **/
+  public final ISrvAccSettings getSrvAccSettings() {
+    return this.srvAccSettings;
+  }
+
+  /**
+   * <p>Setter for srvAccSettings.</p>
+   * @param pSrvAccSettings reference
+   **/
+  public final void setSrvAccSettings(final ISrvAccSettings pSrvAccSettings) {
+    this.srvAccSettings = pSrvAccSettings;
   }
 }

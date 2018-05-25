@@ -207,8 +207,6 @@ public class PrcSalesReturnLineSave<RS>
     }
     pAddParam.put("nextEntity", pEntity.getItsOwner());
     pAddParam.put("nameOwnerEntity", SalesReturn.class.getSimpleName());
-    pRequestData.setAttribute("accSettings",
-      this.srvAccSettings.lazyGetAccSettings(pAddParam));
     return null;
   }
 

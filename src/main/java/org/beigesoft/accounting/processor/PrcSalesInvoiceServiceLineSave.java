@@ -125,8 +125,6 @@ public class PrcSalesInvoiceServiceLineSave<RS>
       .updateOwner(pAddParam, pEntity.getItsOwner());
     pAddParam.put("nextEntity", pEntity.getItsOwner());
     pAddParam.put("nameOwnerEntity", SalesInvoice.class.getSimpleName());
-    pRequestData.setAttribute("accSettings",
-      this.srvAccSettings.lazyGetAccSettings(pAddParam));
     return null;
   }
 

@@ -18,6 +18,7 @@ import java.math.BigDecimal;
 import org.beigesoft.model.IRequestData;
 import org.beigesoft.accounting.persistable.PurchaseReturnLine;
 import org.beigesoft.service.IEntityProcessor;
+import org.beigesoft.orm.processor.PrcEntityPbCopy;
 
 /**
  * <p>Service that make PurchaseReturnLine copy from DB.</p>
@@ -31,7 +32,7 @@ public class PrcPurchaseReturnLineCopy<RS>
   /**
    * <p>Acc-EntityPb Copy delegator.</p>
    **/
-  private PrcAccEntityPbCopy<RS, PurchaseReturnLine> prcAccEntityPbCopy;
+  private PrcEntityPbCopy<RS, PurchaseReturnLine> prcAccEntityPbCopy;
 
   /**
    * <p>Process entity request.</p>
@@ -49,7 +50,7 @@ public class PrcPurchaseReturnLineCopy<RS>
         final IRequestData pRequestData) throws Exception {
     PurchaseReturnLine entity = this.prcAccEntityPbCopy
       .process(pAddParam, pEntityPb, pRequestData);
-    entity.setItsOwner(this.prcAccEntityPbCopy.getPrcEntityPbCopy()
+    entity.setItsOwner(this.prcAccEntityPbCopy
       .getSrvOrm().retrieveEntity(pAddParam, entity.getItsOwner()));
     entity.setPurchaseInvoiceLine(null);
     entity.setPurchInvLnAppearance(null);
@@ -64,9 +65,9 @@ public class PrcPurchaseReturnLineCopy<RS>
   //Simple getters and setters:
   /**
    * <p>Getter for prcAccEntityPbCopy.</p>
-   * @return PrcAccEntityPbCopy<RS, PurchaseReturnLine>
+   * @return PrcEntityPbCopy<RS, PurchaseReturnLine>
    **/
-  public final PrcAccEntityPbCopy<RS, PurchaseReturnLine>
+  public final PrcEntityPbCopy<RS, PurchaseReturnLine>
     getPrcAccEntityPbCopy() {
     return this.prcAccEntityPbCopy;
   }
@@ -76,7 +77,7 @@ public class PrcPurchaseReturnLineCopy<RS>
    * @param pPrcAccEntityPbCopy reference
    **/
   public final void setPrcAccEntityPbCopy(
-    final PrcAccEntityPbCopy<RS, PurchaseReturnLine> pPrcAccEntityPbCopy) {
+    final PrcEntityPbCopy<RS, PurchaseReturnLine> pPrcAccEntityPbCopy) {
     this.prcAccEntityPbCopy = pPrcAccEntityPbCopy;
   }
 }

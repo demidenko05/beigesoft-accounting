@@ -84,8 +84,6 @@ public class PrcMoveItemsLineSave<RS>
       getSrvOrm().updateEntity(pAddParam, pEntity.getItsOwner());
       pAddParam.put("nextEntity", pEntity.getItsOwner());
       pAddParam.put("nameOwnerEntity", MoveItems.class.getSimpleName());
-      pRequestData.setAttribute("accSettings",
-        this.srvAccSettings.lazyGetAccSettings(pAddParam));
       return null;
     } else {
       throw new ExceptionWithCode(ExceptionWithCode.FORBIDDEN,

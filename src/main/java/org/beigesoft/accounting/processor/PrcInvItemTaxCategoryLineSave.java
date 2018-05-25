@@ -22,7 +22,6 @@ import org.beigesoft.service.ISrvOrm;
 import org.beigesoft.accounting.model.ETaxType;
 import org.beigesoft.accounting.persistable.InvItemTaxCategory;
 import org.beigesoft.accounting.persistable.InvItemTaxCategoryLine;
-import org.beigesoft.accounting.service.ISrvAccSettings;
 
 /**
  * <p>Service that save InvItemTaxCategoryLine into DB.</p>
@@ -37,11 +36,6 @@ public class PrcInvItemTaxCategoryLineSave<RS>
    * <p>ORM service.</p>
    **/
   private ISrvOrm<RS> srvOrm;
-
-  /**
-   * <p>Business service for accounting settings.</p>
-   **/
-  private ISrvAccSettings srvAccSettings;
 
   /**
    * <p>Process entity request.</p>
@@ -88,8 +82,6 @@ public class PrcInvItemTaxCategoryLineSave<RS>
     pAddParam.put("nextEntity", pEntity.getItsOwner());
     pAddParam.put("nameOwnerEntity",
       InvItemTaxCategory.class.getSimpleName());
-    pRequestData.setAttribute("accSettings",
-      this.srvAccSettings.lazyGetAccSettings(pAddParam));
     return null;
   }
 
@@ -135,21 +127,5 @@ public class PrcInvItemTaxCategoryLineSave<RS>
    **/
   public final void setSrvOrm(final ISrvOrm<RS> pSrvOrm) {
     this.srvOrm = pSrvOrm;
-  }
-
-  /**
-   * <p>Getter for srvAccSettings.</p>
-   * @return ISrvAccSettings
-   **/
-  public final ISrvAccSettings getSrvAccSettings() {
-    return this.srvAccSettings;
-  }
-
-  /**
-   * <p>Setter for srvAccSettings.</p>
-   * @param pSrvAccSettings reference
-   **/
-  public final void setSrvAccSettings(final ISrvAccSettings pSrvAccSettings) {
-    this.srvAccSettings = pSrvAccSettings;
   }
 }

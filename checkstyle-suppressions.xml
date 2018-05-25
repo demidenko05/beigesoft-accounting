@@ -19,11 +19,9 @@
   <suppress checks="MagicNumberCheck"
     files="AccSettings|EmployeeCategory|Employee|WorkType|Expense|Property|BankAccount|SrvAccSettings|WageTaxLine|WageLine|Wage"/>
   <suppress checks="MagicNumberCheck"
-    files="BeigeAccounting|JettyAccountingService|MngDatabaseAndroid|PaymentTo|PrepaymentTo|PrepaymentFrom|PaymentFrom"/>
-  <suppress checks="ParameterNumber"
-    files="SrvPurchaseInvoice|SrvSalesReturn|SrvBeginningInventory|ASrvDocumentCogs|ASrvDocumentUseMaterial|ASrvDocumentFull"/>
+    files="MngDatabaseAndroid|PaymentTo|PrepaymentTo|PrepaymentFrom|PaymentFrom"/>
   <suppress checks="MagicNumberCheck"
-    files="BalanceAtAllDirtyCheck|SrvBalanceStd|GoodsLoss|GoodsLossLine|SalesReturn|SalesReturnLine|PurchaseReturn|PurchaseReturnLine|AFactoryAppBeans"/>
+    files="BalanceAtAllDirtyCheck|SrvBalanceStd|GoodsLoss|GoodsLossLine|SalesReturn|SalesReturnLine|PurchaseReturn|PurchaseReturnLine|HndlAccVarsRequest"/>
   <suppress checks="MagicNumberCheck"
     files="MoveItems|MoveItemsLine|BeginningInventory|BeginningInventoryLine|InvoiceReportPdf|BalanceSheetPdf|SrvBalanceSheet|ServiceToSaleCategory"/>
 </suppressions>

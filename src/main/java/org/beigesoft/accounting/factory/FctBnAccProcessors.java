@@ -20,7 +20,6 @@ import org.beigesoft.exception.ExceptionWithCode;
 import org.beigesoft.service.IProcessor;
 import org.beigesoft.orm.processor.PrcEntitiesPage;
 import org.beigesoft.orm.factory.FctBnProcessors;
-import org.beigesoft.accounting.processor.PrcAccEntitiesPage;
 import org.beigesoft.accounting.processor.PrcPageWithSubaccTypes;
 import org.beigesoft.accounting.service.ISrvAccSettings;
 import org.beigesoft.accounting.service.ISrvTypeCode;
@@ -82,8 +81,9 @@ public class FctBnAccProcessors<RS>
         // make sure again whether it's null after locking:
         proc = this.processorsMap.get(pBeanName);
         if (proc == null) {
-          if (pBeanName.equals(PrcAccEntitiesPage.class.getSimpleName())) {
-            proc = lazyGetPrcAccEntitiesPage(pAddParam);
+          if (pBeanName.equals(PrcEntitiesPage.class.getSimpleName())) {
+            proc = this.fctBnProcessors
+              .lazyGet(pAddParam, PrcEntitiesPage.class.getSimpleName());
           } else if (pBeanName
             .equals(PrcPageWithSubaccTypes.class.getSimpleName())) {
             proc = createPutPrcPageWithSubaccTypes(pAddParam);
@@ -122,38 +122,13 @@ public class FctBnAccProcessors<RS>
     createPutPrcPageWithSubaccTypes(
       final Map<String, Object> pAddParam) throws Exception {
     PrcPageWithSubaccTypes<RS> proc = new PrcPageWithSubaccTypes<RS>();
-    IProcessor procDlg = lazyGetPrcAccEntitiesPage(pAddParam);
+    PrcEntitiesPage procDlg = (PrcEntitiesPage) this.fctBnProcessors
+      .lazyGet(pAddParam, PrcEntitiesPage.class.getSimpleName());
     proc.setPrcAccEntitiesPage(procDlg);
     proc.setSrvTypeCode(getSrvTypeCode());
     //assigning fully initialized object:
     this.processorsMap
       .put(PrcPageWithSubaccTypes.class.getSimpleName(), proc);
-    return proc;
-  }
-
-  /**
-   * <p>Lazy get PrcAccEntitiesPage.</p>
-   * @param pAddParam additional param
-   * @return requested PrcAccEntitiesPage
-   * @throws Exception - an exception
-   */
-  protected final PrcAccEntitiesPage<RS>
-    lazyGetPrcAccEntitiesPage(
-      final Map<String, Object> pAddParam) throws Exception {
-    @SuppressWarnings("unchecked")
-    PrcAccEntitiesPage<RS> proc = (PrcAccEntitiesPage<RS>)
-      this.processorsMap
-        .get(PrcAccEntitiesPage.class.getSimpleName());
-    if (proc == null) {
-      proc = new PrcAccEntitiesPage<RS>();
-      proc.setSrvAccSettings(getSrvAccSettings());
-      PrcEntitiesPage procDlg = (PrcEntitiesPage) this.fctBnProcessors
-        .lazyGet(pAddParam, PrcEntitiesPage.class.getSimpleName());
-      proc.setPrcEntitiesPage(procDlg);
-      //assigning fully initialized object:
-      this.processorsMap
-        .put(PrcAccEntitiesPage.class.getSimpleName(), proc);
-    }
     return proc;
   }
 

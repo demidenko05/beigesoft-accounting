@@ -20,7 +20,6 @@ import org.beigesoft.model.IRequestData;
 import org.beigesoft.service.IEntityProcessor;
 import org.beigesoft.service.ISrvOrm;
 import org.beigesoft.accounting.persistable.IDoc;
-import org.beigesoft.accounting.service.ISrvAccSettings;
 
 /**
  * <p>Service that make document copy from DB and prepare for reversing.
@@ -43,11 +42,6 @@ public class PrcAccDocGetForReverse<RS, T extends IDoc>
    * <p>Entity Copy delegator.</p>
    **/
   private IEntityProcessor<T, Long> prcAccEntityPbCopy;
-
-  /**
-   * <p>Business service for accounting settings.</p>
-   **/
-  private ISrvAccSettings srvAccSettings;
 
   /**
    * <p>Process entity request.</p>
@@ -78,8 +72,6 @@ public class PrcAccDocGetForReverse<RS, T extends IDoc>
     entity.setItsTotal(entity.getItsTotal().negate());
     entity.setItsDate(new Date(entity.getItsDate().getTime() + 1));
     entity.setHasMadeAccEntries(false);
-    pRequestData.setAttribute("accSettings",
-      this.srvAccSettings.lazyGetAccSettings(pAddParam));
     return entity;
   }
 
@@ -115,21 +107,5 @@ public class PrcAccDocGetForReverse<RS, T extends IDoc>
   public final void setPrcAccEntityPbCopy(
     final IEntityProcessor<T, Long> pPrcAccEntityPbCopy) {
     this.prcAccEntityPbCopy = pPrcAccEntityPbCopy;
-  }
-
-  /**
-   * <p>Getter for srvAccSettings.</p>
-   * @return ISrvAccSettings
-   **/
-  public final ISrvAccSettings getSrvAccSettings() {
-    return this.srvAccSettings;
-  }
-
-  /**
-   * <p>Setter for srvAccSettings.</p>
-   * @param pSrvAccSettings reference
-   **/
-  public final void setSrvAccSettings(final ISrvAccSettings pSrvAccSettings) {
-    this.srvAccSettings = pSrvAccSettings;
   }
 }
