@@ -17,5 +17,7 @@
 <entry key="org.beigesoft.persistable.UserRoleTomcat">itsUser,itsRole</entry>
 <entry key="org.beigesoft.persistable.UserRoleJetty">itsUser,itsRole</entry>
 <entry key="org.beigesoft.persistable.LangPreferences">lang,country</entry>
+<entry key="org.beigesoft.persistable.AI18nName">lang,hasName</entry>
+<entry key="org.beigesoft.accounting.persistable.I18nAccounting">lang</entry>
 <entry key="org.beigesoft.accounting.persistable.WarehouseRest">warehouseSite,invItem,unitOfMeasure</entry>
 </properties>

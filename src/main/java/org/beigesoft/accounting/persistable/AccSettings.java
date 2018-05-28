@@ -166,6 +166,12 @@ public class AccSettings extends AHasIdLongVersion {
    **/
   private WageTaxesMethod wageTaxesMethod;
 
+  /**
+   * <p>Not Null, if  if uses currency sign in reports (e.g. $),
+   * otherwise itsName (e.g. USD).</p>
+   **/
+  private Boolean useCurrencySign = false;
+
   //Hiding references getters and setters:
   /**
    * <p>Getter for currentAccYear.</p>
@@ -597,5 +603,21 @@ public class AccSettings extends AHasIdLongVersion {
    **/
   public final void setRegPhone(final String pRegPhone) {
     this.regPhone = pRegPhone;
+  }
+
+  /**
+   * <p>Getter for useCurrencySign.</p>
+   * @return Boolean
+   **/
+  public final Boolean getUseCurrencySign() {
+    return this.useCurrencySign;
+  }
+
+  /**
+   * <p>Setter for useCurrencySign.</p>
+   * @param pUseCurrencySign reference
+   **/
+  public final void setUseCurrencySign(final Boolean pUseCurrencySign) {
+    this.useCurrencySign = pUseCurrencySign;
   }
 }

@@ -14,5 +14,6 @@
 <entry key="org.beigesoft.persistable.UserRoleTomcat">itsId</entry>
 <entry key="org.beigesoft.persistable.UserRoleJetty">itsId</entry>
 <entry key="org.beigesoft.persistable.LangPreferences">itsId</entry>
+<entry key="org.beigesoft.persistable.AI18nName">itsId</entry>
 <entry key="org.beigesoft.accounting.persistable.WarehouseRest">itsId</entry>
 </properties>

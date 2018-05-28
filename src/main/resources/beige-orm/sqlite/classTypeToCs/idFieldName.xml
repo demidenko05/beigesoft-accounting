@@ -14,4 +14,5 @@
 <entry key="java.lang.Object">itsId</entry>
 <entry key="org.beigesoft.persistable.DatabaseInfo">databaseId</entry>
 <entry key="org.beigesoft.persistable.UserTomcat">itsUser</entry>
+<entry key="org.beigesoft.accounting.persistable.I18nAccounting">lang</entry>
 </properties>

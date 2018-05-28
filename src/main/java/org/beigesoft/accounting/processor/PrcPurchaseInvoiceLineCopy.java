@@ -50,7 +50,6 @@ public class PrcPurchaseInvoiceLineCopy<RS>
     PurchaseInvoiceLine entity = this.prcAccEntityPbCopy
       .process(pAddParam, pEntityPb, pRequestData);
     entity.setItsQuantity(BigDecimal.ZERO);
-    entity.setItsCost(BigDecimal.ZERO);
     entity.setItsTotal(BigDecimal.ZERO);
     entity.setTotalTaxes(BigDecimal.ZERO);
     entity.setSubtotal(BigDecimal.ZERO);

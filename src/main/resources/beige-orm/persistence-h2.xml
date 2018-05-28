@@ -110,6 +110,10 @@
   org.beigesoft.accounting.persistable.UseMaterialEntry,
   org.beigesoft.accounting.persistable.CogsEntry,
   org.beigesoft.accounting.persistable.WarehouseEntry,
+  org.beigesoft.accounting.persistable.I18nServiceToSale,
+  org.beigesoft.accounting.persistable.I18nInvItem,
+  org.beigesoft.accounting.persistable.I18nCurrency,
+  org.beigesoft.accounting.persistable.I18nAccounting,
   org.beigesoft.accounting.persistable.WarehouseRest</entry>
 <entry key="settingsKeysForClasses">idColumnsNames, idFieldName, ownerFieldName, constraintAdd, excludeFields, versionAlgorithm</entry>
 <entry key="settingsKeysForFields">definition, isNullable</entry>

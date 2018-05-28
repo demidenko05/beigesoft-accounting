@@ -13,6 +13,7 @@ package org.beigesoft.accounting.service;
  */
 
 import java.util.Map;
+import java.math.RoundingMode;
 
 import org.beigesoft.model.IRequestData;
 import org.beigesoft.handler.IHandlerRequest;
@@ -31,6 +32,11 @@ public class HndlAccVarsRequest implements IHandlerRequest {
    * <p>Business service for accounting settings.</p>
    **/
   private ISrvAccSettings srvAccSettings;
+
+  /**
+   * <p>Additional I18n Request Handler - Web-Store vars.</p>
+   */
+  private IHandlerRequest additionalI18nReqHndl;
 
   /**
    * <p>Handle request.</p>
@@ -57,12 +63,38 @@ public class HndlAccVarsRequest implements IHandlerRequest {
     Boolean rSisUsePrecision4 = as.getPricePrecision() == 4
       || as.getCostPrecision() == 4 || as.getBalancePrecision() == 4
         || as.getQuantityPrecision() == 4;
+    String rSmRound;
+    if (as.getRoundingMode().equals(RoundingMode.HALF_UP)) {
+      rSmRound = "S";
+    } else if (as.getRoundingMode().equals(RoundingMode.HALF_DOWN)) {
+      rSmRound = "s";
+    } else if (as.getRoundingMode().equals(RoundingMode.UP)) {
+      rSmRound = "U";
+    } else if (as.getRoundingMode().equals(RoundingMode.DOWN)) {
+      rSmRound = "D";
+    } else if (as.getRoundingMode().equals(RoundingMode.HALF_EVEN)) {
+      rSmRound = "B";
+    } else if (as.getRoundingMode().equals(RoundingMode.CEILING)) {
+      rSmRound = "C";
+    } else if (as.getRoundingMode().equals(RoundingMode.FLOOR)) {
+      rSmRound = "F";
+    } else {
+      rSmRound = "S";
+    }
     pRequestData.setAttribute("RSisUsePrecision0", rSisUsePrecision0);
     pRequestData.setAttribute("RSisUsePrecision1", rSisUsePrecision1);
     pRequestData.setAttribute("RSisUsePrecision2", rSisUsePrecision2);
     pRequestData.setAttribute("RSisUsePrecision3", rSisUsePrecision3);
     pRequestData.setAttribute("RSisUsePrecision4", rSisUsePrecision4);
+    pRequestData.setAttribute("quantityPrecision", as.getQuantityPrecision());
+    pRequestData.setAttribute("pricePrecision", as.getPricePrecision());
+    pRequestData.setAttribute("costPrecision", as.getCostPrecision());
+    pRequestData.setAttribute("balancePrecision", as.getBalancePrecision());
+    pRequestData.setAttribute("RSmRound", rSmRound);
     pRequestData.setAttribute("accSettings", as);
+    if (this.additionalI18nReqHndl != null) {
+      this.additionalI18nReqHndl.handle(pReqVars, pRequestData);
+    }
   }
 
   //Simple getters and setters (their synchronization never hit performance):
@@ -80,5 +112,22 @@ public class HndlAccVarsRequest implements IHandlerRequest {
    **/
   public final void setSrvAccSettings(final ISrvAccSettings pSrvAccSettings) {
     this.srvAccSettings = pSrvAccSettings;
+  }
+
+  /**
+   * <p>Getter for additionalI18nReqHndl.</p>
+   * @return IHandlerRequest
+   **/
+  public final IHandlerRequest getAdditionalI18nReqHndl() {
+    return this.additionalI18nReqHndl;
+  }
+
+  /**
+   * <p>Setter for additionalI18nReqHndl.</p>
+   * @param pAdditionalI18nReqHndl reference
+   **/
+  public final void setAdditionalI18nReqHndl(
+    final IHandlerRequest pAdditionalI18nReqHndl) {
+    this.additionalI18nReqHndl = pAdditionalI18nReqHndl;
   }
 }

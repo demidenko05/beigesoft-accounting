@@ -85,6 +85,12 @@ public class DebtorCreditor extends ASubaccount {
   private Boolean isForeigner;
 
   /**
+   * <p>Nullable, name of buyer in native language for I18N
+   * of overseas sales invoice.</p>
+   **/
+  private String nativeName;
+
+  /**
    * <p>OOP friendly Constant of code type.</p>
    * @return 2004
    **/
@@ -286,5 +292,21 @@ public class DebtorCreditor extends ASubaccount {
    **/
   public final void setIsForeigner(final Boolean pIsForeigner) {
     this.isForeigner = pIsForeigner;
+  }
+
+  /**
+   * <p>Getter for nativeName.</p>
+   * @return String
+   **/
+  public final String getNativeName() {
+    return this.nativeName;
+  }
+
+  /**
+   * <p>Setter for nativeName.</p>
+   * @param pNativeName reference
+   **/
+  public final void setNativeName(final String pNativeName) {
+    this.nativeName = pNativeName;
   }
 }

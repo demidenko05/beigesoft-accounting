@@ -1,4 +1,6 @@
 alter table DEBTORCREDITOR add column ISFOREIGNER integer not null default 0;
+alter table DEBTORCREDITOR add column NATIVENAME varchar(255) default null;
+alter table ACCSETTINGS add column USECURRENCYSIGN integer not null default 0;
 alter table CURRENCY add column ITSSIGN varchar(6) default null;
 update CURRENCY set ITSSIGN='€', ITSVERSION=(ITSVERSION+1) where ITSID=978;
 update CURRENCY set ITSSIGN='$', ITSVERSION=(ITSVERSION+1) where ITSID=840;
