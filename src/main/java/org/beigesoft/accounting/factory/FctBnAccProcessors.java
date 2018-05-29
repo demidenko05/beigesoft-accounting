@@ -21,7 +21,6 @@ import org.beigesoft.service.IProcessor;
 import org.beigesoft.orm.processor.PrcEntitiesPage;
 import org.beigesoft.orm.factory.FctBnProcessors;
 import org.beigesoft.accounting.processor.PrcPageWithSubaccTypes;
-import org.beigesoft.accounting.service.ISrvAccSettings;
 import org.beigesoft.accounting.service.ISrvTypeCode;
 
 /**
@@ -39,11 +38,6 @@ public class FctBnAccProcessors<RS>
    * simple name. Any way any such factory must be no abstract.</p>
    **/
   private FctBnProcessors<RS> fctBnProcessors;
-
-  /**
-   * <p>Business service for accounting settings.</p>
-   **/
-  private ISrvAccSettings srvAccSettings;
 
   /**
    * <p>Type Codes of sub-accounts service.</p>
@@ -73,22 +67,20 @@ public class FctBnAccProcessors<RS>
   public final IProcessor lazyGet(
     final Map<String, Object> pAddParam,
       final String pBeanName) throws Exception {
-    IProcessor proc =
-      this.processorsMap.get(pBeanName);
+    IProcessor proc = this.processorsMap.get(pBeanName);
     if (proc == null) {
-      // locking:
-      synchronized (this.processorsMap) {
-        // make sure again whether it's null after locking:
-        proc = this.processorsMap.get(pBeanName);
-        if (proc == null) {
-          if (pBeanName.equals(PrcEntitiesPage.class.getSimpleName())) {
-            proc = this.fctBnProcessors
-              .lazyGet(pAddParam, PrcEntitiesPage.class.getSimpleName());
-          } else if (pBeanName
-            .equals(PrcPageWithSubaccTypes.class.getSimpleName())) {
+      proc = this.fctBnProcessors.lazyGet(pAddParam, pBeanName);
+      if (proc == null && this.additionalPf != null) {
+        proc = this.additionalPf.lazyGet(pAddParam, pBeanName);
+      }
+      if (proc == null) {
+        // locking:
+        synchronized (this.processorsMap) {
+          // make sure again whether it's null after locking:
+          proc = this.processorsMap.get(pBeanName);
+          if (proc == null
+            && pBeanName.equals(PrcPageWithSubaccTypes.class.getSimpleName())) {
             proc = createPutPrcPageWithSubaccTypes(pAddParam);
-          } else if (this.additionalPf != null) {
-            proc = this.additionalPf.lazyGet(pAddParam, pBeanName);
           }
         }
       }
@@ -149,22 +141,6 @@ public class FctBnAccProcessors<RS>
   public final void setFctBnProcessors(
     final FctBnProcessors<RS> pFctBnProcessors) {
     this.fctBnProcessors = pFctBnProcessors;
-  }
-
-  /**
-   * <p>Getter for srvAccSettings.</p>
-   * @return ISrvAccSettings
-   **/
-  public final ISrvAccSettings getSrvAccSettings() {
-    return this.srvAccSettings;
-  }
-
-  /**
-   * <p>Setter for srvAccSettings.</p>
-   * @param pSrvAccSettings reference
-   **/
-  public final void setSrvAccSettings(final ISrvAccSettings pSrvAccSettings) {
-    this.srvAccSettings = pSrvAccSettings;
   }
 
   /**

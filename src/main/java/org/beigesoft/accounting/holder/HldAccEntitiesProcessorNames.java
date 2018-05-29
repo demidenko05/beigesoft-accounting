@@ -86,6 +86,7 @@ import org.beigesoft.accounting.processor.PrcPurchaseReturnSave;
 import org.beigesoft.accounting.processor.PrcPurchaseReturnLineSave;
 import org.beigesoft.accounting.processor.PrcPurchaseReturnLineCopy;
 import org.beigesoft.accounting.processor.PrcPurchaseReturnLineGfr;
+import org.beigesoft.accounting.processor.PrcPurchaseReturnLineCreate;
 import org.beigesoft.accounting.processor.PrcGoodsLossSave;
 import org.beigesoft.accounting.processor.PrcGoodsLossLineCopy;
 import org.beigesoft.accounting.processor.PrcGoodsLossLineGfr;
@@ -592,6 +593,8 @@ public class HldAccEntitiesProcessorNames
         || pClass == PrepaymentFrom.class || pClass == PrepaymentTo.class
           || pClass == AdditionCostLine.class) {
       return PrcAccEntityWithSubaccCreate.class.getSimpleName();
+    } else if (pClass == PurchaseReturnLine.class) {
+      return PrcPurchaseReturnLineCreate.class.getSimpleName();
     } else if (pClass == SubaccountLine.class) {
       return PrcSubaccountLineCreate.class.getSimpleName();
     } else if (pClass == AccountingEntry.class) {

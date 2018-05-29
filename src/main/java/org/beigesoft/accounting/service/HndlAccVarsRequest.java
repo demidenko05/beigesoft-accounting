@@ -16,7 +16,7 @@ import java.util.Map;
 import java.math.RoundingMode;
 
 import org.beigesoft.model.IRequestData;
-import org.beigesoft.handler.IHandlerRequest;
+import org.beigesoft.handler.IHandlerRequestDch;
 import org.beigesoft.accounting.persistable.AccSettings;
 
 /**
@@ -26,7 +26,7 @@ import org.beigesoft.accounting.persistable.AccSettings;
  *
  * @author Yury Demidenko
  */
-public class HndlAccVarsRequest implements IHandlerRequest {
+public class HndlAccVarsRequest implements IHandlerRequestDch {
 
   /**
    * <p>Business service for accounting settings.</p>
@@ -36,7 +36,7 @@ public class HndlAccVarsRequest implements IHandlerRequest {
   /**
    * <p>Additional I18n Request Handler - Web-Store vars.</p>
    */
-  private IHandlerRequest additionalI18nReqHndl;
+  private IHandlerRequestDch additionalI18nReqHndl;
 
   /**
    * <p>Handle request.</p>
@@ -97,7 +97,18 @@ public class HndlAccVarsRequest implements IHandlerRequest {
     }
   }
 
-  //Simple getters and setters (their synchronization never hit performance):
+  /**
+   * <p>Handle data changed event.</p>
+   * @throws Exception - an exception
+   **/
+  @Override
+  public final synchronized void handleDataChanged() throws Exception {
+    if (this.additionalI18nReqHndl != null) {
+      this.additionalI18nReqHndl.handleDataChanged();
+    }
+  }
+
+  //Simple getters and setters:
   /**
    * <p>Getter for srvAccSettings.</p>
    * @return ISrvAccSettings
@@ -118,7 +129,7 @@ public class HndlAccVarsRequest implements IHandlerRequest {
    * <p>Getter for additionalI18nReqHndl.</p>
    * @return IHandlerRequest
    **/
-  public final IHandlerRequest getAdditionalI18nReqHndl() {
+  public final IHandlerRequestDch getAdditionalI18nReqHndl() {
     return this.additionalI18nReqHndl;
   }
 
@@ -127,7 +138,7 @@ public class HndlAccVarsRequest implements IHandlerRequest {
    * @param pAdditionalI18nReqHndl reference
    **/
   public final void setAdditionalI18nReqHndl(
-    final IHandlerRequest pAdditionalI18nReqHndl) {
+    final IHandlerRequestDch pAdditionalI18nReqHndl) {
     this.additionalI18nReqHndl = pAdditionalI18nReqHndl;
   }
 }
