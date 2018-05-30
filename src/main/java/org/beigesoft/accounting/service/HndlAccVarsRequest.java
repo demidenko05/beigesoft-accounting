@@ -81,16 +81,23 @@ public class HndlAccVarsRequest implements IHandlerRequestDch {
     } else {
       rSmRound = "S";
     }
-    pRequestData.setAttribute("RSisUsePrecision0", rSisUsePrecision0);
-    pRequestData.setAttribute("RSisUsePrecision1", rSisUsePrecision1);
-    pRequestData.setAttribute("RSisUsePrecision2", rSisUsePrecision2);
-    pRequestData.setAttribute("RSisUsePrecision3", rSisUsePrecision3);
-    pRequestData.setAttribute("RSisUsePrecision4", rSisUsePrecision4);
-    pRequestData.setAttribute("quantityPrecision", as.getQuantityPrecision());
-    pRequestData.setAttribute("pricePrecision", as.getPricePrecision());
-    pRequestData.setAttribute("costPrecision", as.getCostPrecision());
-    pRequestData.setAttribute("balancePrecision", as.getBalancePrecision());
-    pRequestData.setAttribute("RSmRound", rSmRound);
+    String curSign;
+    if (as.getUseCurrencySign()) {
+      curSign = as.getCurrency().getItsSign();
+    } else {
+      curSign = as.getCurrency().getItsName();
+    }
+    pReqVars.put("RSisUsePrecision0", rSisUsePrecision0);
+    pReqVars.put("RSisUsePrecision1", rSisUsePrecision1);
+    pReqVars.put("RSisUsePrecision2", rSisUsePrecision2);
+    pReqVars.put("RSisUsePrecision3", rSisUsePrecision3);
+    pReqVars.put("RSisUsePrecision4", rSisUsePrecision4);
+    pReqVars.put("quantityPrecision", as.getQuantityPrecision());
+    pReqVars.put("pricePrecision", as.getPricePrecision());
+    pReqVars.put("costPrecision", as.getCostPrecision());
+    pReqVars.put("balancePrecision", as.getBalancePrecision());
+    pReqVars.put("curSign", curSign);
+    pReqVars.put("RSmRound", rSmRound);
     pRequestData.setAttribute("accSettings", as);
     if (this.additionalI18nReqHndl != null) {
       this.additionalI18nReqHndl.handle(pReqVars, pRequestData);

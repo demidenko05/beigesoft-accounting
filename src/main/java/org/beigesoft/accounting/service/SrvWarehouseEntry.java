@@ -267,9 +267,12 @@ public class SrvWarehouseEntry<RS> implements ISrvWarehouseEntry {
           + pEntity.getInvItem().getItsId() + " and UNITOFMEASURE="
             + pEntity.getUnitOfMeasure().getItsId() + " and WAREHOUSESITE="
               + pWhSiteFrom.getItsId());
-      if (wr.getTheRest().compareTo(pEntity.getItsQuantity()) < 0) {
+      if (wr == null
+        || wr.getTheRest().compareTo(pEntity.getItsQuantity()) < 0) {
         throw new ExceptionWithCode(PurchaseInvoice.THERE_IS_NO_GOODS,
-          "there_is_no_goods_in_stock");
+          "There is no goods in stock, Item ID/UOM ID/ WS ID/ quantity"
+            + pEntity.getInvItem().getItsId() + "/" + pEntity.getUnitOfMeasure()
+              .getItsId() + "/" + pEntity.getItsQuantity());
       }
       wr.setTheRest(wr.getTheRest().subtract(pEntity.getItsQuantity()));
       getSrvOrm().updateEntity(pAddParam, wr);

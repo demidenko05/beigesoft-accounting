@@ -29,6 +29,8 @@ import org.beigesoft.pdf.service.IPdfFactory;
 import org.beigesoft.pdf.service.IPdfMaker;
 
 import org.beigesoft.service.ISrvI18n;
+import org.beigesoft.service.ISrvNumberToString;
+import org.beigesoft.service.SrvNumberToString;
 import org.beigesoft.accounting.service.ISrvAccSettings;
 import org.beigesoft.accounting.model.BalanceSheet;
 import org.beigesoft.accounting.persistable.AccSettings;
@@ -62,6 +64,11 @@ public class BalanceSheetPdf<RS, WI> implements IBalanceSheetPdf {
    * <p>I18N service.</p>
    **/
   private ISrvI18n srvI18n;
+
+  /**
+   * <p>Service print number.</p>
+   **/
+  private ISrvNumberToString srvNumberToString = new SrvNumberToString();
 
   /**
    * <p>Write PDF report for given balance to output stream.</p>
@@ -121,9 +128,10 @@ public class BalanceSheetPdf<RS, WI> implements IBalanceSheetPdf {
       String cnt;
       if (pBalance.getItsLines().get(i).getDebit()
         .compareTo(BigDecimal.ZERO) != 0) {
-        cnt = pBalance.getItsLines().get(i).getDebit().toString();
+        cnt = prn(pAddParam, pBalance.getItsLines().get(i).getDebit());
       } else {
-        cnt = "(" + pBalance.getItsLines().get(i).getCredit() + ")";
+        cnt = "(" + prn(pAddParam, pBalance.getItsLines().get(i).getCredit())
+          + ")";
       }
       tblBal.getItsCells().get(row * 4)
         .setItsContent(pBalance.getItsLines().get(i).getAccName());
@@ -143,8 +151,8 @@ public class BalanceSheetPdf<RS, WI> implements IBalanceSheetPdf {
     tblBal.getItsCells().get(lastRowIdx * 4 + 1)
       .setAlignHorizontal(EAlignHorizontal.RIGHT);
     tblBal.getItsCells().get(lastRowIdx * 4 + 1)
-      .setItsContent(pBalance.getTotalAssets().toString() + " "
-        + accSet.getCurrency().getItsName());
+      .setItsContent(prn(pAddParam, pBalance.getTotalAssets()) + " "
+        + pAddParam.get("curSign"));
     row = 1;
     int totAssLeab = pBalance.getTotalLinesAssets()
         + pBalance.getTotalLinesLiabilities();
@@ -152,9 +160,10 @@ public class BalanceSheetPdf<RS, WI> implements IBalanceSheetPdf {
       String cnt;
       if (pBalance.getItsLines().get(i).getCredit()
         .compareTo(BigDecimal.ZERO) != 0) {
-        cnt = pBalance.getItsLines().get(i).getCredit().toString();
+        cnt = prn(pAddParam, pBalance.getItsLines().get(i).getCredit());
       } else {
-        cnt = "(" + pBalance.getItsLines().get(i).getDebit() + ")";
+        cnt = "(" + prn(pAddParam, pBalance.getItsLines().get(i).getDebit())
+          + ")";
       }
       tblBal.getItsCells().get(row * 4 + 2)
         .setItsContent(pBalance.getItsLines().get(i).getAccName());
@@ -182,9 +191,10 @@ public class BalanceSheetPdf<RS, WI> implements IBalanceSheetPdf {
       String cnt;
       if (pBalance.getItsLines().get(i).getCredit()
         .compareTo(BigDecimal.ZERO) != 0) {
-        cnt = pBalance.getItsLines().get(i).getCredit().toString();
+        cnt = prn(pAddParam, pBalance.getItsLines().get(i).getCredit());
       } else {
-        cnt = "(" + pBalance.getItsLines().get(i).getDebit() + ")";
+        cnt = "(" + prn(pAddParam, pBalance.getItsLines().get(i).getDebit())
+          + ")";
       }
       tblBal.getItsCells().get(row * 4 + 2)
         .setItsContent(pBalance.getItsLines().get(i).getAccName());
@@ -206,12 +216,27 @@ public class BalanceSheetPdf<RS, WI> implements IBalanceSheetPdf {
     tblBal.getItsCells().get(lastRowIdx * 4 + 3)
       .setAlignHorizontal(EAlignHorizontal.RIGHT);
     tblBal.getItsCells().get(lastRowIdx * 4 + 3)
-      .setItsContent(pBalance.getTotalOwnersEquity()
-        .add(pBalance.getTotalLiabilities()).toString() + " "
-          + accSet.getCurrency().getItsName());
+      .setItsContent(prn(pAddParam, pBalance.getTotalOwnersEquity()
+        .add(pBalance.getTotalLiabilities())) + " "
+          + pAddParam.get("curSign"));
     docMaker.deriveElements(doc);
     pdfMaker.prepareBeforeWrite(docPdf);
     this.pdfFactory.lazyGetPdfWriter().write(null, docPdf, pOus);
+  }
+
+  /**
+   * <p>Simple delegator to print number.</p>
+   * @param pAddParam additional param
+   * @param pVal value
+   * @return String
+   **/
+  public final String prn(final Map<String, Object> pAddParam,
+    final BigDecimal pVal) {
+    return this.srvNumberToString.print(pVal.toString(),
+      (String) pAddParam.get("dseparatorv"),
+        (String) pAddParam.get("dgseparatorv"),
+          (Integer) pAddParam.get("balancePrecision"),
+            (Integer) pAddParam.get("digitsInGroup"));
   }
 
   //Simple getters and setters:
@@ -277,5 +302,22 @@ public class BalanceSheetPdf<RS, WI> implements IBalanceSheetPdf {
    **/
   public final void setSrvI18n(final ISrvI18n pSrvI18n) {
     this.srvI18n = pSrvI18n;
+  }
+
+  /**
+   * <p>Getter for srvNumberToString.</p>
+   * @return ISrvNumberToString
+   **/
+  public final ISrvNumberToString getSrvNumberToString() {
+    return this.srvNumberToString;
+  }
+
+  /**
+   * <p>Setter for srvNumberToString.</p>
+   * @param pSrvNumberToString reference
+   **/
+  public final void setSrvNumberToString(
+    final ISrvNumberToString pSrvNumberToString) {
+    this.srvNumberToString = pSrvNumberToString;
   }
 }
