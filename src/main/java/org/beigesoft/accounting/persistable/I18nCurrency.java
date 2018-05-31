@@ -41,6 +41,18 @@ public class I18nCurrency extends AI18nName
   private Languages lang;
 
   /**
+   * <p>Not Null, if  if uses currency sign in reports (e.g. $),
+   * otherwise itsName (e.g. USD).</p>
+   **/
+  private Boolean useCurrencySign = false;
+
+  /**
+   * <p>Not Null, if print currency on left of amount
+   * e.g. "1,356.12$" or "$1,356.12".</p>
+   **/
+  private Boolean printCurrencyLeft = false;
+
+  /**
    * <p>Getter for itsId.</p>
    * @return IdI18nCurrency
    **/
@@ -104,5 +116,37 @@ public class I18nCurrency extends AI18nName
    **/
   public final Languages getLang() {
     return this.lang;
+  }
+
+  /**
+   * <p>Getter for useCurrencySign.</p>
+   * @return Boolean
+   **/
+  public final Boolean getUseCurrencySign() {
+    return this.useCurrencySign;
+  }
+
+  /**
+   * <p>Setter for useCurrencySign.</p>
+   * @param pUseCurrencySign reference
+   **/
+  public final void setUseCurrencySign(final Boolean pUseCurrencySign) {
+    this.useCurrencySign = pUseCurrencySign;
+  }
+
+  /**
+   * <p>Getter for printCurrencyLeft.</p>
+   * @return Boolean
+   **/
+  public final Boolean getPrintCurrencyLeft() {
+    return this.printCurrencyLeft;
+  }
+
+  /**
+   * <p>Setter for printCurrencyLeft.</p>
+   * @param pPrintCurrencyLeft reference
+   **/
+  public final void setPrintCurrencyLeft(final Boolean pPrintCurrencyLeft) {
+    this.printCurrencyLeft = pPrintCurrencyLeft;
   }
 }

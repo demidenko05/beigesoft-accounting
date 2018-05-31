@@ -14,31 +14,29 @@ package org.beigesoft.accounting.persistable;
 
 
 import org.beigesoft.model.IHasId;
+import org.beigesoft.model.IHasName;
 import org.beigesoft.model.IHasVersion;
 import org.beigesoft.model.AEditable;
-import org.beigesoft.persistable.Languages;
 
 /**
  * <p>
- * Model of I18N accounting common.
+ * Model of I18N of overseas buyer.
  * </p>
  *
  * @author Yury Demidenko
  */
-public class I18nAccounting extends AEditable
-  implements IHasId<Languages>, IHasVersion {
+public class I18nBuyer extends AEditable
+  implements IHasId<DebtorCreditor>, IHasName, IHasVersion {
 
   /**
-   * <p>The language, PK.</p>
+   * <p>The buyer, PK.</p>
    **/
-  private Languages lang;
+  private DebtorCreditor buyer;
 
   /**
-   * <p>String, not null, organization name in the language.
-   * It's to report financial statements in foreign language,
-   * e.g. balance sheet for foreign investors.</p>
+   * <p>String, not null, buyer name in native language.</p>
    **/
-  private String organizationName;
+  private String itsName;
 
   /**
    * <p>Registered address1.</p>
@@ -89,12 +87,30 @@ public class I18nAccounting extends AEditable
   }
 
   /**
-   * <p>Getter for itsId.</p>
-   * @return Languages
+   * <p>Geter for itsName.</p>
+   * @return String
    **/
   @Override
-  public final Languages getItsId() {
-    return this.lang;
+  public final String getItsName() {
+    return this.itsName;
+  }
+
+  /**
+   * <p>Setter for itsName.</p>
+   * @param pItsName reference
+   **/
+  @Override
+  public final void setItsName(final String pItsName) {
+    this.itsName = pItsName;
+  }
+
+  /**
+   * <p>Getter for itsId.</p>
+   * @return DebtorCreditor
+   **/
+  @Override
+  public final DebtorCreditor getItsId() {
+    return this.buyer;
   }
 
   /**
@@ -102,41 +118,25 @@ public class I18nAccounting extends AEditable
    * @param pItsId reference
    **/
   @Override
-  public final void setItsId(final Languages pItsId) {
-    this.lang = pItsId;
+  public final void setItsId(final DebtorCreditor pItsId) {
+    this.buyer = pItsId;
   }
 
   //Simple getters and setters:
   /**
-   * <p>Getter for lang.</p>
-   * @return Languages
+   * <p>Getter for buyer.</p>
+   * @return DebtorCreditor
    **/
-  public final Languages getLang() {
-    return this.lang;
+  public final DebtorCreditor getBuyer() {
+    return this.buyer;
   }
 
   /**
-   * <p>Setter for lang.</p>
-   * @param pLang reference
+   * <p>Setter for buyer.</p>
+   * @param pBuyer reference
    **/
-  public final void setLang(final Languages pLang) {
-    this.lang = pLang;
-  }
-
-  /**
-   * <p>Getter for organizationName.</p>
-   * @return String
-   **/
-  public final String getOrganizationName() {
-    return this.organizationName;
-  }
-
-  /**
-   * <p>Setter for organizationName.</p>
-   * @param pOrganizationName reference
-   **/
-  public final void setOrganizationName(final String pOrganizationName) {
-    this.organizationName = pOrganizationName;
+  public final void setBuyer(final DebtorCreditor pBuyer) {
+    this.buyer = pBuyer;
   }
 
   /**

@@ -15,6 +15,7 @@ package org.beigesoft.accounting.report;
 import java.io.OutputStream;
 import java.text.DateFormat;
 import java.util.Map;
+import java.util.Locale;
 import java.math.BigDecimal;
 
 import org.beigesoft.doc.model.Document;
@@ -34,6 +35,8 @@ import org.beigesoft.service.SrvNumberToString;
 import org.beigesoft.accounting.service.ISrvAccSettings;
 import org.beigesoft.accounting.model.BalanceSheet;
 import org.beigesoft.accounting.persistable.AccSettings;
+import org.beigesoft.accounting.persistable.I18nAccounting;
+import org.beigesoft.accounting.persistable.I18nCurrency;
 
 /**
  * <p>Balance sheet report into PDF.</p>
@@ -52,8 +55,7 @@ public class BalanceSheetPdf<RS, WI> implements IBalanceSheetPdf {
   /**
    * <p>Date format.</p>
    **/
-  private DateFormat dateFormat =
-    DateFormat.getDateInstance(DateFormat.LONG);
+  private DateFormat dateFormat;
 
   /**
    * <p>Business service for accounting settings.</p>
@@ -85,6 +87,24 @@ public class BalanceSheetPdf<RS, WI> implements IBalanceSheetPdf {
       .createDoc(EPageSize.A4, EPageOrientation.PORTRAIT);
     PdfDocument<WI> docPdf = this.pdfFactory.createPdfDoc(doc);
     AccSettings accSet = this.srvAccSettings.lazyGetAccSettings(pAddParam);
+    String lang = (String) pAddParam.get("lang");
+    this.dateFormat = DateFormat
+      .getDateInstance(DateFormat.MEDIUM, new Locale(lang));
+    String curSign;
+    I18nCurrency i18nCurrency =
+      (I18nCurrency) pAddParam.get("i18nCurrency");
+    boolean isPrnCurLf;
+    if (i18nCurrency != null) {
+      isPrnCurLf = i18nCurrency.getPrintCurrencyLeft();
+      if (i18nCurrency.getUseCurrencySign()) {
+        curSign = i18nCurrency.getHasName().getItsSign();
+      } else {
+        curSign = " " + i18nCurrency.getItsName() + " ";
+      }
+    } else {
+      curSign = (String) pAddParam.get("curSign");
+      isPrnCurLf = accSet.getPrintCurrencyLeft();
+    }
     IDocumentMaker<WI> docMaker = this.pdfFactory.lazyGetDocumentMaker();
     docPdf.getPdfInfo().setAuthor("Beigesoft (TM) Accounting, "
       + accSet.getOrganization());
@@ -98,9 +118,16 @@ public class BalanceSheetPdf<RS, WI> implements IBalanceSheetPdf {
     doc.setContentPaddingBottom(0.5);
     doc.setAlignHoriCont(EAlignHorizontal.CENTER);
     DocTable<WI> tblTitle = docMaker.addDocTableNoBorder(doc, 1, 3);
-    tblTitle.getItsCells().get(0).setItsContent(accSet.getOrganization());
+    I18nAccounting i18nAccounting =
+      (I18nAccounting) pAddParam.get("i18nAccounting");
+    if (i18nAccounting != null) {
+      tblTitle.getItsCells().get(0)
+        .setItsContent(i18nAccounting.getOrganizationName());
+    } else {
+      tblTitle.getItsCells().get(0).setItsContent(accSet.getOrganization());
+    }
     tblTitle.getItsCells().get(1)
-      .setItsContent(this.srvI18n.getMsg("balance_sheet"));
+      .setItsContent(this.srvI18n.getMsg("balance_sheet", lang));
     tblTitle.getItsCells().get(2)
       .setItsContent(this.dateFormat.format(pBalance.getItsDate()));
     tblTitle.setAlignHorizontal(EAlignHorizontal.CENTER);
@@ -118,10 +145,10 @@ public class BalanceSheetPdf<RS, WI> implements IBalanceSheetPdf {
     tblBal.getItsColumns().get(3).setIsWidthFixed(true);
     tblBal.getItsColumns().get(3).setWidthInPercentage(20.0);
     tblBal.getItsCells().get(0).setItsContent(this.srvI18n
-      .getMsg("AssetsTitle"));
+      .getMsg("AssetsTitle", lang));
     tblBal.getItsCells().get(0).setMergedCell(tblBal.getItsCells().get(1));
     tblBal.getItsCells().get(2).setItsContent(this.srvI18n
-      .getMsg("LiabilitiesTitle"));
+      .getMsg("LiabilitiesTitle", lang));
     tblBal.getItsCells().get(2).setMergedCell(tblBal.getItsCells().get(3));
     int row = 1;
     for (int i = 0; i < pBalance.getTotalLinesAssets(); i++) {
@@ -147,12 +174,11 @@ public class BalanceSheetPdf<RS, WI> implements IBalanceSheetPdf {
     int lastRowIdx = Math.max(pBalance.getTotalLinesAssets() + 1,
       totLeabOwnEq + 4);
     tblBal.getItsCells().get(lastRowIdx * 4)
-      .setItsContent(this.srvI18n.getMsg("total_assets"));
+      .setItsContent(this.srvI18n.getMsg("total_assets", lang));
     tblBal.getItsCells().get(lastRowIdx * 4 + 1)
       .setAlignHorizontal(EAlignHorizontal.RIGHT);
     tblBal.getItsCells().get(lastRowIdx * 4 + 1)
-      .setItsContent(prn(pAddParam, pBalance.getTotalAssets()) + " "
-        + pAddParam.get("curSign"));
+      .setItsContent(prn(pAddParam, pBalance.getTotalAssets()) + curSign);
     row = 1;
     int totAssLeab = pBalance.getTotalLinesAssets()
         + pBalance.getTotalLinesLiabilities();
@@ -175,14 +201,14 @@ public class BalanceSheetPdf<RS, WI> implements IBalanceSheetPdf {
       row++;
     }
     tblBal.getItsCells().get(pBalance.getTotalLinesLiabilities() * 4 + 6)
-      .setItsContent(this.srvI18n.getMsg("total_l"));
+      .setItsContent(this.srvI18n.getMsg("total_l", lang));
     tblBal.getItsCells().get(pBalance.getTotalLinesLiabilities() * 4 + 7)
       .setAlignHorizontal(EAlignHorizontal.RIGHT);
     tblBal.getItsCells().get(pBalance.getTotalLinesLiabilities() * 4 + 7)
       .setItsContent(pBalance.getTotalLiabilities().toString());
     int oetIdx = pBalance.getTotalLinesLiabilities() * 4 + 10;
     tblBal.getItsCells().get(oetIdx)
-      .setItsContent(this.srvI18n.getMsg("OwnersEquityTitle"));
+      .setItsContent(this.srvI18n.getMsg("OwnersEquityTitle", lang));
     tblBal.getItsCells().get(oetIdx)
       .setMergedCell(tblBal.getItsCells().get(oetIdx + 1));
     row = 1 + pBalance.getTotalLinesLiabilities() + 2;
@@ -206,19 +232,18 @@ public class BalanceSheetPdf<RS, WI> implements IBalanceSheetPdf {
       row++;
     }
     tblBal.getItsCells().get((totLeabOwnEq + 3) * 4 + 2)
-      .setItsContent(this.srvI18n.getMsg("total_oe"));
+      .setItsContent(this.srvI18n.getMsg("total_oe", lang));
     tblBal.getItsCells().get((totLeabOwnEq + 3) * 4 + 3)
       .setAlignHorizontal(EAlignHorizontal.RIGHT);
     tblBal.getItsCells().get((totLeabOwnEq + 3) * 4 + 3)
       .setItsContent(pBalance.getTotalOwnersEquity().toString());
     tblBal.getItsCells().get(lastRowIdx * 4 + 2)
-      .setItsContent(this.srvI18n.getMsg("total_l_oe"));
+      .setItsContent(this.srvI18n.getMsg("total_l_oe", lang));
     tblBal.getItsCells().get(lastRowIdx * 4 + 3)
       .setAlignHorizontal(EAlignHorizontal.RIGHT);
     tblBal.getItsCells().get(lastRowIdx * 4 + 3)
       .setItsContent(prn(pAddParam, pBalance.getTotalOwnersEquity()
-        .add(pBalance.getTotalLiabilities())) + " "
-          + pAddParam.get("curSign"));
+        .add(pBalance.getTotalLiabilities())) + curSign);
     docMaker.deriveElements(doc);
     pdfMaker.prepareBeforeWrite(docPdf);
     this.pdfFactory.lazyGetPdfWriter().write(null, docPdf, pOus);

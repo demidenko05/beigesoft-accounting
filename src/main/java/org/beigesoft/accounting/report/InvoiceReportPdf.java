@@ -15,6 +15,8 @@ package org.beigesoft.accounting.report;
 import java.io.OutputStream;
 import java.text.DateFormat;
 import java.util.Map;
+import java.util.Locale;
+import java.math.BigDecimal;
 
 import org.beigesoft.doc.model.Document;
 import org.beigesoft.doc.model.DocTable;
@@ -30,6 +32,8 @@ import org.beigesoft.pdf.service.IPdfMaker;
 
 import org.beigesoft.model.IRequestData;
 import org.beigesoft.service.ISrvI18n;
+import org.beigesoft.service.ISrvNumberToString;
+import org.beigesoft.service.SrvNumberToString;
 import org.beigesoft.service.IEntityFileReporter;
 import org.beigesoft.service.ISrvOrm;
 import org.beigesoft.accounting.service.ISrvAccSettings;
@@ -38,6 +42,8 @@ import org.beigesoft.accounting.persistable.SalesInvoiceLine;
 import org.beigesoft.accounting.persistable.SalesInvoiceTaxLine;
 import org.beigesoft.accounting.persistable.SalesInvoiceServiceLine;
 import org.beigesoft.accounting.persistable.AccSettings;
+import org.beigesoft.accounting.persistable.I18nAccounting;
+import org.beigesoft.accounting.persistable.I18nCurrency;
 
 /**
  * <p>Invoice report into PDF.</p>
@@ -57,8 +63,7 @@ public class InvoiceReportPdf<RS, WI>
   /**
    * <p>Date format.</p>
    **/
-  private DateFormat dateFormat =
-    DateFormat.getDateInstance(DateFormat.MEDIUM);
+  private DateFormat dateFormat;
 
   /**
    * <p>Business service for accounting settings.</p>
@@ -76,6 +81,11 @@ public class InvoiceReportPdf<RS, WI>
   private ISrvOrm<RS> srvOrm;
 
   /**
+   * <p>Service print number.</p>
+   **/
+  private ISrvNumberToString srvNumberToString = new SrvNumberToString();
+
+  /**
    * <p>Write PDF report for given invoice to output stream.</p>
    * @param pAddParam additional param
    * @param pInvoice Invoice
@@ -87,6 +97,25 @@ public class InvoiceReportPdf<RS, WI>
   public final void makeReport(final Map<String, Object> pAddParam,
     final SalesInvoice pInvoice, final IRequestData pRequestData,
       final OutputStream pOus) throws Exception {
+    AccSettings accSet = this.srvAccSettings.lazyGetAccSettings(pAddParam);
+    String lang = (String) pAddParam.get("lang");
+    this.dateFormat = DateFormat
+      .getDateInstance(DateFormat.MEDIUM, new Locale(lang));
+    String curSign;
+    I18nCurrency i18nCurrency =
+      (I18nCurrency) pAddParam.get("i18nCurrency");
+    boolean isPrnCurLf;
+    if (i18nCurrency != null) {
+      isPrnCurLf = i18nCurrency.getPrintCurrencyLeft();
+      if (i18nCurrency.getUseCurrencySign()) {
+        curSign = i18nCurrency.getHasName().getItsSign();
+      } else {
+        curSign = " " + i18nCurrency.getItsName() + " ";
+      }
+    } else {
+      curSign = (String) pAddParam.get("curSign");
+      isPrnCurLf = accSet.getPrintCurrencyLeft();
+    }
     SalesInvoice inv = this.srvOrm.retrieveEntity(pAddParam, pInvoice);
     SalesInvoiceLine sil = new SalesInvoiceLine();
     sil.setItsOwner(inv);
@@ -103,7 +132,6 @@ public class InvoiceReportPdf<RS, WI>
     Document<WI> doc = this.pdfFactory.lazyGetFctDocument()
       .createDoc(EPageSize.A4, EPageOrientation.PORTRAIT);
     PdfDocument<WI> docPdf = this.pdfFactory.createPdfDoc(doc);
-    AccSettings accSet = this.srvAccSettings.lazyGetAccSettings(pAddParam);
     IDocumentMaker<WI> docMaker = this.pdfFactory.lazyGetDocumentMaker();
     docPdf.getPdfInfo().setAuthor("Beigesoft (TM) Accounting, "
       + accSet.getOrganization());
@@ -116,43 +144,76 @@ public class InvoiceReportPdf<RS, WI>
     doc.setContentPadding(0.0);
     doc.setContentPaddingBottom(0.5);
     DocTable<WI> tblOwner = docMaker.addDocTableNoBorder(doc, 1, 1);
-    tblOwner.getItsCells().get(0).setItsContent(accSet.getOrganization());
+    I18nAccounting i18nAccounting =
+      (I18nAccounting) pAddParam.get("i18nAccounting");
+    if (i18nAccounting != null) {
+      tblOwner.getItsCells().get(0)
+        .setItsContent(i18nAccounting.getOrganizationName());
+    } else {
+      tblOwner.getItsCells().get(0).setItsContent(accSet.getOrganization());
+    }
     if (accSet.getTaxIdentificationNumber() != null) {
       docMaker.addRowToDocTable(tblOwner);
       tblOwner.getItsCells().get(1).setItsContent(this.srvI18n
-        .getMsg("taxIdentificationNumber") + ": "
+        .getMsg("taxIdentificationNumber", lang) + ": "
           + accSet.getTaxIdentificationNumber());
     }
     int n = 0;
     if (accSet.getRegZip() != null) {
       docMaker.addRowToDocTable(tblOwner);
       tblOwner.getItsCells().get(++n).setItsContent(this.srvI18n
-        .getMsg("regZip") + ": " + accSet.getRegZip());
+        .getMsg("regZip", lang) + ": " + accSet.getRegZip());
     }
-    if (accSet.getRegAddress1() != null) {
+    String addr = null;
+    if (i18nAccounting != null) {
+      addr = i18nAccounting.getRegAddress1();
+    } else {
+      addr = accSet.getRegAddress1();
+    }
+    if (addr != null) {
       docMaker.addRowToDocTable(tblOwner);
       tblOwner.getItsCells().get(++n).setItsContent(this.srvI18n
-        .getMsg("regAddress1") + ": " + accSet.getRegAddress1());
+        .getMsg("regAddress1", lang) + ": " + addr);
     }
-    if (accSet.getRegAddress2() != null) {
+    if (i18nAccounting != null) {
+      addr = i18nAccounting.getRegAddress2();
+    } else {
+      addr = accSet.getRegAddress2();
+    }
+    if (addr != null) {
       docMaker.addRowToDocTable(tblOwner);
       tblOwner.getItsCells().get(++n).setItsContent(this.srvI18n
-        .getMsg("regAddress2") + ": " + accSet.getRegAddress2());
+        .getMsg("regAddress2", lang) + ": " + addr);
     }
-    if (accSet.getRegCity() != null) {
+    if (i18nAccounting != null) {
+      addr = i18nAccounting.getRegCity();
+    } else {
+      addr = accSet.getRegCity();
+    }
+    if (addr != null) {
       docMaker.addRowToDocTable(tblOwner);
       tblOwner.getItsCells().get(++n).setItsContent(this.srvI18n
-        .getMsg("regCity") + ": " + accSet.getRegCity());
+        .getMsg("regCity", lang) + ": " + addr);
     }
-    if (accSet.getRegState() != null) {
+    if (i18nAccounting != null) {
+      addr = i18nAccounting.getRegState();
+    } else {
+      addr = accSet.getRegState();
+    }
+    if (addr != null) {
       docMaker.addRowToDocTable(tblOwner);
       tblOwner.getItsCells().get(++n).setItsContent(this.srvI18n
-        .getMsg("regState") + ": " + accSet.getRegState());
+        .getMsg("regState", lang) + ": " + addr);
     }
-    if (accSet.getRegCountry() != null) {
+    if (i18nAccounting != null) {
+      addr = i18nAccounting.getRegCountry();
+    } else {
+      addr = accSet.getRegCountry();
+    }
+    if (addr != null) {
       docMaker.addRowToDocTable(tblOwner);
       tblOwner.getItsCells().get(++n).setItsContent(this.srvI18n
-        .getMsg("regCountry") + ": " + accSet.getRegCountry());
+        .getMsg("regCountry", lang) + ": " + addr);
     }
     tblOwner.getItsCells().get(0).setFontNumber(1);
     docMaker.makeDocTableWrapping(tblOwner);
@@ -166,8 +227,9 @@ public class InvoiceReportPdf<RS, WI>
       invNum = inv.getIdDatabaseBirth().toString() + "-"
         + inv.getItsId();
     }
-    String title = this.srvI18n.getMsg("Invoice") + " #" + invNum + " "
-      + this.dateFormat.format(inv.getItsDate());
+    String title = this.srvI18n.getMsg("Invoice", lang) + " #" + invNum + ", "
+      + this.srvI18n.getMsg("date", lang) + ": "
+        + this.dateFormat.format(inv.getItsDate());
     tblTitle.getItsCells().get(0).setItsContent(title);
     tblTitle.getItsCells().get(0).setFontNumber(1);
     tblTitle.setAlignHorizontal(EAlignHorizontal.CENTER);
@@ -180,47 +242,47 @@ public class InvoiceReportPdf<RS, WI>
     if (inv.getCustomer().getTaxIdentificationNumber() != null) {
       docMaker.addRowToDocTable(tblCustomer);
       tblCustomer.getItsCells().get(++n).setItsContent(this.srvI18n
-        .getMsg("taxIdentificationNumber") + ": "
+        .getMsg("taxIdentificationNumber", lang) + ": "
           + inv.getCustomer().getTaxIdentificationNumber());
     }
     if (inv.getCustomer().getRegZip() != null) {
       docMaker.addRowToDocTable(tblCustomer);
       tblCustomer.getItsCells().get(++n).setItsContent(this.srvI18n
-        .getMsg("regZip") + ": " + inv.getCustomer().getRegZip());
+        .getMsg("regZip", lang) + ": " + inv.getCustomer().getRegZip());
     }
     if (inv.getCustomer().getRegAddress1() != null) {
       docMaker.addRowToDocTable(tblCustomer);
       tblCustomer.getItsCells().get(++n).setItsContent(this.srvI18n
-        .getMsg("regAddress1") + ": "
+        .getMsg("regAddress1", lang) + ": "
           + inv.getCustomer().getRegAddress1());
     }
     if (inv.getCustomer().getRegAddress2() != null) {
       docMaker.addRowToDocTable(tblCustomer);
       tblCustomer.getItsCells().get(++n).setItsContent(this.srvI18n
-        .getMsg("regAddress2") + ": "
+        .getMsg("regAddress2", lang) + ": "
           + inv.getCustomer().getRegAddress2());
     }
     if (inv.getCustomer().getRegCity() != null) {
       docMaker.addRowToDocTable(tblCustomer);
       tblCustomer.getItsCells().get(++n).setItsContent(this.srvI18n
-        .getMsg("regCity") + ": " + inv.getCustomer().getRegCity());
+        .getMsg("regCity", lang) + ": " + inv.getCustomer().getRegCity());
     }
     if (inv.getCustomer().getRegState() != null) {
       docMaker.addRowToDocTable(tblCustomer);
       tblCustomer.getItsCells().get(++n).setItsContent(this.srvI18n
-        .getMsg("regState") + ": " + inv.getCustomer().getRegState());
+        .getMsg("regState", lang) + ": " + inv.getCustomer().getRegState());
     }
     if (inv.getCustomer().getRegCountry() != null) {
       docMaker.addRowToDocTable(tblCustomer);
       tblCustomer.getItsCells().get(++n).setItsContent(this.srvI18n
-        .getMsg("regCountry") + ": " + inv.getCustomer().getRegCountry());
+        .getMsg("regCountry", lang) + ": " + inv.getCustomer().getRegCountry());
     }
     tblCustomer.getItsCells().get(0).setFontNumber(1);
     if (inv.getItsLines() != null && inv.getItsLines().size() > 0) {
       doc.setContainerMarginBottom(2.0);
       DocTable<WI> tblTiGoods = docMaker.addDocTableNoBorder(doc, 1, 1);
       tblTiGoods.getItsCells().get(0).setItsContent(this.srvI18n
-        .getMsg(SalesInvoiceLine.class.getSimpleName() + "s"));
+        .getMsg(SalesInvoiceLine.class.getSimpleName() + "s", lang));
       tblTiGoods.getItsCells().get(0).setFontNumber(1);
       tblTiGoods.setAlignHorizontal(EAlignHorizontal.CENTER);
       docMaker.makeDocTableWrapping(tblTiGoods);
@@ -229,29 +291,29 @@ public class InvoiceReportPdf<RS, WI>
         .addDocTable(doc, 8, inv.getItsLines().size() + 1);
       tblGoods.setIsRepeatHead(true);
       tblGoods.getItsRows().get(0).setIsHead(true);
-      tblGoods.getItsCells().get(0)
-        .setItsContent(this.srvI18n.getMsg("invItem"));
+      tblGoods.getItsCells().get(0).setItsContent(this.srvI18n
+        .getMsg("invItem", lang).replace(" ", "\n"));
       tblGoods.getItsColumns().get(0).setIsWidthFixed(true);
       tblGoods.getItsColumns().get(0).setWidthInPercentage(60.0);
-      tblGoods.getItsCells().get(1)
-        .setItsContent(this.srvI18n.getMsg("unitOfMeasure"));
+      tblGoods.getItsCells().get(1).setItsContent(this.srvI18n
+        .getMsg("unitOfMeasure", lang).replace(" ", "\n"));
       tblGoods.getItsColumns().get(1).setWraping(EWraping.WRAP_CONTENT);
-      tblGoods.getItsCells().get(2)
-        .setItsContent(this.srvI18n.getMsg("itsPrice"));
+      tblGoods.getItsCells().get(2).setItsContent(this.srvI18n
+        .getMsg("itsPrice", lang).replace(" ", "\n"));
       tblGoods.getItsColumns().get(2).setWraping(EWraping.WRAP_CONTENT);
-      tblGoods.getItsCells().get(3)
-        .setItsContent(this.srvI18n.getMsg("itsQuantity"));
+      tblGoods.getItsCells().get(3).setItsContent(this.srvI18n
+        .getMsg("itsQuantity", lang).replace(" ", "\n"));
       tblGoods.getItsColumns().get(3).setWraping(EWraping.WRAP_CONTENT);
-      tblGoods.getItsCells().get(4)
-        .setItsContent(this.srvI18n.getMsg("subtotal"));
+      tblGoods.getItsCells().get(4).setItsContent(this.srvI18n
+        .getMsg("subtotal", lang).replace(" ", "\n"));
       tblGoods.getItsColumns().get(4).setWraping(EWraping.WRAP_CONTENT);
       tblGoods.getItsCells().get(5)
-        .setItsContent(this.srvI18n.getMsg("taxesDescription"));
-      tblGoods.getItsCells().get(6)
-        .setItsContent(this.srvI18n.getMsg("totalTaxes").replace(" ", "\n"));
+        .setItsContent(this.srvI18n.getMsg("taxesDescription", lang));
+      tblGoods.getItsCells().get(6).setItsContent(this.srvI18n
+        .getMsg("totalTaxes", lang).replace(" ", "\n"));
       tblGoods.getItsColumns().get(6).setWraping(EWraping.WRAP_CONTENT);
-      tblGoods.getItsCells().get(7)
-        .setItsContent(this.srvI18n.getMsg("itsTotal"));
+      tblGoods.getItsCells().get(7).setItsContent(this.srvI18n
+        .getMsg("itsTotal", lang).replace(" ", "\n"));
       tblGoods.getItsColumns().get(7).setWraping(EWraping.WRAP_CONTENT);
       for (int i = 0; i < 8; i++) {
         tblGoods.getItsCells().get(i).setFontNumber(1);
@@ -266,17 +328,17 @@ public class InvoiceReportPdf<RS, WI>
         tblGoods.getItsCells().get(j * 8 + i++)
           .setItsContent(ln.getUnitOfMeasure().getItsName());
         tblGoods.getItsCells().get(j * 8 + i++)
-          .setItsContent(ln.getItsPrice().toString());
+          .setItsContent(prn(pAddParam, ln.getItsPrice()));
         tblGoods.getItsCells().get(j * 8 + i++)
-          .setItsContent(ln.getItsQuantity().toString());
+          .setItsContent(prn(pAddParam, ln.getItsQuantity()));
         tblGoods.getItsCells().get(j * 8 + i++)
-          .setItsContent(ln.getSubtotal().toString());
+          .setItsContent(prn(pAddParam, ln.getSubtotal()));
         tblGoods.getItsCells().get(j * 8 + i++)
           .setItsContent(ln.getTaxesDescription());
         tblGoods.getItsCells().get(j * 8 + i++)
-          .setItsContent(ln.getTotalTaxes().toString());
+          .setItsContent(prn(pAddParam, ln.getTotalTaxes()));
         tblGoods.getItsCells().get(j * 8 + i++)
-          .setItsContent(ln.getItsTotal().toString());
+          .setItsContent(prn(pAddParam, ln.getItsTotal()));
         j++;
       }
     }
@@ -284,7 +346,7 @@ public class InvoiceReportPdf<RS, WI>
       doc.setContainerMarginBottom(2.0);
       DocTable<WI> tblTiServices = docMaker.addDocTableNoBorder(doc, 1, 1);
       tblTiServices.getItsCells().get(0).setItsContent(this.srvI18n
-        .getMsg(SalesInvoiceServiceLine.class.getSimpleName() + "s"));
+        .getMsg(SalesInvoiceServiceLine.class.getSimpleName() + "s", lang));
       tblTiServices.getItsCells().get(0).setFontNumber(1);
       tblTiServices.setAlignHorizontal(EAlignHorizontal.CENTER);
       docMaker.makeDocTableWrapping(tblTiServices);
@@ -294,23 +356,23 @@ public class InvoiceReportPdf<RS, WI>
       tblServices.setIsRepeatHead(true);
       tblServices.getItsRows().get(0).setIsHead(true);
       tblServices.getItsCells().get(0)
-        .setItsContent(this.srvI18n.getMsg("service"));
+        .setItsContent(this.srvI18n.getMsg("service", lang));
       tblServices.getItsColumns().get(0).setIsWidthFixed(true);
       tblServices.getItsColumns().get(0).setWidthInPercentage(35.0);
       tblServices.getItsCells().get(1)
-        .setItsContent(this.srvI18n.getMsg("itsPrice"));
+        .setItsContent(this.srvI18n.getMsg("itsPrice", lang));
       tblServices.getItsColumns().get(1).setIsWidthFixed(true);
       tblServices.getItsColumns().get(1).setWidthInPercentage(15.0);
       tblServices.getItsCells().get(2)
-        .setItsContent(this.srvI18n.getMsg("taxesDescription"));
+        .setItsContent(this.srvI18n.getMsg("taxesDescription", lang));
       tblServices.getItsColumns().get(2).setIsWidthFixed(true);
       tblServices.getItsColumns().get(2).setWidthInPercentage(20.0);
       tblServices.getItsCells().get(3)
-        .setItsContent(this.srvI18n.getMsg("totalTaxes"));
+        .setItsContent(this.srvI18n.getMsg("totalTaxes", lang));
       tblServices.getItsColumns().get(3).setIsWidthFixed(true);
       tblServices.getItsColumns().get(3).setWidthInPercentage(15.0);
       tblServices.getItsCells().get(4)
-        .setItsContent(this.srvI18n.getMsg("itsTotal"));
+        .setItsContent(this.srvI18n.getMsg("itsTotal", lang));
       tblServices.getItsColumns().get(4).setIsWidthFixed(true);
       tblServices.getItsColumns().get(4).setWidthInPercentage(15.0);
       for (int i = 0; i < 5; i++) {
@@ -330,7 +392,7 @@ public class InvoiceReportPdf<RS, WI>
         tblServices.getItsCells().get(j * 5 + i++)
           .setItsContent(ln.getTotalTaxes().toString());
         tblServices.getItsCells().get(j * 5 + i++)
-          .setItsContent(ln.getItsTotal().toString());
+          .setItsContent(prn(pAddParam, ln.getItsTotal()));
         j++;
       }
     }
@@ -340,7 +402,7 @@ public class InvoiceReportPdf<RS, WI>
       tblTiTaxes.setIsRepeatHead(true);
       tblTiTaxes.getItsRows().get(0).setIsHead(true);
       tblTiTaxes.getItsCells().get(0).setItsContent(this.srvI18n
-        .getMsg(SalesInvoiceTaxLine.class.getSimpleName() + "s"));
+        .getMsg(SalesInvoiceTaxLine.class.getSimpleName() + "s", lang));
       tblTiTaxes.getItsCells().get(0).setFontNumber(1);
       tblTiTaxes.setAlignHorizontal(EAlignHorizontal.CENTER);
       docMaker.makeDocTableWrapping(tblTiTaxes);
@@ -348,11 +410,11 @@ public class InvoiceReportPdf<RS, WI>
       DocTable<WI> tblTaxes = docMaker
         .addDocTable(doc, 2, inv.getTaxesLines().size() + 1);
       tblTaxes.getItsCells().get(0)
-        .setItsContent(this.srvI18n.getMsg("tax"));
+        .setItsContent(this.srvI18n.getMsg("tax", lang));
       tblTaxes.getItsColumns().get(0).setIsWidthFixed(true);
       tblTaxes.getItsColumns().get(0).setWidthInPercentage(70.0);
       tblTaxes.getItsCells().get(1)
-        .setItsContent(this.srvI18n.getMsg("itsTotal"));
+        .setItsContent(this.srvI18n.getMsg("itsTotal", lang));
       for (int i = 0; i < 2; i++) {
         tblTaxes.getItsCells().get(i).setFontNumber(1);
         tblTaxes.getItsCells().get(i)
@@ -364,28 +426,64 @@ public class InvoiceReportPdf<RS, WI>
         tblTaxes.getItsCells().get(j * 2 + i++)
           .setItsContent(ln.getTax().getItsName());
         tblTaxes.getItsCells().get(j * 2 + i++)
-          .setItsContent(ln.getItsTotal().toString());
+          .setItsContent(prn(pAddParam, ln.getItsTotal()));
         j++;
       }
     }
     doc.setAlignHoriCont(EAlignHorizontal.RIGHT);
-    DocTable<WI> tblRez = docMaker
-      .addDocTableNoBorder(doc, 1, 3);
+    DocTable<WI> tblRez = docMaker.addDocTableNoBorder(doc, 2, 3);
     tblRez.getItsCells().get(0).setFontNumber(1);
-    tblRez.getItsCells().get(0).setItsContent(this.srvI18n.getMsg("subtotal")
-      + ": " + inv.getSubtotal() + " " + accSet.getCurrency().getItsName());
+    tblRez.getItsCells().get(0).setItsContent(this.srvI18n.getMsg("subtotal",
+      lang) + ": ");
     tblRez.getItsCells().get(1).setFontNumber(1);
-    tblRez.getItsCells().get(1).setItsContent(this.srvI18n.getMsg("totalTaxes")
-      + ": " + inv.getTotalTaxes() + " " + accSet.getCurrency().getItsName());
+    String cnt;
+    if (isPrnCurLf) {
+      cnt = curSign + prn(pAddParam, inv.getSubtotal());
+    } else {
+      cnt = prn(pAddParam, inv.getSubtotal()) + curSign;
+    }
+    tblRez.getItsCells().get(1).setItsContent(cnt);
     tblRez.getItsCells().get(2).setFontNumber(1);
-    tblRez.getItsCells().get(2).setItsContent(this.srvI18n.getMsg("itsTotal")
-      + ": " + inv.getItsTotal() + " " + accSet.getCurrency().getItsName());
+    tblRez.getItsCells().get(2).setItsContent(this.srvI18n.getMsg("totalTaxes",
+      lang) + ": ");
+    tblRez.getItsCells().get(3).setFontNumber(1);
+    if (isPrnCurLf) {
+      cnt = curSign + prn(pAddParam, inv.getTotalTaxes());
+    } else {
+      cnt = prn(pAddParam, inv.getTotalTaxes()) + curSign;
+    }
+    tblRez.getItsCells().get(3).setItsContent(cnt);
+    tblRez.getItsCells().get(4).setFontNumber(1);
+    tblRez.getItsCells().get(4).setItsContent(this.srvI18n.getMsg("itsTotal",
+      lang) + ": ");
+    tblRez.getItsCells().get(5).setFontNumber(1);
+    if (isPrnCurLf) {
+      cnt = curSign + prn(pAddParam, inv.getItsTotal());
+    } else {
+      cnt = prn(pAddParam, inv.getItsTotal()) + curSign;
+    }
+    tblRez.getItsCells().get(5).setItsContent(cnt);
     tblRez.setAlignHorizontal(EAlignHorizontal.RIGHT);
     docMaker.makeDocTableWrapping(tblRez);
     docMaker.addPagination(doc);
     docMaker.deriveElements(doc);
     pdfMaker.prepareBeforeWrite(docPdf);
     this.pdfFactory.lazyGetPdfWriter().write(null, docPdf, pOus);
+  }
+
+  /**
+   * <p>Simple delegator to print number.</p>
+   * @param pAddParam additional param
+   * @param pVal value
+   * @return String
+   **/
+  public final String prn(final Map<String, Object> pAddParam,
+    final BigDecimal pVal) {
+    return this.srvNumberToString.print(pVal.toString(),
+      (String) pAddParam.get("dseparatorv"),
+        (String) pAddParam.get("dgseparatorv"),
+          (Integer) pAddParam.get("balancePrecision"),
+            (Integer) pAddParam.get("digitsInGroup"));
   }
 
   //Simple getters and setters:
@@ -467,5 +565,22 @@ public class InvoiceReportPdf<RS, WI>
    **/
   public final void setSrvI18n(final ISrvI18n pSrvI18n) {
     this.srvI18n = pSrvI18n;
+  }
+
+  /**
+   * <p>Getter for srvNumberToString.</p>
+   * @return ISrvNumberToString
+   **/
+  public final ISrvNumberToString getSrvNumberToString() {
+    return this.srvNumberToString;
+  }
+
+  /**
+   * <p>Setter for srvNumberToString.</p>
+   * @param pSrvNumberToString reference
+   **/
+  public final void setSrvNumberToString(
+    final ISrvNumberToString pSrvNumberToString) {
+    this.srvNumberToString = pSrvNumberToString;
   }
 }

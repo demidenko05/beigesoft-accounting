@@ -15,4 +15,5 @@
 <entry key="org.beigesoft.persistable.DatabaseInfo">databaseId</entry>
 <entry key="org.beigesoft.persistable.UserTomcat">itsUser</entry>
 <entry key="org.beigesoft.accounting.persistable.I18nAccounting">lang</entry>
+<entry key="org.beigesoft.accounting.persistable.I18nBuyer">buyer</entry>
 </properties>

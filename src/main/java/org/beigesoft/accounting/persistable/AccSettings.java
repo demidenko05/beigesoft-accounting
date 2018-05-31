@@ -172,6 +172,12 @@ public class AccSettings extends AHasIdLongVersion {
    **/
   private Boolean useCurrencySign = false;
 
+  /**
+   * <p>Not Null, if print currency on left of amount
+   * e.g. "1,356.12$" or "$1,356.12".</p>
+   **/
+  private Boolean printCurrencyLeft = false;
+
   //Hiding references getters and setters:
   /**
    * <p>Getter for currentAccYear.</p>
@@ -619,5 +625,21 @@ public class AccSettings extends AHasIdLongVersion {
    **/
   public final void setUseCurrencySign(final Boolean pUseCurrencySign) {
     this.useCurrencySign = pUseCurrencySign;
+  }
+
+  /**
+   * <p>Getter for printCurrencyLeft.</p>
+   * @return Boolean
+   **/
+  public final Boolean getPrintCurrencyLeft() {
+    return this.printCurrencyLeft;
+  }
+
+  /**
+   * <p>Setter for printCurrencyLeft.</p>
+   * @param pPrintCurrencyLeft reference
+   **/
+  public final void setPrintCurrencyLeft(final Boolean pPrintCurrencyLeft) {
+    this.printCurrencyLeft = pPrintCurrencyLeft;
   }
 }
