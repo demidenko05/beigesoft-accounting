@@ -15,8 +15,13 @@ package org.beigesoft.accounting.report;
 import java.io.OutputStream;
 import java.text.DateFormat;
 import java.util.Map;
+import java.util.Set;
+import java.util.HashSet;
 import java.util.Locale;
 import java.math.BigDecimal;
+import java.io.InputStream;
+import java.io.IOException;
+import java.net.URL;
 
 import org.beigesoft.doc.model.Document;
 import org.beigesoft.doc.model.DocTable;
@@ -44,6 +49,7 @@ import org.beigesoft.accounting.persistable.SalesInvoiceServiceLine;
 import org.beigesoft.accounting.persistable.AccSettings;
 import org.beigesoft.accounting.persistable.I18nAccounting;
 import org.beigesoft.accounting.persistable.I18nCurrency;
+import org.beigesoft.accounting.persistable.I18nBuyer;
 
 /**
  * <p>Invoice report into PDF.</p>
@@ -86,6 +92,16 @@ public class InvoiceReportPdf<RS, WI>
   private ISrvNumberToString srvNumberToString = new SrvNumberToString();
 
   /**
+   * <p>salesInvOverseaseLines SQL.</p>
+   **/
+  private String salesInvOverseaseLinesSql;
+
+  /**
+   * <p>salesInvOverseaseServiceLines SQL.</p>
+   **/
+  private String salesInvOverseaseServiceLinesSql;
+
+  /**
    * <p>Write PDF report for given invoice to output stream.</p>
    * @param pAddParam additional param
    * @param pInvoice Invoice
@@ -99,6 +115,7 @@ public class InvoiceReportPdf<RS, WI>
       final OutputStream pOus) throws Exception {
     AccSettings accSet = this.srvAccSettings.lazyGetAccSettings(pAddParam);
     String lang = (String) pAddParam.get("lang");
+    String langDef = (String) pAddParam.get("langDef");
     this.dateFormat = DateFormat
       .getDateInstance(DateFormat.MEDIUM, new Locale(lang));
     String curSign;
@@ -116,19 +133,8 @@ public class InvoiceReportPdf<RS, WI>
       curSign = (String) pAddParam.get("curSign");
       isPrnCurLf = accSet.getPrintCurrencyLeft();
     }
-    SalesInvoice inv = this.srvOrm.retrieveEntity(pAddParam, pInvoice);
-    SalesInvoiceLine sil = new SalesInvoiceLine();
-    sil.setItsOwner(inv);
-    inv.setItsLines(getSrvOrm().
-      retrieveListForField(pAddParam, sil, "itsOwner"));
-    SalesInvoiceTaxLine sitl = new SalesInvoiceTaxLine();
-    sitl.setItsOwner(inv);
-    inv.setTaxesLines(getSrvOrm().
-      retrieveListForField(pAddParam, sitl, "itsOwner"));
-    SalesInvoiceServiceLine sisl = new SalesInvoiceServiceLine();
-    sisl.setItsOwner(inv);
-    inv.setServices(getSrvOrm().
-      retrieveListForField(pAddParam, sisl, "itsOwner"));
+    SalesInvoice inv = retrieveEntity(pAddParam, pInvoice, lang,
+      !lang.equals(langDef));
     Document<WI> doc = this.pdfFactory.lazyGetFctDocument()
       .createDoc(EPageSize.A4, EPageOrientation.PORTRAIT);
     PdfDocument<WI> docPdf = this.pdfFactory.createPdfDoc(doc);
@@ -236,8 +242,18 @@ public class InvoiceReportPdf<RS, WI>
     doc.setContainerMarginBottom(1.0);
     docMaker.makeDocTableWrapping(tblTitle);
     DocTable<WI> tblCustomer = docMaker.addDocTableNoBorder(doc, 1, 1);
-    tblCustomer.getItsCells().get(0)
-      .setItsContent(inv.getCustomer().getItsName());
+    I18nBuyer i18nBuyer = null;
+    if (!lang.equals(langDef)) {
+      i18nBuyer = getSrvOrm().retrieveEntityById(pAddParam,
+        I18nBuyer.class, inv.getCustomer());
+    }
+    if (i18nBuyer != null) {
+      tblCustomer.getItsCells().get(0)
+        .setItsContent(i18nBuyer.getItsName());
+    } else {
+      tblCustomer.getItsCells().get(0)
+        .setItsContent(inv.getCustomer().getItsName());
+    }
     n = 0;
     if (inv.getCustomer().getTaxIdentificationNumber() != null) {
       docMaker.addRowToDocTable(tblCustomer);
@@ -250,32 +266,55 @@ public class InvoiceReportPdf<RS, WI>
       tblCustomer.getItsCells().get(++n).setItsContent(this.srvI18n
         .getMsg("regZip", lang) + ": " + inv.getCustomer().getRegZip());
     }
-    if (inv.getCustomer().getRegAddress1() != null) {
-      docMaker.addRowToDocTable(tblCustomer);
-      tblCustomer.getItsCells().get(++n).setItsContent(this.srvI18n
-        .getMsg("regAddress1", lang) + ": "
-          + inv.getCustomer().getRegAddress1());
+    if (i18nBuyer != null) {
+      addr = i18nBuyer.getRegAddress1();
+    } else {
+      addr = inv.getCustomer().getRegAddress1();
     }
-    if (inv.getCustomer().getRegAddress2() != null) {
+    if (addr != null) {
       docMaker.addRowToDocTable(tblCustomer);
       tblCustomer.getItsCells().get(++n).setItsContent(this.srvI18n
-        .getMsg("regAddress2", lang) + ": "
-          + inv.getCustomer().getRegAddress2());
+        .getMsg("regAddress1", lang) + ": " + addr);
     }
-    if (inv.getCustomer().getRegCity() != null) {
-      docMaker.addRowToDocTable(tblCustomer);
-      tblCustomer.getItsCells().get(++n).setItsContent(this.srvI18n
-        .getMsg("regCity", lang) + ": " + inv.getCustomer().getRegCity());
+    if (i18nBuyer != null) {
+      addr = i18nBuyer.getRegAddress2();
+    } else {
+      addr = inv.getCustomer().getRegAddress2();
     }
-    if (inv.getCustomer().getRegState() != null) {
+    if (addr != null) {
       docMaker.addRowToDocTable(tblCustomer);
       tblCustomer.getItsCells().get(++n).setItsContent(this.srvI18n
-        .getMsg("regState", lang) + ": " + inv.getCustomer().getRegState());
+        .getMsg("regAddress2", lang) + ": " + addr);
     }
-    if (inv.getCustomer().getRegCountry() != null) {
+    if (i18nBuyer != null) {
+      addr = i18nBuyer.getRegCity();
+    } else {
+      addr = inv.getCustomer().getRegCity();
+    }
+    if (addr != null) {
       docMaker.addRowToDocTable(tblCustomer);
       tblCustomer.getItsCells().get(++n).setItsContent(this.srvI18n
-        .getMsg("regCountry", lang) + ": " + inv.getCustomer().getRegCountry());
+        .getMsg("regCity", lang) + ": " + addr);
+    }
+    if (i18nBuyer != null) {
+      addr = i18nBuyer.getRegState();
+    } else {
+      addr = inv.getCustomer().getRegState();
+    }
+    if (addr != null) {
+      docMaker.addRowToDocTable(tblCustomer);
+      tblCustomer.getItsCells().get(++n).setItsContent(this.srvI18n
+        .getMsg("regState", lang) + ": " + addr);
+    }
+    if (i18nBuyer != null) {
+      addr = i18nBuyer.getRegCountry();
+    } else {
+      addr = inv.getCustomer().getRegCountry();
+    }
+    if (addr != null) {
+      docMaker.addRowToDocTable(tblCustomer);
+      tblCustomer.getItsCells().get(++n).setItsContent(this.srvI18n
+        .getMsg("regCountry", lang) + ": " + addr);
     }
     tblCustomer.getItsCells().get(0).setFontNumber(1);
     if (inv.getItsLines() != null && inv.getItsLines().size() > 0) {
@@ -323,21 +362,43 @@ public class InvoiceReportPdf<RS, WI>
       int j = 1;
       for (SalesInvoiceLine ln : inv.getItsLines()) {
         int i = 0;
-        tblGoods.getItsCells().get(j * 8 + i++)
+        int k = j * 8 + i++;
+        tblGoods.getItsCells().get(k)
           .setItsContent(ln.getInvItem().getItsName());
-        tblGoods.getItsCells().get(j * 8 + i++)
+        k = j * 8 + i++;
+        tblGoods.getItsCells().get(k)
+          .setAlignHorizontal(EAlignHorizontal.CENTER);
+        tblGoods.getItsCells().get(k)
           .setItsContent(ln.getUnitOfMeasure().getItsName());
-        tblGoods.getItsCells().get(j * 8 + i++)
+        k = j * 8 + i++;
+        tblGoods.getItsCells().get(k)
+          .setAlignHorizontal(EAlignHorizontal.RIGHT);
+        tblGoods.getItsCells().get(k)
           .setItsContent(prn(pAddParam, ln.getItsPrice()));
-        tblGoods.getItsCells().get(j * 8 + i++)
+        k = j * 8 + i++;
+        tblGoods.getItsCells().get(k)
+          .setAlignHorizontal(EAlignHorizontal.RIGHT);
+        tblGoods.getItsCells().get(k)
           .setItsContent(prn(pAddParam, ln.getItsQuantity()));
-        tblGoods.getItsCells().get(j * 8 + i++)
+        k = j * 8 + i++;
+        tblGoods.getItsCells().get(k)
+          .setAlignHorizontal(EAlignHorizontal.RIGHT);
+        tblGoods.getItsCells().get(k)
           .setItsContent(prn(pAddParam, ln.getSubtotal()));
-        tblGoods.getItsCells().get(j * 8 + i++)
+        k = j * 8 + i++;
+        tblGoods.getItsCells().get(k)
+          .setAlignHorizontal(EAlignHorizontal.CENTER);
+        tblGoods.getItsCells().get(k)
           .setItsContent(ln.getTaxesDescription());
-        tblGoods.getItsCells().get(j * 8 + i++)
+        k = j * 8 + i++;
+        tblGoods.getItsCells().get(k)
+          .setAlignHorizontal(EAlignHorizontal.RIGHT);
+        tblGoods.getItsCells().get(k)
           .setItsContent(prn(pAddParam, ln.getTotalTaxes()));
-        tblGoods.getItsCells().get(j * 8 + i++)
+        k = j * 8 + i++;
+        tblGoods.getItsCells().get(k)
+          .setAlignHorizontal(EAlignHorizontal.RIGHT);
+        tblGoods.getItsCells().get(k)
           .setItsContent(prn(pAddParam, ln.getItsTotal()));
         j++;
       }
@@ -385,13 +446,25 @@ public class InvoiceReportPdf<RS, WI>
         int i = 0;
         tblServices.getItsCells().get(j * 5 + i++)
           .setItsContent(ln.getService().getItsName());
-        tblServices.getItsCells().get(j * 5 + i++)
-          .setItsContent(ln.getItsPrice().toString());
-        tblServices.getItsCells().get(j * 5 + i++)
+        int k = j * 5 + i++;
+        tblServices.getItsCells().get(k)
+          .setAlignHorizontal(EAlignHorizontal.RIGHT);
+        tblServices.getItsCells().get(k)
+          .setItsContent(prn(pAddParam, ln.getItsPrice()));
+        k = j * 5 + i++;
+        tblServices.getItsCells().get(k)
+          .setAlignHorizontal(EAlignHorizontal.CENTER);
+        tblServices.getItsCells().get(k)
           .setItsContent(ln.getTaxesDescription());
-        tblServices.getItsCells().get(j * 5 + i++)
-          .setItsContent(ln.getTotalTaxes().toString());
-        tblServices.getItsCells().get(j * 5 + i++)
+        k = j * 5 + i++;
+        tblServices.getItsCells().get(k)
+          .setAlignHorizontal(EAlignHorizontal.RIGHT);
+        tblServices.getItsCells().get(k)
+          .setItsContent(prn(pAddParam, ln.getTotalTaxes()));
+        k = j * 5 + i++;
+        tblServices.getItsCells().get(k)
+          .setAlignHorizontal(EAlignHorizontal.RIGHT);
+        tblServices.getItsCells().get(k)
           .setItsContent(prn(pAddParam, ln.getItsTotal()));
         j++;
       }
@@ -425,7 +498,10 @@ public class InvoiceReportPdf<RS, WI>
         int i = 0;
         tblTaxes.getItsCells().get(j * 2 + i++)
           .setItsContent(ln.getTax().getItsName());
-        tblTaxes.getItsCells().get(j * 2 + i++)
+        int k = j * 2 + i++;
+        tblTaxes.getItsCells().get(k)
+          .setAlignHorizontal(EAlignHorizontal.RIGHT);
+        tblTaxes.getItsCells().get(k)
           .setItsContent(prn(pAddParam, ln.getItsTotal()));
         j++;
       }
@@ -472,6 +548,156 @@ public class InvoiceReportPdf<RS, WI>
   }
 
   /**
+   * <p>Retrieves sales invoice from DB.</p>
+   * @param pAddParam additional param
+   * @param pInvoice Invoice
+   * @param pLang Lang
+   * @param pIsOverseas Is Overseas
+   * @return SalesInvoice
+   * @throws Exception an Exception
+   **/
+  public final SalesInvoice retrieveEntity(final Map<String, Object> pAddParam,
+    final SalesInvoice pInvoice, final String pLang,
+      final boolean pIsOverseas) throws Exception {
+    SalesInvoice inv = this.srvOrm.retrieveEntity(pAddParam, pInvoice);
+    if (pIsOverseas) {
+      Set<String> ndFlSil = new HashSet<String>();
+      ndFlSil.add("itsId");
+      ndFlSil.add("subtotal");
+      ndFlSil.add("totalTaxes");
+      ndFlSil.add("taxesDescription");
+      ndFlSil.add("invItem");
+      ndFlSil.add("unitOfMeasure");
+      ndFlSil.add("itsQuantity");
+      ndFlSil.add("itsPrice");
+      ndFlSil.add("itsTotal");
+      pAddParam.put("SalesInvoiceLineneededFields", ndFlSil);
+      Set<String> ndFlItUm = new HashSet<String>();
+      ndFlItUm.add("itsId");
+      ndFlItUm.add("itsName");
+      pAddParam.put("InvItemneededFields", ndFlItUm);
+      pAddParam.put("UnitOfMeasureneededFields", ndFlItUm);
+      inv.setItsLines(getSrvOrm().retrieveListByQuery(pAddParam,
+        SalesInvoiceLine.class,
+          evalSalesInvOverseaseLinesSql(inv.getItsId().toString(), pLang)));
+      pAddParam.remove("SalesInvoiceLineneededFields");
+      pAddParam.remove("InvItemneededFields");
+      pAddParam.remove("UnitOfMeasureneededFields");
+    } else {
+      SalesInvoiceLine sil = new SalesInvoiceLine();
+      sil.setItsOwner(inv);
+      pAddParam.put("SalesInvoiceLineitsOwnerdeepLevel", 1); //only ID
+      inv.setItsLines(getSrvOrm().
+        retrieveListForField(pAddParam, sil, "itsOwner"));
+      pAddParam.remove("SalesInvoiceLineitsOwnerdeepLevel");
+    }
+    //overseas sales usually free from sales taxes
+    SalesInvoiceTaxLine sitl = new SalesInvoiceTaxLine();
+    sitl.setItsOwner(inv);
+    pAddParam.put("SalesInvoiceTaxLineitsOwnerdeepLevel", 1); //only ID
+    inv.setTaxesLines(getSrvOrm().
+      retrieveListForField(pAddParam, sitl, "itsOwner"));
+    pAddParam.remove("SalesInvoiceTaxLineitsOwnerdeepLevel");
+    if (pIsOverseas) {
+      Set<String> ndFlSil = new HashSet<String>();
+      ndFlSil.add("itsId");
+      ndFlSil.add("totalTaxes");
+      ndFlSil.add("taxesDescription");
+      ndFlSil.add("service");
+      ndFlSil.add("itsPrice");
+      ndFlSil.add("itsTotal");
+      pAddParam.put("SalesInvoiceServiceLineneededFields", ndFlSil);
+      Set<String> ndFlItUm = new HashSet<String>();
+      ndFlItUm.add("itsId");
+      ndFlItUm.add("itsName");
+      pAddParam.put("ServiceToSaleneededFields", ndFlItUm);
+      inv.setServices(getSrvOrm().retrieveListByQuery(pAddParam,
+    SalesInvoiceServiceLine.class, evalSalesInvOverseaseServiceLinesSql(
+  inv.getItsId().toString(), pLang)));
+      pAddParam.remove("SalesInvoiceServiceLineneededFields");
+      pAddParam.remove("ServiceToSaleneededFields");
+    } else {
+      SalesInvoiceServiceLine sisl = new SalesInvoiceServiceLine();
+      sisl.setItsOwner(inv);
+      pAddParam.put("SalesInvoiceServiceLineitsOwnerdeepLevel", 1); //only ID
+      inv.setServices(getSrvOrm().
+        retrieveListForField(pAddParam, sisl, "itsOwner"));
+    }
+    pAddParam.remove("SalesInvoiceServiceLineitsOwnerdeepLevel");
+    return inv;
+  }
+
+  /**
+   * <p>Evaluate I18N overseas sales invoice service lines query.</p>
+   * @param pItsOwnerId ID of sales invoice
+   * @param pLang lang
+   * @return query
+   * @throws Exception - an exception
+   **/
+  public final String evalSalesInvOverseaseServiceLinesSql(
+    final String pItsOwnerId, final String pLang) throws Exception {
+    if (this.salesInvOverseaseServiceLinesSql == null) {
+      synchronized (this) {
+        if (this.salesInvOverseaseServiceLinesSql == null) {
+          String flName = "/accounting/trade/salesInvOverseaseServiceLines.sql";
+          this.salesInvOverseaseServiceLinesSql = loadString(flName);
+        }
+      }
+    }
+    String query = this.salesInvOverseaseServiceLinesSql.replace(":ITSOWNER",
+      pItsOwnerId).replace(":LANG", pLang);
+    return query;
+  }
+
+  /**
+   * <p>Evaluate I18N overseas sales invoice lines query.</p>
+   * @param pItsOwnerId ID of sales invoice
+   * @param pLang lang
+   * @return query
+   * @throws Exception - an exception
+   **/
+  public final String evalSalesInvOverseaseLinesSql(
+    final String pItsOwnerId, final String pLang) throws Exception {
+    if (this.salesInvOverseaseLinesSql == null) {
+      synchronized (this) {
+        if (this.salesInvOverseaseLinesSql == null) {
+          String flName = "/accounting/trade/salesInvOverseaseLines.sql";
+          this.salesInvOverseaseLinesSql = loadString(flName);
+        }
+      }
+    }
+    String query = this.salesInvOverseaseLinesSql.replace(":ITSOWNER",
+      pItsOwnerId).replace(":LANG", pLang);
+    return query;
+  }
+
+  /**
+   * <p>Load string file (usually SQL query).</p>
+   * @param pFileName file name
+   * @return String usually SQL query
+   * @throws IOException - IO exception
+   **/
+  public final String loadString(final String pFileName)
+        throws IOException {
+    URL urlFile = InvoiceReportPdf.class
+      .getResource(pFileName);
+    if (urlFile != null) {
+      InputStream inputStream = null;
+      try {
+        inputStream = InvoiceReportPdf.class.getResourceAsStream(pFileName);
+        byte[] bArray = new byte[inputStream.available()];
+        inputStream.read(bArray, 0, inputStream.available());
+        return new String(bArray, "UTF-8");
+      } finally {
+        if (inputStream != null) {
+          inputStream.close();
+        }
+      }
+    }
+    return null;
+  }
+
+  /**
    * <p>Simple delegator to print number.</p>
    * @param pAddParam additional param
    * @param pVal value
@@ -484,6 +710,41 @@ public class InvoiceReportPdf<RS, WI>
         (String) pAddParam.get("dgseparatorv"),
           (Integer) pAddParam.get("balancePrecision"),
             (Integer) pAddParam.get("digitsInGroup"));
+  }
+
+  //Synchronized getters and setters:
+  /**
+   * <p>Getter for salesInvOverseaseLinesSql.</p>
+   * @return String
+   **/
+  public final synchronized String getSalesInvOverseaseLinesSql() {
+    return this.salesInvOverseaseLinesSql;
+  }
+
+  /**
+   * <p>Setter for salesInvOverseaseLinesSql.</p>
+   * @param pSalesInvOverseaseLinesSql reference
+   **/
+  public final synchronized void setSalesInvOverseaseLinesSql(
+    final String pSalesInvOverseaseLinesSql) {
+    this.salesInvOverseaseLinesSql = pSalesInvOverseaseLinesSql;
+  }
+
+  /**
+   * <p>Getter for salesInvOverseaseServiceLinesSql.</p>
+   * @return String
+   **/
+  public final synchronized String getSalesInvOverseaseServiceLinesSql() {
+    return this.salesInvOverseaseServiceLinesSql;
+  }
+
+  /**
+   * <p>Setter for salesInvOverseaseServiceLinesSql.</p>
+   * @param pSalesInvOverseaseServiceLinesSql reference
+   **/
+  public final synchronized void setSalesInvOverseaseServiceLinesSql(
+    final String pSalesInvOverseaseServiceLinesSql) {
+    this.salesInvOverseaseServiceLinesSql = pSalesInvOverseaseServiceLinesSql;
   }
 
   //Simple getters and setters:

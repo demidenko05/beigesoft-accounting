@@ -177,8 +177,13 @@ public class BalanceSheetPdf<RS, WI> implements IBalanceSheetPdf {
       .setItsContent(this.srvI18n.getMsg("total_assets", lang));
     tblBal.getItsCells().get(lastRowIdx * 4 + 1)
       .setAlignHorizontal(EAlignHorizontal.RIGHT);
-    tblBal.getItsCells().get(lastRowIdx * 4 + 1)
-      .setItsContent(prn(pAddParam, pBalance.getTotalAssets()) + curSign);
+    String cntc;
+    if (isPrnCurLf) {
+      cntc = curSign + prn(pAddParam, pBalance.getTotalAssets());
+    } else {
+      cntc = prn(pAddParam, pBalance.getTotalAssets()) + curSign;
+    }
+    tblBal.getItsCells().get(lastRowIdx * 4 + 1).setItsContent(cntc);
     row = 1;
     int totAssLeab = pBalance.getTotalLinesAssets()
         + pBalance.getTotalLinesLiabilities();
@@ -241,9 +246,14 @@ public class BalanceSheetPdf<RS, WI> implements IBalanceSheetPdf {
       .setItsContent(this.srvI18n.getMsg("total_l_oe", lang));
     tblBal.getItsCells().get(lastRowIdx * 4 + 3)
       .setAlignHorizontal(EAlignHorizontal.RIGHT);
-    tblBal.getItsCells().get(lastRowIdx * 4 + 3)
-      .setItsContent(prn(pAddParam, pBalance.getTotalOwnersEquity()
-        .add(pBalance.getTotalLiabilities())) + curSign);
+    if (isPrnCurLf) {
+      cntc = curSign + prn(pAddParam, pBalance.getTotalOwnersEquity()
+        .add(pBalance.getTotalLiabilities()));
+    } else {
+      cntc = prn(pAddParam, pBalance.getTotalOwnersEquity()
+        .add(pBalance.getTotalLiabilities())) + curSign;
+    }
+    tblBal.getItsCells().get(lastRowIdx * 4 + 3).setItsContent(cntc);
     docMaker.deriveElements(doc);
     pdfMaker.prepareBeforeWrite(docPdf);
     this.pdfFactory.lazyGetPdfWriter().write(null, docPdf, pOus);
