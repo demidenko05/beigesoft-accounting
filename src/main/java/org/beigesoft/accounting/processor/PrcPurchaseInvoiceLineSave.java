@@ -20,6 +20,7 @@ import org.beigesoft.model.IRequestData;
 import org.beigesoft.exception.ExceptionWithCode;
 import org.beigesoft.service.IEntityProcessor;
 import org.beigesoft.service.ISrvOrm;
+import org.beigesoft.service.ISrvNumberToString;
 import org.beigesoft.accounting.model.ETaxType;
 import org.beigesoft.accounting.persistable.InvItem;
 import org.beigesoft.accounting.persistable.InvItemTaxCategoryLine;
@@ -56,6 +57,11 @@ public class PrcPurchaseInvoiceLineSave<RS>
    * <p>Business service for accounting settings.</p>
    **/
   private ISrvAccSettings srvAccSettings;
+
+  /**
+   * <p>Service print number.</p>
+   **/
+  private ISrvNumberToString srvNumberToString;
 
   /**
    * <p>Process entity request.</p>
@@ -131,9 +137,12 @@ public class PrcPurchaseInvoiceLineSave<RS>
         pEntity.setItsCost(pEntity.getItsCost().setScale(getSrvAccSettings()
           .lazyGetAccSettings(pAddParam).getCostPrecision(), getSrvAccSettings()
             .lazyGetAccSettings(pAddParam).getRoundingMode()));
-        pEntity.setSubtotal(pEntity.getItsTotal().setScale(getSrvAccSettings()
-        .lazyGetAccSettings(pAddParam).getPricePrecision(), getSrvAccSettings()
-          .lazyGetAccSettings(pAddParam).getRoundingMode()));
+        //without taxes:
+        pEntity.setSubtotal(pEntity.getItsQuantity().multiply(pEntity
+          .getItsCost()).setScale(getSrvAccSettings()
+            .lazyGetAccSettings(pAddParam).getPricePrecision(),
+              getSrvAccSettings().lazyGetAccSettings(pAddParam)
+                .getRoundingMode()));
         pEntity.setTheRest(pEntity.getItsQuantity());
         BigDecimal totalTaxes = BigDecimal.ZERO;
         String taxesDescription = "";
@@ -160,8 +169,8 @@ public class PrcPurchaseInvoiceLineSave<RS>
               if (i++ > 0) {
                 sb.append(", ");
               }
-              sb.append(iitcl.getTax().getItsName() + " "
-                + iitcl.getItsPercentage() + "%=" + addTx);
+              sb.append(iitcl.getTax().getItsName() + " " + prn(pAddParam,
+                iitcl.getItsPercentage()) + "%=" + prn(pAddParam, addTx));
             }
           }
           taxesDescription = sb.toString();
@@ -182,6 +191,21 @@ public class PrcPurchaseInvoiceLineSave<RS>
       throw new ExceptionWithCode(ExceptionWithCode.FORBIDDEN,
         "edit_not_allowed::" + pAddParam.get("user"));
     }
+  }
+
+  /**
+   * <p>Simple delegator to print number.</p>
+   * @param pAddParam additional param
+   * @param pVal value
+   * @return String
+   **/
+  public final String prn(final Map<String, Object> pAddParam,
+    final BigDecimal pVal) {
+    return this.srvNumberToString.print(pVal.toString(),
+      (String) pAddParam.get("dseparatorv"),
+        (String) pAddParam.get("dgseparatorv"),
+          (Integer) pAddParam.get("balancePrecision"),
+            (Integer) pAddParam.get("digitsInGroup"));
   }
 
   //Simple getters and setters:
@@ -250,5 +274,22 @@ public class PrcPurchaseInvoiceLineSave<RS>
   public final void setSrvWarehouseEntry(
     final ISrvWarehouseEntry pSrvWarehouseEntry) {
     this.srvWarehouseEntry = pSrvWarehouseEntry;
+  }
+
+  /**
+   * <p>Getter for srvNumberToString.</p>
+   * @return ISrvNumberToString
+   **/
+  public final ISrvNumberToString getSrvNumberToString() {
+    return this.srvNumberToString;
+  }
+
+  /**
+   * <p>Setter for srvNumberToString.</p>
+   * @param pSrvNumberToString reference
+   **/
+  public final void setSrvNumberToString(
+    final ISrvNumberToString pSrvNumberToString) {
+    this.srvNumberToString = pSrvNumberToString;
   }
 }

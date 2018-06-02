@@ -38,7 +38,6 @@ import org.beigesoft.pdf.service.IPdfMaker;
 import org.beigesoft.model.IRequestData;
 import org.beigesoft.service.ISrvI18n;
 import org.beigesoft.service.ISrvNumberToString;
-import org.beigesoft.service.SrvNumberToString;
 import org.beigesoft.service.IEntityFileReporter;
 import org.beigesoft.service.ISrvOrm;
 import org.beigesoft.accounting.service.ISrvAccSettings;
@@ -89,7 +88,7 @@ public class InvoiceReportPdf<RS, WI>
   /**
    * <p>Service print number.</p>
    **/
-  private ISrvNumberToString srvNumberToString = new SrvNumberToString();
+  private ISrvNumberToString srvNumberToString;
 
   /**
    * <p>salesInvOverseaseLines SQL.</p>
@@ -413,30 +412,39 @@ public class InvoiceReportPdf<RS, WI>
       docMaker.makeDocTableWrapping(tblTiServices);
       doc.setContentPadding(1.0);
       DocTable<WI> tblServices = docMaker
-        .addDocTable(doc, 5, inv.getServices().size() + 1);
+        .addDocTable(doc, 8, inv.getServices().size() + 1);
       tblServices.setIsRepeatHead(true);
       tblServices.getItsRows().get(0).setIsHead(true);
       tblServices.getItsCells().get(0)
         .setItsContent(this.srvI18n.getMsg("service", lang));
       tblServices.getItsColumns().get(0).setIsWidthFixed(true);
       tblServices.getItsColumns().get(0).setWidthInPercentage(35.0);
-      tblServices.getItsCells().get(1)
-        .setItsContent(this.srvI18n.getMsg("itsPrice", lang));
-      tblServices.getItsColumns().get(1).setIsWidthFixed(true);
-      tblServices.getItsColumns().get(1).setWidthInPercentage(15.0);
+      tblServices.getItsCells().get(1).setItsContent(this.srvI18n
+        .getMsg("unitOfMeasure", lang).replace(" ", "\n"));
+      tblServices.getItsColumns().get(1).setWraping(EWraping.WRAP_CONTENT);
       tblServices.getItsCells().get(2)
-        .setItsContent(this.srvI18n.getMsg("taxesDescription", lang));
+        .setItsContent(this.srvI18n.getMsg("itsPrice", lang));
       tblServices.getItsColumns().get(2).setIsWidthFixed(true);
-      tblServices.getItsColumns().get(2).setWidthInPercentage(20.0);
-      tblServices.getItsCells().get(3)
+      tblServices.getItsColumns().get(2).setWidthInPercentage(15.0);
+      tblServices.getItsCells().get(3).setItsContent(this.srvI18n
+        .getMsg("itsQuantity", lang).replace(" ", "\n"));
+      tblServices.getItsColumns().get(3).setWraping(EWraping.WRAP_CONTENT);
+      tblServices.getItsCells().get(4).setItsContent(this.srvI18n
+        .getMsg("subtotal", lang).replace(" ", "\n"));
+      tblServices.getItsColumns().get(4).setWraping(EWraping.WRAP_CONTENT);
+      tblServices.getItsCells().get(5)
+        .setItsContent(this.srvI18n.getMsg("taxesDescription", lang));
+      tblServices.getItsColumns().get(5).setIsWidthFixed(true);
+      tblServices.getItsColumns().get(5).setWidthInPercentage(20.0);
+      tblServices.getItsCells().get(6)
         .setItsContent(this.srvI18n.getMsg("totalTaxes", lang));
-      tblServices.getItsColumns().get(3).setIsWidthFixed(true);
-      tblServices.getItsColumns().get(3).setWidthInPercentage(15.0);
-      tblServices.getItsCells().get(4)
+      tblServices.getItsColumns().get(6).setIsWidthFixed(true);
+      tblServices.getItsColumns().get(6).setWidthInPercentage(15.0);
+      tblServices.getItsCells().get(7)
         .setItsContent(this.srvI18n.getMsg("itsTotal", lang));
-      tblServices.getItsColumns().get(4).setIsWidthFixed(true);
-      tblServices.getItsColumns().get(4).setWidthInPercentage(15.0);
-      for (int i = 0; i < 5; i++) {
+      tblServices.getItsColumns().get(7).setIsWidthFixed(true);
+      tblServices.getItsColumns().get(7).setWidthInPercentage(15.0);
+      for (int i = 0; i < 8; i++) {
         tblServices.getItsCells().get(i).setFontNumber(1);
         tblServices.getItsCells().get(i)
           .setAlignHorizontal(EAlignHorizontal.CENTER);
@@ -444,24 +452,40 @@ public class InvoiceReportPdf<RS, WI>
       int j = 1;
       for (SalesInvoiceServiceLine ln : inv.getServices()) {
         int i = 0;
-        tblServices.getItsCells().get(j * 5 + i++)
+        int k = j * 8 + i++;
+        tblServices.getItsCells().get(k)
           .setItsContent(ln.getService().getItsName());
-        int k = j * 5 + i++;
+        k = j * 8 + i++;
+        tblServices.getItsCells().get(k)
+          .setAlignHorizontal(EAlignHorizontal.CENTER);
+        tblServices.getItsCells().get(k)
+          .setItsContent(ln.getUnitOfMeasure().getItsName());
+        k = j * 8 + i++;
         tblServices.getItsCells().get(k)
           .setAlignHorizontal(EAlignHorizontal.RIGHT);
         tblServices.getItsCells().get(k)
           .setItsContent(prn(pAddParam, ln.getItsPrice()));
-        k = j * 5 + i++;
+        k = j * 8 + i++;
+        tblServices.getItsCells().get(k)
+          .setAlignHorizontal(EAlignHorizontal.RIGHT);
+        tblServices.getItsCells().get(k)
+          .setItsContent(prn(pAddParam, ln.getItsQuantity()));
+        k = j * 8 + i++;
+        tblServices.getItsCells().get(k)
+          .setAlignHorizontal(EAlignHorizontal.RIGHT);
+        tblServices.getItsCells().get(k)
+          .setItsContent(prn(pAddParam, ln.getSubtotal()));
+        k = j * 8 + i++;
         tblServices.getItsCells().get(k)
           .setAlignHorizontal(EAlignHorizontal.CENTER);
         tblServices.getItsCells().get(k)
           .setItsContent(ln.getTaxesDescription());
-        k = j * 5 + i++;
+        k = j * 8 + i++;
         tblServices.getItsCells().get(k)
           .setAlignHorizontal(EAlignHorizontal.RIGHT);
         tblServices.getItsCells().get(k)
           .setItsContent(prn(pAddParam, ln.getTotalTaxes()));
-        k = j * 5 + i++;
+        k = j * 8 + i++;
         tblServices.getItsCells().get(k)
           .setAlignHorizontal(EAlignHorizontal.RIGHT);
         tblServices.getItsCells().get(k)
@@ -601,8 +625,11 @@ public class InvoiceReportPdf<RS, WI>
     if (pIsOverseas) {
       Set<String> ndFlSil = new HashSet<String>();
       ndFlSil.add("itsId");
+      ndFlSil.add("subtotal");
       ndFlSil.add("totalTaxes");
       ndFlSil.add("taxesDescription");
+      ndFlSil.add("unitOfMeasure");
+      ndFlSil.add("itsQuantity");
       ndFlSil.add("service");
       ndFlSil.add("itsPrice");
       ndFlSil.add("itsTotal");
@@ -611,11 +638,13 @@ public class InvoiceReportPdf<RS, WI>
       ndFlItUm.add("itsId");
       ndFlItUm.add("itsName");
       pAddParam.put("ServiceToSaleneededFields", ndFlItUm);
+      pAddParam.put("UnitOfMeasureneededFields", ndFlItUm);
       inv.setServices(getSrvOrm().retrieveListByQuery(pAddParam,
     SalesInvoiceServiceLine.class, evalSalesInvOverseaseServiceLinesSql(
   inv.getItsId().toString(), pLang)));
       pAddParam.remove("SalesInvoiceServiceLineneededFields");
       pAddParam.remove("ServiceToSaleneededFields");
+      pAddParam.remove("UnitOfMeasureneededFields");
     } else {
       SalesInvoiceServiceLine sisl = new SalesInvoiceServiceLine();
       sisl.setItsOwner(inv);

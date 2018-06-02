@@ -26,6 +26,7 @@ import org.beigesoft.service.IEntityProcessor;
 import org.beigesoft.model.IRecordSet;
 import org.beigesoft.service.ISrvOrm;
 import org.beigesoft.service.ISrvDatabase;
+import org.beigesoft.service.ISrvNumberToString;
 import org.beigesoft.accounting.model.ETaxType;
 import org.beigesoft.accounting.persistable.PurchaseInvoice;
 import org.beigesoft.accounting.persistable.PurchaseInvoiceLine;
@@ -82,6 +83,11 @@ public class PrcPurchaseReturnLineSave<RS>
    * <p>Business service for accounting settings.</p>
    **/
   private ISrvAccSettings srvAccSettings;
+
+  /**
+   * <p>Service print number.</p>
+   **/
+  private ISrvNumberToString srvNumberToString;
 
   /**
    * <p>Process entity request.</p>
@@ -156,6 +162,7 @@ public class PrcPurchaseReturnLineSave<RS>
           getSrvAccSettings().lazyGetAccSettings(pAddParam)
             .getQuantityPrecision(), getSrvAccSettings()
               .lazyGetAccSettings(pAddParam).getRoundingMode()));
+        //without taxes:
         pEntity.setSubtotal(pEntity.getItsQuantity().multiply(pEntity
           .getPurchaseInvoiceLine().getItsCost()).setScale(getSrvAccSettings()
             .lazyGetAccSettings(pAddParam).getPricePrecision(),
@@ -188,8 +195,8 @@ public class PrcPurchaseReturnLineSave<RS>
               if (i++ > 0) {
                 sb.append(", ");
               }
-              sb.append(pst.getTax().getItsName() + " "
-                + pst.getItsPercentage() + "%=" + addTx);
+              sb.append(pst.getTax().getItsName() + " " + prn(pAddParam,
+                pst.getItsPercentage()) + "%=" + prn(pAddParam, addTx));
             }
           }
           taxesDescription = sb.toString();
@@ -339,6 +346,21 @@ public class PrcPurchaseReturnLineSave<RS>
     return null;
   }
 
+  /**
+   * <p>Simple delegator to print number.</p>
+   * @param pAddParam additional param
+   * @param pVal value
+   * @return String
+   **/
+  public final String prn(final Map<String, Object> pAddParam,
+    final BigDecimal pVal) {
+    return this.srvNumberToString.print(pVal.toString(),
+      (String) pAddParam.get("dseparatorv"),
+        (String) pAddParam.get("dgseparatorv"),
+          (Integer) pAddParam.get("balancePrecision"),
+            (Integer) pAddParam.get("digitsInGroup"));
+  }
+
   //Simple getters and setters:
   /**
    * <p>Getter for srvI18n.</p>
@@ -445,5 +467,22 @@ public class PrcPurchaseReturnLineSave<RS>
    **/
   public final void setSrvAccSettings(final ISrvAccSettings pSrvAccSettings) {
     this.srvAccSettings = pSrvAccSettings;
+  }
+
+  /**
+   * <p>Getter for srvNumberToString.</p>
+   * @return ISrvNumberToString
+   **/
+  public final ISrvNumberToString getSrvNumberToString() {
+    return this.srvNumberToString;
+  }
+
+  /**
+   * <p>Setter for srvNumberToString.</p>
+   * @param pSrvNumberToString reference
+   **/
+  public final void setSrvNumberToString(
+    final ISrvNumberToString pSrvNumberToString) {
+    this.srvNumberToString = pSrvNumberToString;
   }
 }

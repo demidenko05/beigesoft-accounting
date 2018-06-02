@@ -20,6 +20,7 @@ import org.beigesoft.model.IRequestData;
 import org.beigesoft.exception.ExceptionWithCode;
 import org.beigesoft.service.IEntityProcessor;
 import org.beigesoft.service.ISrvOrm;
+import org.beigesoft.service.ISrvNumberToString;
 import org.beigesoft.accounting.model.ETaxType;
 import org.beigesoft.accounting.persistable.InvItemTaxCategoryLine;
 import org.beigesoft.accounting.persistable.PurchaseInvoiceServiceLine;
@@ -51,6 +52,11 @@ public class PrcPurchaseInvoiceServiceLineSave<RS>
   private ISrvAccSettings srvAccSettings;
 
   /**
+   * <p>Service print number.</p>
+   **/
+  private ISrvNumberToString srvNumberToString;
+
+  /**
    * <p>Process entity request.</p>
    * @param pAddParam additional param, e.g. return this line's
    * document in "nextEntity" for farther process
@@ -64,6 +70,10 @@ public class PrcPurchaseInvoiceServiceLineSave<RS>
     final Map<String, Object> pAddParam,
       final PurchaseInvoiceServiceLine pEntity,
         final IRequestData pRequestData) throws Exception {
+    if (pEntity.getItsQuantity().doubleValue() <= 0) {
+      throw new ExceptionWithCode(ExceptionWithCode.WRONG_PARAMETER,
+        "quantity_less_or_equal_zero::" + pAddParam.get("user"));
+    }
     if (pEntity.getItsCost().doubleValue() <= 0) {
       throw new ExceptionWithCode(ExceptionWithCode.WRONG_PARAMETER,
         "cost_less_or_eq_zero::" + pAddParam.get("user"));
@@ -74,10 +84,20 @@ public class PrcPurchaseInvoiceServiceLineSave<RS>
     pEntity.setService(getSrvOrm()
       .retrieveEntity(pAddParam, pEntity.getService()));
     //rounding:
+    pEntity.setItsQuantity(pEntity.getItsQuantity().setScale(
+      getSrvAccSettings().lazyGetAccSettings(pAddParam)
+        .getQuantityPrecision(), getSrvAccSettings()
+          .lazyGetAccSettings(pAddParam).getRoundingMode()));
     pEntity.setItsCost(pEntity.getItsCost()
       .setScale(getSrvAccSettings().lazyGetAccSettings(pAddParam)
         .getCostPrecision(), getSrvAccSettings()
           .lazyGetAccSettings(pAddParam).getRoundingMode()));
+    //without taxes:
+    pEntity.setSubtotal(pEntity.getItsQuantity().multiply(pEntity
+      .getItsCost()).setScale(getSrvAccSettings()
+        .lazyGetAccSettings(pAddParam).getPricePrecision(),
+          getSrvAccSettings().lazyGetAccSettings(pAddParam)
+            .getRoundingMode()));
     BigDecimal totalTaxes = BigDecimal.ZERO;
     String taxesDescription = "";
     if (!pEntity.getItsOwner().getVendor().getIsForeigner()
@@ -94,24 +114,23 @@ public class PrcPurchaseInvoiceServiceLineSave<RS>
       for (InvItemTaxCategoryLine pst : pstl) {
         if (ETaxType.SALES_TAX_OUTITEM.equals(pst.getTax().getItsType())
           || ETaxType.SALES_TAX_INITEM.equals(pst.getTax().getItsType())) {
-          BigDecimal addTx = pEntity.getItsCost().multiply(pst
-            .getItsPercentage()).divide(bigDecimal100,
-              getSrvAccSettings().lazyGetAccSettings(pAddParam)
-                .getPricePrecision(), getSrvAccSettings()
-                  .lazyGetAccSettings(pAddParam).getRoundingMode());
+          BigDecimal addTx = pEntity.getItsCost().multiply(pEntity
+        .getItsQuantity()).multiply(pst.getItsPercentage()).divide(bigDecimal100,
+      getSrvAccSettings().lazyGetAccSettings(pAddParam).getPricePrecision(),
+    getSrvAccSettings().lazyGetAccSettings(pAddParam).getRoundingMode());
           totalTaxes = totalTaxes.add(addTx);
           if (i++ > 0) {
             sb.append(", ");
           }
-          sb.append(pst.getTax().getItsName() + " " + pst.getItsPercentage()
-            + "%=" + addTx);
+          sb.append(pst.getTax().getItsName() + " " + prn(pAddParam,
+            pst.getItsPercentage()) + "%=" + prn(pAddParam, addTx));
         }
       }
       taxesDescription = sb.toString();
     }
     pEntity.setTaxesDescription(taxesDescription);
     pEntity.setTotalTaxes(totalTaxes);
-    pEntity.setItsTotal(pEntity.getItsCost().add(totalTaxes));
+    pEntity.setItsTotal(pEntity.getSubtotal().add(totalTaxes));
     if (pEntity.getIsNew()) {
       getSrvOrm().insertEntity(pAddParam, pEntity);
     } else {
@@ -126,6 +145,21 @@ public class PrcPurchaseInvoiceServiceLineSave<RS>
     pAddParam.put("nextEntity", pEntity.getItsOwner());
     pAddParam.put("nameOwnerEntity", PurchaseInvoice.class.getSimpleName());
     return null;
+  }
+
+  /**
+   * <p>Simple delegator to print number.</p>
+   * @param pAddParam additional param
+   * @param pVal value
+   * @return String
+   **/
+  public final String prn(final Map<String, Object> pAddParam,
+    final BigDecimal pVal) {
+    return this.srvNumberToString.print(pVal.toString(),
+      (String) pAddParam.get("dseparatorv"),
+        (String) pAddParam.get("dgseparatorv"),
+          (Integer) pAddParam.get("balancePrecision"),
+            (Integer) pAddParam.get("digitsInGroup"));
   }
 
   //Simple getters and setters:
@@ -177,5 +211,22 @@ public class PrcPurchaseInvoiceServiceLineSave<RS>
   public final void setUtlPurchaseGoodsServiceLine(
     final UtlPurchaseGoodsServiceLine<RS> pUtlPurchaseGoodsServiceLine) {
     this.utlPurchaseGoodsServiceLine = pUtlPurchaseGoodsServiceLine;
+  }
+
+  /**
+   * <p>Getter for srvNumberToString.</p>
+   * @return ISrvNumberToString
+   **/
+  public final ISrvNumberToString getSrvNumberToString() {
+    return this.srvNumberToString;
+  }
+
+  /**
+   * <p>Setter for srvNumberToString.</p>
+   * @param pSrvNumberToString reference
+   **/
+  public final void setSrvNumberToString(
+    final ISrvNumberToString pSrvNumberToString) {
+    this.srvNumberToString = pSrvNumberToString;
   }
 }

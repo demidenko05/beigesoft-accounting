@@ -77,6 +77,21 @@ public class PurchaseInvoiceServiceLine extends APersistableBaseVersion
   private String description;
 
   /**
+   * <p>Unit Of Measure.</p>
+   **/
+  private UnitOfMeasure unitOfMeasure;
+
+  /**
+   * <p>Quantity.</p>
+   **/
+  private BigDecimal itsQuantity = BigDecimal.ZERO;
+
+  /**
+   * <p>Subtotal without taxes.</p>
+   **/
+  private BigDecimal subtotal = BigDecimal.ZERO;
+
+  /**
    * <p>Geter for itsOwner.</p>
    * @return PurchaseInvoice
    **/
@@ -221,5 +236,53 @@ public class PurchaseInvoiceServiceLine extends APersistableBaseVersion
    **/
   public final void setDescription(final String pDescription) {
     this.description = pDescription;
+  }
+
+  /**
+   * <p>Geter for unitOfMeasure.</p>
+   * @return UnitOfMeasure
+   **/
+  public final UnitOfMeasure getUnitOfMeasure() {
+    return this.unitOfMeasure;
+  }
+
+  /**
+   * <p>Setter for unitOfMeasure.</p>
+   * @param pUnitOfMeasure reference
+   **/
+  public final void setUnitOfMeasure(final UnitOfMeasure pUnitOfMeasure) {
+    this.unitOfMeasure = pUnitOfMeasure;
+  }
+
+  /**
+   * <p>Geter for itsQuantity.</p>
+   * @return BigDecimal
+   **/
+  public final BigDecimal getItsQuantity() {
+    return this.itsQuantity;
+  }
+
+  /**
+   * <p>Setter for itsQuantity.</p>
+   * @param pItsQuantity reference
+   **/
+  public final void setItsQuantity(final BigDecimal pItsQuantity) {
+    this.itsQuantity = pItsQuantity;
+  }
+
+  /**
+   * <p>Geter for subtotal.</p>
+   * @return BigDecimal
+   **/
+  public final BigDecimal getSubtotal() {
+    return this.subtotal;
+  }
+
+  /**
+   * <p>Setter for subtotal.</p>
+   * @param pSubtotal reference
+   **/
+  public final void setSubtotal(final BigDecimal pSubtotal) {
+    this.subtotal = pSubtotal;
   }
 }

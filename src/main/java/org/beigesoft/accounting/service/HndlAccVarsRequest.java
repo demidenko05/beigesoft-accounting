@@ -128,6 +128,8 @@ public class HndlAccVarsRequest<RS> implements IHandlerRequestDch {
     pReqVars.put("pricePrecision", as.getPricePrecision());
     pReqVars.put("costPrecision", as.getCostPrecision());
     pReqVars.put("balancePrecision", as.getBalancePrecision());
+    pReqVars.put("isIncludedSalesTaxPurchases", !as.getIsExtractSalesTaxFromPurchase());
+    pReqVars.put("isIncludedSalesTaxSales", !as.getIsExtractSalesTaxFromSales());
     pReqVars.put("curSign", curSign);
     pReqVars.put("RSmRound", rSmRound);
     pRequestData.setAttribute("accSettings", as);

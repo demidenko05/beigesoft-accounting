@@ -1,3 +1,9 @@
+alter table SALESINVOICESERVICELINE add column UNITOFMEASURE integer not null default 1 references UNITOFMEASURE(ITSID);
+alter table SALESINVOICESERVICELINE add column ITSQUANTITY real not null default 1;
+alter table SALESINVOICESERVICELINE add column SUBTOTAL real not null default 0;
+alter table PURCHASEINVOICESERVICELINE add column UNITOFMEASURE integer not null default 1 references UNITOFMEASURE(ITSID);
+alter table PURCHASEINVOICESERVICELINE add column ITSQUANTITY real not null default 1;
+alter table PURCHASEINVOICESERVICELINE add column SUBTOTAL real not null default 0;
 alter table DEBTORCREDITOR add column ISFOREIGNER integer not null default 0;
 alter table ACCSETTINGS add column USECURRENCYSIGN integer not null default 0;
 alter table ACCSETTINGS add column PRINTCURRENCYLEFT integer not null default 0;
@@ -15,5 +21,6 @@ insert into DECIMALGROUPSEPARATOR (ITSID, ITSNAME, ITSVERSION) values (',', 'com
 insert into DECIMALGROUPSEPARATOR (ITSID, ITSNAME, ITSVERSION) values ('space', 'space', 1462867931627);
 insert into LANGPREFERENCES (DECIMALGROUPSEP, LANG, COUNTRY, DECIMALSEP, ISDEFAULT, ITSVERSION, DIGITSINGROUP) values (',', 'en', 'US', '.', 1, 1462867931627, 3);
 insert into LANGPREFERENCES (DECIMALGROUPSEP, LANG, COUNTRY, DECIMALSEP, ISDEFAULT, ITSVERSION, DIGITSINGROUP) values ('space', 'ru', 'RU', ',', 0, 1462867931627, 3);
+update SALESINVOICESERVICELINE set SUBTOTAL=ITSPRICE, ITSVERSION=(ITSVERSION+1) where SUBTOTAL=0;
 update DATABASEINFO set DATABASEVERSION=6, DESCRIPTION='Beige Accounting OIO DB version 6';
 

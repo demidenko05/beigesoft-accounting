@@ -26,6 +26,7 @@ import org.beigesoft.exception.ExceptionWithCode;
 import org.beigesoft.service.IEntityProcessor;
 import org.beigesoft.service.ISrvI18n;
 import org.beigesoft.service.ISrvDate;
+import org.beigesoft.service.ISrvNumberToString;
 import org.beigesoft.settings.IMngSettings;
 import org.beigesoft.service.ISrvOrm;
 import org.beigesoft.service.ISrvDatabase;
@@ -272,6 +273,11 @@ public class FctBnAccEntitiesProcessors<RS>
    * <p>Balance service.</p>
    **/
   private ISrvBalance srvBalance;
+
+  /**
+   * <p>Service print number.</p>
+   **/
+  private ISrvNumberToString srvNumberToString;
 
   /**
    * <p>Converters map "converter name"-"object' s converter".</p>
@@ -1245,6 +1251,7 @@ public class FctBnAccEntitiesProcessors<RS>
     if (proc == null) {
       proc = new PrcSalesInvoiceLineSave<RS>();
       proc.setSrvAccSettings(getSrvAccSettings());
+      proc.setSrvNumberToString(getSrvNumberToString());
       proc.setSrvOrm(getSrvOrm());
       proc.setSrvWarehouseEntry(getSrvWarehouseEntry());
       proc.setSrvCogsEntry(getSrvCogsEntry());
@@ -1417,6 +1424,7 @@ public class FctBnAccEntitiesProcessors<RS>
     if (proc == null) {
       proc = new PrcPurchaseInvoiceLineSave<RS>();
       proc.setSrvAccSettings(getSrvAccSettings());
+      proc.setSrvNumberToString(getSrvNumberToString());
       proc.setSrvOrm(getSrvOrm());
       proc.setSrvWarehouseEntry(getSrvWarehouseEntry());
       proc.setUtlPurchaseGoodsServiceLine(
@@ -1636,6 +1644,7 @@ public class FctBnAccEntitiesProcessors<RS>
     if (proc == null) {
       proc = new PrcSalesInvoiceServiceLineSave<RS>();
       proc.setSrvAccSettings(getSrvAccSettings());
+      proc.setSrvNumberToString(getSrvNumberToString());
       proc.setSrvOrm(getSrvOrm());
       proc.setUtlSalesGoodsServiceLine(
         lazyGetUtlSalesGoodsServiceLine(pAddParam));
@@ -1663,6 +1672,7 @@ public class FctBnAccEntitiesProcessors<RS>
     if (proc == null) {
       proc = new PrcPurchaseInvoiceServiceLineSave<RS>();
       proc.setSrvAccSettings(getSrvAccSettings());
+      proc.setSrvNumberToString(getSrvNumberToString());
       proc.setSrvOrm(getSrvOrm());
       proc.setUtlPurchaseGoodsServiceLine(
         lazyGetUtlPurchaseGoodsServiceLine(pAddParam));
@@ -1690,6 +1700,7 @@ public class FctBnAccEntitiesProcessors<RS>
     if (proc == null) {
       proc = new PrcPurchaseReturnLineSave<RS>();
       proc.setSrvAccSettings(getSrvAccSettings());
+      proc.setSrvNumberToString(getSrvNumberToString());
       proc.setSrvOrm(getSrvOrm());
       proc.setSrvI18n(getSrvI18n());
       proc.setSrvDatabase(getSrvDatabase());
@@ -1822,6 +1833,7 @@ public class FctBnAccEntitiesProcessors<RS>
         .get(PrcSalesReturnLineSave.class.getSimpleName());
     if (proc == null) {
       proc = new PrcSalesReturnLineSave<RS>();
+      proc.setSrvNumberToString(getSrvNumberToString());
       proc.setSrvAccSettings(getSrvAccSettings());
       proc.setSrvOrm(getSrvOrm());
       proc.setSrvDatabase(getSrvDatabase());
@@ -3281,5 +3293,22 @@ public class FctBnAccEntitiesProcessors<RS>
    **/
   public final void setSrvBalance(final ISrvBalance pSrvBalance) {
     this.srvBalance = pSrvBalance;
+  }
+
+  /**
+   * <p>Getter for srvNumberToString.</p>
+   * @return ISrvNumberToString
+   **/
+  public final ISrvNumberToString getSrvNumberToString() {
+    return this.srvNumberToString;
+  }
+
+  /**
+   * <p>Setter for srvNumberToString.</p>
+   * @param pSrvNumberToString reference
+   **/
+  public final void setSrvNumberToString(
+    final ISrvNumberToString pSrvNumberToString) {
+    this.srvNumberToString = pSrvNumberToString;
   }
 }

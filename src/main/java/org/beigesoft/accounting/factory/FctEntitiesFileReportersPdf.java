@@ -19,6 +19,7 @@ import org.beigesoft.factory.IFactoryAppBeansByName;
 import org.beigesoft.exception.ExceptionWithCode;
 import org.beigesoft.log.ILogger;
 import org.beigesoft.service.IEntityFileReporter;
+import org.beigesoft.service.ISrvNumberToString;
 import org.beigesoft.service.ISrvI18n;
 import org.beigesoft.service.ISrvOrm;
 import org.beigesoft.pdf.service.IPdfFactory;
@@ -60,6 +61,11 @@ public class FctEntitiesFileReportersPdf<RS, WI>
    * <p>PDF Factory.</p>
    **/
   private IPdfFactory<WI> pdfFactory;
+
+  /**
+   * <p>Service print number.</p>
+   **/
+  private ISrvNumberToString srvNumberToString;
 
   //inner initialized:
   /**
@@ -129,6 +135,7 @@ public class FctEntitiesFileReportersPdf<RS, WI>
     if (rep == null) {
       rep = new InvoiceReportPdf<RS, WI>();
       rep.setSrvAccSettings(getSrvAccSettings());
+      rep.setSrvNumberToString(getSrvNumberToString());
       rep.setSrvI18n(getSrvI18n());
       rep.setSrvOrm(getSrvOrm());
       rep.setPdfFactory(this.pdfFactory);
@@ -225,5 +232,22 @@ public class FctEntitiesFileReportersPdf<RS, WI>
    **/
   public final Map<String, IEntityFileReporter> getReportersMap() {
     return this.reportersMap;
+  }
+
+  /**
+   * <p>Getter for srvNumberToString.</p>
+   * @return ISrvNumberToString
+   **/
+  public final ISrvNumberToString getSrvNumberToString() {
+    return this.srvNumberToString;
+  }
+
+  /**
+   * <p>Setter for srvNumberToString.</p>
+   * @param pSrvNumberToString reference
+   **/
+  public final void setSrvNumberToString(
+    final ISrvNumberToString pSrvNumberToString) {
+    this.srvNumberToString = pSrvNumberToString;
   }
 }

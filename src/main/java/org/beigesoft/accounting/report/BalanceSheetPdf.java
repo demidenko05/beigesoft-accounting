@@ -31,7 +31,6 @@ import org.beigesoft.pdf.service.IPdfMaker;
 
 import org.beigesoft.service.ISrvI18n;
 import org.beigesoft.service.ISrvNumberToString;
-import org.beigesoft.service.SrvNumberToString;
 import org.beigesoft.accounting.service.ISrvAccSettings;
 import org.beigesoft.accounting.model.BalanceSheet;
 import org.beigesoft.accounting.persistable.AccSettings;
@@ -70,7 +69,7 @@ public class BalanceSheetPdf<RS, WI> implements IBalanceSheetPdf {
   /**
    * <p>Service print number.</p>
    **/
-  private ISrvNumberToString srvNumberToString = new SrvNumberToString();
+  private ISrvNumberToString srvNumberToString;
 
   /**
    * <p>Write PDF report for given balance to output stream.</p>
