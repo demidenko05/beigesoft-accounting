@@ -12,6 +12,8 @@ package org.beigesoft.accounting.processor;
  * http://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html
  */
 
+import java.util.Set;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.List;
 import java.math.BigDecimal;
@@ -29,6 +31,7 @@ import org.beigesoft.service.ISrvDatabase;
 import org.beigesoft.service.ISrvNumberToString;
 import org.beigesoft.accounting.model.ETaxType;
 import org.beigesoft.accounting.persistable.PurchaseInvoice;
+import org.beigesoft.accounting.persistable.PurchaseReturnGoodsTaxLine;
 import org.beigesoft.accounting.persistable.PurchaseInvoiceLine;
 import org.beigesoft.accounting.persistable.PurchaseReturn;
 import org.beigesoft.accounting.persistable.PurchaseReturnLine;
@@ -131,6 +134,13 @@ public class PrcPurchaseReturnLineSave<RS>
         getSrvOrm().insertEntity(pAddParam, pEntity);
         reversed.setReversedId(pEntity.getItsId());
         getSrvOrm().updateEntity(pAddParam, reversed);
+        PurchaseReturnGoodsTaxLine pigtlt = new PurchaseReturnGoodsTaxLine();
+        pigtlt.setItsOwner(pEntity);
+        List<PurchaseReturnGoodsTaxLine> tls = getSrvOrm()
+          .retrieveListForField(pAddParam, pigtlt, "itsOwner");
+        for (PurchaseReturnGoodsTaxLine pigtl : tls) {
+          getSrvOrm().deleteEntity(pAddParam, pigtl);
+        }
         srvWarehouseEntry.reverseDraw(pAddParam, pEntity);
         srvUseMaterialEntry.reverseDraw(pAddParam, pEntity,
           pEntity.getItsOwner().getItsDate(),
@@ -170,11 +180,13 @@ public class PrcPurchaseReturnLineSave<RS>
                 .getRoundingMode()));
         BigDecimal totalTaxes = BigDecimal.ZERO;
         String taxesDescription = "";
+        Set<PurchaseReturnGoodsTaxLine> tls = null;
         if (!purchaseInvoice.getVendor().getIsForeigner()
           && getSrvAccSettings().lazyGetAccSettings(pAddParam)
             .getIsExtractSalesTaxFromPurchase()
             && pEntity.getPurchaseInvoiceLine().getInvItem()
               .getTaxCategory() != null) {
+          tls = new HashSet<PurchaseReturnGoodsTaxLine>();
           List<InvItemTaxCategoryLine> pstl = getSrvOrm()
             .retrieveListWithConditions(pAddParam,
               InvItemTaxCategoryLine.class, "where ITSOWNER="
@@ -197,6 +209,13 @@ public class PrcPurchaseReturnLineSave<RS>
               }
               sb.append(pst.getTax().getItsName() + " " + prn(pAddParam,
                 pst.getItsPercentage()) + "%=" + prn(pAddParam, addTx));
+              PurchaseReturnGoodsTaxLine pigtl =
+                new PurchaseReturnGoodsTaxLine();
+              pigtl.setIsNew(true);
+              pigtl.setIdDatabaseBirth(this.srvOrm.getIdDatabase());
+              pigtl.setItsTotal(addTx);
+              pigtl.setTax(pst.getTax());
+              tls.add(pigtl);
             }
           }
           taxesDescription = sb.toString();
@@ -205,6 +224,13 @@ public class PrcPurchaseReturnLineSave<RS>
         pEntity.setTotalTaxes(totalTaxes);
         pEntity.setItsTotal(pEntity.getSubtotal().add(totalTaxes));
         getSrvOrm().insertEntity(pAddParam, pEntity);
+        if (tls != null) {
+          for (PurchaseReturnGoodsTaxLine pigtl : tls) {
+            pigtl.setItsOwner(pEntity);
+            pigtl.setReturnId(pEntity.getItsOwner().getItsId());
+            getSrvOrm().insertEntity(pAddParam, pigtl);
+          }
+        }
         srvWarehouseEntry.withdrawal(pAddParam, pEntity,
           pEntity.getWarehouseSiteFo());
         srvUseMaterialEntry.withdrawalFrom(pAddParam, pEntity,
@@ -254,7 +280,7 @@ public class PrcPurchaseReturnLineSave<RS>
     if (!pPurchaseInvoice.getVendor().getIsForeigner()
       && getSrvAccSettings().lazyGetAccSettings(pAddParam)
         .getIsExtractSalesTaxFromPurchase()) {
-      String query = lazyGetQueryPurchaseReturnLineTaxes().replace(":ITSOWNER",
+      String query = lazyGetQueryPurchaseReturnLineTaxes().replace(":INVOICEID",
         pItsOwner.getItsId().toString());
       int countUpdatedSitl = 0;
       IRecordSet<RS> recordSet = null;

@@ -165,7 +165,7 @@ public class UtlSalesGoodsServiceLine<RS> {
     List<SalesInvoiceTaxLine> sitl = getSrvOrm().retrieveListWithConditions(
         pAddParam, SalesInvoiceTaxLine.class, "where ITSOWNER="
           + pOwner.getItsId());
-    String query = lazyGetQuerySalesInvoiceTaxes().replace(":ITSOWNER",
+    String query = lazyGetQuerySalesInvoiceTaxes().replace(":INVOICEID",
       pOwner.getItsId().toString());
     if (!pOwner.getCustomer().getIsForeigner() && getSrvAccSettings()
       .lazyGetAccSettings(pAddParam).getIsExtractSalesTaxFromSales()) {

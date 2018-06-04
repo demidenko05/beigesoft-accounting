@@ -12,6 +12,7 @@ package org.beigesoft.accounting.processor;
  * http://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html
  */
 
+import java.util.List;
 import java.util.Map;
 
 import org.beigesoft.model.IRequestData;
@@ -19,6 +20,7 @@ import org.beigesoft.service.IEntityProcessor;
 import org.beigesoft.service.ISrvOrm;
 import org.beigesoft.accounting.persistable.SalesInvoiceServiceLine;
 import org.beigesoft.accounting.persistable.SalesInvoice;
+import org.beigesoft.accounting.persistable.SalesInvoiceServiceTaxLine;
 
 /**
  * <p>Service that delete SalesInvoiceServiceLine from DB.</p>
@@ -59,6 +61,13 @@ public class PrcSalesInvoiceServiceLineDelete<RS>
     final Map<String, Object> pAddParam,
       final SalesInvoiceServiceLine pEntity,
         final IRequestData pRequestData) throws Exception {
+    SalesInvoiceServiceTaxLine pistlt = new SalesInvoiceServiceTaxLine();
+    pistlt.setItsOwner(pEntity);
+    List<SalesInvoiceServiceTaxLine> tls = getSrvOrm()
+      .retrieveListForField(pAddParam, pistlt, "itsOwner");
+    for (SalesInvoiceServiceTaxLine pistl : tls) {
+      getSrvOrm().deleteEntity(pAddParam, pistl);
+    }
     this.prcAccEntityPbDelete.process(pAddParam, pEntity, pRequestData);
     // Beige-Orm refresh:
     pEntity.setItsOwner(getSrvOrm()

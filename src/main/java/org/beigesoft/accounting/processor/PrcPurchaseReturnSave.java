@@ -19,6 +19,7 @@ import org.beigesoft.model.IRequestData;
 import org.beigesoft.accounting.persistable.PurchaseReturn;
 import org.beigesoft.accounting.persistable.PurchaseReturnLine;
 import org.beigesoft.accounting.persistable.PurchaseReturnTaxLine;
+import org.beigesoft.accounting.persistable.PurchaseReturnGoodsTaxLine;
 
 /**
  * <p>Process that save purchase return.</p>
@@ -99,6 +100,14 @@ public class PrcPurchaseReturnSave<RS>
               + "-" + reversingLine.getItsId()); //local
           reversedLine.setReversedId(reversingLine.getItsId());
           getSrvOrm().updateEntity(pAddParam, reversedLine);
+          PurchaseReturnGoodsTaxLine pigtlt =
+            new PurchaseReturnGoodsTaxLine();
+          pigtlt.setItsOwner(reversedLine);
+          List<PurchaseReturnGoodsTaxLine> tls = getSrvOrm()
+            .retrieveListForField(pAddParam, pigtlt, "itsOwner");
+          for (PurchaseReturnGoodsTaxLine pigtl : tls) {
+            getSrvOrm().deleteEntity(pAddParam, pigtl);
+          }
         }
       }
       PurchaseReturnTaxLine prtl = new PurchaseReturnTaxLine();

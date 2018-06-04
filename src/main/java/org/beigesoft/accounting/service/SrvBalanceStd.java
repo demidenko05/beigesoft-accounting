@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.Date;
 import java.util.Calendar;
+import java.util.Locale;
 import java.math.BigDecimal;
 import java.io.InputStream;
 import java.io.IOException;
@@ -242,7 +243,7 @@ public class SrvBalanceStd<RS> implements ISrvBalance {
     evalBalanceStorePeriod(pAddParam);
     evalDateBalanceStoreStart(pAddParam);
     Date datePeriodStartFor = evalDatePeriodStartFor(pAddParam, pDateFor);
-    Calendar calCurrYear = Calendar.getInstance();
+    Calendar calCurrYear = Calendar.getInstance(new Locale("en", "US"));
     calCurrYear.setTime(getSrvAccSettings().lazyGetAccSettings(pAddParam)
       .getCurrentAccYear());
     calCurrYear.set(Calendar.MONTH, 0);
@@ -251,7 +252,7 @@ public class SrvBalanceStd<RS> implements ISrvBalance {
     calCurrYear.set(Calendar.MINUTE, 0);
     calCurrYear.set(Calendar.SECOND, 0);
     calCurrYear.set(Calendar.MILLISECOND, 0);
-    Calendar calStBl = Calendar.getInstance();
+    Calendar calStBl = Calendar.getInstance(new Locale("en", "US"));
     calStBl.setTime(this.balanceAtAllDirtyCheck.getDateBalanceStoreStart());
     calStBl.set(Calendar.MONTH, 0);
     calStBl.set(Calendar.DAY_OF_MONTH, 1);
@@ -501,7 +502,7 @@ public class SrvBalanceStd<RS> implements ISrvBalance {
       throw new ExceptionWithCode(ExceptionWithCode.WRONG_PARAMETER,
         "stored_balance_period_must_be_dwm");
     }
-    Calendar cal = Calendar.getInstance();
+    Calendar cal = Calendar.getInstance(new Locale("en", "US"));
     cal.setTime(pDateFor);
     cal.set(Calendar.HOUR_OF_DAY, 0);
     cal.set(Calendar.MINUTE, 0);
@@ -532,7 +533,7 @@ public class SrvBalanceStd<RS> implements ISrvBalance {
     if (dateBalanceStoreStart.getTime() == this.initDateLong
       && leastAccountingEntryDate.getTime() == this.initDateLong) {
       //the first time with no acc-entries, it's start of current ACC year:
-      Calendar cal = Calendar.getInstance();
+      Calendar cal = Calendar.getInstance(new Locale("en", "US"));
       cal.setTime(getSrvAccSettings().lazyGetAccSettings(pAddParam)
         .getCurrentAccYear());
       cal.set(Calendar.MONTH, 0);
@@ -556,7 +557,7 @@ public class SrvBalanceStd<RS> implements ISrvBalance {
         //e.g. dirty reversed acc entry
         getLogger().info(null, SrvBalanceStd.class,
     "There is no single acc entry, so use current acc year for start balance!");
-        Calendar cal = Calendar.getInstance();
+        Calendar cal = Calendar.getInstance(new Locale("en", "US"));
         cal.setTime(getSrvAccSettings().lazyGetAccSettings(pAddParam)
           .getCurrentAccYear());
         cal.set(Calendar.MONTH, 0);
@@ -769,7 +770,7 @@ public class SrvBalanceStd<RS> implements ISrvBalance {
       throw new ExceptionWithCode(ExceptionWithCode.WRONG_PARAMETER,
         "stored_balance_period_must_be_dwm");
     }
-    Calendar cal = Calendar.getInstance();
+    Calendar cal = Calendar.getInstance(new Locale("en", "US"));
     cal.setTime(pDateFor);
     cal.set(Calendar.HOUR_OF_DAY, 0);
     cal.set(Calendar.MINUTE, 0);

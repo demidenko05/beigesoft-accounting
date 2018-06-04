@@ -274,7 +274,7 @@ public class PrcSalesReturnLineSave<RS>
     if (!pItsOwner.getCustomer().getIsForeigner()
       && getSrvAccSettings().lazyGetAccSettings(pAddParam)
         .getIsExtractSalesTaxFromSales()) {
-      String query = lazyGetQuerySalesReturnLineTaxes().replace(":ITSOWNER",
+      String query = lazyGetQuerySalesReturnLineTaxes().replace(":INVOICEID",
         pItsOwner.getItsId().toString());
       int countUpdatedSitl = 0;
       IRecordSet<RS> recordSet = null;

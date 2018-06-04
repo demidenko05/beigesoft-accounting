@@ -169,7 +169,7 @@ public class UtlPurchaseGoodsServiceLine<RS> {
       .retrieveListForField(pAddParam, pit, "itsOwner");
     if (!pItsOwner.getVendor().getIsForeigner() && getSrvAccSettings()
       .lazyGetAccSettings(pAddParam).getIsExtractSalesTaxFromPurchase()) {
-      String query = lazyGetQueryPurchaseInvoiceTaxes().replace(":ITSOWNER",
+      String query = lazyGetQueryPurchaseInvoiceTaxes().replace(":INVOICEID",
         pItsOwner.getItsId().toString());
       int countUpdatedSitl = 0;
       IRecordSet<RS> recordSet = null;

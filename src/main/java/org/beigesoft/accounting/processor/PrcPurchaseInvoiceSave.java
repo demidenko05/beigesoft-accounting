@@ -22,6 +22,8 @@ import org.beigesoft.accounting.persistable.PaymentTo;
 import org.beigesoft.accounting.persistable.PrepaymentTo;
 import org.beigesoft.accounting.persistable.PurchaseInvoice;
 import org.beigesoft.accounting.persistable.PurchaseInvoiceLine;
+import org.beigesoft.accounting.persistable.PurchaseInvoiceGoodsTaxLine;
+import org.beigesoft.accounting.persistable.PurchaseInvoiceServiceTaxLine;
 import org.beigesoft.accounting.persistable.PurchaseInvoiceServiceLine;
 import org.beigesoft.accounting.persistable.PurchaseInvoiceTaxLine;
 
@@ -136,6 +138,14 @@ public class PrcPurchaseInvoiceSave<RS>
             reversedLine.setReversedId(reversingLine.getItsId());
             reversedLine.setTheRest(BigDecimal.ZERO);
             getSrvOrm().updateEntity(pAddParam, reversedLine);
+            PurchaseInvoiceGoodsTaxLine pigtlt =
+              new PurchaseInvoiceGoodsTaxLine();
+            pigtlt.setItsOwner(reversedLine);
+            List<PurchaseInvoiceGoodsTaxLine> tls = getSrvOrm()
+              .retrieveListForField(pAddParam, pigtlt, "itsOwner");
+            for (PurchaseInvoiceGoodsTaxLine pigtl : tls) {
+              getSrvOrm().deleteEntity(pAddParam, pigtl);
+            }
           }
         }
         PurchaseInvoiceServiceLine pisl = new PurchaseInvoiceServiceLine();
@@ -151,7 +161,12 @@ public class PrcPurchaseInvoiceSave<RS>
             reversingLine.setService(reversedLine.getService());
             reversingLine.setAccExpense(reversedLine.getAccExpense());
             reversingLine.setItsCost(reversedLine.getItsCost().negate());
+            reversingLine.setUnitOfMeasure(reversedLine.getUnitOfMeasure());
+            reversingLine.setItsCost(reversedLine.getItsCost());
+            reversingLine.setItsQuantity(reversedLine.getItsQuantity()
+              .negate());
             reversingLine.setItsTotal(reversedLine.getItsTotal().negate());
+            reversingLine.setSubtotal(reversedLine.getSubtotal().negate());
             reversingLine.setTotalTaxes(reversedLine.getTotalTaxes().negate());
             reversingLine.setTaxesDescription(reversedLine
               .getTaxesDescription());
@@ -160,6 +175,14 @@ public class PrcPurchaseInvoiceSave<RS>
             getSrvOrm().insertEntity(pAddParam, reversingLine);
             reversedLine.setReversedId(reversingLine.getItsId());
             getSrvOrm().updateEntity(pAddParam, reversedLine);
+            PurchaseInvoiceServiceTaxLine pigtlt =
+              new PurchaseInvoiceServiceTaxLine();
+            pigtlt.setItsOwner(reversedLine);
+            List<PurchaseInvoiceServiceTaxLine> tls = getSrvOrm()
+              .retrieveListForField(pAddParam, pigtlt, "itsOwner");
+            for (PurchaseInvoiceServiceTaxLine pigtl : tls) {
+              getSrvOrm().deleteEntity(pAddParam, pigtl);
+            }
           }
         }
         PurchaseInvoiceTaxLine pitl = new PurchaseInvoiceTaxLine();

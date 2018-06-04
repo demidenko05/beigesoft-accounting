@@ -24,6 +24,8 @@ import org.beigesoft.accounting.persistable.SalesInvoice;
 import org.beigesoft.accounting.persistable.SalesInvoiceLine;
 import org.beigesoft.accounting.persistable.SalesInvoiceServiceLine;
 import org.beigesoft.accounting.persistable.SalesInvoiceTaxLine;
+import org.beigesoft.accounting.persistable.SalesInvoiceGoodsTaxLine;
+import org.beigesoft.accounting.persistable.SalesInvoiceServiceTaxLine;
 
 /**
  * <p>Process that save sales invoice.</p>
@@ -133,6 +135,13 @@ public class PrcSalesInvoiceSave<RS>
                   + reversingLine.getItsId());
             reversedLine.setReversedId(reversingLine.getItsId());
             getSrvOrm().updateEntity(pAddParam, reversedLine);
+            SalesInvoiceGoodsTaxLine pigtlt = new SalesInvoiceGoodsTaxLine();
+            pigtlt.setItsOwner(reversedLine);
+            List<SalesInvoiceGoodsTaxLine> tls = getSrvOrm()
+              .retrieveListForField(pAddParam, pigtlt, "itsOwner");
+            for (SalesInvoiceGoodsTaxLine pigtl : tls) {
+              getSrvOrm().deleteEntity(pAddParam, pigtl);
+            }
           }
         }
         SalesInvoiceServiceLine sisl = new SalesInvoiceServiceLine();
@@ -147,6 +156,10 @@ public class PrcSalesInvoiceSave<RS>
             reversingLine.setReversedId(reversedLine.getItsId());
             reversingLine.setService(reversedLine.getService());
             reversingLine.setItsPrice(reversedLine.getItsPrice().negate());
+            reversingLine.setUnitOfMeasure(reversedLine.getUnitOfMeasure());
+            reversingLine.setItsQuantity(reversedLine.getItsQuantity()
+              .negate());
+            reversingLine.setSubtotal(reversedLine.getSubtotal().negate());
             reversingLine.setItsTotal(reversedLine.getItsTotal().negate());
             reversingLine.setTotalTaxes(reversedLine.getTotalTaxes().negate());
             reversingLine.setTaxesDescription(reversedLine
@@ -156,6 +169,14 @@ public class PrcSalesInvoiceSave<RS>
             getSrvOrm().insertEntity(pAddParam, reversingLine);
             reversedLine.setReversedId(reversingLine.getItsId());
             getSrvOrm().updateEntity(pAddParam, reversedLine);
+            SalesInvoiceServiceTaxLine pigtlt =
+              new SalesInvoiceServiceTaxLine();
+            pigtlt.setItsOwner(reversedLine);
+            List<SalesInvoiceServiceTaxLine> tls = getSrvOrm()
+              .retrieveListForField(pAddParam, pigtlt, "itsOwner");
+            for (SalesInvoiceServiceTaxLine pigtl : tls) {
+              getSrvOrm().deleteEntity(pAddParam, pigtl);
+            }
           }
         }
         SalesInvoiceTaxLine sitl = new SalesInvoiceTaxLine();

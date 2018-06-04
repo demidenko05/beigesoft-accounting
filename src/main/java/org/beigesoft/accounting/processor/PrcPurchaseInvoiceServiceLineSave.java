@@ -14,6 +14,7 @@ package org.beigesoft.accounting.processor;
 
 import java.util.Map;
 import java.util.List;
+import java.util.ArrayList;
 import java.math.BigDecimal;
 
 import org.beigesoft.model.IRequestData;
@@ -24,6 +25,7 @@ import org.beigesoft.service.ISrvNumberToString;
 import org.beigesoft.accounting.model.ETaxType;
 import org.beigesoft.accounting.persistable.InvItemTaxCategoryLine;
 import org.beigesoft.accounting.persistable.PurchaseInvoiceServiceLine;
+import org.beigesoft.accounting.persistable.PurchaseInvoiceServiceTaxLine;
 import org.beigesoft.accounting.persistable.PurchaseInvoice;
 import org.beigesoft.accounting.service.ISrvAccSettings;
 
@@ -100,10 +102,12 @@ public class PrcPurchaseInvoiceServiceLineSave<RS>
             .getRoundingMode()));
     BigDecimal totalTaxes = BigDecimal.ZERO;
     String taxesDescription = "";
+    List<PurchaseInvoiceServiceTaxLine> tls = null;
     if (!pEntity.getItsOwner().getVendor().getIsForeigner()
       && getSrvAccSettings().lazyGetAccSettings(pAddParam)
         .getIsExtractSalesTaxFromPurchase()
           && pEntity.getService().getTaxCategory() != null) {
+      tls = new ArrayList<PurchaseInvoiceServiceTaxLine>();
       List<InvItemTaxCategoryLine> pstl = getSrvOrm()
         .retrieveListWithConditions(pAddParam,
           InvItemTaxCategoryLine.class, "where ITSOWNER="
@@ -114,14 +118,21 @@ public class PrcPurchaseInvoiceServiceLineSave<RS>
       for (InvItemTaxCategoryLine pst : pstl) {
         if (ETaxType.SALES_TAX_OUTITEM.equals(pst.getTax().getItsType())
           || ETaxType.SALES_TAX_INITEM.equals(pst.getTax().getItsType())) {
-          BigDecimal addTx = pEntity.getItsCost().multiply(pEntity
-        .getItsQuantity()).multiply(pst.getItsPercentage()).divide(bigDecimal100,
+          BigDecimal addTx = pEntity.getSubtotal().multiply(pst
+        .getItsPercentage()).divide(bigDecimal100,
       getSrvAccSettings().lazyGetAccSettings(pAddParam).getPricePrecision(),
     getSrvAccSettings().lazyGetAccSettings(pAddParam).getRoundingMode());
           totalTaxes = totalTaxes.add(addTx);
           if (i++ > 0) {
             sb.append(", ");
           }
+          PurchaseInvoiceServiceTaxLine pistl =
+            new PurchaseInvoiceServiceTaxLine();
+          pistl.setIsNew(true);
+          pistl.setIdDatabaseBirth(this.srvOrm.getIdDatabase());
+          pistl.setItsTotal(addTx);
+          pistl.setTax(pst.getTax());
+          tls.add(pistl);
           sb.append(pst.getTax().getItsName() + " " + prn(pAddParam,
             pst.getItsPercentage()) + "%=" + prn(pAddParam, addTx));
         }
@@ -135,6 +146,30 @@ public class PrcPurchaseInvoiceServiceLineSave<RS>
       getSrvOrm().insertEntity(pAddParam, pEntity);
     } else {
       getSrvOrm().updateEntity(pAddParam, pEntity);
+    }
+    PurchaseInvoiceServiceTaxLine pistlt = new PurchaseInvoiceServiceTaxLine();
+    pistlt.setItsOwner(pEntity);
+    List<PurchaseInvoiceServiceTaxLine> tlsw = getSrvOrm()
+      .retrieveListForField(pAddParam, pistlt, "itsOwner");
+    if (tls != null) {
+      for (int i = 0; i < tls.size(); i++) {
+        if (i < tlsw.size()) {
+          tlsw.get(i).setTax(tls.get(i).getTax());
+          tlsw.get(i).setItsTotal(tls.get(i).getItsTotal());
+          getSrvOrm().updateEntity(pAddParam, tlsw.get(i));
+        } else {
+          tls.get(i).setItsOwner(pEntity);
+          tls.get(i).setInvoiceId(pEntity.getItsOwner().getItsId());
+          getSrvOrm().insertEntity(pAddParam, tls.get(i));
+        }
+      }
+      for (int j = tls.size(); j < tlsw.size(); j++) {
+        getSrvOrm().deleteEntity(pAddParam, tlsw.get(j));
+      }
+    } else {
+      for (PurchaseInvoiceServiceTaxLine pistlw : tlsw) {
+        getSrvOrm().deleteEntity(pAddParam, pistlw);
+      }
     }
     // optimistic locking (dirty check):
     Long ownerVersion = Long.valueOf(pRequestData
