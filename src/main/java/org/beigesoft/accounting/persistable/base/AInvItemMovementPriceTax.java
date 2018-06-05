@@ -26,12 +26,12 @@ public abstract class AInvItemMovementPriceTax extends AInvItemMovementPrice {
   /**
    * <p>Subtotal without taxes.</p>
    **/
-  private BigDecimal subtotal;
+  private BigDecimal subtotal = BigDecimal.ZERO;
 
   /**
    * <p>Total taxes.</p>
    **/
-  private BigDecimal totalTaxes;
+  private BigDecimal totalTaxes = BigDecimal.ZERO;
 
   /**
    * <p>Taxes description, uneditable,

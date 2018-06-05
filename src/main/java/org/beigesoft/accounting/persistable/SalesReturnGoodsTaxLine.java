@@ -58,15 +58,15 @@ public class SalesReturnGoodsTaxLine extends ADocTaxLine
    * <p>Getter for invoiceId.</p>
    * @return Long
    **/
-  public final Long getReturnId() {
+  public final Long getInvoiceId() {
     return this.invoiceId;
   }
 
   /**
    * <p>Setter for invoiceId.</p>
-   * @param pReturnId reference
+   * @param pInvoiceId reference
    **/
-  public final void setReturnId(final Long pReturnId) {
-    this.invoiceId = pReturnId;
+  public final void setInvoiceId(final Long pInvoiceId) {
+    this.invoiceId = pInvoiceId;
   }
 }

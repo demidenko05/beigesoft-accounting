@@ -14,6 +14,7 @@ package org.beigesoft.accounting.processor;
 
 import java.util.Map;
 import java.util.Date;
+import java.util.Locale;
 import java.text.DateFormat;
 
 import org.beigesoft.model.IRequestData;
@@ -70,11 +71,6 @@ public class PrcAccEntryCreate<RS>
   private ISrvI18n srvI18n;
 
   /**
-   * <p>Date Formatter.</p>
-   **/
-  private DateFormat dateFormatter;
-
-  /**
    * <p>AccountingEntries type code.</p>
    **/
   private final Integer accountingEntriesTypeCode =
@@ -111,10 +107,13 @@ public class PrcAccEntryCreate<RS>
     } else {
       docDescription = "";
     }
+    String langDef = (String) pAddParam.get("langDef");
+    DateFormat dateFormat = DateFormat.getDateTimeInstance(
+      DateFormat.MEDIUM, DateFormat.SHORT, new Locale(langDef));
     pEntity.setDescription(getSrvI18n().getMsg(AccountingEntries.class
-      .getSimpleName() + "short") + " #" + doc.getIdDatabaseBirth() + "-"
-        + doc.getItsId() + ", " + getDateFormatter().format(doc.getItsDate())
-          + ". " + docDescription); //only local allowed
+  .getSimpleName() + "short", langDef) + " #" + doc.getIdDatabaseBirth() + "-"
+    + doc.getItsId() + ", " + dateFormat.format(doc.getItsDate())
+      + ". " + docDescription); //only local allowed
     pEntity.setIsNew(true);
     pRequestData.setAttribute("entity", pEntity);
     pRequestData.setAttribute("AccountingEntriesVersion", doc.getItsVersion());
@@ -166,22 +165,6 @@ public class PrcAccEntryCreate<RS>
    **/
   public final void setSrvI18n(final ISrvI18n pSrvI18n) {
     this.srvI18n = pSrvI18n;
-  }
-
-  /**
-   * <p>Getter for dateFormatter.</p>
-   * @return DateFormat
-   **/
-  public final DateFormat getDateFormatter() {
-    return this.dateFormatter;
-  }
-
-  /**
-   * <p>Setter for dateFormatter.</p>
-   * @param pDateFormatter reference
-   **/
-  public final void setDateFormatter(final DateFormat pDateFormatter) {
-    this.dateFormatter = pDateFormatter;
   }
 
   /**

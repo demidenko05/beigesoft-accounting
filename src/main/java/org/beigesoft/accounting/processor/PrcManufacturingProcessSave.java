@@ -92,6 +92,7 @@ public class PrcManufacturingProcessSave<RS>
       umlrd.setItsOwner(reversed);
       List<UsedMaterialLine> reversedMaterials = getSrvOrm().
         retrieveListForField(pAddParam, umlrd, "itsOwner");
+      String langDef = (String) pAddParam.get("langDef");
       for (UsedMaterialLine reversedLine : reversedMaterials) {
         if (reversedLine.getReversedId() == null) {
           UsedMaterialLine reversingLine = new UsedMaterialLine();
@@ -104,9 +105,9 @@ public class PrcManufacturingProcessSave<RS>
           reversingLine.setItsTotal(reversedLine.getItsTotal().negate());
           reversingLine.setIsNew(true);
           reversingLine.setItsOwner(pEntity);
-          reversingLine.setDescription(getSrvI18n().getMsg("reversed_n")
-            + reversedLine.getIdDatabaseBirth() + "-"
-              + reversedLine.getItsId()); //local
+          reversingLine.setDescription(getSrvI18n()
+            .getMsg("reversed_n", langDef) + reversedLine.getIdDatabaseBirth()
+              + "-" + reversedLine.getItsId()); //local
           getSrvOrm().insertEntity(pAddParam, reversingLine);
           getSrvWarehouseEntry().reverseDraw(pAddParam, reversingLine);
           getSrvUseMaterialEntry().reverseDraw(pAddParam, reversingLine,
@@ -118,7 +119,7 @@ public class PrcManufacturingProcessSave<RS>
             descr = reversedLine.getDescription();
           }
           reversedLine.setDescription(descr
-            + " " + getSrvI18n().getMsg("reversing_n") + reversingLine
+            + " " + getSrvI18n().getMsg("reversing_n", langDef) + reversingLine
               .getIdDatabaseBirth() + "-" + reversingLine.getItsId());
           reversedLine.setReversedId(reversingLine.getItsId());
           getSrvOrm().updateEntity(pAddParam, reversedLine);
@@ -141,9 +142,9 @@ public class PrcManufacturingProcessSave<RS>
           reversingLine.setItsTotal(reversedLine.getItsTotal().negate());
           reversingLine.setIsNew(true);
           reversingLine.setItsOwner(pEntity);
-          reversingLine.setDescription(getSrvI18n().getMsg("reversed_n")
-            + reversedLine.getIdDatabaseBirth() + "-"
-              + reversedLine.getItsId()); //local
+          reversingLine.setDescription(getSrvI18n()
+            .getMsg("reversed_n", langDef) + reversedLine.getIdDatabaseBirth()
+              + "-" + reversedLine.getItsId()); //local
           getSrvOrm().insertEntity(pAddParam, reversingLine);
           String descr;
           if (reversedLine.getDescription() == null) {
@@ -152,7 +153,7 @@ public class PrcManufacturingProcessSave<RS>
             descr = reversedLine.getDescription();
           }
           reversedLine.setDescription(descr
-            + " " + getSrvI18n().getMsg("reversing_n") + reversingLine
+            + " " + getSrvI18n().getMsg("reversing_n", langDef) + reversingLine
               .getIdDatabaseBirth() + "-" + reversingLine.getItsId());
           reversedLine.setReversedId(reversingLine.getItsId());
           getSrvOrm().updateEntity(pAddParam, reversedLine);

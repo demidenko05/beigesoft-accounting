@@ -105,8 +105,7 @@ public class PrcInvItemTaxCategoryLineSave<RS>
       if (i++ > 0) {
         sb.append(", ");
       }
-      sb.append(pt.getTax().getItsName() + " "
-        + pt.getItsPercentage() + "%");
+      sb.append(pt.getTax().getItsName());
     }
     pOwner.setTaxesDescription(sb.toString());
     getSrvOrm().updateEntity(pAddParam, pOwner);

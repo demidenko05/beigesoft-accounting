@@ -14,7 +14,9 @@ package org.beigesoft.accounting.processor;
 
 import java.util.Map;
 import java.util.List;
+import java.util.Locale;
 import java.math.BigDecimal;
+import java.text.DateFormat;
 
 import org.beigesoft.model.IRequestData;
 import org.beigesoft.exception.ExceptionWithCode;
@@ -99,6 +101,7 @@ public class PrcSalesInvoiceSave<RS>
         sil.setItsOwner(reversed);
         List<SalesInvoiceLine> reversedLines = getSrvOrm().
           retrieveListForField(pAddParam, sil, "itsOwner");
+        String langDef = (String) pAddParam.get("langDef");
         for (SalesInvoiceLine reversedLine : reversedLines) {
           if (reversedLine.getReversedId() == null) {
             SalesInvoiceLine reversingLine = new SalesInvoiceLine();
@@ -116,9 +119,9 @@ public class PrcSalesInvoiceSave<RS>
               .getTaxesDescription());
             reversingLine.setIsNew(true);
             reversingLine.setItsOwner(pEntity);
-            reversingLine.setDescription(getSrvI18n().getMsg("reversed_n")
-              + reversedLine.getIdDatabaseBirth() + "-"
-                + reversedLine.getItsId()); //local
+            reversingLine.setDescription(getSrvI18n()
+              .getMsg("reversed_n", langDef) + reversedLine.getIdDatabaseBirth()
+                + "-" + reversedLine.getItsId()); //local
             getSrvOrm().insertEntity(pAddParam, reversingLine);
             getSrvWarehouseEntry().reverseDraw(pAddParam, reversingLine);
             getSrvCogsEntry().reverseDraw(pAddParam, reversingLine,
@@ -130,7 +133,7 @@ public class PrcSalesInvoiceSave<RS>
               descr = reversedLine.getDescription();
             }
             reversedLine.setDescription(descr
-              + " " + getSrvI18n().getMsg("reversing_n")
+              + " " + getSrvI18n().getMsg("reversing_n", langDef)
                 + reversingLine.getIdDatabaseBirth() + "-"
                   + reversingLine.getItsId());
             reversedLine.setReversedId(reversingLine.getItsId());
@@ -250,13 +253,16 @@ public class PrcSalesInvoiceSave<RS>
   public final void calculateTotalPayment(
     final Map<String, Object> pAddParam,
       final SalesInvoice pEntity) throws Exception {
+    String langDef = (String) pAddParam.get("langDef");
+    DateFormat dateFormat = DateFormat.getDateTimeInstance(
+      DateFormat.MEDIUM, DateFormat.SHORT, new Locale(langDef));
     if (pEntity.getPrepaymentFrom() != null) {
       pEntity.setPaymentTotal(pEntity.getPrepaymentFrom().getItsTotal());
       pEntity.setPaymentDescription(getSrvI18n().getMsg(PrepaymentFrom
-        .class.getSimpleName() + "short") + " #" + pEntity.getPrepaymentFrom()
-          .getIdDatabaseBirth() + "-" + pEntity.getPrepaymentFrom().getItsId()
-            + ", " + getDateFormatter().format(pEntity.getPrepaymentFrom()
-              .getItsDate()) + ", " + pEntity.getPaymentTotal());
+    .class.getSimpleName() + "short", langDef) + " #" + pEntity
+  .getPrepaymentFrom().getIdDatabaseBirth() + "-" + pEntity.getPrepaymentFrom()
+    .getItsId() + ", " + dateFormat.format(pEntity.getPrepaymentFrom()
+      .getItsDate()) + ", " + pEntity.getPaymentTotal());
     } else {
       pEntity.setPaymentTotal(BigDecimal.ZERO);
       pEntity.setPaymentDescription("");
@@ -269,10 +275,10 @@ public class PrcSalesInvoiceSave<RS>
       pEntity.setPaymentTotal(pEntity.getPaymentTotal()
         .add(payment.getItsTotal()));
       pEntity.setPaymentDescription(pEntity.getPaymentDescription() + " "
-        + getSrvI18n().getMsg(PaymentFrom.class.getSimpleName() + "short")
-          + " #" + payment.getIdDatabaseBirth() + "-" + payment.getItsId()
-            + ", " + getDateFormatter().format(payment.getItsDate())
-              + ", " + payment.getItsTotal());
+    + getSrvI18n().getMsg(PaymentFrom.class.getSimpleName() + "short", langDef)
+      + " #" + payment.getIdDatabaseBirth() + "-" + payment.getItsId()
+        + ", " + dateFormat.format(payment.getItsDate())
+          + ", " + payment.getItsTotal());
     }
   }
 }

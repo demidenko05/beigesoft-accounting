@@ -22,6 +22,7 @@ import org.beigesoft.accounting.persistable.PurchaseInvoice;
 import org.beigesoft.accounting.persistable.SalesReturn;
 import org.beigesoft.accounting.persistable.SalesReturnLine;
 import org.beigesoft.accounting.persistable.SalesReturnTaxLine;
+import org.beigesoft.accounting.persistable.SalesReturnGoodsTaxLine;
 
 /**
  * <p>Process that save sales return.</p>
@@ -68,6 +69,7 @@ public class PrcSalesReturnSave<RS>
       srl.setItsOwner(reversed);
       List<SalesReturnLine> reversedLines = getSrvOrm().
         retrieveListForField(pAddParam, srl, "itsOwner");
+      String langDef = (String) pAddParam.get("langDef");
       for (SalesReturnLine reversedLine : reversedLines) {
         if (reversedLine.getReversedId() == null) {
           if (!reversedLine.getItsQuantity()
@@ -91,9 +93,9 @@ public class PrcSalesReturnSave<RS>
             .getTaxesDescription());
           reversingLine.setIsNew(true);
           reversingLine.setItsOwner(pEntity);
-          reversingLine.setDescription(getSrvI18n().getMsg("reversed_n")
-            + reversedLine.getIdDatabaseBirth() + "-"
-              + reversedLine.getItsId()); //local
+          reversingLine.setDescription(getSrvI18n()
+            .getMsg("reversed_n", langDef) + reversedLine.getIdDatabaseBirth()
+              + "-" + reversedLine.getItsId()); //local
           getSrvOrm().insertEntity(pAddParam, reversingLine);
           getSrvWarehouseEntry().load(pAddParam, reversingLine,
             reversingLine.getWarehouseSite());
@@ -104,11 +106,19 @@ public class PrcSalesReturnSave<RS>
             descr = reversedLine.getDescription();
           }
           reversedLine.setDescription(descr
-            + " " + getSrvI18n().getMsg("reversing_n") + reversingLine
+            + " " + getSrvI18n().getMsg("reversing_n", langDef) + reversingLine
               .getIdDatabaseBirth() + "-" + reversingLine.getItsId());
           reversedLine.setReversedId(reversingLine.getItsId());
           reversedLine.setTheRest(BigDecimal.ZERO);
           getSrvOrm().updateEntity(pAddParam, reversedLine);
+          SalesReturnGoodsTaxLine pigtlt =
+            new SalesReturnGoodsTaxLine();
+          pigtlt.setItsOwner(reversedLine);
+          List<SalesReturnGoodsTaxLine> tls = getSrvOrm()
+            .retrieveListForField(pAddParam, pigtlt, "itsOwner");
+          for (SalesReturnGoodsTaxLine pigtl : tls) {
+            getSrvOrm().deleteEntity(pAddParam, pigtl);
+          }
         }
       }
       SalesReturnTaxLine srtl = new SalesReturnTaxLine();

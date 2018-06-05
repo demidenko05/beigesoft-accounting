@@ -66,11 +66,6 @@ public class InvoiceReportPdf<RS, WI>
   private IPdfFactory<WI> pdfFactory;
 
   /**
-   * <p>Date format.</p>
-   **/
-  private DateFormat dateFormat;
-
-  /**
    * <p>Business service for accounting settings.</p>
    **/
   private ISrvAccSettings srvAccSettings;
@@ -115,7 +110,7 @@ public class InvoiceReportPdf<RS, WI>
     AccSettings accSet = this.srvAccSettings.lazyGetAccSettings(pAddParam);
     String lang = (String) pAddParam.get("lang");
     String langDef = (String) pAddParam.get("langDef");
-    this.dateFormat = DateFormat
+    DateFormat dateFormat = DateFormat
       .getDateInstance(DateFormat.MEDIUM, new Locale(lang));
     String curSign;
     I18nCurrency i18nCurrency =
@@ -234,7 +229,7 @@ public class InvoiceReportPdf<RS, WI>
     }
     String title = this.srvI18n.getMsg("Invoice", lang) + " #" + invNum + ", "
       + this.srvI18n.getMsg("date", lang) + ": "
-        + this.dateFormat.format(inv.getItsDate());
+        + dateFormat.format(inv.getItsDate());
     tblTitle.getItsCells().get(0).setItsContent(title);
     tblTitle.getItsCells().get(0).setFontNumber(1);
     tblTitle.setAlignHorizontal(EAlignHorizontal.CENTER);
@@ -807,22 +802,6 @@ public class InvoiceReportPdf<RS, WI>
    **/
   public final void setPdfFactory(final IPdfFactory<WI> pFactory) {
     this.pdfFactory = pFactory;
-  }
-
-  /**
-   * <p>Getter for dateFormat.</p>
-   * @return DateFormat
-   **/
-  public final DateFormat getDateFormat() {
-    return this.dateFormat;
-  }
-
-  /**
-   * <p>Setter for dateFormat.</p>
-   * @param pDateFormat reference
-   **/
-  public final void setDateFormat(final DateFormat pDateFormat) {
-    this.dateFormat = pDateFormat;
   }
 
   /**

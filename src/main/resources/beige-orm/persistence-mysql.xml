@@ -121,6 +121,7 @@
   org.beigesoft.accounting.persistable.PurchaseInvoiceServiceTaxLine,
   org.beigesoft.accounting.persistable.PurchaseInvoiceGoodsTaxLine,
   org.beigesoft.accounting.persistable.PurchaseReturnGoodsTaxLine,
+  org.beigesoft.accounting.persistable.SalesReturnGoodsTaxLine,
   org.beigesoft.accounting.persistable.WarehouseRest</entry>
 <entry key="settingsKeysForClasses">idColumnsNames, idFieldName, ownerFieldName, constraintAdd, excludeFields, versionAlgorithm</entry>
 <entry key="settingsKeysForFields">definition, isNullable</entry>

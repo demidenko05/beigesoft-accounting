@@ -66,6 +66,7 @@ public class PrcPurchaseReturnSave<RS>
       prl.setItsOwner(reversed);
       List<PurchaseReturnLine> reversedLines = getSrvOrm().
         retrieveListForField(pAddParam, prl, "itsOwner");
+      String langDef = (String) pAddParam.get("langDef");
       for (PurchaseReturnLine reversedLine : reversedLines) {
         if (reversedLine.getReversedId() == null) {
           PurchaseReturnLine reversingLine = new PurchaseReturnLine();
@@ -82,9 +83,9 @@ public class PrcPurchaseReturnSave<RS>
             .getTaxesDescription());
           reversingLine.setIsNew(true);
           reversingLine.setItsOwner(pEntity);
-          reversingLine.setDescription(getSrvI18n().getMsg("reversed_n")
-            + reversedLine.getIdDatabaseBirth() + "-"
-              + reversedLine.getItsId());
+          reversingLine.setDescription(getSrvI18n()
+            .getMsg("reversed_n", langDef) + reversedLine
+              .getIdDatabaseBirth() + "-" + reversedLine.getItsId());
           getSrvOrm().insertEntity(pAddParam, reversingLine);
           getSrvWarehouseEntry().reverseDraw(pAddParam, reversingLine);
           getSrvUseMaterialEntry().reverseDraw(pAddParam, reversingLine,
@@ -96,7 +97,7 @@ public class PrcPurchaseReturnSave<RS>
             descr = reversedLine.getDescription();
           }
           reversedLine.setDescription(descr + " " + getSrvI18n()
-            .getMsg("reversing_n") + reversingLine.getIdDatabaseBirth()
+            .getMsg("reversing_n", langDef) + reversingLine.getIdDatabaseBirth()
               + "-" + reversingLine.getItsId()); //local
           reversedLine.setReversedId(reversingLine.getItsId());
           getSrvOrm().updateEntity(pAddParam, reversedLine);

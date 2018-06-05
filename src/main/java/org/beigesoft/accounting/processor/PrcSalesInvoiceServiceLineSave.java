@@ -127,8 +127,8 @@ public class PrcSalesInvoiceServiceLineSave<RS>
           if (i++ > 0) {
             sb.append(", ");
           }
-          sb.append(pst.getTax().getItsName() + " " + prn(pAddParam,
-            pst.getItsPercentage()) + "%=" + prn(pAddParam, addTx));
+          sb.append(pst.getTax().getItsName() + " "
+            + prn(pAddParam, addTx));
           SalesInvoiceServiceTaxLine pistl =
             new SalesInvoiceServiceTaxLine();
           pistl.setIsNew(true);
@@ -136,8 +136,6 @@ public class PrcSalesInvoiceServiceLineSave<RS>
           pistl.setItsTotal(addTx);
           pistl.setTax(pst.getTax());
           tls.add(pistl);
-          sb.append(pst.getTax().getItsName() + " " + prn(pAddParam,
-            pst.getItsPercentage()) + "%=" + prn(pAddParam, addTx));
         }
       }
       taxesDescription = sb.toString();
@@ -196,7 +194,7 @@ public class PrcSalesInvoiceServiceLineSave<RS>
     return this.srvNumberToString.print(pVal.toString(),
       (String) pAddParam.get("dseparatorv"),
         (String) pAddParam.get("dgseparatorv"),
-          (Integer) pAddParam.get("balancePrecision"),
+          (Integer) pAddParam.get("pricePrecision"),
             (Integer) pAddParam.get("digitsInGroup"));
   }
 

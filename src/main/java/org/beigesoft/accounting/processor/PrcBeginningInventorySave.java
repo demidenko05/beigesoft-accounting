@@ -66,6 +66,7 @@ public class PrcBeginningInventorySave<RS>
       bil.setItsOwner(reversed);
       List<BeginningInventoryLine> reversedLines = getSrvOrm().
         retrieveListForField(pAddParam, bil, "itsOwner");
+      String langDef = (String) pAddParam.get("langDef");
       for (BeginningInventoryLine reversedLine : reversedLines) {
         if (reversedLine.getReversedId() == null) {
           if (!reversedLine.getItsQuantity()
@@ -85,9 +86,9 @@ public class PrcBeginningInventorySave<RS>
           reversingLine.setItsTotal(reversedLine.getItsTotal().negate());
           reversingLine.setIsNew(true);
           reversingLine.setItsOwner(pEntity);
-          reversingLine.setDescription(getSrvI18n().getMsg("reversed_n")
-            + reversedLine.getIdDatabaseBirth() + "-"
-              + reversedLine.getItsId()); //local
+          reversingLine.setDescription(getSrvI18n()
+            .getMsg("reversed_n", langDef) + reversedLine.getIdDatabaseBirth()
+              + "-" + reversedLine.getItsId()); //local
           getSrvOrm().insertEntity(pAddParam, reversingLine);
           getSrvWarehouseEntry().load(pAddParam, reversingLine,
             reversingLine.getWarehouseSite());
@@ -98,8 +99,8 @@ public class PrcBeginningInventorySave<RS>
             descr = reversedLine.getDescription();
           }
           reversedLine.setDescription(descr + " " + getSrvI18n()
-            .getMsg("reversing_n") + reversingLine.getIdDatabaseBirth() + "-"
-              + reversingLine.getItsId());
+            .getMsg("reversing_n", langDef) + reversingLine.getIdDatabaseBirth()
+              + "-" + reversingLine.getItsId());
           reversedLine.setReversedId(reversingLine.getItsId());
           reversedLine.setTheRest(BigDecimal.ZERO);
           getSrvOrm().updateEntity(pAddParam, reversedLine);

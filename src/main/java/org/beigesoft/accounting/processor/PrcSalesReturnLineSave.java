@@ -12,6 +12,8 @@ package org.beigesoft.accounting.processor;
  * http://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html
  */
 
+import java.util.Set;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.List;
 import java.math.BigDecimal;
@@ -30,6 +32,7 @@ import org.beigesoft.accounting.model.ETaxType;
 import org.beigesoft.accounting.persistable.SalesReturn;
 import org.beigesoft.accounting.persistable.SalesReturnLine;
 import org.beigesoft.accounting.persistable.SalesReturnTaxLine;
+import org.beigesoft.accounting.persistable.SalesReturnGoodsTaxLine;
 import org.beigesoft.accounting.persistable.Tax;
 import org.beigesoft.accounting.persistable.InvItemTaxCategoryLine;
 import org.beigesoft.accounting.service.ISrvWarehouseEntry;
@@ -122,6 +125,13 @@ public class PrcSalesReturnLineSave<RS>
         reversed.setTheRest(BigDecimal.ZERO);
         reversed.setReversedId(pEntity.getItsId());
         getSrvOrm().updateEntity(pAddParam, reversed);
+        SalesReturnGoodsTaxLine pigtlt = new SalesReturnGoodsTaxLine();
+        pigtlt.setItsOwner(reversed);
+        List<SalesReturnGoodsTaxLine> tls = getSrvOrm()
+          .retrieveListForField(pAddParam, pigtlt, "itsOwner");
+        for (SalesReturnGoodsTaxLine pigtl : tls) {
+          getSrvOrm().deleteEntity(pAddParam, pigtl);
+        }
       } else {
         if (pEntity.getItsQuantity().doubleValue() == 0) {
           throw new ExceptionWithCode(ExceptionWithCode.WRONG_PARAMETER,
@@ -158,10 +168,12 @@ public class PrcSalesReturnLineSave<RS>
         pEntity.setTheRest(pEntity.getItsQuantity());
         BigDecimal totalTaxes = BigDecimal.ZERO;
         String taxesDescription = "";
+        Set<SalesReturnGoodsTaxLine> tls = null;
         if (!pEntity.getItsOwner().getCustomer().getIsForeigner()
           && getSrvAccSettings().lazyGetAccSettings(pAddParam)
             .getIsExtractSalesTaxFromSales()
               && pEntity.getInvItem().getTaxCategory() != null) {
+          tls = new HashSet<SalesReturnGoodsTaxLine>();
           List<InvItemTaxCategoryLine> pstl = getSrvOrm()
             .retrieveListWithConditions(pAddParam,
               InvItemTaxCategoryLine.class, "where ITSOWNER="
@@ -181,8 +193,15 @@ public class PrcSalesReturnLineSave<RS>
               if (i++ > 0) {
                 sb.append(", ");
               }
-              sb.append(pst.getTax().getItsName() + " " + pst.getItsPercentage()
-                + "%=" + prn(pAddParam, addTx));
+              sb.append(pst.getTax().getItsName() + " "
+                + prn(pAddParam, addTx));
+              SalesReturnGoodsTaxLine pigtl =
+                new SalesReturnGoodsTaxLine();
+              pigtl.setIsNew(true);
+              pigtl.setIdDatabaseBirth(this.srvOrm.getIdDatabase());
+              pigtl.setItsTotal(addTx);
+              pigtl.setTax(pst.getTax());
+              tls.add(pigtl);
             }
           }
           taxesDescription = sb.toString();
@@ -191,6 +210,13 @@ public class PrcSalesReturnLineSave<RS>
         pEntity.setTotalTaxes(totalTaxes);
         pEntity.setItsTotal(pEntity.getSubtotal().add(totalTaxes));
         getSrvOrm().insertEntity(pAddParam, pEntity);
+        if (tls != null) {
+          for (SalesReturnGoodsTaxLine pigtl : tls) {
+            pigtl.setItsOwner(pEntity);
+            pigtl.setInvoiceId(pEntity.getItsOwner().getItsId());
+            getSrvOrm().insertEntity(pAddParam, pigtl);
+          }
+        }
       }
       srvWarehouseEntry.load(pAddParam, pEntity, pEntity.getWarehouseSite());
       String query =
@@ -336,7 +362,7 @@ public class PrcSalesReturnLineSave<RS>
     return this.srvNumberToString.print(pVal.toString(),
       (String) pAddParam.get("dseparatorv"),
         (String) pAddParam.get("dgseparatorv"),
-          (Integer) pAddParam.get("balancePrecision"),
+          (Integer) pAddParam.get("pricePrecision"),
             (Integer) pAddParam.get("digitsInGroup"));
   }
 

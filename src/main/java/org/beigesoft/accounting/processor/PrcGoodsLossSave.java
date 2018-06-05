@@ -63,6 +63,7 @@ public class PrcGoodsLossSave<RS>
       gll.setItsOwner(reversed);
       List<GoodsLossLine> reversedLines = getSrvOrm().
         retrieveListForField(pAddParam, gll, "itsOwner");
+      String langDef = (String) pAddParam.get("langDef");
       for (GoodsLossLine reversedLine : reversedLines) {
         if (reversedLine.getReversedId() == null) {
           GoodsLossLine reversingLine = new GoodsLossLine();
@@ -74,9 +75,9 @@ public class PrcGoodsLossSave<RS>
             .negate());
           reversingLine.setIsNew(true);
           reversingLine.setItsOwner(pEntity);
-          reversingLine.setDescription(getSrvI18n().getMsg("reversed_n")
-            + reversedLine.getIdDatabaseBirth() + "-"
-              + reversedLine.getItsId()); //local
+          reversingLine.setDescription(getSrvI18n()
+            .getMsg("reversed_n", langDef) + reversedLine
+              .getIdDatabaseBirth() + "-" + reversedLine.getItsId()); //local
           getSrvOrm().insertEntity(pAddParam, reversingLine);
           getSrvWarehouseEntry().reverseDraw(pAddParam, reversingLine);
           getSrvCogsEntry().reverseDraw(pAddParam, reversingLine,
@@ -88,7 +89,7 @@ public class PrcGoodsLossSave<RS>
             descr = reversedLine.getDescription();
           }
           reversedLine.setDescription(descr + " " + getSrvI18n()
-            .getMsg("reversing_n") + reversingLine.getIdDatabaseBirth()
+            .getMsg("reversing_n", langDef) + reversingLine.getIdDatabaseBirth()
               + "-" + reversingLine.getItsId());
           reversedLine.setReversedId(reversingLine.getItsId());
           getSrvOrm().updateEntity(pAddParam, reversedLine);

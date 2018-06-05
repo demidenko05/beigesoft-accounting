@@ -15,6 +15,8 @@ package org.beigesoft.accounting.processor;
 import java.math.BigDecimal;
 import java.util.Map;
 import java.util.List;
+import java.util.Locale;
+import java.text.DateFormat;
 
 import org.beigesoft.exception.ExceptionWithCode;
 import org.beigesoft.model.IRequestData;
@@ -97,6 +99,7 @@ public class PrcPurchaseInvoiceSave<RS>
         pil.setItsOwner(reversed);
         List<PurchaseInvoiceLine> reversedLines = getSrvOrm().
           retrieveListForField(pAddParam, pil, "itsOwner");
+        String langDef = (String) pAddParam.get("langDef");
         for (PurchaseInvoiceLine reversedLine : reversedLines) {
           if (reversedLine.getReversedId() == null) {
             if (!reversedLine.getItsQuantity()
@@ -120,9 +123,9 @@ public class PrcPurchaseInvoiceSave<RS>
               .getTaxesDescription());
             reversingLine.setIsNew(true);
             reversingLine.setItsOwner(pEntity);
-            reversingLine.setDescription(getSrvI18n().getMsg("reversed_entry_n")
-              + reversedLine.getIdDatabaseBirth() + "-"
-                + reversedLine.getItsId()); //local
+            reversingLine.setDescription(getSrvI18n()
+              .getMsg("reversed_entry_n", langDef) + reversedLine
+                .getIdDatabaseBirth() + "-" + reversedLine.getItsId()); //local
             getSrvOrm().insertEntity(pAddParam, reversingLine);
             getSrvWarehouseEntry().load(pAddParam, reversingLine,
               reversingLine.getWarehouseSite());
@@ -132,8 +135,8 @@ public class PrcPurchaseInvoiceSave<RS>
             } else {
               descr = reversedLine.getDescription();
             }
-            reversedLine.setDescription(descr + " " + getSrvI18n()
-              .getMsg("reversing_entry_n") + reversingLine.getIdDatabaseBirth()
+            reversedLine.setDescription(descr + " " + getSrvI18n().getMsg(
+              "reversing_entry_n", langDef) + reversingLine.getIdDatabaseBirth()
                 + "-" + reversingLine.getItsId()); //only local
             reversedLine.setReversedId(reversingLine.getItsId());
             reversedLine.setTheRest(BigDecimal.ZERO);
@@ -255,13 +258,16 @@ public class PrcPurchaseInvoiceSave<RS>
    **/
   public final void calculateTotalPayment(final Map<String, Object> pAddParam,
     final PurchaseInvoice pEntity) throws Exception {
+    String langDef = (String) pAddParam.get("langDef");
+    DateFormat dateFormat = DateFormat.getDateTimeInstance(
+    DateFormat.MEDIUM, DateFormat.SHORT, new Locale(langDef));
     if (pEntity.getPrepaymentTo() != null) {
       pEntity.setPaymentTotal(pEntity.getPrepaymentTo().getItsTotal());
       pEntity.setPaymentDescription(getSrvI18n().getMsg(PrepaymentTo
-        .class.getSimpleName() + "short") + " #" + pEntity.getPrepaymentTo()
-          .getIdDatabaseBirth() + "-"
+        .class.getSimpleName() + "short", langDef) + " #" + pEntity
+          .getPrepaymentTo().getIdDatabaseBirth() + "-"
             + pEntity.getPrepaymentTo().getItsId() + ", " //local
-          + getDateFormatter().format(pEntity.getPrepaymentTo().getItsDate())
+          + dateFormat.format(pEntity.getPrepaymentTo().getItsDate())
         + ", " + pEntity.getPaymentTotal());
     } else {
       pEntity.setPaymentTotal(BigDecimal.ZERO);
@@ -275,9 +281,9 @@ public class PrcPurchaseInvoiceSave<RS>
       pEntity.setPaymentTotal(pEntity.getPaymentTotal()
         .add(payment.getItsTotal()));
       pEntity.setPaymentDescription(pEntity.getPaymentDescription() + " "
-        + getSrvI18n().getMsg(PaymentTo.class.getSimpleName() + "short")
-          + " #" + payment.getIdDatabaseBirth() + "-" + payment.getItsId()
-        + ", " + getDateFormatter().format(payment.getItsDate()) + ", "
+    + getSrvI18n().getMsg(PaymentTo.class.getSimpleName() + "short", langDef)
+      + " #" + payment.getIdDatabaseBirth() + "-" + payment.getItsId()
+        + ", " + dateFormat.format(payment.getItsDate()) + ", "
           + payment.getItsTotal());
     }
   }

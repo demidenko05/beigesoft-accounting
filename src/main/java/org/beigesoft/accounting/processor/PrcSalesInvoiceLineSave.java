@@ -118,7 +118,7 @@ public class PrcSalesInvoiceLineSave<RS>
           pEntity.getItsOwner().getItsDate(),
             pEntity.getItsOwner().getItsId());
         SalesInvoiceGoodsTaxLine pigtlt = new SalesInvoiceGoodsTaxLine();
-        pigtlt.setItsOwner(pEntity);
+        pigtlt.setItsOwner(reversed);
         List<SalesInvoiceGoodsTaxLine> tls = getSrvOrm()
           .retrieveListForField(pAddParam, pigtlt, "itsOwner");
         for (SalesInvoiceGoodsTaxLine pigtl : tls) {
@@ -185,8 +185,8 @@ public class PrcSalesInvoiceLineSave<RS>
               if (i++ > 0) {
                 sb.append(", ");
               }
-              sb.append(pst.getTax().getItsName() + " " + prn(pAddParam,
-                pst.getItsPercentage()) + "%=" + prn(pAddParam, addTx));
+              sb.append(pst.getTax().getItsName() + " "
+                + prn(pAddParam, addTx));
             }
           }
           taxesDescription = sb.toString();
@@ -230,7 +230,7 @@ public class PrcSalesInvoiceLineSave<RS>
     return this.srvNumberToString.print(pVal.toString(),
       (String) pAddParam.get("dseparatorv"),
         (String) pAddParam.get("dgseparatorv"),
-          (Integer) pAddParam.get("balancePrecision"),
+          (Integer) pAddParam.get("pricePrecision"),
             (Integer) pAddParam.get("digitsInGroup"));
   }
 

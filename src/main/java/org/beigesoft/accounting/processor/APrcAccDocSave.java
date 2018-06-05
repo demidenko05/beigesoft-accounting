@@ -13,7 +13,6 @@ package org.beigesoft.accounting.processor;
  */
 
 import java.util.Map;
-import java.text.DateFormat;
 
 import org.beigesoft.exception.ExceptionWithCode;
 import org.beigesoft.model.IRequestData;
@@ -43,11 +42,6 @@ public abstract class APrcAccDocSave<RS, T extends IDoc>
    * <p>I18N service.</p>
    **/
   private ISrvI18n srvI18n;
-
-  /**
-   * <p>Date Formatter.</p>
-   **/
-  private DateFormat dateFormatter;
 
   /**
    * <p>Business service for accounting entries.</p>
@@ -89,6 +83,7 @@ public abstract class APrcAccDocSave<RS, T extends IDoc>
             "Total must be less than 0 only in reversal! "
               + pAddParam.get("user"));
       }
+      String langDef = (String) pAddParam.get("langDef");
       if (pEntity.getReversedId() != null) {
         String descr;
         if (pEntity.getDescription() == null) {
@@ -97,7 +92,7 @@ public abstract class APrcAccDocSave<RS, T extends IDoc>
           descr = pEntity.getDescription();
         }
         pEntity.setDescription(descr
-          + " " + getSrvI18n().getMsg("reversed_n") + pEntity
+          + " " + getSrvI18n().getMsg("reversed_n", langDef) + pEntity
             .getReversedIdDatabaseBirth() + "-"
               + pEntity.getReversedId());
       }
@@ -125,7 +120,7 @@ public abstract class APrcAccDocSave<RS, T extends IDoc>
           oldDesr = reversed.getDescription();
         }
         reversed.setDescription(oldDesr
-          + " " + getSrvI18n().getMsg("reversing_n") + pEntity
+          + " " + getSrvI18n().getMsg("reversing_n", langDef) + pEntity
             .getIdDatabaseBirth() + "-"
               + pEntity.getItsId()); //reversing always new from current DB
         reversed.setReversedId(pEntity.getItsId());
@@ -238,22 +233,6 @@ public abstract class APrcAccDocSave<RS, T extends IDoc>
    **/
   public final void setSrvI18n(final ISrvI18n pSrvI18n) {
     this.srvI18n = pSrvI18n;
-  }
-
-  /**
-   * <p>Getter for dateFormatter.</p>
-   * @return DateFormat
-   **/
-  public final DateFormat getDateFormatter() {
-    return this.dateFormatter;
-  }
-
-  /**
-   * <p>Setter for dateFormatter.</p>
-   * @param pDateFormatter reference
-   **/
-  public final void setDateFormatter(final DateFormat pDateFormatter) {
-    this.dateFormatter = pDateFormatter;
   }
 
   /**

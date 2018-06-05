@@ -13,6 +13,7 @@ package org.beigesoft.accounting.service;
  */
 
 import java.util.Date;
+import java.util.Locale;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
@@ -55,11 +56,6 @@ public abstract class ASrvDrawItemEntry<T extends ADrawItemEntry, RS>
    * <p>I18N service.</p>
    **/
   private ISrvI18n srvI18n;
-
-  /**
-   * <p>Date Formatter.</p>
-   **/
-  private DateFormat dateFormatter;
 
   /**
    * <p>ORM service.</p>
@@ -241,7 +237,7 @@ public abstract class ASrvDrawItemEntry<T extends ADrawItemEntry, RS>
       multiply(die.getItsQuantity()).setScale(getSrvAccSettings()
         .lazyGetAccSettings(pAddParam).getCostPrecision(), getSrvAccSettings()
           .lazyGetAccSettings(pAddParam).getRoundingMode()));
-    die.setDescription(makeDescription(pEntity, die));
+    die.setDescription(makeDescription(pAddParam, pEntity, die));
     this.srvOrm.insertEntity(pAddParam, die);
     pSource.setTheRest(pSource.getTheRest().subtract(pQuantityToDraw));
     this.srvOrm.updateEntity(pAddParam, pSource);
@@ -270,6 +266,7 @@ public abstract class ASrvDrawItemEntry<T extends ADrawItemEntry, RS>
         + " and " + tblNm + ".IDDATABASEBIRTH=" + getSrvOrm().getIdDatabase()
           + " and DRAWINGID=" + pEntity.getReversedId());
     BigDecimal quantityToLeaveRst = pEntity.getItsQuantity();
+    String langDef = (String) pAddParam.get("langDef");
     for (T dies : diel) {
       if (dies.getItsQuantity().doubleValue() < 0) {
         throw new ExceptionWithCode(ExceptionWithCode.FORBIDDEN,
@@ -298,8 +295,8 @@ public abstract class ASrvDrawItemEntry<T extends ADrawItemEntry, RS>
             + pAddParam.get("user"));
       }
       die.setReversedId(dies.getItsId());
-      die.setDescription(makeDescription(pEntity, dies) + " "
-        + getSrvI18n().getMsg("reversed_entry_n")
+      die.setDescription(makeDescription(pAddParam, pEntity, dies) + " "
+        + getSrvI18n().getMsg("reversed_entry_n", langDef)
           + getSrvOrm().getIdDatabase() + "-" + dies.getItsId());
       getSrvOrm().insertEntity(pAddParam, die);
       @SuppressWarnings("unchecked")
@@ -318,7 +315,7 @@ public abstract class ASrvDrawItemEntry<T extends ADrawItemEntry, RS>
       srvOrm.updateEntity(pAddParam, drawed);
       dies.setReversedId(die.getItsId());
       dies.setDescription(dies.getDescription() + " "
-        + getSrvI18n().getMsg("reversing_entry_n")
+        + getSrvI18n().getMsg("reversing_entry_n", langDef)
           + getSrvOrm().getIdDatabase() + "-" + die.getItsId()); //only local
       getSrvOrm().updateEntity(pAddParam, dies);
     }
@@ -467,31 +464,36 @@ public abstract class ASrvDrawItemEntry<T extends ADrawItemEntry, RS>
 
   /**
    * <p>Make description for warehouse entry.</p>
+   * @param pAddParam additional param
    * @param pEntity movement
    * @param pSource source of item
    * @return description
    **/
-  public final String makeDescription(final IMakingWarehouseEntry pEntity,
-    final ADrawItemEntry pSource) {
+  public final String makeDescription(final Map<String, Object> pAddParam,
+    final IMakingWarehouseEntry pEntity,
+      final ADrawItemEntry pSource) {
+    String langDef = (String) pAddParam.get("langDef");
+    DateFormat dateFormat = DateFormat.getDateTimeInstance(
+      DateFormat.MEDIUM, DateFormat.SHORT, new Locale(langDef));
     String strWho = getSrvI18n().getMsg(pEntity.getClass().getSimpleName()
-      + "short") + " #" + getSrvOrm().getIdDatabase() + "-" //only local
+      + "short", langDef) + " #" + getSrvOrm().getIdDatabase() + "-"//only local
         + pEntity.getItsId();
     if (pEntity.getOwnerId() == null) {
-      strWho += ", " + getDateFormatter().format(pEntity
-        .getDocumentDate());
+      strWho += ", " + dateFormat.format(pEntity.getDocumentDate());
     } else {
-      strWho += " " + getSrvI18n().getMsg("in") + " " + getSrvI18n()
-        .getMsg(getSrvTypeCode().getTypeCodeMap().get(pEntity.getOwnerType())
-          .getSimpleName() + "short") + " #" + getSrvOrm().getIdDatabase()
-            + "-" + pEntity.getOwnerId() + ", "
-              + getDateFormatter().format(pEntity.getDocumentDate());
+      strWho += " " + getSrvI18n().getMsg("in", langDef) + " " + getSrvI18n()
+    .getMsg(getSrvTypeCode().getTypeCodeMap().get(pEntity.getOwnerType())
+      .getSimpleName() + "short", langDef) + " #" + getSrvOrm().getIdDatabase()
+        + "-" + pEntity.getOwnerId() + ", "
+          + dateFormat.format(pEntity.getDocumentDate());
     }
-    String strFrom = " " + getSrvI18n().getMsg("from") + " " + getSrvI18n()
-      .getMsg(getSrvTypeCode().getTypeCodeMap().get(pSource.getSourceType())
-        .getSimpleName() + "short") + " #" + getSrvOrm().getIdDatabase() + "-"
-          + pSource.getSourceId();
-    return getSrvI18n().getMsg("made_at") + " " + getDateFormatter().format(
-      new Date()) + " " + getSrvI18n().getMsg("by") + " " + strWho + strFrom;
+    String strFrom = " " + getSrvI18n().getMsg("from", langDef) + " "
+  + getSrvI18n().getMsg(getSrvTypeCode().getTypeCodeMap()
+    .get(pSource.getSourceType()).getSimpleName() + "short", langDef)
+      + " #" + getSrvOrm().getIdDatabase() + "-" + pSource.getSourceId();
+    return getSrvI18n().getMsg("made_at", langDef) + " " + dateFormat.format(
+      new Date()) + " " + getSrvI18n().getMsg("by", langDef)
+        + " " + strWho + strFrom;
   }
 
   //Simple getters and setters:
@@ -565,22 +567,6 @@ public abstract class ASrvDrawItemEntry<T extends ADrawItemEntry, RS>
    **/
   public final void setSrvI18n(final ISrvI18n pSrvI18n) {
     this.srvI18n = pSrvI18n;
-  }
-
-  /**
-   * <p>Getter for dateFormatter.</p>
-   * @return DateFormat
-   **/
-  public final DateFormat getDateFormatter() {
-    return this.dateFormatter;
-  }
-
-  /**
-   * <p>Setter for dateFormatter.</p>
-   * @param pDateFormatter reference
-   **/
-  public final void setDateFormatter(final DateFormat pDateFormatter) {
-    this.dateFormatter = pDateFormatter;
   }
 
   /**

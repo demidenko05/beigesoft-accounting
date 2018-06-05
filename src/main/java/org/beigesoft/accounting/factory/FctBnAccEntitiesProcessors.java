@@ -14,7 +14,6 @@ package org.beigesoft.accounting.factory;
 
 import java.util.Map;
 import java.util.HashMap;
-import java.text.DateFormat;
 
 import org.beigesoft.model.IHasId;
 import org.beigesoft.persistable.IPersistableBase;
@@ -207,11 +206,6 @@ public class FctBnAccEntitiesProcessors<RS>
    * <p>I18N service.</p>
    **/
   private ISrvI18n srvI18n;
-
-  /**
-   * <p>Date Formatter.</p>
-   **/
-  private DateFormat dateFormatter;
 
   /**
    * <p>Business service for accounting entries.</p>
@@ -1905,10 +1899,10 @@ public class FctBnAccEntitiesProcessors<RS>
         .get(PrcSalesReturnSave.class.getSimpleName());
     if (proc == null) {
       proc = new PrcSalesReturnSave<RS>();
+      proc.setSrvAccSettings(getSrvAccSettings());
       proc.setSrvAccEntry(getSrvAccEntry());
       proc.setSrvOrm(getSrvOrm());
       proc.setSrvI18n(getSrvI18n());
-      proc.setDateFormatter(getDateFormatter());
       proc.setSrvWarehouseEntry(getSrvWarehouseEntry());
       proc.setSrvCogsEntry(getSrvCogsEntry());
       proc.setSrvUseMaterialEntry(getSrvUseMaterialEntry());
@@ -1935,10 +1929,10 @@ public class FctBnAccEntitiesProcessors<RS>
         .get(PrcGoodsLossSave.class.getSimpleName());
     if (proc == null) {
       proc = new PrcGoodsLossSave<RS>();
+      proc.setSrvAccSettings(getSrvAccSettings());
       proc.setSrvAccEntry(getSrvAccEntry());
       proc.setSrvOrm(getSrvOrm());
       proc.setSrvI18n(getSrvI18n());
-      proc.setDateFormatter(getDateFormatter());
       proc.setSrvWarehouseEntry(getSrvWarehouseEntry());
       proc.setSrvCogsEntry(getSrvCogsEntry());
       //assigning fully initialized object:
@@ -1988,10 +1982,10 @@ public class FctBnAccEntitiesProcessors<RS>
         .get(PrcSalesInvoiceSave.class.getSimpleName());
     if (proc == null) {
       proc = new PrcSalesInvoiceSave<RS>();
+      proc.setSrvAccSettings(getSrvAccSettings());
       proc.setSrvAccEntry(getSrvAccEntry());
       proc.setSrvOrm(getSrvOrm());
       proc.setSrvI18n(getSrvI18n());
-      proc.setDateFormatter(getDateFormatter());
       proc.setSrvWarehouseEntry(getSrvWarehouseEntry());
       proc.setSrvCogsEntry(getSrvCogsEntry());
       //assigning fully initialized object:
@@ -2018,10 +2012,10 @@ public class FctBnAccEntitiesProcessors<RS>
     if (proc == null) {
       proc =
         new PrcManufactureSave<RS>();
+      proc.setSrvAccSettings(getSrvAccSettings());
       proc.setSrvAccEntry(getSrvAccEntry());
       proc.setSrvOrm(getSrvOrm());
       proc.setSrvI18n(getSrvI18n());
-      proc.setDateFormatter(getDateFormatter());
       proc.setSrvWarehouseEntry(getSrvWarehouseEntry());
       proc.setSrvUseMaterialEntry(getSrvUseMaterialEntry());
       //assigning fully initialized object:
@@ -2094,9 +2088,9 @@ public class FctBnAccEntitiesProcessors<RS>
       proc =
         new PrcManufacturingProcessSave<RS>();
       proc.setSrvAccEntry(getSrvAccEntry());
+      proc.setSrvAccSettings(getSrvAccSettings());
       proc.setSrvOrm(getSrvOrm());
       proc.setSrvI18n(getSrvI18n());
-      proc.setDateFormatter(getDateFormatter());
       proc.setSrvWarehouseEntry(getSrvWarehouseEntry());
       proc.setSrvUseMaterialEntry(getSrvUseMaterialEntry());
       //assigning fully initialized object:
@@ -2249,10 +2243,10 @@ public class FctBnAccEntitiesProcessors<RS>
     if (proc == null) {
       proc =
         new PrcPurchaseReturnSave<RS>();
+      proc.setSrvAccSettings(getSrvAccSettings());
       proc.setSrvAccEntry(getSrvAccEntry());
       proc.setSrvOrm(getSrvOrm());
       proc.setSrvI18n(getSrvI18n());
-      proc.setDateFormatter(getDateFormatter());
       proc.setSrvWarehouseEntry(getSrvWarehouseEntry());
       proc.setSrvUseMaterialEntry(getSrvUseMaterialEntry());
       //assigning fully initialized object:
@@ -2279,10 +2273,10 @@ public class FctBnAccEntitiesProcessors<RS>
     if (proc == null) {
       proc =
         new PrcBeginningInventorySave<RS>();
+      proc.setSrvAccSettings(getSrvAccSettings());
       proc.setSrvAccEntry(getSrvAccEntry());
       proc.setSrvOrm(getSrvOrm());
       proc.setSrvI18n(getSrvI18n());
-      proc.setDateFormatter(getDateFormatter());
       proc.setSrvWarehouseEntry(getSrvWarehouseEntry());
       proc.setSrvCogsEntry(getSrvCogsEntry());
       proc.setSrvUseMaterialEntry(getSrvUseMaterialEntry());
@@ -2310,10 +2304,10 @@ public class FctBnAccEntitiesProcessors<RS>
     if (proc == null) {
       proc =
         new PrcPurchaseInvoiceSave<RS>();
+      proc.setSrvAccSettings(getSrvAccSettings());
       proc.setSrvAccEntry(getSrvAccEntry());
       proc.setSrvOrm(getSrvOrm());
       proc.setSrvI18n(getSrvI18n());
-      proc.setDateFormatter(getDateFormatter());
       proc.setSrvWarehouseEntry(getSrvWarehouseEntry());
       proc.setSrvCogsEntry(getSrvCogsEntry());
       proc.setSrvUseMaterialEntry(getSrvUseMaterialEntry());
@@ -2335,10 +2329,10 @@ public class FctBnAccEntitiesProcessors<RS>
       final Map<String, Object> pAddParam) throws Exception {
     PrcPrepaymentFromSave<RS> proc =
       new PrcPrepaymentFromSave<RS>();
+    proc.setSrvAccSettings(getSrvAccSettings());
     proc.setSrvAccEntry(getSrvAccEntry());
     proc.setSrvOrm(getSrvOrm());
     proc.setSrvI18n(getSrvI18n());
-    proc.setDateFormatter(getDateFormatter());
     //assigning fully initialized object:
     this.processorsMap
       .put(PrcPrepaymentFromSave.class.getSimpleName(), proc);
@@ -2402,10 +2396,10 @@ public class FctBnAccEntitiesProcessors<RS>
       final Map<String, Object> pAddParam) throws Exception {
     PrcPrepaymentToSave<RS> proc =
       new PrcPrepaymentToSave<RS>();
+      proc.setSrvAccSettings(getSrvAccSettings());
     proc.setSrvAccEntry(getSrvAccEntry());
     proc.setSrvOrm(getSrvOrm());
     proc.setSrvI18n(getSrvI18n());
-    proc.setDateFormatter(getDateFormatter());
     //assigning fully initialized object:
     this.processorsMap
       .put(PrcPrepaymentToSave.class.getSimpleName(), proc);
@@ -2469,10 +2463,10 @@ public class FctBnAccEntitiesProcessors<RS>
       final Map<String, Object> pAddParam) throws Exception {
     PrcPaymentFromSave<RS> proc =
       new PrcPaymentFromSave<RS>();
+      proc.setSrvAccSettings(getSrvAccSettings());
     proc.setSrvAccEntry(getSrvAccEntry());
     proc.setSrvOrm(getSrvOrm());
     proc.setSrvI18n(getSrvI18n());
-    proc.setDateFormatter(getDateFormatter());
     proc.setPrcSalesInvoiceSave(lazyGetPrcSalesInvoiceSave(pAddParam));
     //assigning fully initialized object:
     this.processorsMap
@@ -2539,7 +2533,6 @@ public class FctBnAccEntitiesProcessors<RS>
     proc.setSrvAccEntry(getSrvAccEntry());
     proc.setSrvOrm(getSrvOrm());
     proc.setSrvI18n(getSrvI18n());
-    proc.setDateFormatter(getDateFormatter());
     proc.setFactoryAppBeans(getFactoryAppBeans());
     //assigning fully initialized object:
     this.processorsMap
@@ -2603,10 +2596,10 @@ public class FctBnAccEntitiesProcessors<RS>
       final Map<String, Object> pAddParam) throws Exception {
     PrcPaymentToSave<RS> proc =
       new PrcPaymentToSave<RS>();
+    proc.setSrvAccSettings(getSrvAccSettings());
     proc.setSrvAccEntry(getSrvAccEntry());
     proc.setSrvOrm(getSrvOrm());
     proc.setSrvI18n(getSrvI18n());
-    proc.setDateFormatter(getDateFormatter());
     proc.setPrcPurchaseInvoiceSave(lazyGetPrcPurchaseInvoiceSave(pAddParam));
     //assigning fully initialized object:
     this.processorsMap
@@ -2730,7 +2723,6 @@ public class FctBnAccEntitiesProcessors<RS>
       proc.setMngUvdSettings(getMngUvdSettings());
       proc.setSrvDate(getSrvDate());
       proc.setSrvI18n(getSrvI18n());
-      proc.setDateFormatter(getDateFormatter());
       proc.setConvertersFieldsFatory(getConvertersFieldsFatory());
       proc.setFieldConverterNamesHolder(getFieldConverterNamesHolder());
       //assigning fully initialized object:
@@ -2760,7 +2752,6 @@ public class FctBnAccEntitiesProcessors<RS>
       proc.setMngUvdSettings(getMngUvdSettings());
       proc.setSrvDate(getSrvDate());
       proc.setSrvI18n(getSrvI18n());
-      proc.setDateFormatter(getDateFormatter());
       proc.setConvertersFieldsFatory(getConvertersFieldsFatory());
       proc.setFieldConverterNamesHolder(getFieldConverterNamesHolder());
       //assigning fully initialized object:
@@ -3109,22 +3100,6 @@ public class FctBnAccEntitiesProcessors<RS>
    **/
   public final void setSrvI18n(final ISrvI18n pSrvI18n) {
     this.srvI18n = pSrvI18n;
-  }
-
-  /**
-   * <p>Getter for dateFormatter.</p>
-   * @return DateFormat
-   **/
-  public final DateFormat getDateFormatter() {
-    return this.dateFormatter;
-  }
-
-  /**
-   * <p>Setter for dateFormatter.</p>
-   * @param pDateFormatter reference
-   **/
-  public final void setDateFormatter(final DateFormat pDateFormatter) {
-    this.dateFormatter = pDateFormatter;
   }
 
   /**

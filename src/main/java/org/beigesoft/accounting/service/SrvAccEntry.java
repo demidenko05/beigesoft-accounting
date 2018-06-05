@@ -16,6 +16,7 @@ import java.util.Date;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Calendar;
 import java.math.BigDecimal;
 import java.io.InputStream;
@@ -46,11 +47,6 @@ public class SrvAccEntry<RS> implements ISrvAccEntry {
    * <p>I18N service.</p>
    **/
   private ISrvI18n srvI18n;
-
-  /**
-   * <p>Date Formatter.</p>
-   **/
-  private DateFormat dateFormatter;
 
   /**
    * <p>ORM service.</p>
@@ -102,19 +98,17 @@ public class SrvAccEntry<RS> implements ISrvAccEntry {
    * @param pSrvAccSettings AccSettings service
    * @param pSrvBalance Balance service
    * @param pSrvI18n I18N service
-   * @param pDateFormatter for description
    **/
   public SrvAccEntry(final ISrvOrm<RS> pSrvOrm,
       final ISrvDatabase<RS> pSrvDatabase, final ISrvTypeCode pSrvTypeCode,
         final ISrvAccSettings pSrvAccSettings, final ISrvBalance pSrvBalance,
-          final ISrvI18n pSrvI18n, final DateFormat pDateFormatter) {
+          final ISrvI18n pSrvI18n) {
     this.srvDatabase = pSrvDatabase;
     this.srvBalance = pSrvBalance;
     this.srvOrm = pSrvOrm;
     this.srvTypeCode = pSrvTypeCode;
     this.srvAccSettings = pSrvAccSettings;
     this.srvI18n = pSrvI18n;
-    this.dateFormatter = pDateFormatter;
   }
 
   /**
@@ -175,6 +169,9 @@ public class SrvAccEntry<RS> implements ISrvAccEntry {
         sb.append(query);
       }
     }
+    String langDef = (String) pAddParam.get("langDef");
+    DateFormat dateFormat = DateFormat.getDateTimeInstance(
+      DateFormat.MEDIUM, DateFormat.SHORT, new Locale(langDef));
     String query = sb.toString();
     if (query.trim().length() == 0) {
       throw new ExceptionWithCode(ExceptionWithCode.CONFIGURATION_MISTAKE,
@@ -235,10 +232,9 @@ public class SrvAccEntry<RS> implements ISrvAccEntry {
           if (pEntity.getDescription() != null) {
             descr = " " + pEntity.getDescription();
           }
-          accEntry.setDescription(getSrvI18n().getMsg(pEntity.getClass()
-              .getSimpleName() + "short") + " #" + pEntity.getIdDatabaseBirth()
-                + "-" + docId + ", " + getDateFormatter()
-              .format(pEntity.getItsDate()) + descr);
+          accEntry.setDescription(getSrvI18n().getMsg(pEntity.getClass().
+      getSimpleName() + "short", langDef) + " #" + pEntity.getIdDatabaseBirth()
+    + "-" + docId + ", " + dateFormat.format(pEntity.getItsDate()) + descr);
           this.srvOrm.insertEntity(pAddParam, accEntry);
         } while (recordSet.moveToNext());
       }
@@ -268,6 +264,9 @@ public class SrvAccEntry<RS> implements ISrvAccEntry {
           + pReversing.getReversedId() + " and SOURCEDATABASEBIRTH="
             + pReversing.getReversedIdDatabaseBirth());
     Long itsDateLong = null;
+    String langDef = (String) pAddParam.get("langDef");
+    DateFormat dateFormat = DateFormat.getDateTimeInstance(
+      DateFormat.MEDIUM, DateFormat.SHORT, new Locale(langDef));
     for (AccountingEntry source : sources) {
       if (!source.getIdDatabaseBirth()
         .equals(getSrvDatabase().getIdDatabase())) {
@@ -303,20 +302,19 @@ public class SrvAccEntry<RS> implements ISrvAccEntry {
       if (source.getCredit() != null) {
         accEntry.setCredit(source.getCredit().negate());
       }
-      accEntry.setDescription(getSrvI18n().getMsg("made_at") + " "
-        + getDateFormatter().format(new Date()) + " " + getSrvI18n()
-          .getMsg("by") + " " + getSrvI18n().getMsg(pReversing.getClass()
-            .getSimpleName() + "short") + " #" + pReversing.getIdDatabaseBirth()
-              + "-" + reversingDocId + ", " + getDateFormatter()
-                .format(pReversing.getItsDate())
-              // reversed from  current DB:
-              + ", " + getSrvI18n().getMsg("reversed_entry_n") + source
-            .getIdDatabaseBirth() + "-" + source.getItsId());
+      accEntry.setDescription(getSrvI18n().getMsg("made_at", langDef) + " "
+    + dateFormat.format(new Date()) + " " + getSrvI18n()
+  .getMsg("by", langDef) + " " + getSrvI18n().getMsg(pReversing.getClass()
+.getSimpleName() + "short", langDef) + " #" + pReversing.getIdDatabaseBirth()
+  + "-" + reversingDocId + ", " + dateFormat.format(pReversing.getItsDate())
+    // reversed from  current DB:
+    + ", " + getSrvI18n().getMsg("reversed_entry_n", langDef) + source
+      .getIdDatabaseBirth() + "-" + source.getItsId());
       accEntry.setReversedId(source.getItsId());
       accEntry.setReversedIdDatabaseBirth(source.getIdDatabaseBirth());
       srvOrm.insertEntity(pAddParam, accEntry);
       source.setDescription(source.getDescription().trim()
-        + " " + getSrvI18n().getMsg("reversing_entry_n") + accEntry
+        + " " + getSrvI18n().getMsg("reversing_entry_n", langDef) + accEntry
           .getIdDatabaseBirth() + "-"
             + accEntry.getItsId()); // new in current DB
       source.setReversedId(accEntry.getItsId());
@@ -525,21 +523,5 @@ public class SrvAccEntry<RS> implements ISrvAccEntry {
    **/
   public final void setSrvI18n(final ISrvI18n pSrvI18n) {
     this.srvI18n = pSrvI18n;
-  }
-
-  /**
-   * <p>Getter for dateFormatter.</p>
-   * @return DateFormat
-   **/
-  public final DateFormat getDateFormatter() {
-    return this.dateFormatter;
-  }
-
-  /**
-   * <p>Setter for dateFormatter.</p>
-   * @param pDateFormatter reference
-   **/
-  public final void setDateFormatter(final DateFormat pDateFormatter) {
-    this.dateFormatter = pDateFormatter;
   }
 }

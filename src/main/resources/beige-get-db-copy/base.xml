@@ -115,6 +115,7 @@
   org.beigesoft.accounting.persistable.PurchaseInvoiceServiceTaxLine,
   org.beigesoft.accounting.persistable.PurchaseInvoiceGoodsTaxLine,
   org.beigesoft.accounting.persistable.PurchaseReturnGoodsTaxLine,
+  org.beigesoft.accounting.persistable.SalesReturnGoodsTaxLine,
   org.beigesoft.accounting.persistable.WarehouseRest</entry>
 <entry key="settingsKeysForClasses">excludeFields</entry>
 <entry key="settingsKeysForFields">isEnabled, ISrvFieldWriter, ISrvEntityFieldFiller</entry>

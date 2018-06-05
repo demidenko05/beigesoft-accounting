@@ -11,6 +11,7 @@
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
 <comment>Correspondence of field name to is null-able.</comment>
+<entry key="invoiceId">false</entry>
 <entry key="digitsInGroup">false</entry>
 <entry key="recordsPerTransaction">false</entry>
 <entry key="columnsCount">false</entry>

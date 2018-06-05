@@ -135,7 +135,7 @@ public class PrcPurchaseReturnLineSave<RS>
         reversed.setReversedId(pEntity.getItsId());
         getSrvOrm().updateEntity(pAddParam, reversed);
         PurchaseReturnGoodsTaxLine pigtlt = new PurchaseReturnGoodsTaxLine();
-        pigtlt.setItsOwner(pEntity);
+        pigtlt.setItsOwner(reversed);
         List<PurchaseReturnGoodsTaxLine> tls = getSrvOrm()
           .retrieveListForField(pAddParam, pigtlt, "itsOwner");
         for (PurchaseReturnGoodsTaxLine pigtl : tls) {
@@ -154,19 +154,20 @@ public class PrcPurchaseReturnLineSave<RS>
           throw new ExceptionWithCode(ExceptionWithCode.WRONG_PARAMETER,
             "wrong_purchaseInvoiceLine");
         }
+        String langDef = (String) pAddParam.get("langDef");
         //BeigeORM refresh:
         pEntity.setPurchaseInvoiceLine(getSrvOrm()
           .retrieveEntity(pAddParam, pEntity.getPurchaseInvoiceLine()));
         pEntity.setPurchInvLnAppearance(getSrvI18n().getMsg(PurchaseInvoiceLine
-          .class.getSimpleName() + "short") + " #" + pEntity
-            .getPurchaseInvoiceLine().getIdDatabaseBirth() + "-" //local
-              + pEntity.getPurchaseInvoiceLine().getItsId() + ", " + pEntity
-            .getPurchaseInvoiceLine().getInvItem().getItsName() + ", " + pEntity
-              .getPurchaseInvoiceLine().getUnitOfMeasure().getItsName() + ", "
-            + getSrvI18n().getMsg("itsCost") + "=" + pEntity
-              .getPurchaseInvoiceLine().getItsCost() + ", " + getSrvI18n()
-            .getMsg("rest_was") + "=" + pEntity.getPurchaseInvoiceLine()
-              .getTheRest());
+      .class.getSimpleName() + "short", langDef) + " #" + pEntity
+    .getPurchaseInvoiceLine().getIdDatabaseBirth() + "-" //local
+      + pEntity.getPurchaseInvoiceLine().getItsId() + ", " + pEntity
+        .getPurchaseInvoiceLine().getInvItem().getItsName() + ", " + pEntity
+          .getPurchaseInvoiceLine().getUnitOfMeasure().getItsName() + ", "
+    + getSrvI18n().getMsg("itsCost", langDef) + "=" + prnc(pAddParam, pEntity
+      .getPurchaseInvoiceLine().getItsCost()) + ", " + getSrvI18n()
+        .getMsg("rest_was", langDef) + "=" + prnq(pAddParam, pEntity
+          .getPurchaseInvoiceLine().getTheRest()));
         //rounding:
         pEntity.setItsQuantity(pEntity.getItsQuantity().setScale(
           getSrvAccSettings().lazyGetAccSettings(pAddParam)
@@ -207,8 +208,8 @@ public class PrcPurchaseReturnLineSave<RS>
               if (i++ > 0) {
                 sb.append(", ");
               }
-              sb.append(pst.getTax().getItsName() + " " + prn(pAddParam,
-                pst.getItsPercentage()) + "%=" + prn(pAddParam, addTx));
+              sb.append(pst.getTax().getItsName() + " "
+                + prn(pAddParam, addTx));
               PurchaseReturnGoodsTaxLine pigtl =
                 new PurchaseReturnGoodsTaxLine();
               pigtl.setIsNew(true);
@@ -227,7 +228,7 @@ public class PrcPurchaseReturnLineSave<RS>
         if (tls != null) {
           for (PurchaseReturnGoodsTaxLine pigtl : tls) {
             pigtl.setItsOwner(pEntity);
-            pigtl.setReturnId(pEntity.getItsOwner().getItsId());
+            pigtl.setInvoiceId(pEntity.getItsOwner().getItsId());
             getSrvOrm().insertEntity(pAddParam, pigtl);
           }
         }
@@ -373,7 +374,7 @@ public class PrcPurchaseReturnLineSave<RS>
   }
 
   /**
-   * <p>Simple delegator to print number.</p>
+   * <p>Simple delegator to print price.</p>
    * @param pAddParam additional param
    * @param pVal value
    * @return String
@@ -383,7 +384,37 @@ public class PrcPurchaseReturnLineSave<RS>
     return this.srvNumberToString.print(pVal.toString(),
       (String) pAddParam.get("dseparatorv"),
         (String) pAddParam.get("dgseparatorv"),
-          (Integer) pAddParam.get("balancePrecision"),
+          (Integer) pAddParam.get("pricePrecision"),
+            (Integer) pAddParam.get("digitsInGroup"));
+  }
+
+  /**
+   * <p>Simple delegator to print cost.</p>
+   * @param pAddParam additional param
+   * @param pVal value
+   * @return String
+   **/
+  public final String prnc(final Map<String, Object> pAddParam,
+    final BigDecimal pVal) {
+    return this.srvNumberToString.print(pVal.toString(),
+      (String) pAddParam.get("dseparatorv"),
+        (String) pAddParam.get("dgseparatorv"),
+          (Integer) pAddParam.get("costPrecision"),
+            (Integer) pAddParam.get("digitsInGroup"));
+  }
+
+  /**
+   * <p>Simple delegator to print quantity.</p>
+   * @param pAddParam additional param
+   * @param pVal value
+   * @return String
+   **/
+  public final String prnq(final Map<String, Object> pAddParam,
+    final BigDecimal pVal) {
+    return this.srvNumberToString.print(pVal.toString(),
+      (String) pAddParam.get("dseparatorv"),
+        (String) pAddParam.get("dgseparatorv"),
+          (Integer) pAddParam.get("quantityPrecision"),
             (Integer) pAddParam.get("digitsInGroup"));
   }
 

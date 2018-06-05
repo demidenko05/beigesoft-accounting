@@ -14,7 +14,9 @@ package org.beigesoft.accounting.processor;
 
 import java.util.Date;
 import java.util.Map;
+import java.util.Locale;
 import java.math.BigDecimal;
+import java.text.DateFormat;
 
 import org.beigesoft.exception.ExceptionWithCode;
 import org.beigesoft.model.IRequestData;
@@ -165,18 +167,21 @@ public class PrcManufactureSave<RS>
   /**
    * <p>Make description for warehouse entry.</p>
    * @param pEntity movement
+   * @param pLangDef Lang Default
+   * @param pDateFormat DateFormat
    * @return description
    **/
-  public final String makeDescription(final Manufacture pEntity) {
+  public final String makeDescription(final Manufacture pEntity,
+    final String pLangDef, final DateFormat pDateFormat) {
     String strWho = getSrvI18n().getMsg(pEntity.getClass().getSimpleName()
-      + "short") + " #" + pEntity.getIdDatabaseBirth() + "-" + pEntity
-        .getItsId() + ", " + getDateFormatter().format(pEntity.getItsDate());
-    String strFrom = " " + getSrvI18n().getMsg("from") + " " + getSrvI18n()
-      .getMsg(ManufacturingProcess.class.getSimpleName() + "short") + " #"
-        + pEntity.getManufacturingProcess().getIdDatabaseBirth() + "-"
-          + pEntity.getManufacturingProcess().getItsId(); //local
-    return getSrvI18n().getMsg("made_at") + " " + getDateFormatter()
-      .format(new Date()) + " " + getSrvI18n().getMsg("by") + " "
+      + "short", pLangDef) + " #" + pEntity.getIdDatabaseBirth() + "-" + pEntity
+        .getItsId() + ", " + pDateFormat.format(pEntity.getItsDate());
+    String strFrom = " " + getSrvI18n().getMsg("from", pLangDef) + " "
+  + getSrvI18n().getMsg(ManufacturingProcess.class.getSimpleName() + "short",
+    pLangDef) + " #" + pEntity.getManufacturingProcess().getIdDatabaseBirth()
+      + "-" + pEntity.getManufacturingProcess().getItsId(); //local
+    return getSrvI18n().getMsg("made_at", pLangDef) + " " + pDateFormat
+      .format(new Date()) + " " + getSrvI18n().getMsg("by", pLangDef) + " "
         + strWho + strFrom;
   }
 
@@ -211,7 +216,10 @@ public class PrcManufactureSave<RS>
     die.setUnitOfMeasure(pEntity.getManufacturingProcess().getUnitOfMeasure());
     die.setItsTotal(die.getItsCost().
       multiply(die.getItsQuantity()));
-    die.setDescription(makeDescription(pEntity));
+    String langDef = (String) pAddParam.get("langDef");
+    DateFormat dateFormat = DateFormat.getDateTimeInstance(
+      DateFormat.MEDIUM, DateFormat.SHORT, new Locale(langDef));
+    die.setDescription(makeDescription(pEntity, langDef, dateFormat));
     getSrvOrm().insertEntity(pAddParam, die);
   }
 
@@ -246,16 +254,19 @@ public class PrcManufactureSave<RS>
     die.setInvItem(dies.getInvItem());
     die.setItsQuantity(dies.getItsQuantity().negate());
     die.setReversedId(die.getItsId());
-    die.setDescription(makeDescription(pEntity) + " " + getSrvI18n()
-      .getMsg("reversed_entry_n") + dies.getIdDatabaseBirth() + "-"
-        + dies.getItsId());
+    String langDef = (String) pAddParam.get("langDef");
+    DateFormat dateFormat = DateFormat.getDateTimeInstance(
+      DateFormat.MEDIUM, DateFormat.SHORT, new Locale(langDef));
+    die.setDescription(makeDescription(pEntity, langDef, dateFormat)
+      + " " + getSrvI18n().getMsg("reversed_entry_n", langDef)
+        + dies.getIdDatabaseBirth() + "-" + dies.getItsId());
     getSrvOrm().insertEntity(pAddParam, die);
     pEntity.getManufacturingProcess().setTheRest(pEntity
       .getManufacturingProcess().getTheRest().add(dies.getItsQuantity()));
     getSrvOrm().updateEntity(pAddParam, pEntity.getManufacturingProcess());
     dies.setReversedId(die.getItsId());
     dies.setDescription(dies.getDescription() + " " + getSrvI18n()
-      .getMsg("reversing_entry_n") + die.getIdDatabaseBirth() + "-"
+      .getMsg("reversing_entry_n", langDef) + die.getIdDatabaseBirth() + "-"
         + die.getItsId()); //local
     getSrvOrm().updateEntity(pAddParam, dies);
   }

@@ -52,11 +52,6 @@ public class BalanceSheetPdf<RS, WI> implements IBalanceSheetPdf {
   private IPdfFactory<WI> pdfFactory;
 
   /**
-   * <p>Date format.</p>
-   **/
-  private DateFormat dateFormat;
-
-  /**
    * <p>Business service for accounting settings.</p>
    **/
   private ISrvAccSettings srvAccSettings;
@@ -87,7 +82,7 @@ public class BalanceSheetPdf<RS, WI> implements IBalanceSheetPdf {
     PdfDocument<WI> docPdf = this.pdfFactory.createPdfDoc(doc);
     AccSettings accSet = this.srvAccSettings.lazyGetAccSettings(pAddParam);
     String lang = (String) pAddParam.get("lang");
-    this.dateFormat = DateFormat
+    DateFormat dateFormat = DateFormat
       .getDateInstance(DateFormat.MEDIUM, new Locale(lang));
     String curSign;
     I18nCurrency i18nCurrency =
@@ -128,7 +123,7 @@ public class BalanceSheetPdf<RS, WI> implements IBalanceSheetPdf {
     tblTitle.getItsCells().get(1)
       .setItsContent(this.srvI18n.getMsg("balance_sheet", lang));
     tblTitle.getItsCells().get(2)
-      .setItsContent(this.dateFormat.format(pBalance.getItsDate()));
+      .setItsContent(dateFormat.format(pBalance.getItsDate()));
     tblTitle.setAlignHorizontal(EAlignHorizontal.CENTER);
     docMaker.makeDocTableWrapping(tblTitle);
     doc.setContentPadding(1.0);
@@ -288,22 +283,6 @@ public class BalanceSheetPdf<RS, WI> implements IBalanceSheetPdf {
    **/
   public final void setPdfFactory(final IPdfFactory<WI> pFactory) {
     this.pdfFactory = pFactory;
-  }
-
-  /**
-   * <p>Getter for dateFormat.</p>
-   * @return DateFormat
-   **/
-  public final DateFormat getDateFormat() {
-    return this.dateFormat;
-  }
-
-  /**
-   * <p>Setter for dateFormat.</p>
-   * @param pDateFormat reference
-   **/
-  public final void setDateFormat(final DateFormat pDateFormat) {
-    this.dateFormat = pDateFormat;
   }
 
   /**

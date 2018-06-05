@@ -14,6 +14,7 @@ package org.beigesoft.accounting.service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.text.DateFormat;
 import java.math.BigDecimal;
@@ -47,11 +48,6 @@ public class SrvWarehouseEntry<RS> implements ISrvWarehouseEntry {
   private ISrvI18n srvI18n;
 
   /**
-   * <p>Date Formatter.</p>
-   **/
-  private DateFormat dateFormatter;
-
-  /**
    * <p>ORM service.</p>
    **/
   private ISrvOrm<RS> srvOrm;
@@ -67,15 +63,13 @@ public class SrvWarehouseEntry<RS> implements ISrvWarehouseEntry {
    * @param pSrvOrm ORM service
    * @param pSrvTypeCodeDocuments Type Code Documents service
    * @param pSrvI18n I18N service
-   * @param pDateFormatter for description
    **/
   public SrvWarehouseEntry(final ISrvOrm<RS> pSrvOrm,
     final ISrvTypeCode pSrvTypeCodeDocuments,
-      final ISrvI18n pSrvI18n, final DateFormat pDateFormatter) {
+      final ISrvI18n pSrvI18n) {
     this.srvOrm = pSrvOrm;
     this.srvTypeCodeDocuments = pSrvTypeCodeDocuments;
     this.srvI18n = pSrvI18n;
-    this.dateFormatter = pDateFormatter;
   }
 
   /**
@@ -109,6 +103,9 @@ public class SrvWarehouseEntry<RS> implements ISrvWarehouseEntry {
           "cant_find_reverced_source");
       }
     }
+    String langDef = (String) pAddParam.get("langDef");
+    DateFormat dateFormat = DateFormat.getDateTimeInstance(
+      DateFormat.MEDIUM, DateFormat.SHORT, new Locale(langDef));
     WarehouseEntry wm = new WarehouseEntry();
     wm.setIdDatabaseBirth(getSrvOrm().getIdDatabase());
     wm.setSourceId(pEntity.getItsId());
@@ -121,18 +118,18 @@ public class SrvWarehouseEntry<RS> implements ISrvWarehouseEntry {
     wm.setSourceOwnerType(pEntity.getOwnerType());
     if (wms != null) {
       wm.setReversedId(wms.getItsId());
-      wm.setDescription(makeDescription(pEntity) + " " + getSrvI18n()
-        .getMsg("reversed_entry_n") + getSrvOrm().getIdDatabase()
-          + "-" + wms.getItsId()); //only local
+      wm.setDescription(makeDescription(pEntity, langDef, dateFormat) + " "
+        + getSrvI18n().getMsg("reversed_entry_n", langDef) + getSrvOrm()
+          .getIdDatabase() + "-" + wms.getItsId()); //only local
     } else {
-      wm.setDescription(makeDescription(pEntity));
+      wm.setDescription(makeDescription(pEntity, langDef, dateFormat));
     }
     getSrvOrm().insertEntity(pAddParam, wm);
     makeWarehouseRest(pAddParam, pEntity, pWhSiteTo, pEntity.getItsQuantity());
     if (wms != null) {
       wms.setReversedId(wm.getItsId());
       wms.setDescription(wms.getDescription() + " " + getSrvI18n()
-        .getMsg("reversing_entry_n") + getSrvOrm().getIdDatabase()
+        .getMsg("reversing_entry_n", langDef) + getSrvOrm().getIdDatabase()
           + "-" + wm.getItsId());
       getSrvOrm().updateEntity(pAddParam, wms);
     }
@@ -167,6 +164,9 @@ public class SrvWarehouseEntry<RS> implements ISrvWarehouseEntry {
           "cant_find_reverced_source");
       }
     }
+    String langDef = (String) pAddParam.get("langDef");
+    DateFormat dateFormat = DateFormat.getDateTimeInstance(
+      DateFormat.MEDIUM, DateFormat.SHORT, new Locale(langDef));
     WarehouseEntry wm = new WarehouseEntry();
     wm.setIdDatabaseBirth(getSrvOrm().getIdDatabase());
     wm.setSourceId(pEntity.getItsId());
@@ -180,11 +180,11 @@ public class SrvWarehouseEntry<RS> implements ISrvWarehouseEntry {
     wm.setSourceOwnerType(pEntity.getOwnerType());
     if (wms != null) {
       wm.setReversedId(wms.getItsId());
-      wm.setDescription(makeDescription(pEntity) + " " + getSrvI18n()
-        .getMsg("reversed_entry_n") + getSrvOrm().getIdDatabase()
-          + "-" + wms.getItsId()); //only local
+      wm.setDescription(makeDescription(pEntity, langDef, dateFormat) + " "
+        + getSrvI18n().getMsg("reversed_entry_n", langDef) + getSrvOrm()
+          .getIdDatabase() + "-" + wms.getItsId()); //only local
     } else {
-      wm.setDescription(makeDescription(pEntity));
+      wm.setDescription(makeDescription(pEntity, langDef, dateFormat));
     }
     getSrvOrm().insertEntity(pAddParam, wm);
     makeWarehouseRest(pAddParam, pEntity, pWhSiteFrom,
@@ -193,7 +193,7 @@ public class SrvWarehouseEntry<RS> implements ISrvWarehouseEntry {
     if (wms != null) {
       wms.setReversedId(wm.getItsId());
       wms.setDescription(wms.getDescription() + " " + getSrvI18n()
-        .getMsg("reversing_entry_n") + getSrvOrm().getIdDatabase()
+        .getMsg("reversing_entry_n", langDef) + getSrvOrm().getIdDatabase()
           + "-" + wm.getItsId());
       getSrvOrm().updateEntity(pAddParam, wms);
     }
@@ -261,6 +261,9 @@ public class SrvWarehouseEntry<RS> implements ISrvWarehouseEntry {
       throw new ExceptionWithCode(ExceptionWithCode.WRONG_PARAMETER,
         "can_not_make_ws_entry_for_foreign_src");
     }
+    String langDef = (String) pAddParam.get("langDef");
+    DateFormat dateFormat = DateFormat.getDateTimeInstance(
+      DateFormat.MEDIUM, DateFormat.SHORT, new Locale(langDef));
     if (pWhSiteFrom != null) {
       WarehouseRest wr = getSrvOrm().retrieveEntityWithConditions(pAddParam,
         WarehouseRest.class, "where THEREST>0 and INVITEM="
@@ -286,7 +289,7 @@ public class SrvWarehouseEntry<RS> implements ISrvWarehouseEntry {
       wm.setItsQuantity(pEntity.getItsQuantity());
       wm.setSourceOwnerId(pEntity.getOwnerId());
       wm.setSourceOwnerType(pEntity.getOwnerType());
-      wm.setDescription(makeDescription(pEntity));
+      wm.setDescription(makeDescription(pEntity, langDef, dateFormat));
       getSrvOrm().insertEntity(pAddParam, wm);
     } else {
       List<WarehouseRest> wrl = getSrvOrm().retrieveListWithConditions(
@@ -327,7 +330,7 @@ public class SrvWarehouseEntry<RS> implements ISrvWarehouseEntry {
         wm.setItsQuantity(quantityToLeave);
         wm.setSourceOwnerId(pEntity.getOwnerId());
         wm.setSourceOwnerType(pEntity.getOwnerType());
-        wm.setDescription(makeDescription(pEntity));
+        wm.setDescription(makeDescription(pEntity, langDef, dateFormat));
         getSrvOrm().insertEntity(pAddParam, wm);
         quantityToLeaveRest = quantityToLeaveRest.subtract(quantityToLeave);
       }
@@ -360,6 +363,9 @@ public class SrvWarehouseEntry<RS> implements ISrvWarehouseEntry {
             + " and INVITEM=" + pEntity.getInvItem().getItsId()
               +  " and WAREHOUSESITEFROM is not null");
     BigDecimal quantityToLeaveRst = pEntity.getItsQuantity();
+    String langDef = (String) pAddParam.get("langDef");
+    DateFormat dateFormat = DateFormat.getDateTimeInstance(
+      DateFormat.MEDIUM, DateFormat.SHORT, new Locale(langDef));
     for (WarehouseEntry wms : wml) {
       if (wms.getItsQuantity().doubleValue() < 0) {
         throw new ExceptionWithCode(ExceptionWithCode.WRONG_PARAMETER,
@@ -381,15 +387,15 @@ public class SrvWarehouseEntry<RS> implements ISrvWarehouseEntry {
       wm.setSourceOwnerId(pEntity.getOwnerId());
       wm.setSourceOwnerType(pEntity.getOwnerType());
       wm.setReversedId(wms.getItsId());
-      wm.setDescription(makeDescription(pEntity) + " " + getSrvI18n()
-        .getMsg("reversed_entry_n") + getSrvOrm().getIdDatabase()
-          + "-" + wms.getItsId());
+      wm.setDescription(makeDescription(pEntity, langDef, dateFormat) + " "
+        + getSrvI18n().getMsg("reversed_entry_n", langDef) + getSrvOrm()
+          .getIdDatabase() + "-" + wms.getItsId());
       getSrvOrm().insertEntity(pAddParam, wm);
       makeWarehouseRest(pAddParam, pEntity, wm.getWarehouseSiteFrom(),
         wms.getItsQuantity());
       wms.setReversedId(wm.getItsId());
       wms.setDescription(wms.getDescription() + " " + getSrvI18n()
-        .getMsg("reversing_entry_n") + getSrvOrm().getIdDatabase()
+        .getMsg("reversing_entry_n", langDef) + getSrvOrm().getIdDatabase()
           + "-" + wm.getItsId());
       getSrvOrm().updateEntity(pAddParam, wms);
     }
@@ -457,24 +463,27 @@ public class SrvWarehouseEntry<RS> implements ISrvWarehouseEntry {
   /**
    * <p>Make description for warehouse entry.</p>
    * @param pEntity movement
+   * @param pLangDef Lang Default
+   * @param pDateFormat DateFormat
    * @return description
    **/
-  public final String makeDescription(final IMakingWarehouseEntry pEntity) {
+  public final String makeDescription(final IMakingWarehouseEntry pEntity,
+    final String pLangDef, final DateFormat pDateFormat) {
     String strWho = getSrvI18n().getMsg(pEntity.getClass().getSimpleName()
-      + "short") + " #" + getSrvOrm().getIdDatabase() + "-"
+      + "short", pLangDef) + " #" + getSrvOrm().getIdDatabase() + "-"
         + pEntity.getItsId(); //only local
     if (pEntity.getOwnerId() == null) {
-      strWho += ", " + getDateFormatter().format(pEntity
+      strWho += ", " + pDateFormat.format(pEntity
         .getDocumentDate());
     } else {
-      strWho += " " + getSrvI18n().getMsg("in") + " " + getSrvI18n()
-        .getMsg(getSrvTypeCodeDocuments().getTypeCodeMap().get(pEntity
-          .getOwnerType()).getSimpleName() + "short") + " #" + getSrvOrm()
-            .getIdDatabase() + "-" + pEntity.getOwnerId() + ", "
-              + getDateFormatter().format(pEntity.getDocumentDate());
+      strWho += " " + getSrvI18n().getMsg("in", pLangDef) + " " + getSrvI18n()
+    .getMsg(getSrvTypeCodeDocuments().getTypeCodeMap().get(pEntity
+  .getOwnerType()).getSimpleName() + "short", pLangDef) + " #" + getSrvOrm()
+    .getIdDatabase() + "-" + pEntity.getOwnerId() + ", "
+      + pDateFormat.format(pEntity.getDocumentDate());
     }
-    return getSrvI18n().getMsg("made_at") + " " + getDateFormatter().format(
-      new Date()) + " " + getSrvI18n().getMsg("by") + " " + strWho;
+    return getSrvI18n().getMsg("made_at", pLangDef) + " " + pDateFormat.format(
+      new Date()) + " " + getSrvI18n().getMsg("by", pLangDef) + " " + strWho;
   }
 
   //Simple getters and setters:
@@ -525,21 +534,5 @@ public class SrvWarehouseEntry<RS> implements ISrvWarehouseEntry {
    **/
   public final void setSrvI18n(final ISrvI18n pSrvI18n) {
     this.srvI18n = pSrvI18n;
-  }
-
-  /**
-   * <p>Getter for dateFormatter.</p>
-   * @return DateFormat
-   **/
-  public final DateFormat getDateFormatter() {
-    return this.dateFormatter;
-  }
-
-  /**
-   * <p>Setter for dateFormatter.</p>
-   * @param pDateFormatter reference
-   **/
-  public final void setDateFormatter(final DateFormat pDateFormatter) {
-    this.dateFormatter = pDateFormatter;
   }
 }

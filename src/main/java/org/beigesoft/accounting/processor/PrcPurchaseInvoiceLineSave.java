@@ -115,7 +115,7 @@ public class PrcPurchaseInvoiceLineSave<RS>
         reversed.setReversedId(pEntity.getItsId());
         getSrvOrm().updateEntity(pAddParam, reversed);
         PurchaseInvoiceGoodsTaxLine pigtlt = new PurchaseInvoiceGoodsTaxLine();
-        pigtlt.setItsOwner(pEntity);
+        pigtlt.setItsOwner(reversed);
         List<PurchaseInvoiceGoodsTaxLine> tls = getSrvOrm()
           .retrieveListForField(pAddParam, pigtlt, "itsOwner");
         for (PurchaseInvoiceGoodsTaxLine pigtl : tls) {
@@ -188,8 +188,8 @@ public class PrcPurchaseInvoiceLineSave<RS>
               pigtl.setItsTotal(addTx);
               pigtl.setTax(iitcl.getTax());
               tls.add(pigtl);
-              sb.append(iitcl.getTax().getItsName() + " " + prn(pAddParam,
-                iitcl.getItsPercentage()) + "%=" + prn(pAddParam, addTx));
+              sb.append(iitcl.getTax().getItsName() + " "
+                + prn(pAddParam, addTx));
             }
           }
           taxesDescription = sb.toString();
@@ -230,7 +230,7 @@ public class PrcPurchaseInvoiceLineSave<RS>
     return this.srvNumberToString.print(pVal.toString(),
       (String) pAddParam.get("dseparatorv"),
         (String) pAddParam.get("dgseparatorv"),
-          (Integer) pAddParam.get("balancePrecision"),
+          (Integer) pAddParam.get("pricePrecision"),
             (Integer) pAddParam.get("digitsInGroup"));
   }
 
