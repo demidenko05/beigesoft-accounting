@@ -120,7 +120,7 @@ public class SrvAccEntry<RS> implements ISrvAccEntry {
   @Override
   public final void makeEntries(final Map<String, Object> pAddParam,
     final IDoc pEntity) throws Exception {
-    Calendar calCurrYear = Calendar.getInstance();
+    Calendar calCurrYear = Calendar.getInstance(new Locale("en", "US"));
     calCurrYear.setTime(getSrvAccSettings().lazyGetAccSettings(pAddParam)
       .getCurrentAccYear());
     calCurrYear.set(Calendar.MONTH, 0);
@@ -129,7 +129,7 @@ public class SrvAccEntry<RS> implements ISrvAccEntry {
     calCurrYear.set(Calendar.MINUTE, 0);
     calCurrYear.set(Calendar.SECOND, 0);
     calCurrYear.set(Calendar.MILLISECOND, 0);
-    Calendar calDoc = Calendar.getInstance();
+    Calendar calDoc = Calendar.getInstance(new Locale("en", "US"));
     calDoc.setTime(pEntity.getItsDate());
     calDoc.set(Calendar.MONTH, 0);
     calDoc.set(Calendar.DAY_OF_MONTH, 1);

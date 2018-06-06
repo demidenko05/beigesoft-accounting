@@ -97,7 +97,8 @@ public class SrvLedger<RS> implements ISrvLedger {
     LedgerPrevious result = new LedgerPrevious();
     if (this.queryPrevious == null) {
       String flName = "/" + "accounting" + "/" + "ledger"
-        + "/" + "queryPrevious.sql";
+//+ "/" + "queryPrevious.sql";fast query cause error due changing subacc name
+        + "/" + "queryPreviousSl.sql";
       this.queryPrevious = loadString(flName);
     }
     String query = queryPrevious.replace(":DATEBALANCE",
@@ -176,7 +177,8 @@ public class SrvLedger<RS> implements ISrvLedger {
     LedgerDetail result = new LedgerDetail();
     if (this.queryDetail == null) {
       String flName = "/" + "accounting" + "/" + "ledger"
-        + "/" + "queryDetail.sql";
+//+ "/" + "queryDetail.sql";fast query cause error due changing subacc name
+        + "/" + "queryDetailSl.sql";
       this.queryDetail = loadString(flName);
     }
     String query = queryDetail.replace(":DATE1",

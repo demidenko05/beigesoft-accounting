@@ -79,11 +79,6 @@ public class SrvBalanceStd<RS> implements ISrvBalance {
   private String queryBalance;
 
   /**
-   * <p>Query balance for an account.</p>
-   **/
-  private String queryBalanceAccount;
-
-  /**
    * <p>Initialized date constant.</p>
    **/
   private final long initDateLong = 157766400000L;
@@ -589,7 +584,8 @@ public class SrvBalanceStd<RS> implements ISrvBalance {
     final Map<String, Object> pAddParam, final Date pDate) throws Exception {
     if (this.queryBalance == null) {
       String flName = "/" + "accounting" + "/" + "balance"
-        + "/" + "queryBalance.sql";
+//+ "/" + "queryBalance.sql"; fast query cause error due changing subacc name
+        + "/" + "queryBalanceSl.sql";
       this.queryBalance = loadString(flName);
     }
     String query = queryBalance.replace(":DATE1",
@@ -854,23 +850,6 @@ public class SrvBalanceStd<RS> implements ISrvBalance {
    **/
   public final synchronized void setQueryBalance(final String pQueryBalance) {
     this.queryBalance = pQueryBalance;
-  }
-
-  /**
-   * <p>Getter for queryBalanceAccount.</p>
-   * @return String
-   **/
-  public final synchronized String getQueryBalanceAccount() {
-    return this.queryBalanceAccount;
-  }
-
-  /**
-   * <p>Setter for queryBalanceAccount.</p>
-   * @param pQueryBalanceAccount reference
-   **/
-  public final synchronized void
-    setQueryBalanceAccount(final String pQueryBalanceAccount) {
-    this.queryBalanceAccount = pQueryBalanceAccount;
   }
 
   /**

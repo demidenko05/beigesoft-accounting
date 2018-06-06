@@ -15,6 +15,7 @@ package org.beigesoft.accounting.processor;
 import java.util.Map;
 import java.math.BigDecimal;
 import java.util.Calendar;
+import java.util.Locale;
 
 import org.beigesoft.model.IRequestData;
 import org.beigesoft.exception.ExceptionWithCode;
@@ -84,7 +85,7 @@ public class PrcAccEntrySave<RS>
     if (pEntity.getIsNew()) {
       AccSettings accSettings = getSrvAccSettings()
         .lazyGetAccSettings(pAddParam);
-      Calendar calCurrYear = Calendar.getInstance();
+      Calendar calCurrYear = Calendar.getInstance(new Locale("en", "US"));
       calCurrYear.setTime(accSettings.getCurrentAccYear());
       calCurrYear.set(Calendar.MONTH, 0);
       calCurrYear.set(Calendar.DAY_OF_MONTH, 1);
@@ -92,7 +93,7 @@ public class PrcAccEntrySave<RS>
       calCurrYear.set(Calendar.MINUTE, 0);
       calCurrYear.set(Calendar.SECOND, 0);
       calCurrYear.set(Calendar.MILLISECOND, 0);
-      Calendar calDoc = Calendar.getInstance();
+      Calendar calDoc = Calendar.getInstance(new Locale("en", "US"));
       calDoc.setTime(pEntity.getItsDate());
       calDoc.set(Calendar.MONTH, 0);
       calDoc.set(Calendar.DAY_OF_MONTH, 1);
