@@ -74,7 +74,13 @@ public class PrcPurchaseInvoiceSave<RS>
       throw new ExceptionWithCode(ExceptionWithCode.WRONG_PARAMETER,
         "reverse_payments_first");
     }
+    BigDecimal payTot = BigDecimal
+      .valueOf(pEntity.getPaymentTotal().doubleValue());
     calculateTotalPayment(pAddParam, pEntity);
+    if (payTot.compareTo(pEntity.getPaymentTotal()) != 0) {
+      //for using cash accounting methods with prepayments:
+      getSrvOrm().updateEntity(pAddParam, pEntity);
+    }
   }
 
   /**

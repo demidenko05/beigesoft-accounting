@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document xmlns="http://maven.apache.org/XDOC/2.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
+
+  <properties>
+    <title>Beigesoft ™, Beige-Accounting</title>
+   </properties>
+
+  <body>
+
+    <section name="Accounting of sales taxes cash method, cash vs accrual methods.">
+
+    <p>Keywords: Accounting of sales taxes cash method, cash vs accrual methods.</p>
+
+    <h4>Base principles.</h4>
+    <p>At first, it's need to understand these things:
+      <ul>
+        <li>Prepaid merchandise - means that buyer has paid 100% for merchandise and has not yet received it (merchandise).</li>
+        <li>Paid merchandise - means that buyer has paid/prepaid 100% for merchandise and has received it (merchandise).</li>
+        <li>Prepaid/paid partially - means that buyer has paid less then 100% for merchandise.</li>
+        <li>Sold merchandise - means that buyer has received merchandise*.</li>
+      </ul>
+      *for some countries term "sold" may means also "merchandise is sent to buyer". In Beige-Accounting "sold" means when document is accounted.
+    </p>
+    <p>Accrual or cash method is dedicated to estimate income tax "WHEN" (all other taxes usually have the same method as income tax).</p>
+    <p>The most used method for income tax is:
+    <pre style="white-space:pre-wrap">
+      Income tax = (Business revenue - Business expenses) * Tax Rate
+    </pre>
+    There are two methods "WHEN" revenue or expense is occurred:
+    <ul>
+      <li>CASH method - means that expense/revenue/tax is occurred when merchandise is sold and paid.</li>
+      <li>ACCRUAL method - means that expense/revenue/tax is occurred when merchandise is sold (even unpaid or partially paid).</li>
+    </ul>
+    </p>
+    
+    <h4>Sales taxes cash method</h4>
+    <p>In some countries the law may demand to use cash method to estimate sales taxes despite of using accrual method for income tax.</p>
+    <p>Beigesoft ™ accounting since 1.1.6 version has implemented this method for sales, purchases and their returns. Lets do a purchase for example.
+      At first, set in accounting settings using of "Accounting entries sources":
+      <ul>
+        <li>#1 "PurInvInvCatPayDbtCrdt" set off.</li>
+        <li>#11 "PurInvSalTaxSelfDeductingDbtAccrual" set off.</li>
+        <li>#23 "PurInvExpenceDbtAccPayCredCrdt" set off.</li>
+        <li>#25 "PurInvInvCatPayDbtCrdtAccrMSm" set on.</li>
+        <li>#26 "PurInvSalTaxDbtAccPayCrAccrMSm" set off.</li>
+        <li>#27 "PurInvExpenceDbtAccPayCrAccrMSm" set on.</li>
+        <li>#28 "PurInvSalTaxDbtAccPayCrCashMSm" set on.</li>
+        <li>#29 "PaymentToSalTaxDbtAccPayCrCashMSm" set on.</li>
+      </ul>
+      Also set "Extract sales taxes from purchase" to "ON".
+      Accounting settings switch source line:
+        <p align="center"><img style="max-width: 100%" src="images/accsetacsourcepurch25.png" /></p>
+    </p>
+    <p>Then add several sales taxes with "CASH" method:
+      <p align="center"><img style="max-width: 100%" src="images/saltaxcash1.png" /></p>
+    </p>
+    <p>Then add service and goods tax category, e.g.:
+      <p align="center"><img style="max-width: 100%" src="images/saltaxcategcash1.png" /></p>
+    </p>
+    <p>Then set tax category for services and goods, e.g.:
+      <p align="center"><img style="max-width: 100%" src="images/saltaxcategcashgoods1.png" /></p>
+    </p>
+    <h4>100% prepaid invoice.</h4>
+    <p>Add purchase invoice (07 Jul. 2016, 358.90$ total) non-accounted draft (non-purchased yet):
+      <p align="center"><img style="max-width: 100%" src="images/saltaxcashinvf1.png" /></p>
+    </p>
+    <p>Then add 100% prepayments to vendor (05 Jul. 2016, 358.90$ total) and account it:
+      <p align="center"><img style="max-width: 100%" src="images/saltaxcashprep100p.png" /></p>
+    </p>
+    <p>Then (on 07 Jul. 2016) set this prepayment in the invoice and account it:
+      <p align="center"><img style="max-width: 100%" src="images/saltaxcashinvrep1.png" /></p>
+      As you can see it made all accounting entries: taxes, payable, inventory, adjusting prepayments to payable.
+    </p>
+    <h4>50% prepaid invoice plus 25%*2 payments.</h4>
+    <p>Add purchase invoice (17 Jul. 2016, 204.61$ total) non-accounted draft (non-purchased yet):
+      <p align="center"><img style="max-width: 100%" src="images/saltaxcashinvf2.png" /></p>
+    </p>
+    <p>Then add 50% prepayments to vendor (15 Jul. 2016, 102.31$ total) and account it:
+      <p align="center"><img style="max-width: 100%" src="images/saltaxcashprep50p.png" /></p>
+    </p>
+    <p>Then (on 17 Jul. 2016) set this prepayment in the invoice and account it:
+      <p align="center"><img style="max-width: 100%" src="images/saltaxcashinvrep2.png" /></p>
+      As you can see it made not all accounting entries: payable, inventory, adjusting prepayments to payable.
+    </p>
+    <p>Then add payment (18 Jul. 2016, 61.00$ total) and account it:
+      <p align="center"><img style="max-width: 100%" src="images/saltaxcashpaym1.png" /></p>
+      As you can see it made only cash to payable accounting entries.
+    </p>
+    <p>Then add the rest payment (19 Jul. 2016, 41.30$ total) and account it:
+      <p align="center"><img style="max-width: 100%" src="images/saltaxcashpaym2.png" /></p>
+      As you can see it made cash to payable and taxes to payable accounting entries.
+    </p>
+    </section>
+
+  </body>
+
+</document>
