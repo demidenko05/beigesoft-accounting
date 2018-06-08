@@ -55,8 +55,6 @@ public class PrcAccSettingsLineSave<RS, T extends IHasId<Long>>
       final T pEntity, final IRequestData pRequestData) throws Exception {
     T result = this.prcEntityFolSave.process(pAddParam, pEntity, pRequestData);
     this.srvAccSettings.clearAccSettings(pAddParam);
-    pRequestData.setAttribute("accSettings",
-      this.srvAccSettings.lazyGetAccSettings(pAddParam));
     return result;
   }
 

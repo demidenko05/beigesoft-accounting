@@ -21,7 +21,7 @@
         <li>Prepaid/paid partially - means that buyer has paid less then 100% for merchandise.</li>
         <li>Sold merchandise - means that buyer has received merchandise*.</li>
       </ul>
-      *for some countries term "sold" may means also "merchandise is sent to buyer". In Beige-Accounting "sold" means when document is accounted.
+      *for some countries term "sold" may means also "merchandise is sent to buyer". In Beige-Accounting "sold/bought" means when invoice is accounted.
     </p>
     <p>Accrual or cash method is dedicated to estimate income tax "WHEN" (all other taxes usually have the same method as income tax).</p>
     <p>The most used method for income tax is:
@@ -33,21 +33,46 @@
       <li>CASH method - means that expense/revenue/tax is occurred when merchandise is sold and paid.</li>
       <li>ACCRUAL method - means that expense/revenue/tax is occurred when merchandise is sold (even unpaid or partially paid).</li>
     </ul>
+    Cash method is used in tax accounting only in simple cases - when income is low.
+    Accrual is only reliable method to properly estimate business results and it is used in market (financial) accounting.
+    If you have choice between these methods for tax accounting, then you should better opt accrual method.
     </p>
     
     <h4>Sales taxes cash method</h4>
     <p>In some countries the law may demand to use cash method to estimate sales taxes despite of using accrual method for income tax.</p>
-    <p>Beigesoft ™ accounting since 1.1.6 version has implemented this method for sales, purchases and their returns. Lets do a purchase for example.
-      At first, set in accounting settings using of "Accounting entries sources":
+    <p>Beigesoft ™ accounting since 1.1.6 version has implemented this method for sales, purchases and their returns*.</p>
+    <p>*You should do accounting tax entries by hand in case if where is return from purchase/sales and that purchase/sales did not paid 100% yet.
+      For sales returns you can manually switch to "ON" accrual method #38 if the sales invoice paid.
+    </p>
+    <p>Lets do a purchase for example.At first, set in accounting settings using of "Accounting entries sources":
       <ul>
-        <li>#1 "PurInvInvCatPayDbtCrdt" set off.</li>
-        <li>#11 "PurInvSalTaxSelfDeductingDbtAccrual" set off.</li>
-        <li>#23 "PurInvExpenceDbtAccPayCredCrdt" set off.</li>
-        <li>#25 "PurInvInvCatPayDbtCrdtAccrMSm" set on.</li>
-        <li>#26 "PurInvSalTaxDbtAccPayCrAccrMSm" set off.</li>
-        <li>#27 "PurInvExpenceDbtAccPayCrAccrMSm" set on.</li>
-        <li>#28 "PurInvSalTaxDbtAccPayCrCashMSm" set on.</li>
-        <li>#29 "PaymentToSalTaxDbtAccPayCrCashMSm" set on.</li>
+        <li><b>All old methods must be always set to OFF:</b></li>
+        <li>#1 "PurchaseInvoice, Debit Inventory per InvItemCategory, Credit AccPayable per DebtorCreditor" set off.</li>
+        <li>#11 "PurchaseInvoice, Debit SalesTaxFromPurchase per Tax. ACCRUAL method" set off.</li>
+        <li>#23 "PurchaseInvoice , Debit AccExpense per ServicePurchasedCategory.Expense, Credit AccPayable per DebtorCreditor. ACCRUAL method" set off.</li>
+        <li>#20 "PurchaseReturn, Debit ReturnsReceivable.DebtorCreditor Credit Inventory.InvItemCategory" set off.</li>
+        <li>#21 "PurchaseReturn, Credit SalesTaxFromPurchReturns per Tax" set off.</li>
+        <li>#24 "SalesInvoiceServiceLine , Debit AccReievable per DebtorCreditor, Credit SalesServices per ServiceToSaleCategory" set off.</li>
+        <li>#5 "SalesInvoice, AccReceivable.DebtorCreditor Credit Sales.InvItemCategory." set off.</li>
+        <li>#15 "SalesInvoice, Credit SalesTaxPay per Tax" set off.</li>
+        <li>#17 "SalesReturn, Debit SalesReturns.InvItemCategory Credit ReturnsPayable.DebtorCreditor" set off.</li>
+        <li>#19 "SalesReturn, Debit SalesTaxFromSalReturns per Tax" set off.</li>
+        <li><b>All new accrual methods without sales taxes must be always set to ON:</b></li>
+        <li>#25 "PurchaseInvoice, Debit Inventory.InvItemCategory Credit AccPayable.DebtorCreditor for Subtotal amount. Accrual Symmetric." set on.</li>
+        <li>#27 "PurchaseInvoice , Debit AccExpense.ServicePurchasedCategory.Expense Credit AccPayable.DebtorCreditor for Subtotal amount. Accrual Symmetric." set on.</li>
+        <li>#30 "PurchaseReturn, Debit ReturnsReceivable.DebtorCreditor Credit Inventory.InvItemCategory for Subtotal amount. Accrual Symmetric." set on.</li>
+        <li>#33 "SalesInvoice, Debit AccReievable.DebtorCreditor Credit SalesServices.ServiceToSaleCategory for Subtotal amount. Accrual Symmetric." set on.</li>
+        <li>#34 "SalesInvoice, Debit AccReceivable.DebtorCreditor Credit Sales.InvItemCategory for Subtotal amount. Accrual Symmetric." set on.</li>
+        <li>#37 "SalesReturn, Debit SalesReturns.InvItemCategory Credit ReturnsPayable.DebtorCreditor for Subtotal amount. Accrual Symmetric." set on.</li>
+        <li><b>Sales taxes methods must be switched according current rules (here is: Cash=On, Accrual=Off)</b></li>
+        <li>#26 "PurchaseInvoice, Debit SalesTaxFromPurchase.Tax Credit AccPayable.DebtorCreditor for Tax amount. Accrual Symmetric." set off.</li>
+        <li>#28 "PurchaseInvoice, Debit SalesTaxFromPurchase.Tax Credit AccPayable.DebtorCreditor for Tax amount. Cash Symmetric." set on.</li>
+        <li>#29 "PaymentTo, Debit SalesTaxFromPurchase.Tax Credit AccPayable.DebtorCreditor for Tax amount. Cash Symmetric." set on.</li>
+        <li>#31 "PurchaseReturn, Debit ReturnsReceivable.DebtorCreditor Credit SalesTaxFromPurchReturns.Tax for Tax amount. Accrual Symmetric." set off.</li>
+        <li>#32 "PurchaseReturn, Debit ReturnsReceivable.DebtorCreditor Credit SalesTaxFromPurchReturns.Tax for Tax amount. Cash Symmetric." set on.</li>
+        <li>#35 "SalesInvoice, Debit AccReceivable.DebtorCreditor Credit SalesTaxPay.Tax for Tax amount. Accrual Symmetric." set off.</li>
+        <li>#36 "SalesInvoice, Debit AccReceivable.DebtorCreditor Credit SalesTaxPay.Tax for Tax amount. Cash Symmetric." set on.</li>
+        <li>#38 "SalesReturn, Debit SalesTaxFromSalReturns.Tax Credit ReturnsPayable.DebtorCreditor for Tax amount. Accrual Symmetric." set on (WHEN PAID).</li>
       </ul>
       Also set "Extract sales taxes from purchase" to "ON".
       Accounting settings switch source line:

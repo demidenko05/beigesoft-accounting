@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document xmlns="http://maven.apache.org/XDOC/2.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
+
+  <properties>
+    <title>Beigesoft ™, Beige-Accounting</title>
+   </properties>
+
+  <body>
+
+    <section name="Overseas sales.">
+      
+      <p>Keywords: overseas sales.</p>
+
+      <h4>Overseas sales.</h4>
+      <p>Nowadays international trading is still growing sphere of business.
+        Even small business entities make overseas sales (export) or import.</p>
+      <p>Overseas buyer usually have not to pay foreign sales taxes. For example, foreigners travelers can refund sales taxes when they leaves the country.
+        To implements this logic Debtor/Creditor has "Is foreigner" property.
+        If Debtor/Creditor is foreigner then sales taxes will be omitted for both sales (foreigner buyers) and purchase (foreigner vendors).
+      </p>
+      <p>Foreign buyers that buy goods for business purpose (e.g. for resale) usually must have translated invoice. This is required by their tax bureau.
+        Beige-Accounting has advanced internationalization to do it. This helps foreigner buyers and may attract more of them.
+      </p>
+      <h4>Making sales invoice translated on native buyer language.</h4>
+      <p>
+        At first add foreign buyer, e.g. "OOO Berezka" from Russia:
+        <p align="center"><img style="max-width: 100%" src="images/foreigninvbuyeren.png" /></p>
+      </p>
+      <p>
+        Then add I18N Overseas Buyer for this buyer in Russian language:
+        <p align="center"><img style="max-width: 100%" src="images/foreigninvbuyerru.png" /></p>
+      </p>
+      <p>
+        Then add I18N Accounting common - business owner information in Russian language:
+        <p align="center"><img style="max-width: 100%" src="images/busnessownerru.png" /></p>
+      </p>
+      <p>
+        Then add I18N goods/service/unit of measure - goods/service/UOM name in Russian language:
+        <p align="center"><img style="max-width: 100%" src="images/googsru.png" /></p>
+      </p>
+      <p>
+        Then add I18N currency USD in Russian language:
+        <p align="center"><img style="max-width: 100%" src="images/currencyru.png" /></p>
+      </p>
+      <p>
+        Finally just add invoice, report in English:
+        <p align="center"><img style="max-width: 100%" src="images/foreigninvrepin.png" /></p>
+      </p>
+      <p>
+        Set Russian language in "Change language preferences":
+        <p align="center"><img style="max-width: 100%" src="images/langprefch.png" /></p>
+      </p>
+      <p>
+        Then report again in Russian:
+        <p align="center"><img style="max-width: 100%" src="images/foreigninvrepru.png" /></p>
+      </p>
+      <p>*For over languages you have to add base static internationalization - file e.g. /resources/Messages_fr_FR.properties for France language.</p>
+    </section>
+
+  </body>
+
+</document>

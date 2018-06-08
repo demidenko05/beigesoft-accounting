@@ -48,8 +48,6 @@ public class PrcAccSettingsSave<RS>
       final AccSettings pEntity,
         final IRequestData pRequestData) throws Exception {
     srvAccSettings.saveAccSettings(pAddParam, pEntity);
-    pRequestData.setAttribute("accSettings",
-      this.srvAccSettings.lazyGetAccSettings(pAddParam));
     return pEntity;
   }
 

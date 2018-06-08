@@ -732,7 +732,7 @@ public class InvoiceReportPdf<RS, WI>
     return this.srvNumberToString.print(pVal.toString(),
       (String) pAddParam.get("dseparatorv"),
         (String) pAddParam.get("dgseparatorv"),
-          (Integer) pAddParam.get("balancePrecision"),
+          (Integer) pAddParam.get("pricePrecision"),
             (Integer) pAddParam.get("digitsInGroup"));
   }
 
