@@ -21,9 +21,9 @@
         If Debtor/Creditor is foreigner then sales taxes will be omitted for both sales (foreigner buyers) and purchase (foreigner vendors).
       </p>
       <p>Foreign buyers that buy goods for business purpose (e.g. for resale) usually must have translated invoice. This is required by their tax bureau.
-        Beige-Accounting has advanced internationalization to do it. This helps foreigner buyers and may attract more of them.
+        Beige-Accounting has advanced dynamic internationalization to do it. This helps foreigner buyers and may attract more of them.
       </p>
-      <h4>Making sales invoice translated on native buyer language.</h4>
+      <h4>Making sales invoice translated in native buyer language.</h4>
       <p>
         At first add foreign buyer, e.g. "OOO Berezka" from Russia:
         <p align="center"><img style="max-width: 100%" src="images/foreigninvbuyeren.png" /></p>
@@ -49,14 +49,14 @@
         <p align="center"><img style="max-width: 100%" src="images/foreigninvrepin.png" /></p>
       </p>
       <p>
-        Set Russian language in "Change language preferences":
+        Set Russian language, digit separator "comma" and group separator "space" in "Change language preferences":
         <p align="center"><img style="max-width: 100%" src="images/langprefch.png" /></p>
       </p>
       <p>
-        Then report again in Russian:
+        Then report invoice again in Russian:
         <p align="center"><img style="max-width: 100%" src="images/foreigninvrepru.png" /></p>
       </p>
-      <p>*For over languages you have to add base static internationalization - file e.g. /resources/Messages_fr_FR.properties for France language.</p>
+      <p>*For over languages you have to add basic static internationalization - file e.g. /resources/Messages_fr_FR.properties for France language.</p>
     </section>
 
   </body>

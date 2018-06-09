@@ -1,7 +1,7 @@
-alter table SALESINVOICESERVICELINE add column UNITOFMEASURE integer not null default 1 references UNITOFMEASURE(ITSID);
+alter table SALESINVOICESERVICELINE add column UNITOFMEASURE integer default 1 references UNITOFMEASURE(ITSID);
 alter table SALESINVOICESERVICELINE add column ITSQUANTITY real not null default 1;
 alter table SALESINVOICESERVICELINE add column SUBTOTAL real not null default 0;
-alter table PURCHASEINVOICESERVICELINE add column UNITOFMEASURE integer not null default 1 references UNITOFMEASURE(ITSID);
+alter table PURCHASEINVOICESERVICELINE add column UNITOFMEASURE integer default 1 references UNITOFMEASURE(ITSID);
 alter table PURCHASEINVOICESERVICELINE add column ITSQUANTITY real not null default 1;
 alter table PURCHASEINVOICESERVICELINE add column SUBTOTAL real not null default 0;
 alter table DEBTORCREDITOR add column ISFOREIGNER integer not null default 0;
