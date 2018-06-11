@@ -204,7 +204,7 @@ public class SrvLedger<RS> implements ISrvLedger {
           ldl.setSourceType(recordSet.getInteger("SOURCETYPE"));
           ldl.setDescription(recordSet.getString("DESCRIPTION"));
           ldl.setSubaccName(recordSet.getString("SUBACC"));
-          ldl.setCorrAccName(recordSet.getString("CORACC"));
+          ldl.setCorrAccName(recordSet.getString("CORACCNAME"));
           ldl.setCorrSubaccName(recordSet.getString("CORSUBACC"));
           ldl.setCorrAccNumber(recordSet.getString("CORACCNUMBER"));
           Boolean isDebit = recordSet.getInteger("ISDEBIT") == 1;
