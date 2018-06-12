@@ -142,7 +142,7 @@ public class InvoiceReportPdf<RS, WI>
       .fromPoints(2.0, 300.0, doc.getUnitOfMeasure()); //printer resolution
     doc.setBorder(widthNdot);
     doc.setContentPadding(0.0);
-    doc.setContentPaddingBottom(0.5);
+    doc.setContentPaddingBottom(1.0);
     DocTable<WI> tblOwner = docMaker.addDocTableNoBorder(doc, 1, 1);
     I18nAccounting i18nAccounting =
       (I18nAccounting) pAddParam.get("i18nAccounting");
@@ -152,13 +152,13 @@ public class InvoiceReportPdf<RS, WI>
     } else {
       tblOwner.getItsCells().get(0).setItsContent(accSet.getOrganization());
     }
+    int n = 0;
     if (accSet.getTaxIdentificationNumber() != null) {
       docMaker.addRowToDocTable(tblOwner);
-      tblOwner.getItsCells().get(1).setItsContent(this.srvI18n
+      tblOwner.getItsCells().get(++n).setItsContent(this.srvI18n
         .getMsg("taxIdentificationNumber", lang) + ": "
           + accSet.getTaxIdentificationNumber());
     }
-    int n = 0;
     if (accSet.getRegZip() != null) {
       docMaker.addRowToDocTable(tblOwner);
       tblOwner.getItsCells().get(++n).setItsContent(this.srvI18n
@@ -320,6 +320,7 @@ public class InvoiceReportPdf<RS, WI>
       tblTiGoods.setAlignHorizontal(EAlignHorizontal.CENTER);
       docMaker.makeDocTableWrapping(tblTiGoods);
       doc.setContentPadding(1.0);
+      doc.setContentPaddingBottom(1.5);
       DocTable<WI> tblGoods = docMaker
         .addDocTable(doc, 8, inv.getItsLines().size() + 1);
       tblGoods.setIsRepeatHead(true);
@@ -406,6 +407,7 @@ public class InvoiceReportPdf<RS, WI>
       tblTiServices.setAlignHorizontal(EAlignHorizontal.CENTER);
       docMaker.makeDocTableWrapping(tblTiServices);
       doc.setContentPadding(1.0);
+      doc.setContentPaddingBottom(1.5);
       DocTable<WI> tblServices = docMaker
         .addDocTable(doc, 8, inv.getServices().size() + 1);
       tblServices.setIsRepeatHead(true);
@@ -499,6 +501,7 @@ public class InvoiceReportPdf<RS, WI>
       tblTiTaxes.setAlignHorizontal(EAlignHorizontal.CENTER);
       docMaker.makeDocTableWrapping(tblTiTaxes);
       doc.setContentPadding(1.0);
+      doc.setContentPaddingBottom(1.5);
       DocTable<WI> tblTaxes = docMaker
         .addDocTable(doc, 2, inv.getTaxesLines().size() + 1);
       tblTaxes.getItsCells().get(0)

@@ -204,7 +204,7 @@ public class BalanceSheetPdf<RS, WI> implements IBalanceSheetPdf {
     tblBal.getItsCells().get(pBalance.getTotalLinesLiabilities() * 4 + 7)
       .setAlignHorizontal(EAlignHorizontal.RIGHT);
     tblBal.getItsCells().get(pBalance.getTotalLinesLiabilities() * 4 + 7)
-      .setItsContent(pBalance.getTotalLiabilities().toString());
+      .setItsContent(prn(pAddParam, pBalance.getTotalLiabilities()));
     int oetIdx = pBalance.getTotalLinesLiabilities() * 4 + 10;
     tblBal.getItsCells().get(oetIdx)
       .setItsContent(this.srvI18n.getMsg("OwnersEquityTitle", lang));
@@ -235,7 +235,7 @@ public class BalanceSheetPdf<RS, WI> implements IBalanceSheetPdf {
     tblBal.getItsCells().get((totLeabOwnEq + 3) * 4 + 3)
       .setAlignHorizontal(EAlignHorizontal.RIGHT);
     tblBal.getItsCells().get((totLeabOwnEq + 3) * 4 + 3)
-      .setItsContent(pBalance.getTotalOwnersEquity().toString());
+      .setItsContent(prn(pAddParam, pBalance.getTotalOwnersEquity()));
     tblBal.getItsCells().get(lastRowIdx * 4 + 2)
       .setItsContent(this.srvI18n.getMsg("total_l_oe", lang));
     tblBal.getItsCells().get(lastRowIdx * 4 + 3)
