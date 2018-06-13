@@ -109,6 +109,7 @@ public class PrcManufacturingProcessSave<RS>
             .getMsg("reversed_n", langDef) + reversedLine.getIdDatabaseBirth()
               + "-" + reversedLine.getItsId()); //local
           getSrvOrm().insertEntity(pAddParam, reversingLine);
+          reversingLine.setIsNew(false);
           getSrvWarehouseEntry().reverseDraw(pAddParam, reversingLine);
           getSrvUseMaterialEntry().reverseDraw(pAddParam, reversingLine,
             pEntity.getItsDate(), pEntity.getItsId());
@@ -146,6 +147,7 @@ public class PrcManufacturingProcessSave<RS>
             .getMsg("reversed_n", langDef) + reversedLine.getIdDatabaseBirth()
               + "-" + reversedLine.getItsId()); //local
           getSrvOrm().insertEntity(pAddParam, reversingLine);
+          reversingLine.setIsNew(false);
           String descr;
           if (reversedLine.getDescription() == null) {
             descr = "";

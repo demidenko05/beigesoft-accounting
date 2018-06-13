@@ -4,7 +4,7 @@
   xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
 
   <properties>
-    <title>Beigesoftware, Beige-Accounting</title>
+    <title>Beigesoft™ Accounting</title>
    </properties>
 
   <body>
@@ -32,33 +32,19 @@ If the property is merchandise bought for resale, the sales tax is part of the c
 </pre>  
         That is sales taxes from purchase is included into inventory and they become expenses automatically as part of Cost Of Goods Sold (method FIFO in this case).
         So Bob should set accounting settings "Extract sales taxes from purchase" to No,
-        and set "is used" to No for method "PurchaseInvoice, Debit SalesTaxFromPurchase per Tax.":
+        and set "is used" to No for method #26 "PurchaseInvoice, Debit SalesTaxFromPurchase.Tax Credit AccPayable.DebtorCreditor for Tax amount. Accrual Symmetric.":
           <p align="center"><img alt="Beige-Accounting settings - sales taxes from purchase" style="max-width: 100%" src="images/settings-sales-tax-from-purchase.png" /></p>
         Also he should set "is used" to No asset account <b>Sales Tax From Purchase</b>.
-        Then he should fill inventory item tax category and set sales tax for each material.
-        Purchase invoice will extracts taxes cost into <b>Sales Tax From Purchase</b> account.
       </p>
       <p>
         If you have to use different method to account sales tax from purchase,
         then set accounting settings "Extract sales taxes from purchase" to Yes,
-        and set "is used" to Yes for method "PurchaseInvoice, Debit SalesTaxFromPurchase per Tax."
-        Also you should set "is used" to true asset account <b>Sales Tax From Purchase</b>.
+        and set "is used" to Yes for method #26 "PurchaseInvoice, Debit SalesTaxFromPurchase.Tax Credit AccPayable.DebtorCreditor for Tax amount. Accrual Symmetric."
+        Then you should set "is used" to true asset account <b>Sales Tax From Purchase</b>. Also you should add sales taxes, item tax categories and set tax category for goods/service (see <a href="acc-selling.html">Accounting of sales, prepayments, payments tracking.</a>)
         This is required in case of using "inventory capitalized costs" method (for USA example <a href="https://www.irs.gov/pub/irs-pdf/p538.pdf">IRS 538, Page 18 Uniform Capitalization Rules</a>).
         Capitalized cost became expense partially depends of ending inventory (product).
       </p>
       <p>For many other countries sales taxes (e.g. VAT) from purchases is always extracted from goods/service cost and they are deducting themselves (taxes from sales, not deducting income tax).</p>
-      <p>Sales taxes imposed on the buyer from your sales of your goods/service are extracted from sales revenue, and you have to pay them, this rule is applied in all countries.</p>
-
-      <p>Here is used fake sales tax 6% for goods with cheese (only for example purpose)!</p>
-      
-      <p>To apply sales tax for a material/merchandise/service you should:
-        <p>1. Add <b>Item Tax Category</b> e.g.:
-          <p align="center"><img alt="Beige-Accounting merchandise sales tax category" style="max-width: 100%" src="images/item-tax-category.png" /></p>
-        </p>
-        <p>1. Set <b>Item Tax Category</b> for material e.g.:
-          <p align="center"><img alt="Beige-Accounting set merchandise sales tax" style="max-width: 100%" src="images/set-merchandise-sales-tax.png" /></p>
-        </p>
-      </p>
       
       <h4>Prepayments</h4>
       <p>Bob has prepaid goods to Carlo's grocery on 14 Jan:

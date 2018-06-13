@@ -75,6 +75,7 @@ public class PrcMoveItemsLineSave<RS>
       pEntity.setItsOwner(getSrvOrm()
         .retrieveEntity(pAddParam, pEntity.getItsOwner()));
       getSrvOrm().insertEntity(pAddParam, pEntity);
+      pEntity.setIsNew(false);
       this.srvWarehouseEntry.move(pAddParam, pEntity, pEntity
         .getWarehouseSiteFrom(), pEntity.getWarehouseSiteTo());
       // optimistic locking (dirty check):

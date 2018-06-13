@@ -75,7 +75,18 @@ public class PrcSalesInvoiceSave<RS>
         "reverse_payments_first");
     }
     if (pEntity.getReversedId() == null) {
+      BigDecimal payTot = BigDecimal
+        .valueOf(pEntity.getPaymentTotal().doubleValue());
       calculateTotalPayment(pAddParam, pEntity);
+      if (payTot.compareTo(pEntity.getPaymentTotal()) != 0) {
+        //for using cash accounting methods with prepayments:
+        if (pEntity.getIsNew()) {
+          getSrvOrm().insertEntity(pAddParam, pEntity);
+          pEntity.setIsNew(false);
+        } else {
+          getSrvOrm().updateEntity(pAddParam, pEntity);
+        }
+      }
     }
   }
 
@@ -123,6 +134,7 @@ public class PrcSalesInvoiceSave<RS>
               .getMsg("reversed_n", langDef) + reversedLine.getIdDatabaseBirth()
                 + "-" + reversedLine.getItsId()); //local
             getSrvOrm().insertEntity(pAddParam, reversingLine);
+            reversingLine.setIsNew(false);
             getSrvWarehouseEntry().reverseDraw(pAddParam, reversingLine);
             getSrvCogsEntry().reverseDraw(pAddParam, reversingLine,
               pEntity.getItsDate(), pEntity.getItsId());
@@ -170,6 +182,7 @@ public class PrcSalesInvoiceSave<RS>
             reversingLine.setIsNew(true);
             reversingLine.setItsOwner(pEntity);
             getSrvOrm().insertEntity(pAddParam, reversingLine);
+            reversingLine.setIsNew(false);
             reversedLine.setReversedId(reversingLine.getItsId());
             getSrvOrm().updateEntity(pAddParam, reversedLine);
             SalesInvoiceServiceTaxLine pigtlt =
@@ -196,6 +209,7 @@ public class PrcSalesInvoiceSave<RS>
             reversingLine.setIsNew(true);
             reversingLine.setItsOwner(pEntity);
             getSrvOrm().insertEntity(pAddParam, reversingLine);
+            reversingLine.setIsNew(false);
             reversedLine.setReversedId(reversingLine.getItsId());
             getSrvOrm().updateEntity(pAddParam, reversedLine);
           }

@@ -196,6 +196,7 @@ public class UtlSalesGoodsServiceLine<RS> {
                   .lazyGetAccSettings(pAddParam).getRoundingMode()));
             if (sit.getIsNew()) {
               getSrvOrm().insertEntity(pAddParam, sit);
+              sit.setIsNew(false);
             } else {
               getSrvOrm().updateEntity(pAddParam, sit);
             }

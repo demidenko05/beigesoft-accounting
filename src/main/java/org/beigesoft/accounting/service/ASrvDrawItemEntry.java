@@ -239,6 +239,7 @@ public abstract class ASrvDrawItemEntry<T extends ADrawItemEntry, RS>
           .lazyGetAccSettings(pAddParam).getRoundingMode()));
     die.setDescription(makeDescription(pAddParam, pEntity, die));
     this.srvOrm.insertEntity(pAddParam, die);
+    die.setIsNew(false);
     pSource.setTheRest(pSource.getTheRest().subtract(pQuantityToDraw));
     this.srvOrm.updateEntity(pAddParam, pSource);
   }
@@ -299,6 +300,7 @@ public abstract class ASrvDrawItemEntry<T extends ADrawItemEntry, RS>
         + getSrvI18n().getMsg("reversed_entry_n", langDef)
           + getSrvOrm().getIdDatabase() + "-" + dies.getItsId());
       getSrvOrm().insertEntity(pAddParam, die);
+      die.setIsNew(false);
       @SuppressWarnings("unchecked")
       IFactorySimple<IDrawItemSource> fctDis =
         (IFactorySimple<IDrawItemSource>) this.entitiesFactoriesFatory

@@ -104,6 +104,7 @@ public class PrcBeginningInventoryLineSave<RS>
         pEntity.setTheRest(BigDecimal.ZERO);
       }
       getSrvOrm().insertEntity(pAddParam, pEntity);
+      pEntity.setIsNew(false);
       if (pEntity.getReversedId() != null) {
         BeginningInventoryLine reversed = getSrvOrm().retrieveEntityById(
           pAddParam, BeginningInventoryLine.class, pEntity.getReversedId());

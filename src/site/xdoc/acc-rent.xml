@@ -4,7 +4,7 @@
   xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
 
   <properties>
-    <title>Beigesoftware, Beige-Accounting</title>
+    <title>Beigesoft™ Accounting</title>
    </properties>
 
   <body>
@@ -15,8 +15,8 @@
 
   These expenses usually don't requires tracking payments to its vendor(supplier), and usually they don't include taxes.
   So accounting of such expenses is very simple.
-  Bob rented kitchen at Jan 13 with equipment for 1000USD per month. The document lease is the prove that says that rent expense is occurred
-  at last day of every month for 1000USD even unpaid (accrual method).
+  Bob rented kitchen on Jan 13 with equipment for 1000USD per month. The document lease is the prove that says that rent expense is occurred
+  on the last day of every month for 1000USD even unpaid (accrual method).
   <h4>Accounting of prepaid rent.</h4>
   He prepaid 3000USD for 3 months and made accounting entries:
   <p align="center"><img alt="Beige-Accounting prepaid rent" style="max-width: 100%" src="images/prepaid-rent.png" /></p>
@@ -34,12 +34,12 @@
   <p align="center"><img alt="Beige-Accounting rent occurred unpaid" style="max-width: 100%" src="images/rent-occurred-unpaid.png" /></p>
   <p>
     When Bob will paid rent for April, he will makes accounting entries:<br></br>
-    <pre style="white-space: pre-wrap;">Debit Accrued Payable for Rent Credit Cash In Bank for 1000 USD</pre>
+    <pre style="white-space: pre-wrap;">Debit "Accrued Payable.Rent" Credit "Cash In Bank" for 1000 USD</pre>
   </p>
   <h4>Accounting of paid rent on time.</h4>
   <p>
     When Bob will paid rent on time, he will makes accounting entries:<br></br>
-    <pre style="white-space: pre-wrap;">Debit Expenses for Rent Credit Cash In Bank for 1000 USD</pre>
+    <pre style="white-space: pre-wrap;">Debit "Expenses.Rent" Credit "Cash In Bank" for 1000 USD</pre>
   </p>
   <p>
     If according the law of your country rent expense is required to be capitalized then it's used asset account <b>1210 Inventory Capitalized Cost.Rent</b> instead of <b>Expenses.Rent</b>.

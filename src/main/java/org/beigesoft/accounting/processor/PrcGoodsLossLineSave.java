@@ -95,6 +95,7 @@ public class PrcGoodsLossLineSave<RS>
           .getQuantityPrecision(), getSrvAccSettings()
             .lazyGetAccSettings(pAddParam).getRoundingMode()));
       getSrvOrm().insertEntity(pAddParam, pEntity);
+      pEntity.setIsNew(false);
       if (pEntity.getReversedId() != null) {
         GoodsLossLine reversed = getSrvOrm().retrieveEntityById(
           pAddParam, GoodsLossLine.class, pEntity.getReversedId());

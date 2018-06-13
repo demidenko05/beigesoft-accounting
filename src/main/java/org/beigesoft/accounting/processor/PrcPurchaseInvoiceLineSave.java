@@ -111,6 +111,7 @@ public class PrcPurchaseInvoiceLineSave<RS>
         pEntity.setSubtotal(reversed.getSubtotal().negate());
         pEntity.setItsTotal(reversed.getItsTotal().negate());
         getSrvOrm().insertEntity(pAddParam, pEntity);
+        pEntity.setIsNew(false);
         reversed.setTheRest(BigDecimal.ZERO);
         reversed.setReversedId(pEntity.getItsId());
         getSrvOrm().updateEntity(pAddParam, reversed);
@@ -198,6 +199,7 @@ public class PrcPurchaseInvoiceLineSave<RS>
         pEntity.setTotalTaxes(totalTaxes);
         pEntity.setItsTotal(pEntity.getSubtotal().add(totalTaxes));
         getSrvOrm().insertEntity(pAddParam, pEntity);
+        pEntity.setIsNew(false);
         if (tls != null) {
           for (PurchaseInvoiceGoodsTaxLine pigtl : tls) {
             pigtl.setItsOwner(pEntity);

@@ -87,6 +87,7 @@ public class PrcPurchaseReturnSave<RS>
             .getMsg("reversed_n", langDef) + reversedLine
               .getIdDatabaseBirth() + "-" + reversedLine.getItsId());
           getSrvOrm().insertEntity(pAddParam, reversingLine);
+          reversingLine.setIsNew(false);
           getSrvWarehouseEntry().reverseDraw(pAddParam, reversingLine);
           getSrvUseMaterialEntry().reverseDraw(pAddParam, reversingLine,
             pEntity.getItsDate(), pEntity.getItsId());
@@ -125,6 +126,7 @@ public class PrcPurchaseReturnSave<RS>
           reversingLine.setIsNew(true);
           reversingLine.setItsOwner(pEntity);
           getSrvOrm().insertEntity(pAddParam, reversingLine);
+          reversingLine.setIsNew(false);
           reversedLine.setReversedId(reversingLine.getItsId());
           getSrvOrm().updateEntity(pAddParam, reversedLine);
         }

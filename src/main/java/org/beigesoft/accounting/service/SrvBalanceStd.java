@@ -374,6 +374,7 @@ public class SrvBalanceStd<RS> implements ISrvBalance {
         balanceAt.setSubaccount(tbl.getSubaccName());
         if (balanceAt.getIsNew()) {
           getSrvOrm().insertEntity(pAddParam, balanceAt);
+          balanceAt.setIsNew(false);
         } else {
           getSrvOrm().updateEntity(pAddParam, balanceAt);
         }
@@ -741,6 +742,7 @@ public class SrvBalanceStd<RS> implements ISrvBalance {
         .retrieveEntity(pAddParam, balLoc);
       if (this.balanceAtAllDirtyCheck == null) {
         getSrvOrm().insertEntity(pAddParam, balLoc);
+        balLoc.setIsNew(false);
         this.balanceAtAllDirtyCheck = getSrvOrm()
           .retrieveEntity(pAddParam, balLoc);
       }

@@ -4,7 +4,7 @@
   xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
 
   <properties>
-    <title>Beigesoftware</title>
+    <title>Beigesoft™ Accounting</title>
    </properties>
 
   <body>
@@ -13,9 +13,9 @@
       
       <p>Keywords: Accounting of property deprecation.</p>
 
-      <p>Bob has bought Ford at Jan.12 2016 for 22000USD. He has made accounting entries:
+      <p>Bob bought Ford on Jan. 12 2016 for 22000USD. He has made accounting entries:
         <p align="center"><img alt="Beige-Accounting property bought" style="max-width: 100%" src="images/ford-bought.png" /></p>
-        <p align="center">So first trial balance as at Jan.12.2016 is:</p>
+        <p align="center">So first trial balance as at Jan.12 2016 is:</p>
         <p align="center"><img style="max-width: 100%" src="images/trial-balance1.png" /></p>
 
         He should use MACRS method for it deprecation according to <a href="https://www.irs.gov/pub/irs-pdf/p946.pdf">IRS Publication 946</a>.

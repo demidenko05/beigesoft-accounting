@@ -125,6 +125,7 @@ public class SrvWarehouseEntry<RS> implements ISrvWarehouseEntry {
       wm.setDescription(makeDescription(pEntity, langDef, dateFormat));
     }
     getSrvOrm().insertEntity(pAddParam, wm);
+    wm.setIsNew(false);
     makeWarehouseRest(pAddParam, pEntity, pWhSiteTo, pEntity.getItsQuantity());
     if (wms != null) {
       wms.setReversedId(wm.getItsId());
@@ -187,6 +188,7 @@ public class SrvWarehouseEntry<RS> implements ISrvWarehouseEntry {
       wm.setDescription(makeDescription(pEntity, langDef, dateFormat));
     }
     getSrvOrm().insertEntity(pAddParam, wm);
+    wm.setIsNew(false);
     makeWarehouseRest(pAddParam, pEntity, pWhSiteFrom,
       pEntity.getItsQuantity().negate());
     makeWarehouseRest(pAddParam, pEntity, pWhSiteTo, pEntity.getItsQuantity());
@@ -240,6 +242,7 @@ public class SrvWarehouseEntry<RS> implements ISrvWarehouseEntry {
     }
     if (wr.getIsNew()) {
       getSrvOrm().insertEntity(pAddParam, wr);
+      wr.setIsNew(false);
     } else {
       getSrvOrm().updateEntity(pAddParam, wr);
     }
@@ -291,6 +294,7 @@ public class SrvWarehouseEntry<RS> implements ISrvWarehouseEntry {
       wm.setSourceOwnerType(pEntity.getOwnerType());
       wm.setDescription(makeDescription(pEntity, langDef, dateFormat));
       getSrvOrm().insertEntity(pAddParam, wm);
+      wm.setIsNew(false);
     } else {
       List<WarehouseRest> wrl = getSrvOrm().retrieveListWithConditions(
         pAddParam, WarehouseRest.class, "where THEREST>0 and INVITEM="
@@ -332,6 +336,7 @@ public class SrvWarehouseEntry<RS> implements ISrvWarehouseEntry {
         wm.setSourceOwnerType(pEntity.getOwnerType());
         wm.setDescription(makeDescription(pEntity, langDef, dateFormat));
         getSrvOrm().insertEntity(pAddParam, wm);
+        wm.setIsNew(false);
         quantityToLeaveRest = quantityToLeaveRest.subtract(quantityToLeave);
       }
     }
@@ -391,6 +396,7 @@ public class SrvWarehouseEntry<RS> implements ISrvWarehouseEntry {
         + getSrvI18n().getMsg("reversed_entry_n", langDef) + getSrvOrm()
           .getIdDatabase() + "-" + wms.getItsId());
       getSrvOrm().insertEntity(pAddParam, wm);
+      wm.setIsNew(false);
       makeWarehouseRest(pAddParam, pEntity, wm.getWarehouseSiteFrom(),
         wms.getItsQuantity());
       wms.setReversedId(wm.getItsId());

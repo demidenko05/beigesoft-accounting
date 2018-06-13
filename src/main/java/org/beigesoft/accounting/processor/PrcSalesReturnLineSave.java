@@ -122,6 +122,7 @@ public class PrcSalesReturnLineSave<RS>
         pEntity.setSubtotal(reversed.getSubtotal().negate());
         pEntity.setItsTotal(reversed.getItsTotal().negate());
         getSrvOrm().insertEntity(pAddParam, pEntity);
+        pEntity.setIsNew(false);
         reversed.setTheRest(BigDecimal.ZERO);
         reversed.setReversedId(pEntity.getItsId());
         getSrvOrm().updateEntity(pAddParam, reversed);
@@ -210,11 +211,13 @@ public class PrcSalesReturnLineSave<RS>
         pEntity.setTotalTaxes(totalTaxes);
         pEntity.setItsTotal(pEntity.getSubtotal().add(totalTaxes));
         getSrvOrm().insertEntity(pAddParam, pEntity);
+        pEntity.setIsNew(false);
         if (tls != null) {
           for (SalesReturnGoodsTaxLine pigtl : tls) {
             pigtl.setItsOwner(pEntity);
             pigtl.setInvoiceId(pEntity.getItsOwner().getItsId());
             getSrvOrm().insertEntity(pAddParam, pigtl);
+            pigtl.setIsNew(false);
           }
         }
       }
@@ -329,6 +332,7 @@ public class PrcSalesReturnLineSave<RS>
                   .lazyGetAccSettings(pAddParam).getRoundingMode()));
             if (sit.getIsNew()) {
               getSrvOrm().insertEntity(pAddParam, sit);
+              sit.setIsNew(false);
             } else {
               getSrvOrm().updateEntity(pAddParam, sit);
             }

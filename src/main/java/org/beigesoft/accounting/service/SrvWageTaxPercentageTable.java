@@ -164,6 +164,7 @@ public class SrvWageTaxPercentageTable<RS> implements ISrvFillWageLines {
                 .getItsId() + "/" + wtte.getItsOwner().getItsName() + "/"
                   + totalTaxableForTax);
               getSrvOrm().insertEntity(pAddParam, wtl);
+              wtl.setIsNew(false);
               if (wtl.getTax().getItsType()
                 .equals(ETaxType.EMPLOYMENT_TAX_EMPLOYEE)) {
                 totalTaxesEmployee = totalTaxesEmployee.add(wtl.getItsTotal());

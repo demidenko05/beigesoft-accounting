@@ -79,6 +79,7 @@ public class PrcWageLineSave<RS>
     }
     if (pEntity.getIsNew()) {
       getSrvOrm().insertEntity(pAddParam, pEntity);
+      pEntity.setIsNew(false);
     } else {
       getSrvOrm().updateEntity(pAddParam, pEntity);
     }

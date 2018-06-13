@@ -111,6 +111,7 @@ public class PrcSalesInvoiceLineSave<RS>
         pEntity.setSubtotal(reversed.getSubtotal().negate());
         pEntity.setItsTotal(reversed.getItsTotal().negate());
         getSrvOrm().insertEntity(pAddParam, pEntity);
+        pEntity.setIsNew(false);
         reversed.setReversedId(pEntity.getItsId());
         getSrvOrm().updateEntity(pAddParam, reversed);
         srvWarehouseEntry.reverseDraw(pAddParam, pEntity);
@@ -195,11 +196,13 @@ public class PrcSalesInvoiceLineSave<RS>
         pEntity.setTotalTaxes(totalTaxes);
         pEntity.setItsTotal(pEntity.getSubtotal().add(totalTaxes));
         getSrvOrm().insertEntity(pAddParam, pEntity);
+        pEntity.setIsNew(false);
         if (tls != null) {
           for (SalesInvoiceGoodsTaxLine pigtl : tls) {
             pigtl.setItsOwner(pEntity);
             pigtl.setInvoiceId(pEntity.getItsOwner().getItsId());
             getSrvOrm().insertEntity(pAddParam, pigtl);
+            pigtl.setIsNew(false);
           }
         }
         srvWarehouseEntry.withdrawal(pAddParam, pEntity,

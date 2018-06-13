@@ -97,6 +97,7 @@ public abstract class APrcAccDocSave<RS, T extends IDoc>
               + pEntity.getReversedId());
       }
       getSrvOrm().insertEntity(pAddParam, pEntity);
+      pEntity.setIsNew(false);
       if (pEntity.getReversedId() != null) {
         T reversed;
         if (pEntity.getIdDatabaseBirth().equals(pEntity

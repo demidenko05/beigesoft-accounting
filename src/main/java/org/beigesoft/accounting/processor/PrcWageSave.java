@@ -93,6 +93,7 @@ public class PrcWageSave<RS> extends APrcAccDocSave<RS, Wage> {
               .subtract(wageLine.getTaxesEmployee()));
           if (employeeYearWage.getIsNew()) {
             getSrvOrm().insertEntity(pAddParam, employeeYearWage);
+            employeeYearWage.setIsNew(false);
           } else {
             getSrvOrm().updateEntity(pAddParam, employeeYearWage);
           }

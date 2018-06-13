@@ -149,6 +149,7 @@ public class PrcAccEntrySave<RS>
         }
       }
       getSrvOrm().insertEntity(pAddParam, pEntity);
+      pEntity.setIsNew(false);
       AccountingEntries itsOwner = getSrvOrm().retrieveEntityById(pAddParam,
         AccountingEntries.class, pEntity.getSourceId());
       // optimistic locking (dirty check):

@@ -144,6 +144,7 @@ public class PrcPurchaseInvoiceServiceLineSave<RS>
     pEntity.setItsTotal(pEntity.getSubtotal().add(totalTaxes));
     if (pEntity.getIsNew()) {
       getSrvOrm().insertEntity(pAddParam, pEntity);
+      pEntity.setIsNew(false);
     } else {
       getSrvOrm().updateEntity(pAddParam, pEntity);
     }
@@ -161,6 +162,7 @@ public class PrcPurchaseInvoiceServiceLineSave<RS>
           tls.get(i).setItsOwner(pEntity);
           tls.get(i).setInvoiceId(pEntity.getItsOwner().getItsId());
           getSrvOrm().insertEntity(pAddParam, tls.get(i));
+          tls.get(i).setIsNew(false);
         }
       }
       for (int j = tls.size(); j < tlsw.size(); j++) {

@@ -90,6 +90,7 @@ public class PrcBeginningInventorySave<RS>
             .getMsg("reversed_n", langDef) + reversedLine.getIdDatabaseBirth()
               + "-" + reversedLine.getItsId()); //local
           getSrvOrm().insertEntity(pAddParam, reversingLine);
+          reversingLine.setIsNew(false);
           getSrvWarehouseEntry().load(pAddParam, reversingLine,
             reversingLine.getWarehouseSite());
           String descr;

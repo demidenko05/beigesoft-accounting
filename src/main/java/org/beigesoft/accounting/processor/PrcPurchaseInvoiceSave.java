@@ -74,12 +74,19 @@ public class PrcPurchaseInvoiceSave<RS>
       throw new ExceptionWithCode(ExceptionWithCode.WRONG_PARAMETER,
         "reverse_payments_first");
     }
-    BigDecimal payTot = BigDecimal
-      .valueOf(pEntity.getPaymentTotal().doubleValue());
-    calculateTotalPayment(pAddParam, pEntity);
-    if (payTot.compareTo(pEntity.getPaymentTotal()) != 0) {
-      //for using cash accounting methods with prepayments:
-      getSrvOrm().updateEntity(pAddParam, pEntity);
+    if (pEntity.getReversedId() == null) {
+      BigDecimal payTot = BigDecimal
+        .valueOf(pEntity.getPaymentTotal().doubleValue());
+      calculateTotalPayment(pAddParam, pEntity);
+      if (payTot.compareTo(pEntity.getPaymentTotal()) != 0) {
+        //for using cash accounting methods with prepayments:
+        if (pEntity.getIsNew()) {
+          getSrvOrm().insertEntity(pAddParam, pEntity);
+          pEntity.setIsNew(false);
+        } else {
+          getSrvOrm().updateEntity(pAddParam, pEntity);
+        }
+      }
     }
   }
 
@@ -133,6 +140,7 @@ public class PrcPurchaseInvoiceSave<RS>
               .getMsg("reversed_entry_n", langDef) + reversedLine
                 .getIdDatabaseBirth() + "-" + reversedLine.getItsId()); //local
             getSrvOrm().insertEntity(pAddParam, reversingLine);
+            reversingLine.setIsNew(false);
             getSrvWarehouseEntry().load(pAddParam, reversingLine,
               reversingLine.getWarehouseSite());
             String descr;
@@ -182,6 +190,7 @@ public class PrcPurchaseInvoiceSave<RS>
             reversingLine.setIsNew(true);
             reversingLine.setItsOwner(pEntity);
             getSrvOrm().insertEntity(pAddParam, reversingLine);
+            reversingLine.setIsNew(false);
             reversedLine.setReversedId(reversingLine.getItsId());
             getSrvOrm().updateEntity(pAddParam, reversedLine);
             PurchaseInvoiceServiceTaxLine pigtlt =
@@ -208,6 +217,7 @@ public class PrcPurchaseInvoiceSave<RS>
             reversingLine.setIsNew(true);
             reversingLine.setItsOwner(pEntity);
             getSrvOrm().insertEntity(pAddParam, reversingLine);
+            reversingLine.setIsNew(false);
             reversedLine.setReversedId(reversingLine.getItsId());
             getSrvOrm().updateEntity(pAddParam, reversedLine);
           }

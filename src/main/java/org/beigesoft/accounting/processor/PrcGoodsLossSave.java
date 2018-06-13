@@ -79,6 +79,7 @@ public class PrcGoodsLossSave<RS>
             .getMsg("reversed_n", langDef) + reversedLine
               .getIdDatabaseBirth() + "-" + reversedLine.getItsId()); //local
           getSrvOrm().insertEntity(pAddParam, reversingLine);
+          reversingLine.setIsNew(false);
           getSrvWarehouseEntry().reverseDraw(pAddParam, reversingLine);
           getSrvCogsEntry().reverseDraw(pAddParam, reversingLine,
             pEntity.getItsDate(), pEntity.getItsId());

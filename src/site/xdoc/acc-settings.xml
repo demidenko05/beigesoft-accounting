@@ -4,7 +4,7 @@
   xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
 
   <properties>
-    <title>Beigesoftware</title>
+    <title>Beigesoft™ Accounting</title>
    </properties>
 
   <body>
@@ -54,7 +54,7 @@ Bob has read <a href="https://www.irs.gov/pub/irs-pdf/p583.pdf">IRS 583 Starting
 To make strong and ease to remember password use method similar to this:
   <ol>
     <li>use at least 3 words, e.g. raccoon eat stone</li>
-    <li>change these words with a rule e.g. "last letter to thirst position upper case" e.g. Nraccoo Tea Eston</li>
+    <li>change these words with a rule e.g. "last letter to first position upper case" e.g. Nraccoo Tea Eston</li>
     <li>add several digits, e.g. result is "NraccooTeaEston165" or "165NraccooTeaEston" or "165NraccooTeaEston165"...</li>
   </ol>
 </p>
@@ -92,7 +92,7 @@ security.provider.11=org.bouncycastle.jce.provider.BouncyCastleProvider
   then you should install "Java Cryptography Extension (JCE) Unlimited Strength Jurisdiction Policy Files for Java 8" into
   folder [JAVA_HOME]/lib/security. For MS Windows you can find these files in folder "C:\Program Files (x86)\Java\jre[version#8]\lib\security\policy\unlimited",
   otherwise download these from Oracle HTTPS web-site.
-  Encryption with strong keys (long size) protects you (your information) from scams, so any law must protect you too.
+  Encryption with strong keys (long size) protects you (your information) from scams (swindlers), so any law must protect you too.
 </p>
 
 <p>
@@ -104,8 +104,8 @@ security.provider.11=org.bouncycastle.jce.provider.BouncyCastleProvider
   as trusted Certificate Authority in the browser. On Chrome push Menu -> Settings -> Advanced -> Manage certificates -> AUTHORITIES and push button <b>IMPORT</b>:
   <p align="center"><img alt="Beige-Accounting install CA certificate" style="max-width: 100%" src="images/installcaweb1.png" /></p>
   <p align="center"><img alt="Beige-Accounting install CA certificate" style="max-width: 100%" src="images/installcaweb2.png" /></p>
-  Certificate Authorities that aren't signed by global trusted CA are often used to create private (non-public) intranets, using digital signatures inside organization and its partners.
-  Here A-Jetty CA is used to create HTTPS intranet inside only computer and for safe file exchanging between your computers/tablets...
+  Certificate Authorities that aren't signed by global trusted CA are often used to create private (non-public internet) intranets and using digital signatures inside organization.
+  Here A-Jetty CA is used to create HTTPS intranet inside only computer and for safe file exchanging between your computers/tablets.
 </p>
 <p>  
   After installing certificate <b>ajetty-ca.pem</b> on web-browser Bob pushed button <b>https://localhost:8443/bsa8443</b> - default browser will opened this address.
@@ -127,10 +127,12 @@ security.provider.11=org.bouncycastle.jce.provider.BouncyCastleProvider
 </p>
 <p>
   Result chart of accounts will be:
-  <h4 style="text-align: center;">
-    Chart Of Accounts <br></br>
-    Bob's Pizza
-  </h4>
+<div style="text-align: center;">
+    <h4>
+      Chart Of Accounts <br></br>
+      Bob's Pizza
+    </h4>
+  </div>
   <table>
     <tr>
       <th>ID</th>
@@ -345,6 +347,30 @@ security.provider.11=org.bouncycastle.jce.provider.BouncyCastleProvider
           
         </td>
         <td>
+          Pizza in progress
+        </td>
+        <td>
+          
+        </td>
+        <td>
+          
+        </td>
+        <td>
+          
+        </td>
+      </tr>
+    
+      <tr>
+        <td>
+          
+        </td>
+        <td>
+          
+        </td>
+        <td>
+          
+        </td>
+        <td>
           Pizza bacon frozen
         </td>
         <td>
@@ -384,58 +410,6 @@ security.provider.11=org.bouncycastle.jce.provider.BouncyCastleProvider
     
       <tr>
         <td>
-          
-        </td>
-        <td>
-          
-        </td>
-        <td>
-          
-        </td>
-        <td>
-          Pizza in progress
-        </td>
-        <td>
-          
-        </td>
-        <td>
-          
-        </td>
-        <td>
-          
-        </td>
-      </tr>
-    
-      <tr>
-        <td>
-          InventoryDirectCostTmp
-        </td>
-        <td>
-          1205
-        </td>
-        <td>
-          Inventory direct cost temporary
-        </td>
-        <td>
-          Direct Labor
-        </td>
-        <td>
-          
-            Debit
-          
-        </td>
-        <td>
-          
-            Asset
-          
-        </td>
-        <td>
-          For manufacturing it temporary hold direct labor cost that will be included into inventory item cost (goods)
-        </td>
-      </tr>
-    
-      <tr>
-        <td>
           SalesTaxFromSalReturns
         </td>
         <td>
@@ -445,7 +419,7 @@ security.provider.11=org.bouncycastle.jce.provider.BouncyCastleProvider
           Sales Tax From Sales Returns
         </td>
         <td>
-          Sales tax fake
+          STG4.7%
         </td>
         <td>
           
@@ -455,6 +429,30 @@ security.provider.11=org.bouncycastle.jce.provider.BouncyCastleProvider
         <td>
           
             Asset
+          
+        </td>
+        <td>
+          
+        </td>
+      </tr>
+    
+      <tr>
+        <td>
+          
+        </td>
+        <td>
+          
+        </td>
+        <td>
+          
+        </td>
+        <td>
+          STG6.4%
+        </td>
+        <td>
+          
+        </td>
+        <td>
           
         </td>
         <td>
@@ -542,7 +540,7 @@ security.provider.11=org.bouncycastle.jce.provider.BouncyCastleProvider
           
         </td>
         <td>
-          Property deprecable.
+          
         </td>
       </tr>
     
@@ -669,7 +667,7 @@ security.provider.11=org.bouncycastle.jce.provider.BouncyCastleProvider
           Employment Taxes Payable
         </td>
         <td>
-          F. Income Tax wh.
+          SST wh.
         </td>
         <td>
           
@@ -679,6 +677,30 @@ security.provider.11=org.bouncycastle.jce.provider.BouncyCastleProvider
         <td>
           
             Liability
+          
+        </td>
+        <td>
+          
+        </td>
+      </tr>
+    
+      <tr>
+        <td>
+          
+        </td>
+        <td>
+          
+        </td>
+        <td>
+          
+        </td>
+        <td>
+          F. Income Tax wh.
+        </td>
+        <td>
+          
+        </td>
+        <td>
           
         </td>
         <td>
@@ -745,30 +767,6 @@ security.provider.11=org.bouncycastle.jce.provider.BouncyCastleProvider
           
         </td>
         <td>
-          SST wh.
-        </td>
-        <td>
-          
-        </td>
-        <td>
-          
-        </td>
-        <td>
-          
-        </td>
-      </tr>
-    
-      <tr>
-        <td>
-          
-        </td>
-        <td>
-          
-        </td>
-        <td>
-          
-        </td>
-        <td>
           NY income tax wh.
         </td>
         <td>
@@ -793,7 +791,7 @@ security.provider.11=org.bouncycastle.jce.provider.BouncyCastleProvider
           Sales Taxes Payable
         </td>
         <td>
-          Sales tax fake
+          STG4.7%
         </td>
         <td>
           
@@ -803,6 +801,54 @@ security.provider.11=org.bouncycastle.jce.provider.BouncyCastleProvider
         <td>
           
             Liability
+          
+        </td>
+        <td>
+          
+        </td>
+      </tr>
+    
+      <tr>
+        <td>
+          
+        </td>
+        <td>
+          
+        </td>
+        <td>
+          
+        </td>
+        <td>
+          STG6.4%
+        </td>
+        <td>
+          
+        </td>
+        <td>
+          
+        </td>
+        <td>
+          
+        </td>
+      </tr>
+    
+      <tr>
+        <td>
+          
+        </td>
+        <td>
+          
+        </td>
+        <td>
+          
+        </td>
+        <td>
+          STS11%
+        </td>
+        <td>
+          
+        </td>
+        <td>
           
         </td>
         <td>
@@ -970,7 +1016,7 @@ security.provider.11=org.bouncycastle.jce.provider.BouncyCastleProvider
         </td>
         <td>
           
-            Gross Income Revenue
+            Income Revenue
           
         </td>
         <td>
@@ -1004,6 +1050,34 @@ security.provider.11=org.bouncycastle.jce.provider.BouncyCastleProvider
     
       <tr>
         <td>
+          SalesServices
+        </td>
+        <td>
+          4020
+        </td>
+        <td>
+          Services Sales Revenue
+        </td>
+        <td>
+          Cleaning
+        </td>
+        <td>
+          
+            Credit
+          
+        </td>
+        <td>
+          
+            Income Revenue
+          
+        </td>
+        <td>
+          
+        </td>
+      </tr>
+    
+      <tr>
+        <td>
           SalesReturns
         </td>
         <td>
@@ -1022,7 +1096,7 @@ security.provider.11=org.bouncycastle.jce.provider.BouncyCastleProvider
         </td>
         <td>
           
-            Gross Income Expense
+            Income Expense
           
         </td>
         <td>
@@ -1074,7 +1148,7 @@ security.provider.11=org.bouncycastle.jce.provider.BouncyCastleProvider
         </td>
         <td>
           
-            Gross Income Expense
+            Income Expense
           
         </td>
         <td>
@@ -1102,7 +1176,7 @@ security.provider.11=org.bouncycastle.jce.provider.BouncyCastleProvider
         </td>
         <td>
           
-            Gross Income Expense
+            Income Expense
           
         </td>
         <td>
@@ -1136,6 +1210,34 @@ security.provider.11=org.bouncycastle.jce.provider.BouncyCastleProvider
     
       <tr>
         <td>
+          COGSAdditional
+        </td>
+        <td>
+          5105
+        </td>
+        <td>
+          Cost Of Goods Sold capitalized
+        </td>
+        <td>
+          
+        </td>
+        <td>
+          
+            Debit
+          
+        </td>
+        <td>
+          
+            Income Expense
+          
+        </td>
+        <td>
+          COGS from capitalized expenses e.g. rent, indirect labor for producing business
+        </td>
+      </tr>
+    
+      <tr>
+        <td>
           COGL
         </td>
         <td>
@@ -1154,14 +1256,13 @@ security.provider.11=org.bouncycastle.jce.provider.BouncyCastleProvider
         </td>
         <td>
           
-            Gross Income Expense
+            Income Expense
           
         </td>
         <td>
           
         </td>
       </tr>
-    
       <tr>
         <td>
           Expenses
@@ -1182,31 +1283,7 @@ security.provider.11=org.bouncycastle.jce.provider.BouncyCastleProvider
         </td>
         <td>
           
-            Gross Income Expense
-          
-        </td>
-        <td>
-          
-        </td>
-      </tr>
-    
-      <tr>
-        <td>
-          
-        </td>
-        <td>
-          
-        </td>
-        <td>
-          
-        </td>
-        <td>
-          Property Deprecation
-        </td>
-        <td>
-          
-        </td>
-        <td>
+            Income Expense
           
         </td>
         <td>
@@ -1226,6 +1303,30 @@ security.provider.11=org.bouncycastle.jce.provider.BouncyCastleProvider
         </td>
         <td>
           Rent
+        </td>
+        <td>
+          
+        </td>
+        <td>
+          
+        </td>
+        <td>
+          
+        </td>
+      </tr>
+    
+      <tr>
+        <td>
+          
+        </td>
+        <td>
+          
+        </td>
+        <td>
+          
+        </td>
+        <td>
+          Property Deprecation
         </td>
         <td>
           
@@ -1297,7 +1398,7 @@ security.provider.11=org.bouncycastle.jce.provider.BouncyCastleProvider
           
         </td>
         <td>
-          Medicare withholding
+          Social Security withholding
         </td>
         <td>
           
@@ -1321,7 +1422,7 @@ security.provider.11=org.bouncycastle.jce.provider.BouncyCastleProvider
           
         </td>
         <td>
-          Social Security withholding
+          Medicare withholding
         </td>
         <td>
           
@@ -1358,10 +1459,10 @@ security.provider.11=org.bouncycastle.jce.provider.BouncyCastleProvider
         </td>
       </tr>    
   </table>
-    </p>
+</p>
 
 <h4>Started capital.</h4>
-<p>At Jan 10 2016 Bob opened checking account #12125686 in Bank and deposit 40000USD. He make the first accounting entries from Menu Accounting -> Input accounting Entries:
+<p>Bob opened checking account #12125686 in Bank on Jan 10 2016 and deposited 40000USD. He made the first accounting entries from Menu Accounting -> Input accounting Entries:
   <p align="center"><img alt="Beige-Accounting started capital" style="max-width: 100%" src="images/started-capital.png" /></p>
 </p>
 
@@ -1372,13 +1473,16 @@ security.provider.11=org.bouncycastle.jce.provider.BouncyCastleProvider
       then you can open Beige-Accounting in another browser tab and create Employee, then go back and in picker
       press page (1 for example) to refresh it.</li>
     <li>You can edit accounting entry description(only) in menu Accounting - Accounting Records</li>
-    <li>Several entities require for creating to enter ID manually. For customer/vendor/employee ID you can use its phone number (only numbers) or tax identification number.
-      If you got error when you create such entity then probably ID is not unique.
+    <li>Several entities require entering ID manually for their creating. For customer/vendor/employee ID you can use its phone number (only numbers) or tax identification number.
+      If you got error when you are creating such entity then probably ID is not unique.
     </li>
   </ul>
 </p>
 
 <h4>Running Beige-Accounting in "protected from light scamware" mode.</h4>
+<p>English language likes freedom, so here word "scam" means a person who deprives any your value (tangible/intangible) by using non-robberies methods like cheating.
+  This word songs similar to European one "skam" (means shame) and English "scar".
+</p>
 <p>
   Light scamware is software that can poison a standard application or it is any harmful-script, e.g script on HTML page.
   Light scamware is running under your regular account and can read file system that you can read.

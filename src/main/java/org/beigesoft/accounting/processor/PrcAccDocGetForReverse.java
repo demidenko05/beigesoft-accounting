@@ -63,6 +63,7 @@ public class PrcAccDocGetForReverse<RS, T extends IDoc>
         "Attempt to double reverse! " + pAddParam.get("user"));
     }
     T entityReversed = getSrvOrm().retrieveEntity(pAddParam, pEntity);
+    entityReversed.setIsNew(false);
     Long docId = entityReversed.getItsId();
     if (entityReversed.getIdBirth() != null) {
       docId = entityReversed.getIdBirth();

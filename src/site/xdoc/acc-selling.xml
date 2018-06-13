@@ -10,9 +10,28 @@
   <body>
 
     <section name="Accounting of sales, prepayments, payments tracking.">
-    <p>Keywords: Accounting of sales, payments tracking software.</p>
+    <p>Keywords: Accounting of sales, payments tracking software, sales taxes.</p>
+
+      <p>Sales taxes imposed on the buyer from your sales of your goods/service are extracted from sales revenue, and you have to pay them, this rule is applied in all countries.</p>
+
+      <p>Bob should not pay sales taxes for frozen pizza, but here is used fake sales taxes for goods with cheese and all services (only for example purpose)!</p>
+      
+      <p>To apply sales tax for a material/merchandise/service you should:
+        <p>2. Add <b>Tax</b> (method must be "ACCRUAL"!) e.g.:
+          <p align="center"><img alt="Beige-Accounting sales tax" style="max-width: 100%" src="images/tax-fake.png" /></p>
+        </p>
+        <p>2. Add <b>Item Tax Category</b> e.g.:
+          <p align="center"><img alt="Beige-Accounting merchandise sales tax category" style="max-width: 100%" src="images/item-tax-category.png" /></p>
+        </p>
+        <p>3. Set <b>Item Tax Category</b> for material e.g.:
+          <p align="center"><img alt="Beige-Accounting set merchandise sales tax" style="max-width: 100%" src="images/set-merchandise-sales-tax.png" /></p>
+        </p>
+        <p>4. In "Accounting settings" set "extract sales taxes from sales" to "ON" and switch to "ON" method #35 "SalesInvoice, Debit AccReceivable.DebtorCreditor Credit SalesTaxPay.Tax for Tax amount. Accrual Symmetric."
+        </p>
+      </p>
+
       <p>
-        16 Bob received on Jan 50USD prepayment from Mini Market.
+        Bob received 50USD prepayment from Mini Market on Jan 16.
         Bob has filled Prepayment From:
         <p align="center"><img alt="Beige-Accounting prepayment for sales" style="max-width: 100%" src="images/prepayment-for-sales.png" /></p>
         <p align="center">After accounting full report is:</p>

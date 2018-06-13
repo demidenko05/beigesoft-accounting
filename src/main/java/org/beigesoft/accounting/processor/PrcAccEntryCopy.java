@@ -91,10 +91,6 @@ public class PrcAccEntryCopy<RS>
       final AccountingEntry pEntity,
         final IRequestData pRequestData) throws Exception {
     AccountingEntry entity = this.srvOrm.retrieveEntity(pAddParam, pEntity);
-    entity.setIsNew(true);
-    entity.setItsId(null);
-    entity.setIdBirth(null);
-    entity.setIdDatabaseBirth(this.srvOrm.getIdDatabase());
     AccountingEntries doc = getSrvOrm().retrieveEntityById(pAddParam,
       AccountingEntries.class, entity.getSourceId());
     if (!doc.getIdDatabaseBirth()
@@ -103,6 +99,9 @@ public class PrcAccEntryCopy<RS>
         "can_not_make_entry_for_foreign_src");
     }
     entity.setIsNew(true);
+    entity.setItsId(null);
+    entity.setIdBirth(null);
+    entity.setIdDatabaseBirth(this.srvOrm.getIdDatabase());
     entity.setItsDate(new Date());
     entity.setSourceType(this.accountingEntriesTypeCode);
     String docDescription;

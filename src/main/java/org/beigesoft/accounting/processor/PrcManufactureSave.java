@@ -221,6 +221,7 @@ public class PrcManufactureSave<RS>
       DateFormat.MEDIUM, DateFormat.SHORT, new Locale(langDef));
     die.setDescription(makeDescription(pEntity, langDef, dateFormat));
     getSrvOrm().insertEntity(pAddParam, die);
+    die.setIsNew(false);
   }
 
   /**
@@ -261,6 +262,7 @@ public class PrcManufactureSave<RS>
       + " " + getSrvI18n().getMsg("reversed_entry_n", langDef)
         + dies.getIdDatabaseBirth() + "-" + dies.getItsId());
     getSrvOrm().insertEntity(pAddParam, die);
+    die.setIsNew(false);
     pEntity.getManufacturingProcess().setTheRest(pEntity
       .getManufacturingProcess().getTheRest().add(dies.getItsQuantity()));
     getSrvOrm().updateEntity(pAddParam, pEntity.getManufacturingProcess());

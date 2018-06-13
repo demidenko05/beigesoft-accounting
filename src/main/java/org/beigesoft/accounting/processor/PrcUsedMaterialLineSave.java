@@ -110,6 +110,7 @@ public class PrcUsedMaterialLineSave<RS>
           .getQuantityPrecision(), getSrvAccSettings()
             .lazyGetAccSettings(pAddParam).getRoundingMode()));
       getSrvOrm().insertEntity(pAddParam, pEntity);
+      pEntity.setIsNew(false);
       pEntity.setItsOwner(pEntity.getItsOwner());
       if (pEntity.getReversedId() != null) {
         UsedMaterialLine reversed = getSrvOrm().retrieveEntityById(

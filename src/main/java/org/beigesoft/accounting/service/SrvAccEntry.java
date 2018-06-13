@@ -236,6 +236,7 @@ public class SrvAccEntry<RS> implements ISrvAccEntry {
       getSimpleName() + "short", langDef) + " #" + pEntity.getIdDatabaseBirth()
     + "-" + docId + ", " + dateFormat.format(pEntity.getItsDate()) + descr);
           this.srvOrm.insertEntity(pAddParam, accEntry);
+          accEntry.setIsNew(false);
         } while (recordSet.moveToNext());
       }
     } finally {
@@ -313,6 +314,7 @@ public class SrvAccEntry<RS> implements ISrvAccEntry {
       accEntry.setReversedId(source.getItsId());
       accEntry.setReversedIdDatabaseBirth(source.getIdDatabaseBirth());
       srvOrm.insertEntity(pAddParam, accEntry);
+      accEntry.setIsNew(false);
       source.setDescription(source.getDescription().trim()
         + " " + getSrvI18n().getMsg("reversing_entry_n", langDef) + accEntry
           .getIdDatabaseBirth() + "-"
