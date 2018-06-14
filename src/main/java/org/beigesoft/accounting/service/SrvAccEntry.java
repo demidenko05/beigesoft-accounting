@@ -186,8 +186,7 @@ public class SrvAccEntry<RS> implements ISrvAccEntry {
           AccountingEntry accEntry = new AccountingEntry();
           accEntry.setIdDatabaseBirth(getSrvDatabase().getIdDatabase());
           if (itsDateLong == null) {
-            itsDateLong = recordSet
-              .getLong("ITSDATE");
+            itsDateLong = pEntity.getItsDate().getTime();
             getSrvBalance().handleNewAccountEntry(pAddParam, null, null,
               new Date(itsDateLong)); //This is for SrvBalanceStd only!!!
           }

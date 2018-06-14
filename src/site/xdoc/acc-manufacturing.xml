@@ -4,7 +4,7 @@
   xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
 
   <properties>
-    <title>Beigesoftware, Beige-Accounting</title>
+    <title>Beigesoft™ Accounting</title>
    </properties>
 
   <body>
@@ -13,8 +13,8 @@
 
 <p>Keywords: Accounting of manufacturing, direct and indirect labor, cost of product.</p>
 
-      <b>Beige-Accounting automatically calculates cost of product = cost of materials
-       plus additional costs (direct labor, packaging etc), this method is widely used in many countries.</b>
+      <b>Beige-Accounting automatically calculates <b>cost of product = cost of materials
+       plus additional costs (direct labor, packaging etc)</b>, this method is widely used in many countries.</b>
       <p>
         Rob has made on Jan 17 12 Pizza with bacon frozen and 12 Pizza with cheese frozen. Where are two documents for manufacturing:
         <ul>

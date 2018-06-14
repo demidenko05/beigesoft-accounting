@@ -105,10 +105,14 @@ public class PrcAdditionCostLineSave<RS>
       + " ADDITIONCOSTLINE where ITSOWNER="
         + pEntity.getItsOwner().getItsId();
     Double total = getSrvDatabase().evalDoubleResult(query, "ITSTOTAL");
-    pEntity.getItsOwner().setTotalAdditionCost(BigDecimal.valueOf(total));
+    pEntity.getItsOwner().setTotalAdditionCost(BigDecimal.valueOf(total)
+.setScale(getSrvAccSettings().lazyGetAccSettings(pAddParam).getCostPrecision(),
+  getSrvAccSettings().lazyGetAccSettings(pAddParam).getRoundingMode()));
     pEntity.getItsOwner().setItsTotal(pEntity.getItsOwner()
       .getTotalMaterialsCost().add(pEntity.getItsOwner()
-        .getTotalAdditionCost()));
+        .getTotalAdditionCost()).setScale(getSrvAccSettings()
+      .lazyGetAccSettings(pAddParam).getCostPrecision(),
+    getSrvAccSettings().lazyGetAccSettings(pAddParam).getRoundingMode()));
     pEntity.getItsOwner().setItsCost(pEntity.getItsOwner().getItsTotal()
       .divide(pEntity.getItsOwner().getItsQuantity(),
         getSrvAccSettings().lazyGetAccSettings(pAddParam).getCostPrecision(),

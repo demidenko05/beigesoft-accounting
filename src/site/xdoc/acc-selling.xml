@@ -4,7 +4,7 @@
   xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
 
   <properties>
-    <title>Beigesoftware, Beige-Accounting</title>
+    <title>Beigesoft™ Accounting</title>
    </properties>
 
   <body>
@@ -17,7 +17,7 @@
       <p>Bob should not pay sales taxes for frozen pizza, but here is used fake sales taxes for goods with cheese and all services (only for example purpose)!</p>
       
       <p>To apply sales tax for a material/merchandise/service you should:
-        <p>2. Add <b>Tax</b> (method must be "ACCRUAL"!) e.g.:
+        <p>1. Add <b>Tax</b> (method must be "ACCRUAL"!) e.g.:
           <p align="center"><img alt="Beige-Accounting sales tax" style="max-width: 100%" src="images/tax-fake.png" /></p>
         </p>
         <p>2. Add <b>Item Tax Category</b> e.g.:
@@ -38,24 +38,27 @@
         <p align="center"><img alt="Beige-Accounting prepayment for sales report" style="max-width: 100%" src="images/prepayment-for-sales-report.png" /></p>
       </p>
       <p>
-        Bob has sold on Jan 17 6 Pizza with bacon frozen and 6 Pizza with cheese frozen to Mini Market.
+        Bob has sold on Jan 17 6 Pizza with bacon frozen and 6 Pizza with cheese frozen to Mini Market (he also sold 3 pounds of cheese and 1.5 hours of cleaning for example purposes).
         Bob has filled Sales invoice:
         <p align="center"><img alt="Beige-Accounting sales invoice" style="max-width: 100%" src="images/sales0.png" /></p>
         <p align="center"><img alt="Beige-Accounting sales invoice" style="max-width: 100%" src="images/sales1.png" /></p>
         <p align="center">After accounting full report is:</p>
         <p align="center"><img alt="Beige-Accounting sales invoice report" style="max-width: 100%" src="images/sales2.png" /></p>
+        <p align="center"><img alt="Beige-Accounting sales invoice report" style="max-width: 100%" src="images/sales2-1.png" /></p>
       </p>
       <p>
         After that Bob has changed in accounting settings precision for trial balance to 4 then printed it:
         <p align="center"><img style="max-width: 100%" src="images/trial-balance2.png" /></p>
+        <p align="center"><img style="max-width: 100%" src="images/trial-balance2-1.png" /></p>
       </p>
       <p>
         Ledger Inventory is:
         <p align="center"><img alt="Beige-Accounting Ledger Inventory" style="max-width: 100%" src="images/ledger-inventory1.png" /></p>
+        <p align="center"><img alt="Beige-Accounting Ledger Inventory" style="max-width: 100%" src="images/ledger-inventory1-1.png" /></p>
       </p>
       <p>
         As you can see Bob made another mistake. He set Sales date less than Manufacture date for that pizza, so
-        balance of Inventory.Pizza Cheese Frozen is -23.5788 at 4:42 PM because it(pizza) was made at 6:40 PM.
+        balance of Inventory.Pizza Cheese Frozen is -19.5462 at 4:45 PM because it(pizza) was made at 6:40 PM.
         So it's reasonable to make database copy more frequently, he needs to copy beigeaccounting.sqlite
         by file explorer without exiting from accounting (on Android he should do it in the Database manager).
         Otherwise he should reverse whole document. For warehouse document date means nothing cause warehouse
@@ -63,7 +66,7 @@
       </p>
 
       <h4>Payments tracking</h4>
-      <p>Bob received on 18 Jan the rest 48.76 from Mini Market for sales invoice #1:
+      <p>Bob received on 18 Jan the rest 107.64 from Mini Market for sales invoice #1:
           <p align="center"><img alt="Beige-Accounting payment for sales" style="max-width: 100%" src="images/payment-for-sales.png" /></p>
       </p>
       <p>It make simple accounting entries:

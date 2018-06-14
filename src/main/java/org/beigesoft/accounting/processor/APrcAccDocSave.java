@@ -142,9 +142,8 @@ public abstract class APrcAccDocSave<RS, T extends IDoc>
           "Attempt to update accounted document by " + pAddParam.get("user"));
       }
       checkOtherFraudUpdate(pAddParam, pEntity, pRequestData, oldEntity);
-      if (!"makeAccEntries".equals(actionAdd)) {
-        getSrvOrm().updateEntity(pAddParam, pEntity);
-      } //else during making acc entries
+      //update also before making acc-entries!!!
+      getSrvOrm().updateEntity(pAddParam, pEntity);
     }
     if (!pEntity.getHasMadeAccEntries()
       && "makeAccEntries".equals(actionAdd)) {

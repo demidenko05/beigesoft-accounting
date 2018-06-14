@@ -60,6 +60,11 @@ public class PrcManufacturingProcessSave<RS>
     } else {
       pEntity.setTheRest(pEntity.getItsQuantity());
     }
+    //rounding:
+    pEntity.setItsQuantity(pEntity.getItsQuantity().setScale(
+      getSrvAccSettings().lazyGetAccSettings(pAddParam)
+        .getQuantityPrecision(), getSrvAccSettings()
+          .lazyGetAccSettings(pAddParam).getRoundingMode()));
     pEntity.setItsCost(pEntity.getItsTotal().divide(
       pEntity.getItsQuantity(), getSrvAccSettings()
         .lazyGetAccSettings(pAddParam).getCostPrecision(),

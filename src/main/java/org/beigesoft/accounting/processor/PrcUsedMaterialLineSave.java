@@ -105,9 +105,18 @@ public class PrcUsedMaterialLineSave<RS>
         throw new ExceptionWithCode(ExceptionWithCode.WRONG_PARAMETER,
           "type_must_be_material::" + pAddParam.get("user"));
       }
+      //rounding:
       pEntity.setItsQuantity(pEntity.getItsQuantity().setScale(
         getSrvAccSettings().lazyGetAccSettings(pAddParam)
           .getQuantityPrecision(), getSrvAccSettings()
+            .lazyGetAccSettings(pAddParam).getRoundingMode()));
+      pEntity.setItsCost(pEntity.getItsCost().setScale(
+        getSrvAccSettings().lazyGetAccSettings(pAddParam)
+          .getCostPrecision(), getSrvAccSettings()
+            .lazyGetAccSettings(pAddParam).getRoundingMode()));
+      pEntity.setItsTotal(pEntity.getItsCost().multiply(pEntity
+        .getItsQuantity()).setScale(getSrvAccSettings()
+          .lazyGetAccSettings(pAddParam).getCostPrecision(), getSrvAccSettings()
             .lazyGetAccSettings(pAddParam).getRoundingMode()));
       getSrvOrm().insertEntity(pAddParam, pEntity);
       pEntity.setIsNew(false);
@@ -157,8 +166,10 @@ public class PrcUsedMaterialLineSave<RS>
           .getCostPrecision(), getSrvAccSettings()
             .lazyGetAccSettings(pAddParam).getRoundingMode()));
       pEntity.getItsOwner().setItsTotal(pEntity.getItsOwner()
-        .getTotalMaterialsCost().add(pEntity.getItsOwner()
-          .getTotalAdditionCost()));
+    .getTotalMaterialsCost().add(pEntity.getItsOwner().getTotalAdditionCost())
+      .setScale(getSrvAccSettings().lazyGetAccSettings(pAddParam)
+        .getCostPrecision(), getSrvAccSettings()
+          .lazyGetAccSettings(pAddParam).getRoundingMode()));
       pEntity.getItsOwner().setItsCost(pEntity.getItsOwner().getItsTotal()
         .divide(pEntity.getItsOwner().getItsQuantity(), getSrvAccSettings()
           .lazyGetAccSettings(pAddParam).getCostPrecision(),

@@ -83,7 +83,7 @@ public class AccountingEntry extends APersistableBase {
   /**
    * <p>Debit.</p>
    **/
-  private BigDecimal debit = new BigDecimal("0.00");
+  private BigDecimal debit = BigDecimal.ZERO;
 
   /**
    * <p>Account credit.</p>
@@ -109,7 +109,7 @@ public class AccountingEntry extends APersistableBase {
   /**
    * <p>Credit.</p>
    **/
-  private BigDecimal credit = new BigDecimal("0.00");
+  private BigDecimal credit = BigDecimal.ZERO;
 
   /**
    * <p>Description.</p>

@@ -46,12 +46,12 @@ public class ManufacturingProcess extends AInvItemMovementCost
   /**
    * <p>Total materials costs.</p>
    **/
-  private BigDecimal totalMaterialsCost = new BigDecimal("0.00");
+  private BigDecimal totalMaterialsCost = BigDecimal.ZERO;
 
   /**
    * <p>Total additional direct/indirect uncapitalized costs.</p>
    **/
-  private BigDecimal totalAdditionCost = new BigDecimal("0.00");
+  private BigDecimal totalAdditionCost = BigDecimal.ZERO;
 
   /**
    * <p>Warehouse site, Not Null, e.g. kitchen.</p>
