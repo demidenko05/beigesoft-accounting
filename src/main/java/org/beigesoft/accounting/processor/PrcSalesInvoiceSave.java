@@ -75,18 +75,7 @@ public class PrcSalesInvoiceSave<RS>
         "reverse_payments_first");
     }
     if (pEntity.getReversedId() == null) {
-      BigDecimal payTot = BigDecimal
-        .valueOf(pEntity.getPaymentTotal().doubleValue());
       calculateTotalPayment(pAddParam, pEntity);
-      if (payTot.compareTo(pEntity.getPaymentTotal()) != 0) {
-        //for using cash accounting methods with prepayments:
-        if (pEntity.getIsNew()) {
-          getSrvOrm().insertEntity(pAddParam, pEntity);
-          pEntity.setIsNew(false);
-        } else {
-          getSrvOrm().updateEntity(pAddParam, pEntity);
-        }
-      }
     }
   }
 

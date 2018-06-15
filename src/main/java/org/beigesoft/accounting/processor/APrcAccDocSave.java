@@ -142,7 +142,7 @@ public abstract class APrcAccDocSave<RS, T extends IDoc>
           "Attempt to update accounted document by " + pAddParam.get("user"));
       }
       checkOtherFraudUpdate(pAddParam, pEntity, pRequestData, oldEntity);
-      //update also before making acc-entries!!!
+      //update also before making acc-entries, cause using SQL queries!!!
       getSrvOrm().updateEntity(pAddParam, pEntity);
     }
     if (!pEntity.getHasMadeAccEntries()
@@ -152,7 +152,7 @@ public abstract class APrcAccDocSave<RS, T extends IDoc>
           "total_less_or_eq_zero");
       }
       addCheckIsReadyToAccount(pAddParam, pEntity, pRequestData);
-      //it will update this doc:
+      //it will set hasMadeAccEntries=true and update this doc:
       this.srvAccEntry.makeEntries(pAddParam, pEntity);
     }
     makeOtherEntries(pAddParam, pEntity, pRequestData, isNew);

@@ -4,7 +4,7 @@
   xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
 
   <properties>
-    <title>Beigesoftware, Beige-Accounting</title>
+    <title>Beigesoft™ Accounting</title>
    </properties>
 
   <body>
@@ -21,6 +21,7 @@
         Bob was confirmed on Jan 19 what "Funny coffee shop" is bankrupt and he was received sales return 2 Pizza with bacon frozen and 2 Pizza with cheese frozen.
         Bob has printed full sales invoice report to figure price and cost which must be same for return:
         <p align="center"><img style="max-width: 100%" src="images/sales-invoice-for-return.png" /></p>
+        <p align="center"><img style="max-width: 100%" src="images/sales-invoice-for-return-1.png" /></p>
       </p>
 
       <p>Then Bob has filled sales return according sales invoice:
@@ -28,6 +29,12 @@
       </p>
       <p>It makes complex accounting/warehouse entries:
           <p align="center"><img alt="Beige-Accounting sales return report" style="max-width: 100%" src="images/sales-return-report.png" /></p>
+          <p align="center"><img alt="Beige-Accounting sales return report" style="max-width: 100%" src="images/sales-return-report-1.png" /></p>
+      </p>
+      <p>*Here is error - accounting entry #1-46 is asymmetric cause using deprecated method #17 "SalesReturn, Debit SalesReturns.InvItemCategory Credit ReturnsPayable.DebtorCreditor"
+        instead of new #37 "SalesReturn, Debit SalesReturns.InvItemCategory Credit ReturnsPayable.DebtorCreditor for Subtotal amount. Accrual Symmetric."
+        In that case (using wrong accounting settings) you should reverse whole document, fix the settings and create document again, or just make adjusting entries, in this case (subtract 1.77 from "Sales returns payable.Funny coffee shop"):
+        <p align="center"><img alt="Beige-Accounting sales return report" style="max-width: 100%" src="images/sales-return-adjusting.png" /></p>
       </p>
       <p>
         * Sales returns are business expenses (deducting income tax).

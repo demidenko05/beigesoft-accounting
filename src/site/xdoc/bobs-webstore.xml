@@ -41,14 +41,17 @@
           <p align="center"><img style="max-width: 100%" src="images/webstore-goodsavail.png" /></p>
           Property <b>is always</b> means that customers can order this goods without availability checking.
         </p>
-        <p>Then Bob added <b>Group of specifics of item</b>:
-          <p align="center"><img style="max-width: 100%" src="images/webstore-grspecitm.png" /></p>
-        </p>
-        <p>Then Bob added <b>Specifics of item</b>:
+        <p>Then Bob added <b>Specifics of item</b> "Image":
           <p align="center"><img style="max-width: 100%" src="images/webstore-specitm.png" /></p>
         </p>
-        <p>Then Bob added <b>Goods specifics</b> for every goods (actually image):
+        <p>Then Bob added <b>Specifics of item</b> "weight":
+          <p align="center"><img style="max-width: 100%" src="images/webstore-specitm-w.png" /></p>
+        </p>
+        <p>Then Bob added <b>Goods specifics</b> "Image" for every goods:
           <p align="center"><img style="max-width: 100%" src="images/webstore-goodsspec.png" /></p>
+        </p>
+        <p>Then Bob added <b>Goods specifics</b> "weight" for every goods:
+          <p align="center"><img style="max-width: 100%" src="images/webstore-goodsspec-w.png" /></p>
         </p>
         <p>Then Bob added <b>Price category of goods/service</b>:
           <p align="center"><img style="max-width: 100%" src="images/webstore-pricecatgoods.png" /></p>
@@ -72,6 +75,7 @@
           <p align="center"><img style="max-width: 100%" src="images/bebstoremobile1.png" /></p>
           <p align="center"><img style="max-width: 100%" src="images/bebstoremobile2.png" /></p>
           <p align="center"><img style="max-width: 100%" src="images/bebstoremobile3.png" /></p>
+          <p align="center"><img style="max-width: 100%" src="images/bebstoremobile4.png" /></p>
         </p>
     </section>
 

@@ -46,10 +46,10 @@
     <p align="center"><img style="max-width: 100%" src="images/copytoandroid.png" /></p>
     These files are:
     <ul>
-      <li>beigeaccounting.sqlten - database that is encrypted with 256bit AES session symmetric key.</li>
-      <li>beigeaccounting.sqlten.sig - encrypted database signature that is made with A-Jetty444 private 2048bit RSA key</li>
-      <li>beigeaccounting.sqlten.sken - 256bit AES session symmetric key that is encrypted with A-Jetty777 public 2048bit RSA key, this file can be decrypted only with A-Jetty777 RSA private key</li>
-      <li>beigeaccounting.sqlten.sken.sig - encrypted AES key signature that is made with A-Jetty444 private 2048bit RSA key</li>
+      <li>bobz-pizza-tax3.sqlten - database that is encrypted with 256bit AES session symmetric key.</li>
+      <li>bobz-pizza-tax3.sqlten.sig - encrypted database signature that is made with A-Jetty444 private 2048bit RSA key</li>
+      <li>bobz-pizza-tax3.sqlten.sken - 256bit AES session symmetric key that is encrypted with A-Jetty777 public 2048bit RSA key, this file can be decrypted only with A-Jetty777 RSA private key</li>
+      <li>bobz-pizza-tax3.sqlten.sken.sig - encrypted AES key signature that is made with A-Jetty444 private 2048bit RSA key</li>
     </ul>
   </p>
   Then Bob restored database on smartphone:
@@ -62,14 +62,13 @@
   <p align="center"><img style="max-width: 100%" src="images/android-purchaseline.png" /></p>
   <br></br>
   <p>Screenshots from virtual Nexus 9 Android Oreo 8.0 (API-26):</p>
-  <p align="center"><img style="max-width: 100%" src="images/avd26start.png" /></p>
-  <p align="center"><img style="max-width: 100%" src="images/avd26addca1.png" /></p>
-  <p align="center"><img style="max-width: 100%" src="images/avd26addca2.png" /></p>
-  <p align="center"><img style="max-width: 100%" src="images/avd26dbmanager.png" /></p>
-  <p align="center"><img style="max-width: 100%" src="images/avd26tbalance.png" /></p>
-  <p align="center"><img style="max-width: 100%" src="images/avd26invoicepdf.png" /></p>
-  <p align="center"><img style="max-width: 100%" src="images/avd26accenties.png" /></p>
-  <p align="center"><img style="max-width: 100%" src="images/avd26salinv.png" /></p>
+  <p align="center"><img style="max-width: 100%" src="images/avd26-1.png" /></p>
+  <p align="center"><img style="max-width: 100%" src="images/avd26-2.png" /></p>
+  <p align="center"><img style="max-width: 100%" src="images/avd26-3.png" /></p>
+  <p align="center"><img style="max-width: 100%" src="images/avd26-4.png" /></p>
+  <p align="center"><img style="max-width: 100%" src="images/avd26-5.png" /></p>
+  <p align="center"><img style="max-width: 100%" src="images/avd26-6.png" /></p>
+  <p align="center"><img style="max-width: 100%" src="images/avd26-7.png" /></p>
   
 </p>
 
