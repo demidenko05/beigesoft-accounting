@@ -56,7 +56,7 @@
         Then report invoice again in Russian:
         <p align="center"><img style="max-width: 100%" src="images/foreigninvrepru.png" /></p>
       </p>
-      <p>*For over languages you have to add basic static internationalization - file e.g. /resources/Messages_fr_FR.properties for France language.</p>
+      <p>*For over languages you have to add basic static internationalization - file e.g. /resources/Messages_fr_FR.properties for France language, and add it into <b>langCountries</b> in <b>web.xml</b>, e.g. <b>en,US,ru,RU,fr,FR</b></p>
     </section>
 
   </body>

@@ -4,12 +4,12 @@
   xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
 
   <properties>
-    <title>Beigesoftware, Beige-Accounting</title>
+    <title>Beigesoft™ Accounting</title>
    </properties>
 
   <body>
 
-    <section name="Beige-Accounting start not from scratch.">
+    <section name="Beigesoft™ Accounting start not from scratch.">
 
       <p>
         In real life a user usually starts to use an accounting software when he/she already has been doing his/her business.
@@ -60,6 +60,7 @@
       <p>Trial balances in database "from scratch" and database "not from scratch" are same (except little rounding errors in both databases):
       </p>
       <p align="center"><img style="max-width: 100%" src="images/nfs-balance.png" /></p>
+      <p align="center"><img style="max-width: 100%" src="images/nfs-balance-1.png" /></p>
 
       <p>Warehouse in database "from scratch" and database "not from scratch" is the same:
       </p>

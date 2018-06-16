@@ -4,7 +4,7 @@
   xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
 
   <properties>
-    <title>Beigesoftware, Beige-Accounting</title>
+    <title>Beigesoft™ Accounting</title>
    </properties>
 
   <body>
@@ -59,6 +59,7 @@ keytool -import -trustcacerts -alias ajettyca -file "ajetty-ca.pem" -keystore /u
       
       <p>The data is the same:</p>
       <p align="center"><img style="max-width: 100%" src="images/import-db5.png" /></p>
+      <p align="center"><img style="max-width: 100%" src="images/import-db6.png" /></p>
       
       <p>For real cloud (internet) WEB-application intranet WEB-server <b>https://localhost:8443/bsa8443</b> is not available, so you have two options:
       <ul>

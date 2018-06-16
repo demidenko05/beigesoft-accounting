@@ -97,9 +97,10 @@ public class PrcBeginningInventoryLineSave<RS>
         .lazyGetAccSettings(pAddParam).getCostPrecision(), getSrvAccSettings()
           .lazyGetAccSettings(pAddParam).getRoundingMode()));
       pEntity.setTheRest(pEntity.getItsQuantity());
-      pEntity.setItsTotal(pEntity.getItsTotal().setScale(getSrvAccSettings()
-        .lazyGetAccSettings(pAddParam).getCostPrecision(), getSrvAccSettings()
-          .lazyGetAccSettings(pAddParam).getRoundingMode()));
+      pEntity.setItsTotal(pEntity.getItsQuantity().multiply(pEntity
+        .getItsCost()).setScale(getSrvAccSettings()
+          .lazyGetAccSettings(pAddParam).getCostPrecision(), getSrvAccSettings()
+            .lazyGetAccSettings(pAddParam).getRoundingMode()));
       if (pEntity.getReversedId() != null) {
         pEntity.setTheRest(BigDecimal.ZERO);
       }

@@ -4,7 +4,7 @@
   xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
 
   <properties>
-    <title>Beigesoftware, Beige-Accounting</title>
+    <title>Beigesoft™ Accounting</title>
    </properties>
 
   <body>
@@ -17,11 +17,11 @@
         to estimates his taxes in calendar year period. Bob wants to estimates his real business results
         monthly. Market accounting (double entries system) based on rule:
         <pre style="white-space: pre-wrap;">
-          Assets - Liabilities = current market value of Bob's business (How much he can sold it right now) = Owner's equity
+          Assets - Liabilities = current market value of Bob's business (How much he can sell it right now) = Owner's equity
         </pre>
       </p>
       <b>
-        The most entries from Tax accounting is relevant for Market one. Excluding entries are:
+        The most entries from Tax accounting is relevant to Market one. Excluding entries are:
         <ul>
           <li>Property deprecation</li>
           <li>Closing entries (yearly)</li>
@@ -29,7 +29,7 @@
         </ul>
       </b>
 
-      <p>Bob unpack files from <b>beigesoft-accountingoio-ajetty-bin.zip</b> into new folder <b>accounting-market</b>,
+      <p>Bob unpacked files from <b>beigesoft-accountingoio-ajetty-bin.zip</b> into new folder <b>accounting-market</b>,
         then he copied keystore form <b>accounting-tax</b>:
       <p align="center"><img style="max-width: 100%" src="images/market-acc-ks.png" /></p>
       </p>
@@ -44,7 +44,7 @@
       <h4>Import data from tax accounting.</h4>
       <p>To use WEB-services on intranet (localhost) Bob installed Bouncy Castle Crypto Provider and A-Jetty CA certificate as described in <a href="import-db-web.html">Import database with WEB-service.</a></p>
       <p>
-        He launched source (tax) database Tax Beige Accounting on port 8443.
+        He launched source database Tax Beige Accounting on port 8443.
         Then he launched market accounting on port 8444, new market database will be created with ID=2.
       </p>
       <p>
@@ -65,43 +65,44 @@
       <p align="center"><img style="max-width: 100%" src="images/import_acc_entries_result.png" /></p>
       
       <h4>Property asset market cost</h4>
-      <p>If you bought something then you can't sold it for the same price. Bob thinks that he can sold his Ford
-      right now (in January) for 20000 USD, so he report Ford cost loss:</p>
+      <p>If you bought something then you can't sell it for the same price. Bob thinks that he can sold his Ford
+      right now (in January) for 20000 USD, so he report Ford value loss:</p>
       <p align="center"><img style="max-width: 100%" src="images/ford_cost_loss.png" /></p>
 
       <h4>Accounting of bad debts</h4>
-      <p>In opposite to tax accounting rules Bob wants to report loss immediately. Funny coffee shop bad debt is 32.92.
-         But if IRS has approved this bad debt, then Bob's income tax deducting will be roughly 32.92 * 25% = 8.23 (25 is predicted tax rate).
+      <p>In opposite to tax accounting rules Bob wants to report loss immediately. Funny coffee shop bad debt is 67.47 - 33.73 = 33.74.
+         But if IRS has approved this bad debt, then Bob's income tax deducting will be roughly 33.74 * 25% = 8.44 (25 is predicted tax rate).
          So he created new asset account <b>Income Tax Deducting</b>:
       </p>
       <p align="center"><img style="max-width: 100%" src="images/income-tax-deducting-acc.png" /></p>
       <p>Note that ID for account must be a word without spaces maximum 25 letters!</p>
-      <p>Then Bob transferred 8.23 into it, and the rest into <b>Other loses</b>:</p>
+      <p>Then Bob transferred 8.44 into it, and the rest 25.30 into <b>Other loses</b>:</p>
       <p align="center"><img style="max-width: 100%" src="images/acc-market-bad-debt.png" /></p>
 
       <p>* to be brief sample database <b>bobs-pizza-market.sqlite</b> contains of summary revenue and expenses entries instead of lot of Purchase and Sales invoices,
       so trial balance on 31 Jan is:</p>
       <p align="center"><img style="max-width: 100%" src="images/market-trial-jan.png" /></p>
+      <p align="center"><img style="max-width: 100%" src="images/market-trial-jan-1.png" /></p>
       
       <h4>Closing entries monthly, balance sheet.</h4>
       <p>Bob made on 31 Jan closing entries into <b>Retained Earnings</b> account:
       </p>
       <p align="center"><img alt="Beige-Accounting closing entries" style="max-width: 100%" src="images/market-closing-jan.png" /></p>
       
-      <p>After that gross revenue is 8997.5244. Bob's income tax roughly is 8997.5244 * 25% = 2249.3811, so Bob transferred
+      <p>After that gross revenue is 9,031.5212. Bob's income tax roughly is 9,031.5212 * 25% = 2257.8803, so Bob transferred
       it from <b>Retained Earnings</b>:</p>
       <p align="center"><img style="max-width: 100%" src="images/market-jan-inc-tax.png" /></p>
       
       <p>As a result the balance sheet on 31 Jan is:</p>
       <p align="center"><img style="max-width: 100%" src="images/market-jan-balance.png" /></p>
-      <p>So Bob earn 6748.14 USD in January(*) and his business market cost is 46748.14 USD.</p>
-      <p>* take note that it is a simple example which does not included other taxes and their properly rates.</p>
+      <p>So Bob earn 6,773.64USD in January(*) and his business market value is 46,773.64USD.</p>
+      <p>* take note that it is a simple example which does not included other taxes and their properly rates, also liabilities such taxes must be payed.</p>
       
       <h4>Accounting of business (trade) name.</h4>
-      <p>In February Bob has sold pizza for 37000 USD, expenses is 11000 USD. So gross income = 26000 USD,
-      income tax = 6500 USD (Bob earned 19500 in Feb vs 6750 in Jan). Bob closed February with result: his business market cost is 66248.14.
-      But at this time (Feb 29 evening) a reliable businessman called Bob and asked him that he wants to buy Bob's pizza business for 80000 USD.
-      Bob refused this offer and reported this event (increased business cost for 13751.86) with new asset account <b>Bob's pizza name</b>:
+      <p>In February Bob has sold pizza for 37,000 USD, expenses is 11,000 USD. So gross income = 26,000 USD,
+      income tax = 6,500 USD (Bob earned 19,500 in Feb vs 6,774 in Jan). Bob closed February with result: his business market cost is 66,273.64.
+      But at this time (on Feb 29 evening) a reliable businessman called Bob and asked him that he wants to buy Bob's pizza business for 80,000 USD.
+      Bob refused this offer and reported this event (increased business cost for 13,726.36) with new asset account <b>Bob's pizza name</b>:
       </p>
       <p align="center"><img alt="Beige-Accounting of business (trade) name" style="max-width: 100%" src="images/market-business-name.png" /></p>
       <p>Business (trade) name cost always reflect to quantity of customers that prefer its (business maker's) goods or services.</p>
