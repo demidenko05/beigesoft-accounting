@@ -23,16 +23,17 @@
   then you must remove sensitive data from these files.
 </p>
 <p>
-  This is WEB-application, so you should use the newest version of WEB-browser. You should avoid to install any WEB-browser plugins.
+  This is WEB-application, so you have to use the newest version of WEB-browser. You should avoid to install any WEB-browser plugins.
 </p>
 
 <h5 align="center">Beigesoft™ Accounting standalone versions.</h5>
 <p>These versions are based on embedded private A-Jetty WEB-server.
   This private WEB-server is not available from outside your computer (or Android device).
   These versions require authorization with strong password (created by you).
-  They allow maximum 6 fail login attempts. You should periodically check file <b>secure.log</b> that contains authorization information.
+  They allow maximum 6 fail login attempts. Session will be blocked in 15 minutes after 6-th fail login attempts. You should periodically check file <b>secure.log</b> that contains authorization information.
   These versions use modern encryption algorithms with strong keys for HTTPS connection and for safe encrypted file exchanging.
   These are multi-database versions, you can create new and switch database from WEB-interface.
+  If you a going to sent database file to another computer then you have to use WEB-interface for encrypting this file.
 </p>
 
 <h5 align="center">Beigesoft™ Accounting on embedded A-Jetty for standard computer.</h5>
@@ -54,7 +55,7 @@
   Only another Beige-Accounting (whose public key used for encryption) can decrypts these encrypted files.
   Avoid to print PDF file if Google Chrome download them into shared storage (download folder), cause any other application
   that has permissions to this storage can read your PDF file. At least avoid to install any additional applications that requires permission to the storage,
-  already installed PDF viewer will do.
+  already installed PDF viewer will do. If you connect your Android device to a computer in MTP mode, then these PDF files will be also accessible to all computer's software.
 </p>
 
 <h5 align="center">Beigesoft™ Accounting cloud version.</h5>

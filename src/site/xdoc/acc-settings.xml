@@ -1493,7 +1493,7 @@ security.provider.11=org.bouncycastle.jce.provider.BouncyCastleProvider
 <p>Bob opened checking account #1236786b17 in Bank on Jan 10 2016 and deposited 40000USD. He made the first accounting entries from Menu Accounting -> Input accounting Entries:
   <p align="center"><img alt="Beige-Accounting started capital" style="max-width: 100%" src="images/started-capital.png" /></p>
 </p>
-<h5>Book's style entries vs Computer's style one</h5>
+<h4>Book's style entries vs Computer's style ones</h4>
 <p>
   Accounting entries above is made with computer's style - two classic symmetric entries are made as a single entry:
   <pre style="white-space: pre-wrap;">
@@ -1523,7 +1523,7 @@ Debit "Cash In Bank.#1236786b17 in Bank" Credit "Bob's Started Capital" for 40 0
 </p>
 
 <h4>Running Beige-Accounting in "protected from light scamware" mode.</h4>
-<p>English language likes freedom, so here word "scam" means a person who deprives any your value (tangible/intangible) by using non-robberies methods like cheating.
+<p>English language likes freedom, so here word "scam" means a person who deprives any your value (tangible/intangible) by using non-robbery's methods like cheating.
   This word songs similar to European one "skam" (means shame) and English "scar".
 </p>
 <p>

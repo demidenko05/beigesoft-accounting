@@ -61,12 +61,13 @@ keytool -import -trustcacerts -alias ajettyca -file "ajetty-ca.pem" -keystore /u
       <p align="center"><img style="max-width: 100%" src="images/import-db5.png" /></p>
       <p align="center"><img style="max-width: 100%" src="images/import-db6.png" /></p>
       
-      <p>For real cloud (internet) WEB-application intranet WEB-server <b>https://localhost:8443/bsa8443</b> is not available, so you have two options:
+      <p>Local WEB-server <b>https://127.0.0.1:8443/bsa8443</b> is not available for cloud (Internet) WEB-application, so you have two options:
       <ul>
-        <li>Make MySql database backup in local computer, then restore backup on remote cloud database with MySql backup software</li>
-        <li>Make SQlite version internet accessible - non-localhost i.e. public it on cloud (it MUST be only HTTPS(encrypted) accessible),
+        <li>Make MySql database backup in local computer, then restore backup on remote cloud database by using MySql backup software</li>
+        <li>Make SQlite version Internet accessible - e.g. public it on cloud (it MUST be only HTTPS(encrypted) accessible),
          see <a href="https://github.com/demidenko05/beigesoft-webcrud">https://github.com/demidenko05/beigesoft-webcrud</a> that uses SQlite and JDBC authentication for Apache Tomcat standard.</li>
       </ul>
+      *You can make A-Jetty Internet accessible by changing IP address from "127.0.0.1" in source code.
       </p>
     </section>
 

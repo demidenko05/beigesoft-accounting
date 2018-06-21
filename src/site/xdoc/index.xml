@@ -4,7 +4,7 @@
   xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
 
   <properties>
-    <title>Beigesoft projects overview</title>
+    <title>Beigesoft™ projects overview</title>
   </properties>
 
   <body>
@@ -16,54 +16,52 @@
       
       <h3>Products:</h3>
 
-      <h4>Beigesoft ™ Accounting</h4>
+      <h4>Beigesoft™ Accounting</h4>
             
-      <p>Beigesoft ™ Accounting is JEE-WEB based Accounting software.</p>
+      <p>Beigesoft™ Accounting is JEE-WEB based Accounting software.</p>
       <p>
         It works as:
         <ul>
-          <li>Standalone WEB-application on embedded private WEB-server A-Jetty for standard Java (Ms Windows, Mac, *Nix...).</li>
-          <li>Standalone WEB-application on embedded A-Jetty for Android.</li>
+          <li>Standalone WEB-application with private WEB-server A-Jetty for standard Java (MS Windows, Mac, UNIX like OS...).</li>
+          <li>Standalone WEB-application with private WEB-server A-Jetty for Android.</li>
           <li>Standard JEE web-application on any JEE server (cloud).</li>
         </ul>
       </p>
-      <p>It requires Google Chrome, Opera, or Chromium browser (html5-dialog ready).</p>
+      <p>It requires Google Chrome, Opera or Chromium browser (html5-dialog ready).</p>
       <p>
         Features:
         <ul>
-          <li>Double entries accounting system include ledger and balance reports.</li>
-          <li>COGS FIFO/LIFO perpetual automatically for sales, sales returns, inventory loses.</li>
-          <li>Automatically sales taxes accounting entries (a goods may has several sales taxes) for sales, purchase invoice
-            and their returns.
-          </li>
+          <li>Double entry accounting system including ledger and balance reports.</li>
+          <li>COGS FIFO/LIFO perpetual automatically for sales, sales returns, inventory losses.</li>
+          <li>Automatically sales taxes accounting entries (a goods or a service may has several sales taxes) for sales, purchases and their returns.</li>
           <li>Prepayments/payments tracking for sales/purchases.</li>
           <li>Payroll - automatically taxes calculation (by percentage tax table method) and accounting entries.</li>
           <li>Manufacturing - automatically cost calculation from used materials and direct labor (and other) costs.</li>
-          <li>Multi-databases (organizations) on standalone web-app version which uses SQlite database.</li>
+          <li>Multi-databases (organizations) for standalone versions which use SQlite database.</li>
           <li>and more.</li>
         </ul>
       </p>
-      <p><a href="privacypolicy.html">See Beige Accounting Privacy Policy.</a></p>
+      <p><a href="privacypolicy.html">See Beigesoft™ Accounting Privacy Policy.</a></p>
       <p><a href="beigekeys.html">See Beigesoft™ digital signatures.</a></p>
       <p>
         <a href="bobs-pizza.html">See Beige Accounting Bob's Pizza example.</a>
       </p>
-      <p>Since version 1.1.5 Beige-Accounting standalone versions are always in secure enabled mode,
+      <p>Since version 1.1.5 Beigesoft™ Accounting standalone versions are always in secure enabled mode,
         that is it uses encrypted (HTTPS) connection, it requires strong password for authorization,
         it also uses encryption (modern algorithm RSA with 2048bit key and 256bit AES) for safe
-        file (SQLite databases) exchanging between computers/tablets, e.g. accountant can send encrypted SQLite database to business owner, and no one can decrypt it except owner.
+        file (SQLite databases) exchanging between computers/tablets, e.g. an accountant can send encrypted SQLite database to a business owner, and no one can decrypt it except this owner.
       </p>
       <p>
-        Beige-Accounting for MS Windows/Mac/*Nix <b>beigesoft-accountingoio-ajetty.bin.zip</b> and
+        Beigesoft™ Accounting for MS Windows/Mac/*Nix <b>beigesoft-accountingoio-ajetty.bin.zip</b> and
         cloud version <b>beigesoft-accounting-weboio.war</b> and other products
         you can find in central Maven repository <a href="https://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.beigesoft%22">https://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.beigesoft%22</a>
         or <a href="https://repo1.maven.org/maven2/org/beigesoft/beigesoft-accountingoio-ajetty/">https://repo1.maven.org/maven2/org/beigesoft/beigesoft-accountingoio-ajetty/</a>
       </p>
-      <p>Beige-Accounting for Android comply rules
+      <p>Beigesoft™ Accounting for Android comply rules
         <a href="https://play.google.com/about/privacy-security/personal-sensitive/">https://play.google.com/about/privacy-security/personal-sensitive/</a>,
         so you can find it in Google Play-Store.</p>
       <p>
-        Source code of Beige-Accounting and other products you can find in <a href="https://github.com/demidenko05">https://github.com/demidenko05</a>
+        Source code of Beigesoft™ Accounting and other products you can find in <a href="https://github.com/demidenko05">https://github.com/demidenko05</a>
       </p>
       <p>
         Licenses:
@@ -78,7 +76,7 @@
         </ul>
       </p>
 
-        <h4>Beigesoft ™ PDF Writer.</h4>
+        <h4>Beigesoft™ PDF Writer.</h4>
               
         <p>This is light-weight (all JARs size is about 250KB), international friendly and fast PDF writer.
          It's cross-platform writer - Standard Java and Android.</p>
@@ -86,10 +84,10 @@
         <p>Benefits:</p>
         <ul>
           <li>Ready for high load job. Speed test (thread per invoice) results shows that making 100 invoices (3pages each) takes less than 4 seconds on ordinal notebook. Invoice file size is 26KB cause embed TTF font has only used characters.</li>
-          <li>There are not 3-d party libraries. Beigesoft ™ Document Writer, Swing/Android graphics libraries, Logger are licensed under free GPLv2. Every day English language is polluted with new words that duplicate old ones, and old words are polluted with new meanings, so there are "free open source software" that are actually non-free.
+          <li>There are not 3-d party libraries. Beigesoft™ Document Writer, Swing/Android graphics libraries, Logger are licensed under free GPLv2. Every day English language is polluted with new words that duplicate old ones, and old words are polluted with new meanings, so there are "free open source software" that are actually non-free.
             In other hand there are free software that have not noticed that "it has dependencies with non-three licenses" (truly free license always means "forever").</li>
         </ul>
-        Although Beigesoft ™ PDF Writer hasn't yet implemented graphic charts and other features, and it has no visual editor, it's really enough to create complex black and white (include non-masked RGB images) business reports quickly.
+        Although Beigesoft™ PDF Writer hasn't yet implemented graphic charts and other features, and it has no visual editor, it's really enough to create complex black and white (include non-masked RGB images) business reports quickly.
         Visual editor is planned to be the same as MS Word or LibreOffice Writer. Here are PDF files for example:
         <a href="https://docs.google.com/viewer?a=v&amp;pid=sites&amp;srcid=ZGVmYXVsdGRvbWFpbnxiZWlnZXNvZnR3YXJlfGd4OjM3YTU4MWFmNDNiYzZmYjk">Invoice sample</a> <a href="https://docs.google.com/viewer?a=v&amp;pid=sites&amp;srcid=ZGVmYXVsdGRvbWFpbnxiZWlnZXNvZnR3YXJlfGd4OjNhZDczYWU4OWE2MDU3ODQ">Счет-фактура</a> <a href="https://docs.google.com/viewer?a=v&amp;pid=sites&amp;srcid=ZGVmYXVsdGRvbWFpbnxiZWlnZXNvZnR3YXJlfGd4OjE4MTA3ODM1NTg3MTAyNzQ">Платежное поручение</a>
 
@@ -103,7 +101,7 @@
       </p>
       <p>
         JSP(plus JSTL) is the same WEB-view technology as ASPX, PHP and deprecated ASP. JSP and ASPX are faster than PHP and ASP cause
-        they are compiled into byte-code which is performed by Java VM or DOT.NET. PHP, ASP are text that is interpreted during runtime and they are never compiled.
+        they are compiled into byte-code which is performed (actually it's compiled on fly into CPU code) by Java VM or DOT.NET. PHP, ASP are text that is interpreted during runtime and they are never compiled.
         All these technology used to build complex WEB-interface quickly.
       </p>
       <p>
@@ -111,8 +109,8 @@
         The best way of using A-Jetty is use it as embedded server in standalone WEB-application.
       </p>
       
-      <h4>Beigesoft ™ ORM</h4>
-      <p>Beige-ORM is lightweight multiplatform (Android Java and standard Java 7+) ORM library.
+      <h4>Beigesoft™ ORM</h4>
+      <p>Beigesoft™ ORM is lightweight multiplatform (Android Java and standard Java 7+) ORM library.
       </p>
       <p>It supports Postgresql, MySql, H2 and SQlite (adding a new RDBMS is very simple task).</p>
       <p>For mapping it uses standard Java XML properties files.</p>
@@ -121,107 +119,111 @@
         Another example GoodsRating{Goods, rating} where Goods is primary and foreign ID.
       </p>
       <p>
-        It retrieve almost full model through 2 level. E.g. an retrieved Invoice has already retrieved Customer(1st level),
+        By default, it retrieves almost full model through 2 level. E.g. an retrieved Invoice has already retrieved Customer(1st level),
         but in this Customer CustomerCategory  (2-nd level) has only ID.
+      </p>
+      <p>
+        Since version 1.1.6 you can set fields that are needed to retrieve, and deep level to retrieve owned entities.
+        This is very performance friendly feature that other ORMs have no.
       </p>
       <p>It hasn't implemented refresh owned entity by invoke getter. So you have to invoke explicitly ORM refresh e.g.:
         <pre style="white-space: pre-wrap;">
-    customerInvoice.getCustomer().setCustomerCategory(getSrvOrm()
-      .retrieveEntity(customerInvoice.getCustomer().getCustomerCategory()));
+customerInvoice.getCustomer().setCustomerCategory(getSrvOrm()
+  .retrieveEntity(pAddParam, customerInvoice.getCustomer().getCustomerCategory()));
         </pre>
       </p>
       <p>
         It never retrieved owned entities-list, e.g. InvoiceLines, you should do it explicitly:
         <pre style="white-space: pre-wrap;">
-        SalesInvoiceLine sil = new SalesInvoiceLine();
-        sil.setItsOwner(salesInvoice);
-        salesInvoice.setItsLines(getSrvOrm().retrieveListForField(pAddParam, sil, "itsOwner"));
+SalesInvoiceLine sil = new SalesInvoiceLine();
+sil.setItsOwner(salesInvoice);
+salesInvoice.setItsLines(getSrvOrm().retrieveListForField(pAddParam, sil, "itsOwner"));
         </pre>
         These lines are retrieved also through 2 level by big SQL query.
       </p>
       <p>Standard ORM use lazy-initialization of model by default. So they retrieve model by several SQL queries
-        and JDBC connection used during whole HTTP request-response. This is no good for performance. Beige-ORM retrieve 
+        and JDBC connection used during whole HTTP request-response. This is no good for performance. Beigesoft™ ORM retrieve 
         a customer invoice with 15 lines by 2 SQL queries (one for body, another for lines) then close connection and pass model to viewer (renderer).
         Standard ORM make 1 SQL request for body, 1 for customer, 1 for lines, 15 for every line goods, 15 for every line unit of measure.
         Two big SQL queries (exactly with joins) is faster than several (33 in this case) small ones. Any RDMBS is optimized (must be) to perform
         big SQL queries that returns a lot of data.
         SQL queries without joins is bad practice that hit performance e.g.:
         <pre style="white-space: pre-wrap;">
-    select SALESINVOICE.ITSDATE, DEBTORCREDITOR.ITSNAME 
-    from SALESINVOICE, DEBTORCREDITOR
-    where SALESINVOICE.ITSID=1 and DEBTORCREDITOR.ITSID=SALESINVOICE.CUSTOMER
+select SALESINVOICE.ITSDATE, DEBTORCREDITOR.ITSNAME 
+from SALESINVOICE, DEBTORCREDITOR
+where SALESINVOICE.ITSID=1 and DEBTORCREDITOR.ITSID=SALESINVOICE.CUSTOMER
         </pre>
       </p>
       <p>
-        Beige-ORM never alter tables, only create new ones, but it has reliable mean - invoke upgrade_[new_version].sql script
-        when Beige-ORM is started. Beige-ORM required database must has ID and VERSION table, this is holds in model org.beigesoft.persistable.DatabaseInfo.
+        Beigesoft™ ORM never alter tables, only create new ones, but it has reliable mean - invoke upgrade_[new_version].sql script
+        when Beigesoft™ ORM is starting. Beigesoft™ ORM requires that database must has ID and VERSION table, this is holds in model org.beigesoft.persistable.DatabaseInfo.
         Upgrade script can upgrade tables (alters, insert, updates...) and must set new database version. So task "add DebtorCreditor.spetialCategory, not null"
-        is trivial for Beige-ORM, not for standard ORM:
+        is trivial for Beigesoft™ ORM, but it's not for other ORMs:
         <pre style="white-space: pre-wrap;">
-    alter table DebtorCreditor add column specialCategory integer;
-    insert into CPECIALCATEGORY  values (1, 'cat A');
-    ...
-    update DebtorCreditor [for specialCategory]
-    ...
-    alter table DebtorCreditor alter column spetialCategory integer not null;
-    update DATABASEINFO set DATABASEVERSION=[new_version], DESCRIPTION='database upgraded' where DATABASEID=[DB_ID];          
+alter table DebtorCreditor add column specialCategory integer;
+insert into CPECIALCATEGORY  values (1, 'cat A');
+...
+update DebtorCreditor [for specialCategory]
+...
+alter table DebtorCreditor alter column spetialCategory integer not null;
+update DATABASEINFO set DATABASEVERSION=[new_version], DESCRIPTION='database upgraded' where DATABASEID=[DB_ID];          
         </pre>
       </p>
 
-      <h4>Beige-WEB.</h4>
-      <p>Beige-WEB is CRUD WEB-application based on JSP, JSTL, JSON, AJAX.</p>
+      <h4>Beigesoft™ WEB.</h4>
+      <p>Beigesoft™ WEB is CRUD WEB-application based on JSP, JSTL, JSON, AJAX.</p>
       <p>With it you can build complex WEB interface with no time.
-        It renders forms (include entity pickers) and lists of any entity according XML settings. Beige-Accounting use it.</p>
+        It renders forms (include entity pickers) and lists of any entity according XML settings. Beigesoft™ Accounting use it.</p>
       <p>It uses BeigeSettings to describe how to render an entity and its fields, e.g. beige-uvd/fieldTypeToFs/wdgNewForm.xml:
         <pre style="white-space: pre-wrap;">
-    &lt;?xml version="1.0" encoding="UTF-8"?&gt;
-    &lt;!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd"&gt;
-    &lt;properties&gt;
-    &lt;comment&gt;Correspondence of Java types to widget base names. ORDER is essential, the LAST value will be used&lt;/comment&gt;
-    &lt;entry key="java.lang.Integer"&gt;inputNumber&lt;/entry&gt;
-    &lt;entry key="java.lang.Long"&gt;inputNumber&lt;/entry&gt;
-    &lt;entry key="java.lang.Float"&gt;inputReal&lt;/entry&gt;
-    &lt;entry key="java.lang.Double"&gt;inputReal&lt;/entry&gt;
-    &lt;entry key="java.lang.String"&gt;inputString&lt;/entry&gt;
-    &lt;entry key="java.lang.Boolean"&gt;inputBoolean&lt;/entry&gt;
-    &lt;entry key="java.util.Date"&gt;inputDateTime&lt;/entry&gt;
-    &lt;entry key="java.math.BigDecimal"&gt;inputPrice&lt;/entry&gt;
-    &lt;entry key="java.lang.Enum"&gt;inputEnum&lt;/entry&gt;
-    &lt;entry key="org.beigesoft.model.IHasName"&gt;inputEntityHasName&lt;/entry&gt;
-    &lt;entry key="org.beigesoft.accounting.persistable.Account"&gt;inputAccount&lt;/entry&gt;
-    &lt;entry key="org.beigesoft.accounting.persistable.IDoc"&gt;inputDocument&lt;/entry&gt;
-    &lt;/properties&gt;
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd"&gt;
+&lt;properties&gt;
+&lt;comment&gt;Correspondence of Java types to widget base names. ORDER is essential, the LAST value will be used&lt;/comment&gt;
+&lt;entry key="java.lang.Integer"&gt;inputNumber&lt;/entry&gt;
+&lt;entry key="java.lang.Long"&gt;inputNumber&lt;/entry&gt;
+&lt;entry key="java.lang.Float"&gt;inputReal&lt;/entry&gt;
+&lt;entry key="java.lang.Double"&gt;inputReal&lt;/entry&gt;
+&lt;entry key="java.lang.String"&gt;inputString&lt;/entry&gt;
+&lt;entry key="java.lang.Boolean"&gt;inputBoolean&lt;/entry&gt;
+&lt;entry key="java.util.Date"&gt;inputDateTime&lt;/entry&gt;
+&lt;entry key="java.math.BigDecimal"&gt;inputPrice&lt;/entry&gt;
+&lt;entry key="java.lang.Enum"&gt;inputEnum&lt;/entry&gt;
+&lt;entry key="org.beigesoft.model.IHasName"&gt;inputEntityHasName&lt;/entry&gt;
+&lt;entry key="org.beigesoft.accounting.persistable.Account"&gt;inputAccount&lt;/entry&gt;
+&lt;entry key="org.beigesoft.accounting.persistable.IDoc"&gt;inputDocument&lt;/entry&gt;
+&lt;/properties&gt;
         </pre>
       </p>
       <p>It use cheap JSON multi-target responses created by JSP, for example after document was accounted:
         <pre style="white-space: pre-wrap;">
-    &lt;%@ page language="java" contentType="application/json; charset=UTF-8" pageEncoding="UTF-8"%&gt;
-    &lt;%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %&gt;
-    &lt;c:set var="namePlaceForm" value="frmMainPlace" scope="request"/&gt;
-    {"multiTargetResponse":
-      [{"nameTarget": "${namePlaceForm}", "content": "",
-        "nameTargetParent": null, "javascript": null},
-    &lt;c:set var="fltOrdPrefix" value="fltordM" scope="request"/&gt;
-    &lt;c:set var="namePlace" value="lstMainPlace" scope="request"/&gt;
-    &lt;c:set var="showSuccess" value="showSuccess(MSGS['account_successful']);"/&gt;
-    &lt;c:set var="nameRendererList" value="listJson" scope="request"/&gt;
-    &lt;c:import url="/WEB-INF/jsp/list.jsp" varReader="rdEntities" charEncoding="UTF-8"&gt;
-       {"nameTarget": "${namePlace}list", "content": "${utlJsp.toJsonStringAndClose(rdEntities)}",
-        "nameTargetParent": null, "javascript": "${utlJsp.toJsonString(showSuccess)}"}]
-    }
-    &lt;/c:import&gt;  
+&lt;%@ page language="java" contentType="application/json; charset=UTF-8" pageEncoding="UTF-8"%&gt;
+&lt;%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %&gt;
+&lt;c:set var="namePlaceForm" value="frmMainPlace" scope="request"/&gt;
+{"multiTargetResponse":
+  [{"nameTarget": "${namePlaceForm}", "content": "",
+    "nameTargetParent": null, "javascript": null},
+&lt;c:set var="fltOrdPrefix" value="fltordM" scope="request"/&gt;
+&lt;c:set var="namePlace" value="lstMainPlace" scope="request"/&gt;
+&lt;c:set var="showSuccess" value="showSuccess(MSGS['account_successful']);"/&gt;
+&lt;c:set var="nameRendererList" value="listJson" scope="request"/&gt;
+&lt;c:import url="/WEB-INF/jsp/list.jsp" varReader="rdEntities" charEncoding="UTF-8"&gt;
+   {"nameTarget": "${namePlace}list", "content": "${utlJsp.toJsonStringAndClose(rdEntities)}",
+    "nameTargetParent": null, "javascript": "${utlJsp.toJsonString(showSuccess)}"}]
+}
+&lt;/c:import&gt;  
         </pre>
         This response clear entity form, refresh entity list and show successful message.
       </p>
 
-      <h4>Beige-Replicator.</h4>
-      <p>Beige-Replicator replicate/persist any entity according XML settings and user's requirements with a file or network (HTTP).
-      Right now it has implemented XML format of stored/transferred data. Beige-Accounting use it to import full database copy with WEB-service.</p>
+      <h4>Beigesoft™ Replicator.</h4>
+      <p>Beigesoft™ Replicator replicate/persist any entity according XML settings and user's requirements with a file or network (HTTP).
+      Right now it has implemented XML format of stored/transferred data. Beigesoft™ Accounting use it to import full database copy with WEB-service and import data from tax to market accounting.</p>
 
-      <h4>Beige-Settings.</h4>
+      <h4>Beigesoft™ Settings.</h4>
       <p>Beige-Settings helps to make quickly settings for class and its fields with properties XML.
     Instead of create a lot of files to describe every class and its fields it use describing by type, by name,
-    e.g. setting "java.lang.Integer"-"INTEGER NOT NULL" will be assigned for every field of this type. Beige-ORM,
+    e.g. setting "java.lang.Integer"-"INTEGER NOT NULL" will be assigned for every field of this type. Beigesoft™ ORM,
     Beige-WEB, Beige-Replicator use it.</p>
             
     <p>
