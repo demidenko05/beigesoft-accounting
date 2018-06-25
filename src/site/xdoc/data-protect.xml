@@ -15,32 +15,32 @@
 
     <h4>Why you should learn about data protection.</h4>
     <p>If you a business owner and a data about your customers was leaked, then you will get problems. And so does if you are a freelance accountant.
-      Learn about data protection is not difficult.
+      Learning about data protection is not difficult.
     </p>
     
     <h4>The facts.</h4>
     <p>
       <ul>
         <li>
-          It was about 19 years ago, when a computer with an operation system catches a virus just after connection to Internet. That is user did not open WEB-browser. 
+          It was about 19 years ago, when a computer with an operation system catches a virus just after it was connected to Internet. That is user even did not open WEB-browser. 
         </li>
         <li>
           It was about 8 years ago, when a web-browser allowed a scam-script to rewrite master boot record (the heart of file system) in hard drive. That virus was trying to force victims to pay many.
         </li>
         <li>
-          You never need a lat of features in your software that scams uses for cheating you.
+          You never need a lot of features in your software that scams use for cheating you.
         </li>
         <li>
           Your software might already affected by scam-ware, and you might never know about it, but scam knows anything from your computer.
         </li>
       </ul>
-      * Here word "scam" means a person who deprives any your value (tangible/intangible) by using non-robbery's methods like cheating.
+      * Here word "scam" means a person who deprives you of any your value (tangible/intangible) by using non-robbery's methods like cheating.
     </p>
 
-    <h4>That they do the best for you (to protect your data)</h4>
+    <h4>What they do the best for you (to protect your data)?</h4>
     <p>
       <ul>
-        <li>They removed, restricted scam-friendly features, the leader (it seams only) is Android, an Android application can't read files belongs to another applications, and you set by yourself permissions to the shared storage.</li>
+        <li>They removed, restricted scam-friendly features, the leader (it seems only) is Android, an Android application can't read files that belongs to another application, and you set by yourself permissions to the shared storage.</li>
         <li>They track activity of your account (all social networks do it). So if scam stole your password and trying to sign-in under your account from another device, then you will be informed about it (they even can block your account without your request).</li>
         <li>They allow to use your social network account for authorization in other sites. Using "master" account to login to another sites is preferred authorization method, cause they track your activity.</li>
         <li>They force you to install software from well known sources like "a software store".</li>
@@ -49,10 +49,10 @@
       * Here "They" means IT specialists - programmers...
     </p>
     
-    <h4>That they do the worst for you</h4>
+    <h4>What they do the worst for you?</h4>
     <p>
       <ul>
-        <li>Despite of too long "VERY bad practice" they force you to use scam-friendly features. The leader is Linux desktop Gnome 3. They remove useful feature standard system tray, added new one, to enable useful features they forced you to install additional software and PLUGIN!!! for firefox that has permissions to your file system.</li>
+        <li>Despite of too long "VERY bad practice", they force you to use scam-friendly features. The leader is Linux desktop Gnome 3. They removed useful standard system tray, added new one, to enable useful features they force you to install additional software and firefox plugin that has permissions to your file system.</li>
         <li>They force you to install and use unsigned software from "untrusted sources" to resolve your problems.</li>
         <li>Offer recovering software in non write-protected places like HDD or flash, cause very complex scamware can poisons them and breaks their protection.</li>
         <li>Do not track usage of their digital signature.</li>
@@ -60,14 +60,14 @@
       "untrusted sources" means any non well known Internet sites.
     </p>
 
-    <h4>That they must do for you</h4>
+    <h4>What they must do for you?</h4>
     <p>
       <ul>
         <li>A web-browser can upload and download a file (files/folder) interactively. Browser's plugins and page's scripts must delegate to the browser "upload/download" file interactively only. They must has permissions to only their "sandbox" file-system.</li>
       </ul>
     </p>
 
-    <h4>That you do the worst for you</h4>
+    <h4>What you do the worst for you?</h4>
     <p>
       <ul>
         <li>Install unneeded software (especially from untrusted sources).</li>
@@ -91,9 +91,9 @@
       You should sign out when you leave your computer for a long time (e.g. a vocation).
     </p>
     
-    <h4>How to protect you from scams completely.</h4>
+    <h4>How to protect you from scams completely?</h4>
     <p>
-      There is way to  protect you from scams completely. It's all about encryption, digital signature, global tracking of using digital signature, save storing key for digital signature.
+      There is way to  protect you from scams completely. It's all about encryption, digital signature, global tracking of using digital signature, safe storing key for digital signature.
     </p>
     <p>
       What is encryption? It's encoding message (text, file...) with an encryption algorithm and a key. Encrypted message is not readable.
@@ -109,10 +109,10 @@
     <p>
       Digital signature is information encrypted with asymmetric secret (private) key.
       Public key is available for all, so anyone can use it to decrypt signature,
-      and this successful decryption means that signature is checked.
+      and this successful decryption means that signature was successfully verified.
     </p>
     <p>A scam can try to match a private key by using the public one and the signature. But it's takes very long time even for high-performance computers.
-      So common way is stole private key, or stole keystore and match its pass-phrase.
+      So common way is stealing private key, or stealing keystore and matching its pass-phrase.
     </p>
     <p>
       It must be a "device to sign" and "global tracking of signature usage" to resolve these problems. "Device to sign" makes signature itself.
@@ -120,9 +120,9 @@
       The best way is using this device as your only digital passport, so it also will contain your photo and other information.
       Of course this requires changing law and adapting software, but finally you will be totally protected from scams.
       You will use this device for any operation - open a door (home, car, hotel room), sing in to computer or any site, bank transfer, ATM withdrawal, etc.
-      You even will no need to use pin for making signature. A cashier will check photo from your device.
+      You even will no need to use a pin code for making signature, a cashier will check photo from your device (bank software can do it too).
     </p>
-    
+
     </section>
 
   </body>
