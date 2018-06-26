@@ -134,7 +134,7 @@ public class HndlAccVarsRequest<RS> implements IHandlerRequestDch {
       !as.getIsExtractSalesTaxFromSales());
     pReqVars.put("curSign", curSign);
     pReqVars.put("RSmRound", rSmRound);
-    pRequestData.setAttribute("accSettings", as);
+    pReqVars.put("accSettings", as);
     String lang = (String) pReqVars.get("lang");
     String langDef = (String) pReqVars.get("langDef");
     if (lang != null && langDef != null && !lang.equals(langDef)) {
