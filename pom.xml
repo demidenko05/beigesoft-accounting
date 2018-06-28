@@ -5,7 +5,7 @@
   <groupId>org.beigesoft</groupId>
   <version>1.1.7-SNAPSHOT</version>
   <artifactId>beigesoft-accounting</artifactId>  
-  <name>Beigesoft ™ Accounting library.</name>
+  <name>Beigesoft™ Accounting library.</name>
 
   <description>It implements accounting models and services, e.g. AccountingEntry, SalesInvoice, service that fill payroll taxes according tax percentage table, etc.</description>
   <url>https://sites.google.com/site/beigesoftware</url>
@@ -168,7 +168,7 @@
     <dependency>
       <groupId>org.beigesoft</groupId>
       <artifactId>beigesoft-orm</artifactId>
-      <version>1.1.6</version>
+      <version>1.1.7-SNAPSHOT</version>
     </dependency>
     <dependency>
      <groupId>org.beigesoft</groupId>
