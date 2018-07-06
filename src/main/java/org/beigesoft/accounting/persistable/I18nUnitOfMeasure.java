@@ -12,7 +12,6 @@ package org.beigesoft.accounting.persistable;
  * http://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html
  */
 
-import org.beigesoft.model.IHasId;
 import org.beigesoft.persistable.AI18nName;
 import org.beigesoft.persistable.Languages;
 
@@ -23,8 +22,8 @@ import org.beigesoft.persistable.Languages;
  *
  * @author Yury Demidenko
  */
-public class I18nUnitOfMeasure extends AI18nName
-  implements IHasId<IdI18nUnitOfMeasure> {
+public class I18nUnitOfMeasure
+  extends AI18nName<UnitOfMeasure, IdI18nUnitOfMeasure> {
   /**
    * <p>ID.</p>
    **/
@@ -69,6 +68,7 @@ public class I18nUnitOfMeasure extends AI18nName
    * <p>Setter for lang.</p>
    * @param pLang reference
    **/
+  @Override
   public final void setLang(final Languages pLang) {
     this.lang = pLang;
     if (this.itsId == null) {
@@ -81,6 +81,7 @@ public class I18nUnitOfMeasure extends AI18nName
    * <p>Setter for hasName.</p>
    * @param pHasName reference
    **/
+  @Override
   public final void setHasName(final UnitOfMeasure pHasName) {
     this.hasName = pHasName;
     if (this.itsId == null) {
@@ -89,11 +90,11 @@ public class I18nUnitOfMeasure extends AI18nName
     this.itsId.setHasName(this.hasName);
   }
 
-  //SGS:
   /**
    * <p>Getter for hasName.</p>
    * @return UnitOfMeasure
    **/
+  @Override
   public final UnitOfMeasure getHasName() {
     return this.hasName;
   }
@@ -102,6 +103,7 @@ public class I18nUnitOfMeasure extends AI18nName
    * <p>Getter for lang.</p>
    * @return Languages
    **/
+  @Override
   public final Languages getLang() {
     return this.lang;
   }

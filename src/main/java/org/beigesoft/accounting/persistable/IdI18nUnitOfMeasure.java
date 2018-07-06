@@ -12,7 +12,7 @@ package org.beigesoft.accounting.persistable;
  * http://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html
  */
 
-import org.beigesoft.persistable.Languages;
+import org.beigesoft.persistable.AI18nNameId;
 
 /**
  * <p>
@@ -21,24 +21,18 @@ import org.beigesoft.persistable.Languages;
  *
  * @author Yury Demidenko
  */
-public class IdI18nUnitOfMeasure {
+public class IdI18nUnitOfMeasure extends AI18nNameId<UnitOfMeasure> {
 
   /**
    * <p>Internationalized thing.</p>
    **/
   private UnitOfMeasure hasName;
 
-
-  /**
-   * <p>The language.</p>
-   **/
-  private Languages lang;
-
-  //Simple getters and setters:
   /**
    * <p>Getter for hasName.</p>
    * @return UnitOfMeasure
    **/
+  @Override
   public final UnitOfMeasure getHasName() {
     return this.hasName;
   }
@@ -47,23 +41,8 @@ public class IdI18nUnitOfMeasure {
    * <p>Setter for hasName.</p>
    * @param pHasName reference
    **/
+  @Override
   public final void setHasName(final UnitOfMeasure pHasName) {
     this.hasName = pHasName;
-  }
-
-  /**
-   * <p>Getter for lang.</p>
-   * @return Languages
-   **/
-  public final Languages getLang() {
-    return this.lang;
-  }
-
-  /**
-   * <p>Setter for lang.</p>
-   * @param pLang reference
-   **/
-  public final void setLang(final Languages pLang) {
-    this.lang = pLang;
   }
 }
