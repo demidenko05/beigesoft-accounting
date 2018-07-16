@@ -81,13 +81,20 @@ public class UtlSalesGoodsServiceLine<RS> {
     final SalesInvoice pItsOwner) throws Exception {
     String query = lazyGetQuerySalesInvoiceTotals();
     query = query.replace(":ITSOWNER", pItsOwner.getItsId().toString());
-    String[] columns = new String[]{"SUBTOTAL", "TOTALTAXES"};
+    String[] columns = new String[]
+      {"SUBTOTAL", "TOTALTAXES", "FOREIGNSUBTOTAL", "FOREIGNTOTALTAXES"};
     Double[] totals = getSrvDatabase().evalDoubleResults(query, columns);
     if (totals[0] == null) {
       totals[0] = 0d;
     }
     if (totals[1] == null) {
       totals[1] = 0d;
+    }
+    if (totals[2] == null) {
+      totals[2] = 0d;
+    }
+    if (totals[3] == null) {
+      totals[3] = 0d;
     }
     pItsOwner.setSubtotal(BigDecimal.valueOf(totals[0]).setScale(
       getSrvAccSettings().lazyGetAccSettings(pAddParam).getPricePrecision(),
@@ -97,6 +104,14 @@ public class UtlSalesGoodsServiceLine<RS> {
         getSrvAccSettings().lazyGetAccSettings(pAddParam).getRoundingMode()));
     pItsOwner.setItsTotal(pItsOwner.getSubtotal().
       add(pItsOwner.getTotalTaxes()));
+    pItsOwner.setForeignSubtotal(BigDecimal.valueOf(totals[2]).setScale(
+      getSrvAccSettings().lazyGetAccSettings(pAddParam).getPricePrecision(),
+        getSrvAccSettings().lazyGetAccSettings(pAddParam).getRoundingMode()));
+    pItsOwner.setForeignTotalTaxes(BigDecimal.valueOf(totals[3]).setScale(
+      getSrvAccSettings().lazyGetAccSettings(pAddParam).getPricePrecision(),
+        getSrvAccSettings().lazyGetAccSettings(pAddParam).getRoundingMode()));
+    pItsOwner.setForeignTotal(pItsOwner.getForeignSubtotal().
+      add(pItsOwner.getForeignTotalTaxes()));
     getSrvOrm().updateEntity(pAddParam, pItsOwner);
     updateTaxLines(pAddParam, pItsOwner);
   }
@@ -177,6 +192,7 @@ public class UtlSalesGoodsServiceLine<RS> {
           do {
             Long taxId = recordSet.getLong("TAXID");
             Double totalTax = recordSet.getDouble("TOTALTAX");
+            Double foreignTotalTaxes = recordSet.getDouble("FOREIGNTOTALTAXES");
             SalesInvoiceTaxLine sit;
             if (sitl.size() > countUpdatedSitl) {
               sit = sitl.get(countUpdatedSitl);
@@ -192,6 +208,10 @@ public class UtlSalesGoodsServiceLine<RS> {
             sit.setTax(tax);
             sit.setItsTotal(BigDecimal.valueOf(totalTax).setScale(
               getSrvAccSettings().lazyGetAccSettings(pAddParam)
+                .getPricePrecision(), getSrvAccSettings()
+                  .lazyGetAccSettings(pAddParam).getRoundingMode()));
+            sit.setForeignTotalTaxes(BigDecimal.valueOf(foreignTotalTaxes)
+              .setScale(getSrvAccSettings().lazyGetAccSettings(pAddParam)
                 .getPricePrecision(), getSrvAccSettings()
                   .lazyGetAccSettings(pAddParam).getRoundingMode()));
             if (sit.getIsNew()) {

@@ -1,0 +1,18 @@
+alter table SALESINVOICE add column FOREIGNCURRENCY bigint default null;
+alter table SALESINVOICE add constraint fksalinvforcurrn FOREIGN KEY (FOREIGNCURRENCY) REFERENCES CURRENCY(ITSID);
+alter table SALESINVOICE add column EXCHANGERATE decimal(19,4) default 0;
+alter table SALESINVOICE add column FOREIGNSUBTOTAL decimal(19,4) default 0;
+alter table SALESINVOICE add column FOREIGNTOTALTAXES decimal(19,4) default 0;
+alter table SALESINVOICE add column FOREIGNTOTAL decimal(19,4) default 0;
+alter table SALESINVOICELINE add column FOREIGNPRICE decimal(19,4) default 0;
+alter table SALESINVOICELINE add column FOREIGNTOTALTAXES decimal(19,4) default 0;
+alter table SALESINVOICELINE add column FOREIGNSUBTOTAL decimal(19,4) default 0;
+alter table SALESINVOICELINE add column FOREIGNTOTAL decimal(19,4) default 0;
+alter table SALESINVOICESERVICELINE add column FOREIGNPRICE decimal(19,4) default 0;
+alter table SALESINVOICESERVICELINE add column FOREIGNTOTALTAXES decimal(19,4) default 0;
+alter table SALESINVOICESERVICELINE add column FOREIGNSUBTOTAL decimal(19,4) default 0;
+alter table SALESINVOICESERVICELINE add column FOREIGNTOTAL decimal(19,4) default 0;
+alter table SALESINVOICEGOODSTAXLINE add column FOREIGNTOTALTAXES decimal(19,4) default 0;
+alter table SALESINVOICESERVICETAXLINE add column FOREIGNTOTALTAXES decimal(19,4) default 0;
+alter table SALESINVOICETAXLINE add column FOREIGNTOTALTAXES decimal(19,4) default 0;
+update DATABASEINFO set DATABASEVERSION=7, DESCRIPTION='Beige Accounting OIO DB version 7';

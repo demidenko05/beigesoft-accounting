@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document xmlns="http://maven.apache.org/XDOC/2.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
+
+  <properties>
+    <title>Beigesoft™, Beige-Accounting</title>
+   </properties>
+
+  <body>
+
+    <section name="Multi currency. Exchange gain or loss. Exchange difference.">
+      
+      <p>Keywords: multi currency, exchange gain or loss, exchange difference.</p>
+
+      <h4>Multi currency, exchange gain or loss.</h4>
+      <p>If you sell goods that is paid in foreign currency, and you use ACCRUAL method (you have to report revenue for unpaid sales),
+        and currency exchange rate is different when payment is occurred, then you face "exchange difference".
+        You will never face exchange difference if you use CASH method.</p>
+      <p>The most countries have similar law about selling/buying in foreign currency, that is:
+      <ul>
+        <li>you have to make records in national currency.</li>
+        <li>selling/buying transaction is made with current exchange rate (booking date)</li>
+        <li>payment transaction is made with current exchange rate (payment date)</li>
+        <li>difference between booking and payment rates (gain or loss) is business revenue or expense.</li>
+      </ul>
+      </p>
+      <h4>Selling in foreign currency example</h4>
+      <p>
+        Create new invoice and set foreign currency to EURO and exchange rate 1.12, add 4 "Pizza with bacon frozen" for 11.11 EURO:
+        <p align="center"><img alt="multi currency invoice example" style="max-width: 100%" src="images/salesmc1.png" /></p>
+      </p>
+      <p>
+        Add 200 pounds of "bacon" for 9.15 EURO:
+        <p align="center"><img alt="multi currency invoice example" style="max-width: 100%" src="images/salesmc2.png" /></p>
+      </p>
+      <p>As you can see, accounting entries are made in national currency.</p>
+      <p>
+        After adding 28.5 miles of "delivering to the seaport" for 4.40 EURO and accounting full report is:
+        <p align="center"><img alt="multi currency invoice example" style="max-width: 100%" src="images/salesmc3.png" /></p>
+      </p>
+      <p>See <a href="acc-overseas-sales.html">Overseas sales. Advanced internationalization.</a> to make invoice translated in foreign language (if it's need).</p>
+    </section>
+
+  </body>
+
+</document>

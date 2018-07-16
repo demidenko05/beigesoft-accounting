@@ -97,6 +97,10 @@ public class PrcSalesInvoiceSave<RS>
         //reverse none-reversed lines:
         SalesInvoiceLine sil = new SalesInvoiceLine();
         SalesInvoice reversed = new SalesInvoice();
+        pEntity.setForeignCurrency(reversed.getForeignCurrency());
+        pEntity.setForeignSubtotal(reversed.getForeignSubtotal().negate());
+        pEntity.setForeignTotalTaxes(reversed.getForeignTotalTaxes().negate());
+        pEntity.setForeignTotal(reversed.getForeignTotal().negate());
         reversed.setItsId(pEntity.getReversedId());
         sil.setItsOwner(reversed);
         List<SalesInvoiceLine> reversedLines = getSrvOrm().
@@ -117,6 +121,13 @@ public class PrcSalesInvoiceSave<RS>
             reversingLine.setTotalTaxes(reversedLine.getTotalTaxes().negate());
             reversingLine.setTaxesDescription(reversedLine
               .getTaxesDescription());
+            reversingLine.setForeignPrice(reversedLine.getForeignPrice());
+            reversingLine.setForeignSubtotal(reversedLine.getForeignSubtotal()
+              .negate());
+            reversingLine.setForeignTotalTaxes(reversedLine
+              .getForeignTotalTaxes().negate());
+            reversingLine.setForeignTotal(reversedLine.getForeignTotal()
+              .negate());
             reversingLine.setIsNew(true);
             reversingLine.setItsOwner(pEntity);
             reversingLine.setDescription(getSrvI18n()
@@ -168,6 +179,13 @@ public class PrcSalesInvoiceSave<RS>
             reversingLine.setTotalTaxes(reversedLine.getTotalTaxes().negate());
             reversingLine.setTaxesDescription(reversedLine
               .getTaxesDescription());
+            reversingLine.setForeignPrice(reversedLine.getForeignPrice());
+            reversingLine.setForeignSubtotal(reversedLine.getForeignSubtotal()
+              .negate());
+            reversingLine.setForeignTotalTaxes(reversedLine
+              .getForeignTotalTaxes().negate());
+            reversingLine.setForeignTotal(reversedLine.getForeignTotal()
+              .negate());
             reversingLine.setIsNew(true);
             reversingLine.setItsOwner(pEntity);
             getSrvOrm().insertEntity(pAddParam, reversingLine);

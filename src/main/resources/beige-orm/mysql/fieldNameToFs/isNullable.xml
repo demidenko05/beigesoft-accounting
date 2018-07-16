@@ -64,5 +64,5 @@
 <entry key="priceCategoryCustomer">true</entry>
 <entry key="prepaymentTo">true</entry>
 <entry key="prepaymentFrom">true</entry>
-<entry key="catalogOnStart">true</entry>
+<entry key="foreignCurrency">true</entry>
 </properties>

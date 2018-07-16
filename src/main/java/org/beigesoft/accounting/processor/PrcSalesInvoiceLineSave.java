@@ -110,6 +110,10 @@ public class PrcSalesInvoiceLineSave<RS>
         pEntity.setItsPrice(reversed.getItsPrice());
         pEntity.setSubtotal(reversed.getSubtotal().negate());
         pEntity.setItsTotal(reversed.getItsTotal().negate());
+        pEntity.setForeignPrice(reversed.getForeignPrice());
+        pEntity.setForeignSubtotal(reversed.getForeignSubtotal().negate());
+        pEntity.setForeignTotalTaxes(reversed.getForeignTotalTaxes().negate());
+        pEntity.setForeignTotal(reversed.getForeignTotal().negate());
         getSrvOrm().insertEntity(pAddParam, pEntity);
         pEntity.setIsNew(false);
         reversed.setReversedId(pEntity.getItsId());
@@ -126,12 +130,13 @@ public class PrcSalesInvoiceLineSave<RS>
           getSrvOrm().deleteEntity(pAddParam, pigtl);
         }
       } else {
-        if (pEntity.getItsQuantity().doubleValue() <= 0
+        if (pEntity.getItsQuantity().compareTo(BigDecimal.ZERO) <= 0
           && pEntity.getReversedId() == null) {
           throw new ExceptionWithCode(ExceptionWithCode.WRONG_PARAMETER,
             "quantity_less_or_equal_zero::" + pAddParam.get("user"));
         }
-        if (pEntity.getItsPrice().doubleValue() <= 0) {
+        if (!(pEntity.getItsPrice().compareTo(BigDecimal.ZERO) > 0
+          || pEntity.getForeignPrice().compareTo(BigDecimal.ZERO) > 0)) {
           throw new ExceptionWithCode(ExceptionWithCode.WRONG_PARAMETER,
             "price_less_eq_0::" + pAddParam.get("user"));
         }
@@ -143,16 +148,31 @@ public class PrcSalesInvoiceLineSave<RS>
           getSrvAccSettings().lazyGetAccSettings(pAddParam)
             .getQuantityPrecision(), getSrvAccSettings()
               .lazyGetAccSettings(pAddParam).getRoundingMode()));
-        pEntity.setItsPrice(pEntity.getItsPrice().setScale(getSrvAccSettings()
+        if (pEntity.getItsOwner().getForeignCurrency() != null) {
+          pEntity.setForeignPrice(pEntity.getForeignPrice().setScale(
+        getSrvAccSettings().lazyGetAccSettings(pAddParam).getPricePrecision(),
+      getSrvAccSettings().lazyGetAccSettings(pAddParam).getRoundingMode()));
+          pEntity.setItsPrice(pEntity.getForeignPrice().multiply(pEntity
+        .getItsOwner().getExchangeRate()).setScale(getSrvAccSettings()
+      .lazyGetAccSettings(pAddParam).getPricePrecision(), getSrvAccSettings()
+    .lazyGetAccSettings(pAddParam).getRoundingMode()));
+          //without taxes:
+          pEntity.setForeignSubtotal(pEntity.getItsQuantity().multiply(pEntity
+        .getForeignPrice()).setScale(getSrvAccSettings().lazyGetAccSettings(
+      pAddParam).getPricePrecision(), getSrvAccSettings()
+    .lazyGetAccSettings(pAddParam).getRoundingMode()));
+        } else {
+          pEntity.setItsPrice(pEntity.getItsPrice().setScale(getSrvAccSettings()
         .lazyGetAccSettings(pAddParam).getPricePrecision(), getSrvAccSettings()
-          .lazyGetAccSettings(pAddParam).getRoundingMode()));
+      .lazyGetAccSettings(pAddParam).getRoundingMode()));
+        }
         //without taxes:
         pEntity.setSubtotal(pEntity.getItsQuantity().multiply(pEntity
-          .getItsPrice()).setScale(getSrvAccSettings()
-            .lazyGetAccSettings(pAddParam).getPricePrecision(),
-              getSrvAccSettings().lazyGetAccSettings(pAddParam)
-                .getRoundingMode()));
+      .getItsPrice()).setScale(getSrvAccSettings().lazyGetAccSettings(pAddParam)
+    .getPricePrecision(), getSrvAccSettings().lazyGetAccSettings(pAddParam)
+  .getRoundingMode()));
         BigDecimal totalTaxes = BigDecimal.ZERO;
+        BigDecimal totalTaxesFc = BigDecimal.ZERO;
         String taxesDescription = "";
         Set<SalesInvoiceGoodsTaxLine> tls = null;
         if (!pEntity.getItsOwner().getCustomer().getIsForeigner()
@@ -183,6 +203,14 @@ public class PrcSalesInvoiceLineSave<RS>
               pigtl.setItsTotal(addTx);
               pigtl.setTax(pst.getTax());
               tls.add(pigtl);
+              if (pEntity.getItsOwner().getForeignCurrency() != null) {
+                BigDecimal addTxFc = pEntity.getForeignSubtotal().multiply(pst
+              .getItsPercentage()).divide(bigDecimal100, getSrvAccSettings()
+            .lazyGetAccSettings(pAddParam).getPricePrecision(),
+          getSrvAccSettings().lazyGetAccSettings(pAddParam).getRoundingMode());
+                totalTaxesFc = totalTaxesFc.add(addTxFc);
+                pigtl.setForeignTotalTaxes(addTxFc);
+              }
               if (i++ > 0) {
                 sb.append(", ");
               }
@@ -195,6 +223,8 @@ public class PrcSalesInvoiceLineSave<RS>
         pEntity.setTaxesDescription(taxesDescription);
         pEntity.setTotalTaxes(totalTaxes);
         pEntity.setItsTotal(pEntity.getSubtotal().add(totalTaxes));
+        pEntity.setForeignTotalTaxes(totalTaxesFc);
+        pEntity.setForeignTotal(pEntity.getForeignSubtotal().add(totalTaxesFc));
         getSrvOrm().insertEntity(pAddParam, pEntity);
         pEntity.setIsNew(false);
         if (tls != null) {
@@ -231,7 +261,7 @@ public class PrcSalesInvoiceLineSave<RS>
   public final String prn(final Map<String, Object> pAddParam,
     final BigDecimal pVal) {
     return this.srvNumberToString.print(pVal.toString(),
-      (String) pAddParam.get("dseparatorv"),
+      (String) pAddParam.get("dseparatorv"), //TODO default I18N
         (String) pAddParam.get("dgseparatorv"),
           (Integer) pAddParam.get("pricePrecision"),
             (Integer) pAddParam.get("digitsInGroup"));
