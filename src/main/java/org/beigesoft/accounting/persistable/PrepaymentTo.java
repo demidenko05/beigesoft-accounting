@@ -1,7 +1,7 @@
 package org.beigesoft.accounting.persistable;
 
 /*
- * Copyright (c) 2016 Beigesoft ™
+ * Copyright (c) 2016 Beigesoft™
  *
  * Licensed under the GNU General Public License (GPL), Version 2.0
  * (the "License");
@@ -12,15 +12,16 @@ package org.beigesoft.accounting.persistable;
  * http://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html
  */
 
+import java.math.BigDecimal;
+
 import org.beigesoft.accounting.persistable.base.ADoc;
 
 /**
- * <pre>
+ * <p>
  * Model of PrepaymentTo - prepayment, it is referenced in Purchase invoice.
- * This document is used to track payments for purchase and can be used
- * for a sales tax deducting logic. You are free to use simple
- * accounting entries instead.
- * </pre>
+ * This document is used to track payments for purchase.
+ * You are free to use simple accounting entries instead.
+ * </p>
  *
  * @author Yury Demidenko
  */
@@ -55,6 +56,11 @@ public class PrepaymentTo extends ADoc {
    * <p>Subccount cash appearance if exist.</p>
    **/
   private String subaccCash;
+
+  /**
+   * <p>Total in foreign currency, if used.</p>
+   **/
+  private BigDecimal foreignTotal = BigDecimal.ZERO;
 
   /**
    * <p>OOP friendly Constant of code type 7.</p>
@@ -159,5 +165,21 @@ public class PrepaymentTo extends ADoc {
    **/
   public final void setSubaccCash(final String pSubaccCash) {
     this.subaccCash = pSubaccCash;
+  }
+
+  /**
+   * <p>Getter for foreignTotal.</p>
+   * @return BigDecimal
+   **/
+  public final BigDecimal getForeignTotal() {
+    return this.foreignTotal;
+  }
+
+  /**
+   * <p>Setter for foreignTotal.</p>
+   * @param pForeignTotal reference
+   **/
+  public final void setForeignTotal(final BigDecimal pForeignTotal) {
+    this.foreignTotal = pForeignTotal;
   }
 }

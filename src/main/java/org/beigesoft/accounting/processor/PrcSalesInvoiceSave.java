@@ -212,6 +212,8 @@ public class PrcSalesInvoiceSave<RS>
             reversingLine.setIdDatabaseBirth(getSrvOrm().getIdDatabase());
             reversingLine.setReversedId(reversedLine.getItsId());
             reversingLine.setItsTotal(reversedLine.getItsTotal().negate());
+            reversingLine.setForeignTotalTaxes(reversedLine
+              .getForeignTotalTaxes().negate());
             reversingLine.setTax(reversedLine.getTax());
             reversingLine.setIsNew(true);
             reversingLine.setItsOwner(pEntity);
@@ -278,7 +280,11 @@ public class PrcSalesInvoiceSave<RS>
     DateFormat dateFormat = DateFormat.getDateTimeInstance(
       DateFormat.MEDIUM, DateFormat.SHORT, new Locale(langDef));
     if (pEntity.getPrepaymentFrom() != null) {
-      pEntity.setPaymentTotal(pEntity.getPrepaymentFrom().getItsTotal());
+      if (pEntity.getForeignCurrency() != null) {
+        pEntity.setPaymentTotal(pEntity.getPrepaymentFrom().getForeignTotal());
+      } else {
+        pEntity.setPaymentTotal(pEntity.getPrepaymentFrom().getItsTotal());
+      }
       pEntity.setPaymentDescription(getSrvI18n().getMsg(PrepaymentFrom
     .class.getSimpleName() + "short", langDef) + " #" + pEntity
   .getPrepaymentFrom().getIdDatabaseBirth() + "-" + pEntity.getPrepaymentFrom()
@@ -293,8 +299,13 @@ public class PrcSalesInvoiceSave<RS>
         "where PAYMENTFROM.HASMADEACCENTRIES=1 and PAYMENTFROM.REVERSEDID"
           + " is null and SALESINVOICE=" + pEntity.getItsId());
     for (PaymentFrom payment : payments) {
-      pEntity.setPaymentTotal(pEntity.getPaymentTotal()
-        .add(payment.getItsTotal()));
+      if (pEntity.getForeignCurrency() != null) {
+        pEntity.setPaymentTotal(pEntity.getPaymentTotal()
+          .add(payment.getForeignTotal()));
+      } else {
+        pEntity.setPaymentTotal(pEntity.getPaymentTotal()
+          .add(payment.getItsTotal()));
+      }
       pEntity.setPaymentDescription(pEntity.getPaymentDescription() + " "
     + getSrvI18n().getMsg(PaymentFrom.class.getSimpleName() + "short", langDef)
       + " #" + payment.getIdDatabaseBirth() + "-" + payment.getItsId()

@@ -1,7 +1,7 @@
 package org.beigesoft.accounting.persistable;
 
 /*
- * Copyright (c) 2016 Beigesoft ™
+ * Copyright (c) 2016 Beigesoft™
  *
  * Licensed under the GNU General Public License (GPL), Version 2.0
  * (the "License");
@@ -13,14 +13,15 @@ package org.beigesoft.accounting.persistable;
  */
 
 import java.util.List;
+import java.math.BigDecimal;
 
 import org.beigesoft.accounting.persistable.base.ADocWithTaxesPayments;
 import org.beigesoft.accounting.model.EWarehouseMovementType;
 
 /**
- * <pre>
+ * <p>
  * Model of Vendor Invoice.
- * </pre>
+ * </p>
  *
  * @author Yury Demidenko
  */
@@ -62,6 +63,32 @@ public class PurchaseInvoice extends ADocWithTaxesPayments
    * <p>Taxes lines.</p>
    **/
   private List<PurchaseInvoiceTaxLine> taxesLines;
+
+  /**
+   * <p>Foreign currency, if used.</p>
+   **/
+  private Currency foreignCurrency;
+
+  /**
+   * <p>Currency current exchange rate, if used.</p>
+   **/
+  private BigDecimal exchangeRate = BigDecimal.ZERO;
+
+  /**
+   * <p>Subtotal in foreign currency, if used.</p>
+   **/
+  private BigDecimal foreignSubtotal = BigDecimal.ZERO;
+
+  /**
+   * <p>Total taxes in foreign currency, if used,
+   * in case of domestic sales (if law allow it).</p>
+   **/
+  private BigDecimal foreignTotalTaxes = BigDecimal.ZERO;
+
+  /**
+   * <p>Total in foreign currency, if used.</p>
+   **/
+  private BigDecimal foreignTotal = BigDecimal.ZERO;
 
   /**
    * <p>OOP friendly Constant of code type 1.</p>
@@ -162,5 +189,85 @@ public class PurchaseInvoice extends ADocWithTaxesPayments
   public final void setTaxesLines(
     final List<PurchaseInvoiceTaxLine> pTaxesLines) {
     this.taxesLines = pTaxesLines;
+  }
+
+  /**
+   * <p>Getter for foreignCurrency.</p>
+   * @return Currency
+   **/
+  public final Currency getForeignCurrency() {
+    return this.foreignCurrency;
+  }
+
+  /**
+   * <p>Setter for foreignCurrency.</p>
+   * @param pForeignCurrency reference
+   **/
+  public final void setForeignCurrency(final Currency pForeignCurrency) {
+    this.foreignCurrency = pForeignCurrency;
+  }
+
+  /**
+   * <p>Getter for exchangeRate.</p>
+   * @return BigDecimal
+   **/
+  public final BigDecimal getExchangeRate() {
+    return this.exchangeRate;
+  }
+
+  /**
+   * <p>Setter for exchangeRate.</p>
+   * @param pExchangeRate reference
+   **/
+  public final void setExchangeRate(final BigDecimal pExchangeRate) {
+    this.exchangeRate = pExchangeRate;
+  }
+
+  /**
+   * <p>Getter for foreignSubtotal.</p>
+   * @return BigDecimal
+   **/
+  public final BigDecimal getForeignSubtotal() {
+    return this.foreignSubtotal;
+  }
+
+  /**
+   * <p>Setter for foreignSubtotal.</p>
+   * @param pForeignSubtotal reference
+   **/
+  public final void setForeignSubtotal(final BigDecimal pForeignSubtotal) {
+    this.foreignSubtotal = pForeignSubtotal;
+  }
+
+  /**
+   * <p>Getter for foreignTotalTaxes.</p>
+   * @return BigDecimal
+   **/
+  public final BigDecimal getForeignTotalTaxes() {
+    return this.foreignTotalTaxes;
+  }
+
+  /**
+   * <p>Setter for foreignTotalTaxes.</p>
+   * @param pForeignTotalTaxes reference
+   **/
+  public final void setForeignTotalTaxes(final BigDecimal pForeignTotalTaxes) {
+    this.foreignTotalTaxes = pForeignTotalTaxes;
+  }
+
+  /**
+   * <p>Getter for foreignTotal.</p>
+   * @return BigDecimal
+   **/
+  public final BigDecimal getForeignTotal() {
+    return this.foreignTotal;
+  }
+
+  /**
+   * <p>Setter for foreignTotal.</p>
+   * @param pForeignTotal reference
+   **/
+  public final void setForeignTotal(final BigDecimal pForeignTotal) {
+    this.foreignTotal = pForeignTotal;
   }
 }

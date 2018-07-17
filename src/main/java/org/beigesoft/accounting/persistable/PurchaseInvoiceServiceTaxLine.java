@@ -12,6 +12,8 @@ package org.beigesoft.accounting.persistable;
  * http://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html
  */
 
+import java.math.BigDecimal;
+
 import org.beigesoft.model.IOwned;
 import org.beigesoft.accounting.persistable.base.ADocTaxLine;
 
@@ -34,6 +36,12 @@ public class PurchaseInvoiceServiceTaxLine extends ADocTaxLine
    * <p>Service line.</p>
    **/
   private PurchaseInvoiceServiceLine itsOwner;
+
+  /**
+   * <p>Total taxes in foreign currency, if used,
+   * in case of domestic sales (if law allow it).</p>
+   **/
+  private BigDecimal foreignTotalTaxes = BigDecimal.ZERO;
 
   /**
    * <p>Geter for itsOwner.</p>
@@ -68,5 +76,21 @@ public class PurchaseInvoiceServiceTaxLine extends ADocTaxLine
    **/
   public final void setInvoiceId(final Long pInvoiceId) {
     this.invoiceId = pInvoiceId;
+  }
+
+  /**
+   * <p>Getter for foreignTotalTaxes.</p>
+   * @return BigDecimal
+   **/
+  public final BigDecimal getForeignTotalTaxes() {
+    return this.foreignTotalTaxes;
+  }
+
+  /**
+   * <p>Setter for foreignTotalTaxes.</p>
+   * @param pForeignTotalTaxes reference
+   **/
+  public final void setForeignTotalTaxes(final BigDecimal pForeignTotalTaxes) {
+    this.foreignTotalTaxes = pForeignTotalTaxes;
   }
 }

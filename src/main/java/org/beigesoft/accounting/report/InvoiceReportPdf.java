@@ -15,6 +15,7 @@ package org.beigesoft.accounting.report;
 import java.io.OutputStream;
 import java.text.DateFormat;
 import java.util.Map;
+import java.util.List;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Locale;
@@ -47,6 +48,7 @@ import org.beigesoft.accounting.persistable.SalesInvoiceTaxLine;
 import org.beigesoft.accounting.persistable.SalesInvoiceServiceLine;
 import org.beigesoft.accounting.persistable.AccSettings;
 import org.beigesoft.accounting.persistable.I18nAccounting;
+import org.beigesoft.accounting.persistable.Currency;
 import org.beigesoft.accounting.persistable.I18nCurrency;
 import org.beigesoft.accounting.persistable.I18nBuyer;
 
@@ -97,25 +99,43 @@ public class InvoiceReportPdf<RS, WI>
 
   /**
    * <p>Write PDF report for given invoice to output stream.</p>
-   * @param pAddParam additional param
+   * @param pReqVars additional param
    * @param pInvoice Invoice
    * @param pRequestData Request Data
    * @param pOus servlet output stream
    * @throws Exception - an exception
    **/
   @Override
-  public final void makeReport(final Map<String, Object> pAddParam,
+  public final void makeReport(final Map<String, Object> pReqVars,
     final SalesInvoice pInvoice, final IRequestData pRequestData,
       final OutputStream pOus) throws Exception {
-    AccSettings accSet = this.srvAccSettings.lazyGetAccSettings(pAddParam);
-    String lang = (String) pAddParam.get("lang");
-    String langDef = (String) pAddParam.get("langDef");
+    AccSettings accSet = this.srvAccSettings.lazyGetAccSettings(pReqVars);
+    String lang = (String) pReqVars.get("lang");
+    String langDef = (String) pReqVars.get("langDef");
     DateFormat dateFormat = DateFormat
       .getDateInstance(DateFormat.MEDIUM, new Locale(lang));
+    SalesInvoice inv = retrieveEntity(pReqVars, pInvoice, lang,
+      !lang.equals(langDef));
+    Currency currency;
+    if (inv.getForeignCurrency() != null) {
+      currency = inv.getForeignCurrency();
+    } else {
+      currency = accSet.getCurrency();
+    }
+    I18nCurrency i18nCurrency = null;
     String curSign;
-    I18nCurrency i18nCurrency =
-      (I18nCurrency) pAddParam.get("i18nCurrency");
     boolean isPrnCurLf;
+    if (!lang.equals(langDef)) {
+      List<I18nCurrency> i18nCurrencyLst = this.srvOrm.retrieveList(
+        pReqVars, I18nCurrency.class);
+      for (I18nCurrency i18nCur : i18nCurrencyLst) {
+        if (i18nCur.getHasName().getItsId().equals(currency.getItsId())
+          && i18nCur.getLang().getItsId().equals(lang)) {
+          i18nCurrency = i18nCur;
+          break;
+        }
+      }
+    }
     if (i18nCurrency != null) {
       isPrnCurLf = i18nCurrency.getPrintCurrencyLeft();
       if (i18nCurrency.getUseCurrencySign()) {
@@ -124,11 +144,13 @@ public class InvoiceReportPdf<RS, WI>
         curSign = " " + i18nCurrency.getItsName() + " ";
       }
     } else {
-      curSign = (String) pAddParam.get("curSign");
       isPrnCurLf = accSet.getPrintCurrencyLeft();
+      if (accSet.getUseCurrencySign()) {
+        curSign = currency.getItsSign();
+      } else {
+        curSign = " " + currency.getItsName() + " ";
+      }
     }
-    SalesInvoice inv = retrieveEntity(pAddParam, pInvoice, lang,
-      !lang.equals(langDef));
     Document<WI> doc = this.pdfFactory.lazyGetFctDocument()
       .createDoc(EPageSize.A4, EPageOrientation.PORTRAIT);
     PdfDocument<WI> docPdf = this.pdfFactory.createPdfDoc(doc);
@@ -145,7 +167,7 @@ public class InvoiceReportPdf<RS, WI>
     doc.setContentPaddingBottom(1.0);
     DocTable<WI> tblOwner = docMaker.addDocTableNoBorder(doc, 1, 1);
     I18nAccounting i18nAccounting =
-      (I18nAccounting) pAddParam.get("i18nAccounting");
+      (I18nAccounting) pReqVars.get("i18nAccounting");
     if (i18nAccounting != null) {
       tblOwner.getItsCells().get(0)
         .setItsContent(i18nAccounting.getOrganizationName());
@@ -238,7 +260,7 @@ public class InvoiceReportPdf<RS, WI>
     DocTable<WI> tblCustomer = docMaker.addDocTableNoBorder(doc, 1, 1);
     I18nBuyer i18nBuyer = null;
     if (!lang.equals(langDef)) {
-      i18nBuyer = getSrvOrm().retrieveEntityById(pAddParam,
+      i18nBuyer = getSrvOrm().retrieveEntityById(pReqVars,
         I18nBuyer.class, inv.getCustomer());
     }
     if (i18nBuyer != null) {
@@ -311,6 +333,10 @@ public class InvoiceReportPdf<RS, WI>
         .getMsg("regCountry", lang) + ": " + addr);
     }
     tblCustomer.getItsCells().get(0).setFontNumber(1);
+    BigDecimal price;
+    BigDecimal subtotal;
+    BigDecimal totalTaxes;
+    BigDecimal total;
     if (inv.getItsLines() != null && inv.getItsLines().size() > 0) {
       doc.setContainerMarginBottom(2.0);
       DocTable<WI> tblTiGoods = docMaker.addDocTableNoBorder(doc, 1, 1);
@@ -356,6 +382,17 @@ public class InvoiceReportPdf<RS, WI>
       }
       int j = 1;
       for (SalesInvoiceLine ln : inv.getItsLines()) {
+        if (inv.getForeignCurrency() != null) {
+          price = ln.getForeignPrice();
+          subtotal = ln.getForeignSubtotal();
+          totalTaxes = ln.getForeignTotalTaxes();
+          total = ln.getForeignTotal();
+        } else {
+          price = ln.getItsPrice();
+          subtotal = ln.getSubtotal();
+          totalTaxes = ln.getTotalTaxes();
+          total = ln.getItsTotal();
+        }
         int i = 0;
         int k = j * 8 + i++;
         tblGoods.getItsCells().get(k)
@@ -369,17 +406,17 @@ public class InvoiceReportPdf<RS, WI>
         tblGoods.getItsCells().get(k)
           .setAlignHorizontal(EAlignHorizontal.RIGHT);
         tblGoods.getItsCells().get(k)
-          .setItsContent(prn(pAddParam, ln.getItsPrice()));
+          .setItsContent(prn(pReqVars, price));
         k = j * 8 + i++;
         tblGoods.getItsCells().get(k)
           .setAlignHorizontal(EAlignHorizontal.RIGHT);
         tblGoods.getItsCells().get(k)
-          .setItsContent(prn(pAddParam, ln.getItsQuantity()));
+          .setItsContent(prn(pReqVars, ln.getItsQuantity()));
         k = j * 8 + i++;
         tblGoods.getItsCells().get(k)
           .setAlignHorizontal(EAlignHorizontal.RIGHT);
         tblGoods.getItsCells().get(k)
-          .setItsContent(prn(pAddParam, ln.getSubtotal()));
+          .setItsContent(prn(pReqVars, subtotal));
         k = j * 8 + i++;
         tblGoods.getItsCells().get(k)
           .setAlignHorizontal(EAlignHorizontal.CENTER);
@@ -389,12 +426,12 @@ public class InvoiceReportPdf<RS, WI>
         tblGoods.getItsCells().get(k)
           .setAlignHorizontal(EAlignHorizontal.RIGHT);
         tblGoods.getItsCells().get(k)
-          .setItsContent(prn(pAddParam, ln.getTotalTaxes()));
+          .setItsContent(prn(pReqVars, totalTaxes));
         k = j * 8 + i++;
         tblGoods.getItsCells().get(k)
           .setAlignHorizontal(EAlignHorizontal.RIGHT);
         tblGoods.getItsCells().get(k)
-          .setItsContent(prn(pAddParam, ln.getItsTotal()));
+          .setItsContent(prn(pReqVars, total));
         j++;
       }
     }
@@ -448,6 +485,17 @@ public class InvoiceReportPdf<RS, WI>
       }
       int j = 1;
       for (SalesInvoiceServiceLine ln : inv.getServices()) {
+        if (inv.getForeignCurrency() != null) {
+          price = ln.getForeignPrice();
+          subtotal = ln.getForeignSubtotal();
+          totalTaxes = ln.getForeignTotalTaxes();
+          total = ln.getForeignTotal();
+        } else {
+          price = ln.getItsPrice();
+          subtotal = ln.getSubtotal();
+          totalTaxes = ln.getTotalTaxes();
+          total = ln.getItsTotal();
+        }
         int i = 0;
         int k = j * 8 + i++;
         tblServices.getItsCells().get(k)
@@ -461,17 +509,17 @@ public class InvoiceReportPdf<RS, WI>
         tblServices.getItsCells().get(k)
           .setAlignHorizontal(EAlignHorizontal.RIGHT);
         tblServices.getItsCells().get(k)
-          .setItsContent(prn(pAddParam, ln.getItsPrice()));
+          .setItsContent(prn(pReqVars, price));
         k = j * 8 + i++;
         tblServices.getItsCells().get(k)
           .setAlignHorizontal(EAlignHorizontal.RIGHT);
         tblServices.getItsCells().get(k)
-          .setItsContent(prn(pAddParam, ln.getItsQuantity()));
+          .setItsContent(prn(pReqVars, ln.getItsQuantity()));
         k = j * 8 + i++;
         tblServices.getItsCells().get(k)
           .setAlignHorizontal(EAlignHorizontal.RIGHT);
         tblServices.getItsCells().get(k)
-          .setItsContent(prn(pAddParam, ln.getSubtotal()));
+          .setItsContent(prn(pReqVars, subtotal));
         k = j * 8 + i++;
         tblServices.getItsCells().get(k)
           .setAlignHorizontal(EAlignHorizontal.CENTER);
@@ -481,12 +529,12 @@ public class InvoiceReportPdf<RS, WI>
         tblServices.getItsCells().get(k)
           .setAlignHorizontal(EAlignHorizontal.RIGHT);
         tblServices.getItsCells().get(k)
-          .setItsContent(prn(pAddParam, ln.getTotalTaxes()));
+          .setItsContent(prn(pReqVars, totalTaxes));
         k = j * 8 + i++;
         tblServices.getItsCells().get(k)
           .setAlignHorizontal(EAlignHorizontal.RIGHT);
         tblServices.getItsCells().get(k)
-          .setItsContent(prn(pAddParam, ln.getItsTotal()));
+          .setItsContent(prn(pReqVars, total));
         j++;
       }
     }
@@ -517,6 +565,11 @@ public class InvoiceReportPdf<RS, WI>
       }
       int j = 1;
       for (SalesInvoiceTaxLine ln : inv.getTaxesLines()) {
+        if (inv.getForeignCurrency() != null) {
+          total = ln.getForeignTotalTaxes();
+        } else {
+          total = ln.getItsTotal();
+        }
         int i = 0;
         tblTaxes.getItsCells().get(j * 2 + i++)
           .setItsContent(ln.getTax().getItsName());
@@ -524,7 +577,7 @@ public class InvoiceReportPdf<RS, WI>
         tblTaxes.getItsCells().get(k)
           .setAlignHorizontal(EAlignHorizontal.RIGHT);
         tblTaxes.getItsCells().get(k)
-          .setItsContent(prn(pAddParam, ln.getItsTotal()));
+          .setItsContent(prn(pReqVars, total));
         j++;
       }
     }
@@ -535,10 +588,19 @@ public class InvoiceReportPdf<RS, WI>
       lang) + ": ");
     tblRez.getItsCells().get(1).setFontNumber(1);
     String cnt;
-    if (isPrnCurLf) {
-      cnt = curSign + prn(pAddParam, inv.getSubtotal());
+    if (inv.getForeignCurrency() != null) {
+      subtotal = inv.getForeignSubtotal();
+      totalTaxes = inv.getForeignTotalTaxes();
+      total = inv.getForeignTotal();
     } else {
-      cnt = prn(pAddParam, inv.getSubtotal()) + curSign;
+      subtotal = inv.getSubtotal();
+      totalTaxes = inv.getTotalTaxes();
+      total = inv.getItsTotal();
+    }
+    if (isPrnCurLf) {
+      cnt = curSign + prn(pReqVars, subtotal);
+    } else {
+      cnt = prn(pReqVars, subtotal) + curSign;
     }
     tblRez.getItsCells().get(1).setItsContent(cnt);
     tblRez.getItsCells().get(2).setFontNumber(1);
@@ -546,9 +608,9 @@ public class InvoiceReportPdf<RS, WI>
       lang) + ": ");
     tblRez.getItsCells().get(3).setFontNumber(1);
     if (isPrnCurLf) {
-      cnt = curSign + prn(pAddParam, inv.getTotalTaxes());
+      cnt = curSign + prn(pReqVars, totalTaxes);
     } else {
-      cnt = prn(pAddParam, inv.getTotalTaxes()) + curSign;
+      cnt = prn(pReqVars, totalTaxes) + curSign;
     }
     tblRez.getItsCells().get(3).setItsContent(cnt);
     tblRez.getItsCells().get(4).setFontNumber(1);
@@ -556,9 +618,9 @@ public class InvoiceReportPdf<RS, WI>
       lang) + ": ");
     tblRez.getItsCells().get(5).setFontNumber(1);
     if (isPrnCurLf) {
-      cnt = curSign + prn(pAddParam, inv.getItsTotal());
+      cnt = curSign + prn(pReqVars, total);
     } else {
-      cnt = prn(pAddParam, inv.getItsTotal()) + curSign;
+      cnt = prn(pReqVars, total) + curSign;
     }
     tblRez.getItsCells().get(5).setItsContent(cnt);
     tblRez.setAlignHorizontal(EAlignHorizontal.RIGHT);
@@ -571,17 +633,17 @@ public class InvoiceReportPdf<RS, WI>
 
   /**
    * <p>Retrieves sales invoice from DB.</p>
-   * @param pAddParam additional param
+   * @param pReqVars additional param
    * @param pInvoice Invoice
    * @param pLang Lang
    * @param pIsOverseas Is Overseas
    * @return SalesInvoice
    * @throws Exception an Exception
    **/
-  public final SalesInvoice retrieveEntity(final Map<String, Object> pAddParam,
+  public final SalesInvoice retrieveEntity(final Map<String, Object> pReqVars,
     final SalesInvoice pInvoice, final String pLang,
       final boolean pIsOverseas) throws Exception {
-    SalesInvoice inv = this.srvOrm.retrieveEntity(pAddParam, pInvoice);
+    SalesInvoice inv = this.srvOrm.retrieveEntity(pReqVars, pInvoice);
     if (pIsOverseas) {
       Set<String> ndFlSil = new HashSet<String>();
       ndFlSil.add("itsId");
@@ -593,33 +655,37 @@ public class InvoiceReportPdf<RS, WI>
       ndFlSil.add("itsQuantity");
       ndFlSil.add("itsPrice");
       ndFlSil.add("itsTotal");
-      pAddParam.put("SalesInvoiceLineneededFields", ndFlSil);
+      ndFlSil.add("foreignPrice");
+      ndFlSil.add("foreignSubtotal");
+      ndFlSil.add("foreignTotalTaxes");
+      ndFlSil.add("foreignTotal");
+      pReqVars.put("SalesInvoiceLineneededFields", ndFlSil);
       Set<String> ndFlItUm = new HashSet<String>();
       ndFlItUm.add("itsId");
       ndFlItUm.add("itsName");
-      pAddParam.put("InvItemneededFields", ndFlItUm);
-      pAddParam.put("UnitOfMeasureneededFields", ndFlItUm);
-      inv.setItsLines(getSrvOrm().retrieveListByQuery(pAddParam,
+      pReqVars.put("InvItemneededFields", ndFlItUm);
+      pReqVars.put("UnitOfMeasureneededFields", ndFlItUm);
+      inv.setItsLines(getSrvOrm().retrieveListByQuery(pReqVars,
         SalesInvoiceLine.class,
           evalSalesInvOverseaseLinesSql(inv.getItsId().toString(), pLang)));
-      pAddParam.remove("SalesInvoiceLineneededFields");
-      pAddParam.remove("InvItemneededFields");
-      pAddParam.remove("UnitOfMeasureneededFields");
+      pReqVars.remove("SalesInvoiceLineneededFields");
+      pReqVars.remove("InvItemneededFields");
+      pReqVars.remove("UnitOfMeasureneededFields");
     } else {
       SalesInvoiceLine sil = new SalesInvoiceLine();
       sil.setItsOwner(inv);
-      pAddParam.put("SalesInvoiceLineitsOwnerdeepLevel", 1); //only ID
+      pReqVars.put("SalesInvoiceLineitsOwnerdeepLevel", 1); //only ID
       inv.setItsLines(getSrvOrm().
-        retrieveListForField(pAddParam, sil, "itsOwner"));
-      pAddParam.remove("SalesInvoiceLineitsOwnerdeepLevel");
+        retrieveListForField(pReqVars, sil, "itsOwner"));
+      pReqVars.remove("SalesInvoiceLineitsOwnerdeepLevel");
     }
     //overseas sales usually free from sales taxes
     SalesInvoiceTaxLine sitl = new SalesInvoiceTaxLine();
     sitl.setItsOwner(inv);
-    pAddParam.put("SalesInvoiceTaxLineitsOwnerdeepLevel", 1); //only ID
+    pReqVars.put("SalesInvoiceTaxLineitsOwnerdeepLevel", 1); //only ID
     inv.setTaxesLines(getSrvOrm().
-      retrieveListForField(pAddParam, sitl, "itsOwner"));
-    pAddParam.remove("SalesInvoiceTaxLineitsOwnerdeepLevel");
+      retrieveListForField(pReqVars, sitl, "itsOwner"));
+    pReqVars.remove("SalesInvoiceTaxLineitsOwnerdeepLevel");
     if (pIsOverseas) {
       Set<String> ndFlSil = new HashSet<String>();
       ndFlSil.add("itsId");
@@ -631,26 +697,30 @@ public class InvoiceReportPdf<RS, WI>
       ndFlSil.add("service");
       ndFlSil.add("itsPrice");
       ndFlSil.add("itsTotal");
-      pAddParam.put("SalesInvoiceServiceLineneededFields", ndFlSil);
+      ndFlSil.add("foreignPrice");
+      ndFlSil.add("foreignSubtotal");
+      ndFlSil.add("foreignTotalTaxes");
+      ndFlSil.add("foreignTotal");
+      pReqVars.put("SalesInvoiceServiceLineneededFields", ndFlSil);
       Set<String> ndFlItUm = new HashSet<String>();
       ndFlItUm.add("itsId");
       ndFlItUm.add("itsName");
-      pAddParam.put("ServiceToSaleneededFields", ndFlItUm);
-      pAddParam.put("UnitOfMeasureneededFields", ndFlItUm);
-      inv.setServices(getSrvOrm().retrieveListByQuery(pAddParam,
+      pReqVars.put("ServiceToSaleneededFields", ndFlItUm);
+      pReqVars.put("UnitOfMeasureneededFields", ndFlItUm);
+      inv.setServices(getSrvOrm().retrieveListByQuery(pReqVars,
     SalesInvoiceServiceLine.class, evalSalesInvOverseaseServiceLinesSql(
   inv.getItsId().toString(), pLang)));
-      pAddParam.remove("SalesInvoiceServiceLineneededFields");
-      pAddParam.remove("ServiceToSaleneededFields");
-      pAddParam.remove("UnitOfMeasureneededFields");
+      pReqVars.remove("SalesInvoiceServiceLineneededFields");
+      pReqVars.remove("ServiceToSaleneededFields");
+      pReqVars.remove("UnitOfMeasureneededFields");
     } else {
       SalesInvoiceServiceLine sisl = new SalesInvoiceServiceLine();
       sisl.setItsOwner(inv);
-      pAddParam.put("SalesInvoiceServiceLineitsOwnerdeepLevel", 1); //only ID
+      pReqVars.put("SalesInvoiceServiceLineitsOwnerdeepLevel", 1); //only ID
       inv.setServices(getSrvOrm().
-        retrieveListForField(pAddParam, sisl, "itsOwner"));
+        retrieveListForField(pReqVars, sisl, "itsOwner"));
     }
-    pAddParam.remove("SalesInvoiceServiceLineitsOwnerdeepLevel");
+    pReqVars.remove("SalesInvoiceServiceLineitsOwnerdeepLevel");
     return inv;
   }
 
@@ -726,17 +796,17 @@ public class InvoiceReportPdf<RS, WI>
 
   /**
    * <p>Simple delegator to print number.</p>
-   * @param pAddParam additional param
+   * @param pReqVars additional param
    * @param pVal value
    * @return String
    **/
-  public final String prn(final Map<String, Object> pAddParam,
+  public final String prn(final Map<String, Object> pReqVars,
     final BigDecimal pVal) {
     return this.srvNumberToString.print(pVal.toString(),
-      (String) pAddParam.get("dseparatorv"),
-        (String) pAddParam.get("dgseparatorv"),
-          (Integer) pAddParam.get("pricePrecision"),
-            (Integer) pAddParam.get("digitsInGroup"));
+      (String) pReqVars.get("dseparatorv"),
+        (String) pReqVars.get("dgseparatorv"),
+          (Integer) pReqVars.get("pricePrecision"),
+            (Integer) pReqVars.get("digitsInGroup"));
   }
 
   //Synchronized getters and setters:

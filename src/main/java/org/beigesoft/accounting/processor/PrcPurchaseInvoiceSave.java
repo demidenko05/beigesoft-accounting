@@ -123,6 +123,13 @@ public class PrcPurchaseInvoiceSave<RS>
             reversingLine.setTotalTaxes(reversedLine.getTotalTaxes().negate());
             reversingLine.setTaxesDescription(reversedLine
               .getTaxesDescription());
+            reversingLine.setForeignPrice(reversedLine.getForeignPrice());
+            reversingLine.setForeignSubtotal(reversedLine.getForeignSubtotal()
+              .negate());
+            reversingLine.setForeignTotalTaxes(reversedLine
+              .getForeignTotalTaxes().negate());
+            reversingLine.setForeignTotal(reversedLine.getForeignTotal()
+              .negate());
             reversingLine.setIsNew(true);
             reversingLine.setItsOwner(pEntity);
             reversingLine.setDescription(getSrvI18n()
@@ -176,6 +183,13 @@ public class PrcPurchaseInvoiceSave<RS>
             reversingLine.setTotalTaxes(reversedLine.getTotalTaxes().negate());
             reversingLine.setTaxesDescription(reversedLine
               .getTaxesDescription());
+            reversingLine.setForeignPrice(reversedLine.getForeignPrice());
+            reversingLine.setForeignSubtotal(reversedLine.getForeignSubtotal()
+              .negate());
+            reversingLine.setForeignTotalTaxes(reversedLine
+              .getForeignTotalTaxes().negate());
+            reversingLine.setForeignTotal(reversedLine.getForeignTotal()
+              .negate());
             reversingLine.setIsNew(true);
             reversingLine.setItsOwner(pEntity);
             getSrvOrm().insertEntity(pAddParam, reversingLine);
@@ -202,6 +216,8 @@ public class PrcPurchaseInvoiceSave<RS>
             reversingLine.setIdDatabaseBirth(getSrvOrm().getIdDatabase());
             reversingLine.setReversedId(reversedLine.getItsId());
             reversingLine.setItsTotal(reversedLine.getItsTotal().negate());
+            reversingLine.setForeignTotalTaxes(reversedLine
+              .getForeignTotalTaxes().negate());
             reversingLine.setTax(reversedLine.getTax());
             reversingLine.setIsNew(true);
             reversingLine.setItsOwner(pEntity);
@@ -267,7 +283,11 @@ public class PrcPurchaseInvoiceSave<RS>
     DateFormat dateFormat = DateFormat.getDateTimeInstance(
     DateFormat.MEDIUM, DateFormat.SHORT, new Locale(langDef));
     if (pEntity.getPrepaymentTo() != null) {
-      pEntity.setPaymentTotal(pEntity.getPrepaymentTo().getItsTotal());
+      if (pEntity.getForeignCurrency() != null) {
+        pEntity.setPaymentTotal(pEntity.getPrepaymentTo().getForeignTotal());
+      } else {
+        pEntity.setPaymentTotal(pEntity.getPrepaymentTo().getItsTotal());
+      }
       pEntity.setPaymentDescription(getSrvI18n().getMsg(PrepaymentTo
         .class.getSimpleName() + "short", langDef) + " #" + pEntity
           .getPrepaymentTo().getIdDatabaseBirth() + "-"
@@ -283,8 +303,13 @@ public class PrcPurchaseInvoiceSave<RS>
         "where PAYMENTTO.HASMADEACCENTRIES=1 and PAYMENTTO.REVERSEDID"
           + " is null and PURCHASEINVOICE=" + pEntity.getItsId());
     for (PaymentTo payment : payments) {
-      pEntity.setPaymentTotal(pEntity.getPaymentTotal()
-        .add(payment.getItsTotal()));
+      if (pEntity.getForeignCurrency() != null) {
+        pEntity.setPaymentTotal(pEntity.getPaymentTotal()
+          .add(payment.getForeignTotal()));
+      } else {
+        pEntity.setPaymentTotal(pEntity.getPaymentTotal()
+          .add(payment.getItsTotal()));
+      }
       pEntity.setPaymentDescription(pEntity.getPaymentDescription() + " "
     + getSrvI18n().getMsg(PaymentTo.class.getSimpleName() + "short", langDef)
       + " #" + payment.getIdDatabaseBirth() + "-" + payment.getItsId()

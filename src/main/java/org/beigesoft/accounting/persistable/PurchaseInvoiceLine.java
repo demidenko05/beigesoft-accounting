@@ -19,10 +19,10 @@ import org.beigesoft.model.IOwned;
 import org.beigesoft.accounting.persistable.base.AInvItemMovementCostTax;
 
 /**
- * <pre>
+ * <p>
  * Model of Vendor Invoice Line.
  * It is immutable.
- * </pre>
+ * </p>
  *
  * @author Yury Demidenko
  */
@@ -55,6 +55,27 @@ public class PurchaseInvoiceLine extends AInvItemMovementCostTax
    * <p>Description.</p>
    **/
   private String description;
+
+  /**
+   * <p>Price in foreign currency, if used.</p>
+   **/
+  private BigDecimal foreignPrice = BigDecimal.ZERO;
+
+  /**
+   * <p>Subtotal in foreign currency, if used.</p>
+   **/
+  private BigDecimal foreignSubtotal = BigDecimal.ZERO;
+
+  /**
+   * <p>Total taxes in foreign currency, if used,
+   * in case of domestic sales (if law allow it).</p>
+   **/
+  private BigDecimal foreignTotalTaxes = BigDecimal.ZERO;
+
+  /**
+   * <p>Total in foreign currency, if used.</p>
+   **/
+  private BigDecimal foreignTotal = BigDecimal.ZERO;
 
   /**
    * <p>Geter for theRest.</p>
@@ -179,5 +200,69 @@ public class PurchaseInvoiceLine extends AInvItemMovementCostTax
    **/
   public final void setWarehouseSite(final WarehouseSite pWarehouseSite) {
     this.warehouseSite = pWarehouseSite;
+  }
+
+  /**
+   * <p>Getter for foreignPrice.</p>
+   * @return BigDecimal
+   **/
+  public final BigDecimal getForeignPrice() {
+    return this.foreignPrice;
+  }
+
+  /**
+   * <p>Setter for foreignPrice.</p>
+   * @param pForeignPrice reference
+   **/
+  public final void setForeignPrice(final BigDecimal pForeignPrice) {
+    this.foreignPrice = pForeignPrice;
+  }
+
+  /**
+   * <p>Getter for foreignSubtotal.</p>
+   * @return BigDecimal
+   **/
+  public final BigDecimal getForeignSubtotal() {
+    return this.foreignSubtotal;
+  }
+
+  /**
+   * <p>Setter for foreignSubtotal.</p>
+   * @param pForeignSubtotal reference
+   **/
+  public final void setForeignSubtotal(final BigDecimal pForeignSubtotal) {
+    this.foreignSubtotal = pForeignSubtotal;
+  }
+
+  /**
+   * <p>Getter for foreignTotalTaxes.</p>
+   * @return BigDecimal
+   **/
+  public final BigDecimal getForeignTotalTaxes() {
+    return this.foreignTotalTaxes;
+  }
+
+  /**
+   * <p>Setter for foreignTotalTaxes.</p>
+   * @param pForeignTotalTaxes reference
+   **/
+  public final void setForeignTotalTaxes(final BigDecimal pForeignTotalTaxes) {
+    this.foreignTotalTaxes = pForeignTotalTaxes;
+  }
+
+  /**
+   * <p>Getter for foreignTotal.</p>
+   * @return BigDecimal
+   **/
+  public final BigDecimal getForeignTotal() {
+    return this.foreignTotal;
+  }
+
+  /**
+   * <p>Setter for foreignTotal.</p>
+   * @param pForeignTotal reference
+   **/
+  public final void setForeignTotal(final BigDecimal pForeignTotal) {
+    this.foreignTotal = pForeignTotal;
   }
 }

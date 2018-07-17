@@ -55,6 +55,7 @@ public class PrcPrepaymentFromGfr<RS>
     PrepaymentFrom entity = this.prcAccDocGetForReverse
       .process(pAddParam, pEntity, pRequestData);
     entity.setSalesInvoiceId(null);
+    entity.setForeignTotal(entity.getForeignTotal().negate());
     pRequestData.setAttribute("typeCodeSubaccMap",
       this.srvTypeCode.getTypeCodeMap());
     return entity;

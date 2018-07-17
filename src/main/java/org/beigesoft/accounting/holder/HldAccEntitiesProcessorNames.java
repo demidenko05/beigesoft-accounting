@@ -104,6 +104,8 @@ import org.beigesoft.accounting.processor.PrcPurchaseInvoiceServiceLineDelete;
 import org.beigesoft.accounting.processor.PrcPurchaseInvoiceLineSave;
 import org.beigesoft.accounting.processor.PrcPurchaseInvoiceLineCopy;
 import org.beigesoft.accounting.processor.PrcPurchaseInvoiceLineGfr;
+import org.beigesoft.accounting.processor.PrcPurchaseInvoiceServiceLineCreate;
+import org.beigesoft.accounting.processor.PrcPurchaseInvoiceLineCreate;
 import org.beigesoft.accounting.processor.PrcAccDocGetForReverse;
 import org.beigesoft.accounting.processor.PrcAccDocWithTaxesCopy;
 import org.beigesoft.accounting.processor.PrcAccDocWithTaxesPaymentsCopy;
@@ -595,6 +597,10 @@ public class HldAccEntitiesProcessorNames
         || pClass == PrepaymentFrom.class || pClass == PrepaymentTo.class
           || pClass == AdditionCostLine.class) {
       return PrcAccEntityWithSubaccCreate.class.getSimpleName();
+    } else if (pClass == PurchaseInvoiceServiceLine.class) {
+      return PrcPurchaseInvoiceServiceLineCreate.class.getSimpleName();
+    } else if (pClass == PurchaseInvoiceLine.class) {
+      return PrcPurchaseInvoiceLineCreate.class.getSimpleName();
     } else if (pClass == SalesInvoiceServiceLine.class) {
       return PrcSalesInvoiceServiceLineCreate.class.getSimpleName();
     } else if (pClass == SalesInvoiceLine.class) {

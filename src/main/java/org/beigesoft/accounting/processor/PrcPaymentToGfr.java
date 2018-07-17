@@ -54,6 +54,7 @@ public class PrcPaymentToGfr<RS>
         final IRequestData pRequestData) throws Exception {
     PaymentTo entity = this.prcAccDocGetForReverse
       .process(pAddParam, pEntity, pRequestData);
+    entity.setForeignTotal(entity.getForeignTotal().negate());
     pRequestData.setAttribute("typeCodeSubaccMap",
       this.srvTypeCode.getTypeCodeMap());
     return entity;

@@ -176,7 +176,9 @@ public class HndlAccVarsRequest<RS> implements IHandlerRequestDch {
         }
       }
       for (I18nCurrency i18nCurrency : i18nCurTmp) {
-        if (i18nCurrency.getLang().getItsId().equals(lang)) {
+        if (i18nCurrency.getHasName().getItsId()
+          .equals(as.getCurrency().getItsId())
+            && i18nCurrency.getLang().getItsId().equals(lang)) {
           pReqVars.put("i18nCurrency", i18nCurrency);
           break;
         }

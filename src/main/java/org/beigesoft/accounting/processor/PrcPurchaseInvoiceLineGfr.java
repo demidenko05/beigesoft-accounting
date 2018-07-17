@@ -58,6 +58,9 @@ public class PrcPurchaseInvoiceLineGfr<RS>
     entity.setSubtotal(entity.getSubtotal().negate());
     entity.setTotalTaxes(entity.getTotalTaxes().negate());
     entity.setItsTotal(entity.getItsTotal().negate());
+    entity.setForeignTotal(entity.getForeignTotal().negate());
+    entity.setForeignSubtotal(entity.getForeignSubtotal().negate());
+    entity.setForeignTotalTaxes(entity.getForeignTotalTaxes().negate());
     return entity;
   }
 
