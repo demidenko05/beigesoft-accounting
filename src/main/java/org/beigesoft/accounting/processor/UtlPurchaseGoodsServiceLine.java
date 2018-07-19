@@ -47,14 +47,24 @@ public class UtlPurchaseGoodsServiceLine<RS> {
   private ISrvOrm<RS> srvOrm;
 
   /**
-   * <p>File with Query Vendor Invoice Taxes.</p>
+   * <p>File with Query Vendor Invoice Taxes item basis method.</p>
    **/
-  private String fileQueryPurchaseInvoiceTaxes = "purchaseInvoiceTaxes.sql";
+  private String fileQuPurInvSaTaxItBas = "purchInvSalTaxItemBasis.sql";
 
   /**
-   * <p>Query Vendor Invoice Taxes.</p>
+   * <p>Query Vendor Invoice Taxes item basis method.</p>
    **/
-  private String queryPurchaseInvoiceTaxes;
+  private String quPurInvSaTaxItBas;
+
+  /**
+   * <p>File with Query Vendor Invoice Taxes invoice basis method.</p>
+   **/
+  private String fileQuPurInvSaTaxInvBas = "purchInvSalTaxInvBasis.sql";
+
+  /**
+   * <p>Query Vendor Invoice Taxes invoice basis method.</p>
+   **/
+  private String quPurInvSaTaxInvBas;
 
   /**
    * <p>File with Query Vendor Invoice Totals.</p>
@@ -117,16 +127,29 @@ public class UtlPurchaseGoodsServiceLine<RS> {
   }
 
   /**
-   * <p>Lazy get queryPurchaseInvoiceTaxes.</p>
-   * @return queryPurchaseInvoiceTaxes
+   * <p>Lazy get quPurInvSaTaxItBas.</p>
+   * @return quPurInvSaTaxItBas
    * @throws Exception - an exception
    **/
-  public final String lazyGetQueryPurchaseInvoiceTaxes() throws Exception {
-    if (this.queryPurchaseInvoiceTaxes == null) {
-      String flName = "/accounting/trade/" + this.fileQueryPurchaseInvoiceTaxes;
-      this.queryPurchaseInvoiceTaxes = loadString(flName);
+  public final String lazyGetQuPurchInvSalTaxItBas() throws Exception {
+    if (this.quPurInvSaTaxItBas == null) {
+      String flName = "/accounting/trade/" + this.fileQuPurInvSaTaxItBas;
+      this.quPurInvSaTaxItBas = loadString(flName);
     }
-    return this.queryPurchaseInvoiceTaxes;
+    return this.quPurInvSaTaxItBas;
+  }
+
+  /**
+   * <p>Lazy get quPurInvSaTaxInvBas.</p>
+   * @return quPurInvSaTaxInvBas
+   * @throws Exception - an exception
+   **/
+  public final String lazyGetQuPurchInvSalTaxInvBas() throws Exception {
+    if (this.quPurInvSaTaxInvBas == null) {
+      String flName = "/accounting/trade/" + this.fileQuPurInvSaTaxInvBas;
+      this.quPurInvSaTaxInvBas = loadString(flName);
+    }
+    return this.quPurInvSaTaxInvBas;
   }
 
   /**
@@ -184,8 +207,15 @@ public class UtlPurchaseGoodsServiceLine<RS> {
       .retrieveListForField(pAddParam, pit, "itsOwner");
     if (!pItsOwner.getVendor().getIsForeigner() && getSrvAccSettings()
       .lazyGetAccSettings(pAddParam).getIsExtractSalesTaxFromPurchase()) {
-      String query = lazyGetQueryPurchaseInvoiceTaxes().replace(":INVOICEID",
-        pItsOwner.getItsId().toString());
+      boolean isItemBasis = !getSrvAccSettings()
+        .lazyGetAccSettings(pAddParam).getSalTaxIsInvoiceBase();
+      String query;
+      if (!isItemBasis) {
+        query = lazyGetQuPurchInvSalTaxInvBas();
+      } else {
+        query = lazyGetQuPurchInvSalTaxItBas();
+      }
+      query = query.replace(":INVOICEID", pItsOwner.getItsId().toString());
       int countUpdatedSitl = 0;
       IRecordSet<RS> recordSet = null;
       try {
@@ -193,8 +223,20 @@ public class UtlPurchaseGoodsServiceLine<RS> {
         if (recordSet.moveToFirst()) {
           do {
             Long taxId = recordSet.getLong("TAXID");
-            Double totalTax = recordSet.getDouble("TOTALTAX");
-            Double foreignTotalTaxes = recordSet.getDouble("FOREIGNTOTALTAXES");
+            Double totalTax;
+            Double foreignTotalTaxes;
+            Double taxable = null;
+            Double forTaxable = null;
+            if (!isItemBasis) {
+              Double percent = recordSet.getDouble("ITSPERCENTAGE");
+              taxable = recordSet.getDouble("TAXABLE");
+              forTaxable = recordSet.getDouble("FOREIGNTAXABLE");
+              totalTax = taxable * percent / 100.0d;
+              foreignTotalTaxes = forTaxable * percent / 100.0d;
+            } else {
+              totalTax = recordSet.getDouble("TOTALTAX");
+              foreignTotalTaxes = recordSet.getDouble("FOREIGNTOTALTAXES");
+            }
             if (pitl.size() > countUpdatedSitl) {
               pit = pitl.get(countUpdatedSitl);
               countUpdatedSitl++;
@@ -215,6 +257,16 @@ public class UtlPurchaseGoodsServiceLine<RS> {
               .setScale(getSrvAccSettings().lazyGetAccSettings(pAddParam)
                 .getPricePrecision(), getSrvAccSettings()
                   .lazyGetAccSettings(pAddParam).getRoundingMode()));
+            if (!isItemBasis) {
+              pit.setTaxableInvBas(BigDecimal.valueOf(taxable).setScale(
+                getSrvAccSettings().lazyGetAccSettings(pAddParam)
+                  .getPricePrecision(), getSrvAccSettings()
+                    .lazyGetAccSettings(pAddParam).getRoundingMode()));
+              pit.setTaxableInvBasFc(BigDecimal.valueOf(forTaxable).setScale(
+                getSrvAccSettings().lazyGetAccSettings(pAddParam)
+                  .getPricePrecision(), getSrvAccSettings()
+                    .lazyGetAccSettings(pAddParam).getRoundingMode()));
+            }
             if (pit.getIsNew()) {
               getSrvOrm().insertEntity(pAddParam, pit);
               pit.setIsNew(false);
@@ -274,37 +326,37 @@ public class UtlPurchaseGoodsServiceLine<RS> {
   }
 
   /**
-   * <p>Getter for fileQueryPurchaseInvoiceTaxes.</p>
+   * <p>Getter for fileQuPurInvSaTaxItBas.</p>
    * @return String
    **/
-  public final String getFileQueryPurchaseInvoiceTaxes() {
-    return this.fileQueryPurchaseInvoiceTaxes;
+  public final String getFileQuPurInvSaTaxItBas() {
+    return this.fileQuPurInvSaTaxItBas;
   }
 
   /**
-   * <p>Setter for fileQueryPurchaseInvoiceTaxes.</p>
-   * @param pFileQueryPurchaseInvoiceTaxes reference
+   * <p>Setter for fileQuPurInvSaTaxItBas.</p>
+   * @param pFileQuPurInvSaTaxItBas reference
    **/
-  public final void setFileQueryPurchaseInvoiceTaxes(
-    final String pFileQueryPurchaseInvoiceTaxes) {
-    this.fileQueryPurchaseInvoiceTaxes = pFileQueryPurchaseInvoiceTaxes;
+  public final void setFileQuPurInvSaTaxItBas(
+    final String pFileQuPurInvSaTaxItBas) {
+    this.fileQuPurInvSaTaxItBas = pFileQuPurInvSaTaxItBas;
   }
 
   /**
-   * <p>Getter for queryPurchaseInvoiceTaxes.</p>
+   * <p>Getter for quPurInvSaTaxItBas.</p>
    * @return String
    **/
-  public final String getQueryPurchaseInvoiceTaxes() {
-    return this.queryPurchaseInvoiceTaxes;
+  public final String getQueryPurchInvSalTaxItemBas() {
+    return this.quPurInvSaTaxItBas;
   }
 
   /**
-   * <p>Setter for queryPurchaseInvoiceTaxes.</p>
-   * @param pQueryPurchaseInvoiceTaxes reference
+   * <p>Setter for quPurInvSaTaxItBas.</p>
+   * @param pQueryPurchInvSalTaxItemBas reference
    **/
-  public final void setQueryPurchaseInvoiceTaxes(
-    final String pQueryPurchaseInvoiceTaxes) {
-    this.queryPurchaseInvoiceTaxes = pQueryPurchaseInvoiceTaxes;
+  public final void setQueryPurchInvSalTaxItemBas(
+    final String pQueryPurchInvSalTaxItemBas) {
+    this.quPurInvSaTaxItBas = pQueryPurchInvSalTaxItemBas;
   }
 
   /**

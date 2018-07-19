@@ -4,13 +4,19 @@
   xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
 
   <properties>
-    <title>Beigesoft-Accounting specification version #3</title>
+    <title>Beigesoft™ Accounting specification version #3</title>
   </properties>
 
   <body>
 
     <!-- The body of the document contains a number of sections -->
-    <section name="Beigesoft-Accounting specification version #2">
+    <section name="Beigesoft™ Accounting specification version #2">
+      
+      <h5>Detailed specifications:</h5>
+      <p>
+        <a href="specification-acc-sales-tax.html">Beigesoft™ Accounting. Sales tax specification.</a>
+      </p>
+      
       <p>It consist of accounting methods.</p>
       <p>Any method is implemented with a persistable (stored in database) or not models, and business services that makes them.</p>
       <p>Main models:
@@ -855,121 +861,6 @@ join DEBTORCREDITOR on DEBTORCREDITOR.ITSID = SALESINVOICE.CUSTOMER
 where PAYMENTFROM.REVERSEDID is null and PAYMENTFROM.HASMADEACCENTRIES = 0 and SALESINVOICE.HASMADEACCENTRIES = 1 :WHEREADD
       </pre>
 
-      <h5>Method Sales Tax Accrual/Cash.</h5>
-
-      <p>Sales taxes imposed on the buyer that seller must collect and pay.
-        This is for case when buyer that bought goods/service "is in the country/state where this sales taxes must be paid".
-        Foreigners travelers can refund sales taxes when they leaves the country. E-Commerce is still the growing sphere business that often dials with foreigner buyers that bought goods in a WEB-shop
-        and have delivered them by mail. In that case overseas (foreigner) buyers must not pay "foreign" sales taxes.
-        To implements this logic DebtorCreditor has isForeigner property.
-        If DebtorCreditor is foreigner then sales taxes will be omitted for both sales (foreigner buyers) and purchase (foreigner vendors).
-        If you bought a merchandise from overseas then you have not to pay "foreign" sales taxes,
-        but you usually have to pay "native" sales taxes as if you bought this merchandise from the nearest shop.
-        If vendor in purchase invoice is marked as "foreigner" then sales taxes (native) will be omitted. 
-        Services Utl(Purchase/Sales)GoodsServiceLine/Prc(Purchase/Sales)(Invoice/Return)(Service)LineSave implements "omitting taxes if customer/vendor is foreign".
-      </p>
-
-      <p>Models:</p>
-      <p>Account itsId="SALES_TAX_PAYABLE", name="Sales Tax payable", normalBalanceType=CREDIT itsNumber="2310"
-      Subaccounts - Tax</p>
-      <p>Account itsId="SALES_TAX_RECIVABLE", name="Sales Tax recivable", normalBalanceType=DEBIT itsNumber="1310"
-      Subaccounts - Tax</p>
-      <p>Persistable model Tax consist of:
-        <ul>
-          <li>Subaccount fields  implements IHasTypeCode.</li>
-          <li>expense - Expense not null</li>
-          <li>itsPercentage - BigDecimal not null</li>
-          <li>plusAmount - BigDecimal not null</li>
-          <li>dueMethod - EDueMethod ACCURAL/CASH not null</li>
-          <li>itsType - ETaxType INCOME_TAX/SALES_TAX_INITEM/SALES_TAX_OUTITEM/EMPLOYMENT_TAX_EMPLOYEE/EMPLOYMENT_TAX_EMPLOYER/OTHER_TAX, not null</li>
-        </ul>
-        constTypeCode = 2003
-      </p>
-      <p>Persistable model TaxUsed:
-        <ul>
-          <li>ASubaccountUsed fields</li>
-          <li>subaccount - Tax, not null</li>
-        </ul>
-      </p>
-      <p>Persistable model InvItemTaxCategory (goods or service tax category):
-        <ul>
-          <li>APersistableBaseHasName fields</li>
-          <li>itsVersion - Version, changed time algorithm cause check dirty of
-            calculated from it (derived) records</li>
-          <li>List(InvItemTaxCategoryLine) taxes</li>
-          <li>taxesDescription - String , uneditable e.g. "NY Sales Tax 10%"</li>
-        </ul>
-        This model used to assign tax or set of taxes for an goods or service e.g. "NY sales tax 6%"
-        for pizza hot. 
-      </p>
-      <p>Persistable model InvItemTaxCategoryLine:
-        <ul>
-          <li>APersistableBaseHasName fields</li>
-          <li>itsVersion - Version, changed time algorithm cause check dirty of
-            calculated from it (derived) records</li>
-          <li>itsOwner - InvItemTaxCategory, Not Null</li>
-          <li>tax - Tax, Not Null</li>
-          <li>itsPercentage - BigDecimal not null</li>
-        </ul>
-      </p>
-      <p>Persistable model InvItem additionally consist of:
-        <ul>
-          <li>taxCategory - InvItemTaxCategory, nullable.</li>
-        </ul>
-      </p>
-      <p>Persistable model PurchaseInvoice additionally consist of:
-        <ul>
-          <li>taxesLines - List&lt;PurchaseInvoiceTaxLine&gt; list of summary sales taxes (if exists)</li>
-        </ul>
-      </p>
-      <p>Persistable model ADocTaxLine consist of:
-        <ul>
-          <li>APersistableBase fields</li>
-          <li>itsVersion - Long autoincrement algorithm</li>
-          <li>reversedId - Long if reversed</li>
-          <li>tax - Tax, not null</li>
-          <li>itsTotal, BigDecimal, not null</li>
-        </ul>
-      </p>
-      <p>Persistable model PurchaseInvoiceTaxLine consist of:
-        <ul>
-          <li>ADocTaxLine fields</li>
-          <li>itsOwner - PurchaseInvoice, not null</li>
-        </ul>
-      </p>
-      Method "PurInvSalTaxSelfDeductingDbtAccrual":
-      "PurchaseInvoice, Debit SalesTaxFromPurchase per Tax."
-      Accounting entries source: accounting/journalEntries/PurInvSalTaxSelfDeductingDbtAccrual.sql:
-      <pre style="white-space: pre-wrap;">
-select 1 as SOURCETYPE, PURCHASEINVOICE.:IDNAME as SOURCEID, PURCHASEINVOICE.ITSDATE,
-'SalesTaxFromPurchase' as ACCDEBIT, 2003 as SUBACCDEBITTYPE, TAX.ITSID as SUBACCDEBITID, TAX.ITSNAME as SUBACCDEBIT, sum(PURCHASEINVOICETAXLINE.ITSTOTAL) as DEBIT,
-null as ACCCREDIT, null as SUBACCCREDITTYPE, null as SUBACCCREDITID, null as SUBACCCREDIT, 0 as CREDIT
-from PURCHASEINVOICETAXLINE
-join PURCHASEINVOICE on PURCHASEINVOICE.ITSID = PURCHASEINVOICETAXLINE.ITSOWNER
-join TAX on TAX.ITSID = PURCHASEINVOICETAXLINE.TAX
-where PURCHASEINVOICETAXLINE.REVERSEDID is null and PURCHASEINVOICE.REVERSEDID is null and HASMADEACCENTRIES = 0 and TAX.ITSTYPE in (1,2) and TAX.DUEMETHOD=0 :WHEREADD
-group by SOURCETYPE, SOURCEID, ITSDATE, ACCDEBIT, SUBACCDEBITTYPE, SUBACCDEBITID, SUBACCDEBIT, ACCCREDIT, SUBACCCREDITTYPE, SUBACCCREDITID, SUBACCCREDIT
-      </pre>
-
-      <p>Persistable model SalesInvoiceTaxLine consist of:
-        <ul>
-          <li>ADocTaxLine fields</li>
-          <li>itsOwner - SalesInvoice, not null</li>
-        </ul>
-      </p>
-      Method "SalInvSalTaxPayCrdtAccrual":
-      "SalesInvoice, Credit SalesTaxPay per Tax."
-      Accounting entries source: accounting/journalEntries/SalInvSalTaxPayCrdtAccrual.sql:
-      <pre style="white-space: pre-wrap;">
-select 2 as SOURCETYPE, SALESINVOICE.:IDNAME as SOURCEID, SALESINVOICE.ITSDATE,
-null as ACCDEBIT, null as SUBACCDEBITTYPE, null as SUBACCDEBITID, null as SUBACCDEBIT, 0 as DEBIT,
-'SalesTaxPay' as ACCCREDIT, 2003 as SUBACCCREDITTYPE, TAX.ITSID as SUBACCCREDITID, TAX.ITSNAME as SUBACCCREDIT, sum(SALESINVOICETAXLINE.ITSTOTAL) as CREDIT
-from SALESINVOICETAXLINE
-join SALESINVOICE on SALESINVOICE.ITSID = SALESINVOICETAXLINE.ITSOWNER
-join TAX on TAX.ITSID = SALESINVOICETAXLINE.TAX
-where SALESINVOICETAXLINE.REVERSEDID is null and SALESINVOICE.REVERSEDID is null and HASMADEACCENTRIES = 0 and TAX.ITSTYPE in (1,2) and TAX.DUEMETHOD = 0 :WHEREADD
-group by SOURCETYPE, SOURCEID, ITSDATE, ACCDEBIT, SUBACCDEBITTYPE, SUBACCDEBITID, SUBACCDEBIT, ACCCREDIT, SUBACCCREDITTYPE, SUBACCCREDITID, SUBACCCREDIT
-      </pre>
 
       <h5>Method Cost of Goods Sold FIFO Perpetual (COGSFIFOPERPET).</h5>
       <p>Models:</p>
@@ -1493,27 +1384,6 @@ where BEGINNINGINVENTORYLINE.REVERSEDID is null and THEREST>0 and INVITEM=:INVIT
           <li>services - List&lt;PurchaseInvoiceServiceLine&gt; list of summary sales taxes (if exists)</li>
         </ul>
       </p>
-      Method "accounting/trade/purchaseInvoiceTaxes.sql" that calculate purchase taxes:
-      <pre style="white-space: pre-wrap;">
-select TAX as TAXID,  sum(SUBTOTAL * ITSPERCENTAGE / 100) as TOTALTAX
-from
-(
-  select INVITEM.TAXCATEGORY as TAXCATEGORY, SUBTOTAL
-  from PURCHASEINVOICELINE 
-  join INVITEM on INVITEM.ITSID = PURCHASEINVOICELINE.INVITEM
-  where PURCHASEINVOICELINE.REVERSEDID is null and PURCHASEINVOICELINE.ITSOWNER = :ITSOWNER
-
-  union all
-
-  select SERVICEPURCHASED.TAXCATEGORY as TAXCATEGORY, ITSPRICE as SUBTOTAL
-  from PURCHASEINVOICESERVICELINE 
-  join SERVICEPURCHASED on SERVICEPURCHASED.ITSID = PURCHASEINVOICESERVICELINE.SERVICE
-  where PURCHASEINVOICESERVICELINE.ITSOWNER = :ITSOWNER
-) as ALL_LINES
-join INVITEMTAXCATEGORY on INVITEMTAXCATEGORY.ITSID = TAXCATEGORY
-join INVITEMTAXCATEGORYLINE on INVITEMTAXCATEGORYLINE.ITSOWNER = INVITEMTAXCATEGORY.ITSID
-group by TAX;
-      </pre>
       Method "accounting/trade/purchaseInvoiceTotals.sql" that calculate purchase totals:
       <pre style="white-space: pre-wrap;">
 select sum(SUBTOTAL) as SUBTOTAL, sum(TOTALTAXES) as TOTALTAXES

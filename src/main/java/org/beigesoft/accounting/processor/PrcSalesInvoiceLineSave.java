@@ -175,11 +175,15 @@ public class PrcSalesInvoiceLineSave<RS>
         BigDecimal totalTaxesFc = BigDecimal.ZERO;
         String taxesDescription = "";
         Set<SalesInvoiceGoodsTaxLine> tls = null;
+        boolean isItemBasis = !getSrvAccSettings()
+          .lazyGetAccSettings(pAddParam).getSalTaxIsInvoiceBase();
         if (!pEntity.getItsOwner().getCustomer().getIsForeigner()
           && getSrvAccSettings().lazyGetAccSettings(pAddParam)
             .getIsExtractSalesTaxFromSales()
               && pEntity.getInvItem().getTaxCategory() != null) {
-          tls = new HashSet<SalesInvoiceGoodsTaxLine>();
+          if (isItemBasis) {
+            tls = new HashSet<SalesInvoiceGoodsTaxLine>();
+          }
           List<InvItemTaxCategoryLine> pstl = getSrvOrm()
             .retrieveListWithConditions(pAddParam,
               InvItemTaxCategoryLine.class, "where ITSOWNER="
@@ -190,32 +194,36 @@ public class PrcSalesInvoiceLineSave<RS>
           for (InvItemTaxCategoryLine pst : pstl) {
             if (ETaxType.SALES_TAX_OUTITEM.equals(pst.getTax().getItsType())
             || ETaxType.SALES_TAX_INITEM.equals(pst.getTax().getItsType())) {
-              BigDecimal addTx = pEntity.getSubtotal().multiply(pst
-                .getItsPercentage()).divide(bigDecimal100, getSrvAccSettings()
-                  .lazyGetAccSettings(pAddParam).getPricePrecision(),
-                    getSrvAccSettings().lazyGetAccSettings(pAddParam)
-                      .getRoundingMode());
-              totalTaxes = totalTaxes.add(addTx);
-              SalesInvoiceGoodsTaxLine pigtl =
-                new SalesInvoiceGoodsTaxLine();
-              pigtl.setIsNew(true);
-              pigtl.setIdDatabaseBirth(this.srvOrm.getIdDatabase());
-              pigtl.setItsTotal(addTx);
-              pigtl.setTax(pst.getTax());
-              tls.add(pigtl);
-              if (pEntity.getItsOwner().getForeignCurrency() != null) {
-                BigDecimal addTxFc = pEntity.getForeignSubtotal().multiply(pst
-              .getItsPercentage()).divide(bigDecimal100, getSrvAccSettings()
-            .lazyGetAccSettings(pAddParam).getPricePrecision(),
-          getSrvAccSettings().lazyGetAccSettings(pAddParam).getRoundingMode());
-                totalTaxesFc = totalTaxesFc.add(addTxFc);
-                pigtl.setForeignTotalTaxes(addTxFc);
-              }
               if (i++ > 0) {
                 sb.append(", ");
               }
-              sb.append(pst.getTax().getItsName() + " "
-                + prn(pAddParam, addTx));
+              if (isItemBasis) {
+                BigDecimal addTx = pEntity.getSubtotal().multiply(pst
+                  .getItsPercentage()).divide(bigDecimal100, getSrvAccSettings()
+                    .lazyGetAccSettings(pAddParam).getPricePrecision(),
+                      getSrvAccSettings().lazyGetAccSettings(pAddParam)
+                        .getRoundingMode());
+                totalTaxes = totalTaxes.add(addTx);
+                SalesInvoiceGoodsTaxLine pigtl =
+                  new SalesInvoiceGoodsTaxLine();
+                pigtl.setIsNew(true);
+                pigtl.setIdDatabaseBirth(this.srvOrm.getIdDatabase());
+                pigtl.setItsTotal(addTx);
+                pigtl.setTax(pst.getTax());
+                tls.add(pigtl);
+                if (pEntity.getItsOwner().getForeignCurrency() != null) {
+                  BigDecimal addTxFc = pEntity.getForeignSubtotal().multiply(pst
+                .getItsPercentage()).divide(bigDecimal100, getSrvAccSettings()
+             .lazyGetAccSettings(pAddParam).getPricePrecision(),
+          getSrvAccSettings().lazyGetAccSettings(pAddParam).getRoundingMode());
+                  totalTaxesFc = totalTaxesFc.add(addTxFc);
+                  pigtl.setForeignTotalTaxes(addTxFc);
+                }
+                sb.append(pst.getTax().getItsName() + " "
+                  + prn(pAddParam, addTx));
+              } else {
+                sb.append(pst.getTax().getItsName());
+              }
             }
           }
           taxesDescription = sb.toString();

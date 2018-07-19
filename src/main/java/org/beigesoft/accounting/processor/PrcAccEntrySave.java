@@ -114,15 +114,16 @@ public class PrcAccEntrySave<RS>
         throw new ExceptionWithCode(ExceptionWithCode.WRONG_PARAMETER,
           "account_is_null");
       }
-      if (pEntity.getAccDebit() != null
-        && pEntity.getAccDebit().getItsId().equals("Inventory")) {
+      //hard-coded maximum rounding error to transfer into COGS
+      BigDecimal bdre = new BigDecimal("2");
+      if ((pEntity.getAccDebit() != null
+        && pEntity.getAccDebit().getItsId().equals("Inventory")
+        || pEntity.getAccCredit() != null
+        && pEntity.getAccCredit().getItsId().equals("Inventory"))
+          && pEntity.getDebit().compareTo(bdre) > 0
+            || pEntity.getCredit().compareTo(bdre) > 0) {
         throw new ExceptionWithCode(ExceptionWithCode.WRONG_PARAMETER,
-          "account_must_not_be_inventory");
-      }
-      if (pEntity.getAccCredit() != null
-        && pEntity.getAccCredit().getItsId().equals("Inventory")) {
-        throw new ExceptionWithCode(ExceptionWithCode.WRONG_PARAMETER,
-          "account_must_not_be_inventory");
+          "inventory_allow_only_transfer_rounding_error");
       }
       pEntity.setSourceType(this.accountingEntriesTypeCode);
       if (pEntity.getAccCredit() != null) {

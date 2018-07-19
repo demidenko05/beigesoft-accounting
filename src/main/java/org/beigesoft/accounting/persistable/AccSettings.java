@@ -1,7 +1,7 @@
 package org.beigesoft.accounting.persistable;
 
 /*
- * Copyright (c) 2016 Beigesoft ™
+ * Copyright (c) 2016 Beigesoft™
  *
  * Licensed under the GNU General Public License (GPL), Version 2.0
  * (the "License");
@@ -20,10 +20,10 @@ import org.beigesoft.model.EPeriod;
 import org.beigesoft.persistable.AHasIdLongVersion;
 
 /**
- * <pre>
+ * <p>
  * Accounting settings.
  * Version changed time algorithm.
- * </pre>
+ * </p>
  *
  * @author Yury Demidenko
  */
@@ -177,6 +177,32 @@ public class AccSettings extends AHasIdLongVersion {
    * e.g. "1,356.12$" or "$1,356.12".</p>
    **/
   private Boolean printCurrencyLeft = false;
+
+  /**
+   * <pre>Not Null, if rip decimal places of sales tax before rounding.
+   * price = 4.83
+   * tax rate = 9%
+   * tax calculation:
+   * step#1: 4.83 * 0.09 = 0.4347
+   * step#2: ripDecPl(0.4347, 3) = 0.434
+   * step#3: round(0.434, 2) = 0.43
+   * </pre>
+   **/
+  private Integer salTaxRipDecPl = 0;
+
+  /**
+   * <p>Rounding mode for sales taxes.</p>
+   **/
+  private RoundingMode salTaxRoundMode = RoundingMode.HALF_UP;
+
+  /**
+   * <p>Grouping method for sales taxes - false item basis, true - invoice.
+   * This is about grouping rounding error:
+   * round(2.244 + 2.244) != round(2.244) + round(2.244);
+   * 4.49 != 4.48
+   * </p>
+   **/
+  private Boolean salTaxIsInvoiceBase = Boolean.FALSE;
 
   //Hiding references getters and setters:
   /**
@@ -641,5 +667,53 @@ public class AccSettings extends AHasIdLongVersion {
    **/
   public final void setPrintCurrencyLeft(final Boolean pPrintCurrencyLeft) {
     this.printCurrencyLeft = pPrintCurrencyLeft;
+  }
+
+  /**
+   * <p>Getter for salTaxRipDecPl.</p>
+   * @return Integer
+   **/
+  public final Integer getSalTaxRipDecPl() {
+    return this.salTaxRipDecPl;
+  }
+
+  /**
+   * <p>Setter for salTaxRipDecPl.</p>
+   * @param pSalTaxRipDecPl reference
+   **/
+  public final void setSalTaxRipDecPl(final Integer pSalTaxRipDecPl) {
+    this.salTaxRipDecPl = pSalTaxRipDecPl;
+  }
+
+  /**
+   * <p>Getter for salTaxRoundMode.</p>
+   * @return RoundingMode
+   **/
+  public final RoundingMode getSalTaxRoundMode() {
+    return this.salTaxRoundMode;
+  }
+
+  /**
+   * <p>Setter for salTaxRoundMode.</p>
+   * @param pSalTaxRoundMode reference
+   **/
+  public final void setSalTaxRoundMode(final RoundingMode pSalTaxRoundMode) {
+    this.salTaxRoundMode = pSalTaxRoundMode;
+  }
+
+  /**
+   * <p>Getter for salTaxIsInvoiceBase.</p>
+   * @return Boolean
+   **/
+  public final Boolean getSalTaxIsInvoiceBase() {
+    return this.salTaxIsInvoiceBase;
+  }
+
+  /**
+   * <p>Setter for salTaxIsInvoiceBase.</p>
+   * @param pSalTaxIsInvoiceBase reference
+   **/
+  public final void setSalTaxIsInvoiceBase(final Boolean pSalTaxIsInvoiceBase) {
+    this.salTaxIsInvoiceBase = pSalTaxIsInvoiceBase;
   }
 }

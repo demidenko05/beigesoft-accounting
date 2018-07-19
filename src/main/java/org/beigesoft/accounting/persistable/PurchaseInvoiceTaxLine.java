@@ -1,7 +1,7 @@
 package org.beigesoft.accounting.persistable;
 
 /*
- * Copyright (c) 2016 Beigesoft ™
+ * Copyright (c) 2016 Beigesoft™
  *
  * Licensed under the GNU General Public License (GPL), Version 2.0
  * (the "License");
@@ -15,7 +15,7 @@ package org.beigesoft.accounting.persistable;
 import java.math.BigDecimal;
 
 import org.beigesoft.model.IOwned;
-import org.beigesoft.accounting.persistable.base.ADocTaxLine;
+import org.beigesoft.accounting.persistable.base.ADocTaxLineFc;
 
 /**
  * <pre>
@@ -24,7 +24,7 @@ import org.beigesoft.accounting.persistable.base.ADocTaxLine;
  *
  * @author Yury Demidenko
  */
-public class PurchaseInvoiceTaxLine extends ADocTaxLine
+public class PurchaseInvoiceTaxLine extends ADocTaxLineFc
   implements IOwned<PurchaseInvoice> {
 
   /**
@@ -33,10 +33,14 @@ public class PurchaseInvoiceTaxLine extends ADocTaxLine
   private PurchaseInvoice itsOwner;
 
   /**
-   * <p>Total taxes in foreign currency, if used,
-   * in case of domestic sales (if law allow it).</p>
+   * <p>It's 0 if item basis otherwise taxable amount for invoice basis.</p>
    **/
-  private BigDecimal foreignTotalTaxes = BigDecimal.ZERO;
+  private BigDecimal taxableInvBas = BigDecimal.ZERO;
+  /**
+   * <p>It's 0 if item basis otherwise taxable amount in foreign currency
+   * for invoice basis.</p>
+   **/
+  private BigDecimal taxableInvBasFc = BigDecimal.ZERO;
 
   /**
    * <p>Geter for itsOwner.</p>
@@ -58,18 +62,34 @@ public class PurchaseInvoiceTaxLine extends ADocTaxLine
 
   //SGS:
   /**
-   * <p>Getter for foreignTotalTaxes.</p>
+   * <p>Getter for taxableInvBas.</p>
    * @return BigDecimal
    **/
-  public final BigDecimal getForeignTotalTaxes() {
-    return this.foreignTotalTaxes;
+  public final BigDecimal getTaxableInvBas() {
+    return this.taxableInvBas;
   }
 
   /**
-   * <p>Setter for foreignTotalTaxes.</p>
-   * @param pForeignTotalTaxes reference
+   * <p>Setter for taxableInvBas.</p>
+   * @param pTaxableInvBas reference
    **/
-  public final void setForeignTotalTaxes(final BigDecimal pForeignTotalTaxes) {
-    this.foreignTotalTaxes = pForeignTotalTaxes;
+  public final void setTaxableInvBas(final BigDecimal pTaxableInvBas) {
+    this.taxableInvBas = pTaxableInvBas;
+  }
+
+  /**
+   * <p>Getter for taxableInvBasFc.</p>
+   * @return BigDecimal
+   **/
+  public final BigDecimal getTaxableInvBasFc() {
+    return this.taxableInvBasFc;
+  }
+
+  /**
+   * <p>Setter for taxableInvBasFc.</p>
+   * @param pTaxableInvBasFc reference
+   **/
+  public final void setTaxableInvBasFc(final BigDecimal pTaxableInvBasFc) {
+    this.taxableInvBasFc = pTaxableInvBasFc;
   }
 }

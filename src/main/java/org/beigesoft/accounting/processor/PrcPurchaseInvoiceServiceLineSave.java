@@ -1,7 +1,7 @@
 package org.beigesoft.accounting.processor;
 
 /*
- * Copyright (c) 2017 Beigesoft ™
+ * Copyright (c) 2017 Beigesoft™
  *
  * Licensed under the GNU General Public License (GPL), Version 2.0
  * (the "License");
@@ -119,11 +119,15 @@ public class PrcPurchaseInvoiceServiceLineSave<RS>
     BigDecimal totalTaxesFc = BigDecimal.ZERO;
     String taxesDescription = "";
     List<PurchaseInvoiceServiceTaxLine> tls = null;
+    boolean isItemBasis = !getSrvAccSettings()
+      .lazyGetAccSettings(pAddParam).getSalTaxIsInvoiceBase();
     if (!pEntity.getItsOwner().getVendor().getIsForeigner()
       && getSrvAccSettings().lazyGetAccSettings(pAddParam)
         .getIsExtractSalesTaxFromPurchase()
           && pEntity.getService().getTaxCategory() != null) {
-      tls = new ArrayList<PurchaseInvoiceServiceTaxLine>();
+      if (isItemBasis) {
+        tls = new ArrayList<PurchaseInvoiceServiceTaxLine>();
+      }
       List<InvItemTaxCategoryLine> pstl = getSrvOrm()
         .retrieveListWithConditions(pAddParam,
           InvItemTaxCategoryLine.class, "where ITSOWNER="
@@ -142,23 +146,27 @@ public class PrcPurchaseInvoiceServiceLineSave<RS>
           if (i++ > 0) {
             sb.append(", ");
           }
-          PurchaseInvoiceServiceTaxLine pistl =
-            new PurchaseInvoiceServiceTaxLine();
-          pistl.setIsNew(true);
-          pistl.setIdDatabaseBirth(this.srvOrm.getIdDatabase());
-          pistl.setItsTotal(addTx);
-          pistl.setTax(pst.getTax());
-          if (pEntity.getItsOwner().getForeignCurrency() != null) {
-            BigDecimal addTxFc = pEntity.getForeignSubtotal().multiply(pst
-          .getItsPercentage()).divide(bigDecimal100, getSrvAccSettings()
-        .lazyGetAccSettings(pAddParam).getPricePrecision(),
-      getSrvAccSettings().lazyGetAccSettings(pAddParam).getRoundingMode());
-            totalTaxesFc = totalTaxesFc.add(addTxFc);
-            pistl.setForeignTotalTaxes(addTxFc);
+          if (isItemBasis) {
+            PurchaseInvoiceServiceTaxLine pistl =
+              new PurchaseInvoiceServiceTaxLine();
+            pistl.setIsNew(true);
+            pistl.setIdDatabaseBirth(this.srvOrm.getIdDatabase());
+            pistl.setItsTotal(addTx);
+            pistl.setTax(pst.getTax());
+            if (pEntity.getItsOwner().getForeignCurrency() != null) {
+              BigDecimal addTxFc = pEntity.getForeignSubtotal().multiply(pst
+            .getItsPercentage()).divide(bigDecimal100, getSrvAccSettings()
+          .lazyGetAccSettings(pAddParam).getPricePrecision(),
+        getSrvAccSettings().lazyGetAccSettings(pAddParam).getRoundingMode());
+              totalTaxesFc = totalTaxesFc.add(addTxFc);
+              pistl.setForeignTotalTaxes(addTxFc);
+            }
+            tls.add(pistl);
+            sb.append(pst.getTax().getItsName() + " "
+              + prn(pAddParam, addTx));
+          } else {
+            sb.append(pst.getTax().getItsName());
           }
-          tls.add(pistl);
-          sb.append(pst.getTax().getItsName() + " "
-            + prn(pAddParam, addTx));
         }
       }
       taxesDescription = sb.toString();

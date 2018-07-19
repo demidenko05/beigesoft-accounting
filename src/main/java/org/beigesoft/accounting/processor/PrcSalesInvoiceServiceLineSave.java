@@ -1,7 +1,7 @@
 package org.beigesoft.accounting.processor;
 
 /*
- * Copyright (c) 2017 Beigesoft ™
+ * Copyright (c) 2017 Beigesoft™
  *
  * Licensed under the GNU General Public License (GPL), Version 2.0
  * (the "License");
@@ -118,11 +118,15 @@ public class PrcSalesInvoiceServiceLineSave<RS>
     BigDecimal totalTaxesFc = BigDecimal.ZERO;
     String taxesDescription = "";
     List<SalesInvoiceServiceTaxLine> tls = null;
+    boolean isItemBasis = !getSrvAccSettings()
+      .lazyGetAccSettings(pAddParam).getSalTaxIsInvoiceBase();
     if (!pEntity.getItsOwner().getCustomer().getIsForeigner()
         && getSrvAccSettings().lazyGetAccSettings(pAddParam)
           .getIsExtractSalesTaxFromSales()
             && pEntity.getService().getTaxCategory() != null) {
-      tls = new ArrayList<SalesInvoiceServiceTaxLine>();
+      if (isItemBasis) {
+        tls = new ArrayList<SalesInvoiceServiceTaxLine>();
+      }
       List<InvItemTaxCategoryLine> pstl = getSrvOrm()
         .retrieveListWithConditions(pAddParam,
           InvItemTaxCategoryLine.class, "where ITSOWNER="
@@ -133,32 +137,36 @@ public class PrcSalesInvoiceServiceLineSave<RS>
       for (InvItemTaxCategoryLine pst : pstl) {
         if (ETaxType.SALES_TAX_OUTITEM.equals(pst.getTax().getItsType())
           || ETaxType.SALES_TAX_INITEM.equals(pst.getTax().getItsType())) {
-          BigDecimal addTx = pEntity.getSubtotal().multiply(pst
-        .getItsPercentage())
-      .divide(bigDecimal100, getSrvAccSettings().lazyGetAccSettings(pAddParam)
-    .getPricePrecision(), getSrvAccSettings().lazyGetAccSettings(pAddParam)
-  .getRoundingMode());
-          totalTaxes = totalTaxes.add(addTx);
           if (i++ > 0) {
             sb.append(", ");
           }
-          sb.append(pst.getTax().getItsName() + " "
-            + prn(pAddParam, addTx));
-          SalesInvoiceServiceTaxLine pistl =
-            new SalesInvoiceServiceTaxLine();
-          pistl.setIsNew(true);
-          pistl.setIdDatabaseBirth(this.srvOrm.getIdDatabase());
-          pistl.setItsTotal(addTx);
-          pistl.setTax(pst.getTax());
-          if (pEntity.getItsOwner().getForeignCurrency() != null) {
-            BigDecimal addTxFc = pEntity.getForeignSubtotal().multiply(pst
-          .getItsPercentage()).divide(bigDecimal100, getSrvAccSettings()
-        .lazyGetAccSettings(pAddParam).getPricePrecision(),
-      getSrvAccSettings().lazyGetAccSettings(pAddParam).getRoundingMode());
-            totalTaxesFc = totalTaxesFc.add(addTxFc);
-            pistl.setForeignTotalTaxes(addTxFc);
+          if (isItemBasis) {
+            BigDecimal addTx = pEntity.getSubtotal().multiply(pst
+          .getItsPercentage())
+        .divide(bigDecimal100, getSrvAccSettings().lazyGetAccSettings(pAddParam)
+      .getPricePrecision(), getSrvAccSettings().lazyGetAccSettings(pAddParam)
+    .getRoundingMode());
+            totalTaxes = totalTaxes.add(addTx);
+            SalesInvoiceServiceTaxLine pistl =
+              new SalesInvoiceServiceTaxLine();
+            pistl.setIsNew(true);
+            pistl.setIdDatabaseBirth(this.srvOrm.getIdDatabase());
+            pistl.setItsTotal(addTx);
+            pistl.setTax(pst.getTax());
+            if (pEntity.getItsOwner().getForeignCurrency() != null) {
+              BigDecimal addTxFc = pEntity.getForeignSubtotal().multiply(pst
+            .getItsPercentage()).divide(bigDecimal100, getSrvAccSettings()
+          .lazyGetAccSettings(pAddParam).getPricePrecision(),
+        getSrvAccSettings().lazyGetAccSettings(pAddParam).getRoundingMode());
+              totalTaxesFc = totalTaxesFc.add(addTxFc);
+              pistl.setForeignTotalTaxes(addTxFc);
+            }
+            tls.add(pistl);
+            sb.append(pst.getTax().getItsName() + " "
+              + prn(pAddParam, addTx));
+          } else {
+            sb.append(pst.getTax().getItsName());
           }
-          tls.add(pistl);
         }
       }
       taxesDescription = sb.toString();

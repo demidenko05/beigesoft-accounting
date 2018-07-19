@@ -179,11 +179,15 @@ public class PrcPurchaseInvoiceLineSave<RS>
         BigDecimal totalTaxesFc = BigDecimal.ZERO;
         String taxesDescription = "";
         Set<PurchaseInvoiceGoodsTaxLine> tls = null;
+        boolean isItemBasis = !getSrvAccSettings()
+          .lazyGetAccSettings(pAddParam).getSalTaxIsInvoiceBase();
         if (!pEntity.getItsOwner().getVendor().getIsForeigner()
           && getSrvAccSettings().lazyGetAccSettings(pAddParam)
             .getIsExtractSalesTaxFromPurchase()
               && pEntity.getInvItem().getTaxCategory() != null) {
-          tls = new HashSet<PurchaseInvoiceGoodsTaxLine>();
+          if (isItemBasis) {
+            tls = new HashSet<PurchaseInvoiceGoodsTaxLine>();
+          }
           InvItemTaxCategoryLine iitcLn = new InvItemTaxCategoryLine();
           iitcLn.setItsOwner(pEntity.getInvItem().getTaxCategory());
           List<InvItemTaxCategoryLine> iitcll = getSrvOrm()
@@ -199,27 +203,32 @@ public class PrcPurchaseInvoiceLineSave<RS>
                   .lazyGetAccSettings(pAddParam).getPricePrecision(),
                     getSrvAccSettings()
                       .lazyGetAccSettings(pAddParam).getRoundingMode());
-              totalTaxes = totalTaxes.add(addTx);
               if (i++ > 0) {
                 sb.append(", ");
               }
-              PurchaseInvoiceGoodsTaxLine pigtl =
-                new PurchaseInvoiceGoodsTaxLine();
-              pigtl.setIsNew(true);
-              pigtl.setIdDatabaseBirth(this.srvOrm.getIdDatabase());
-              pigtl.setItsTotal(addTx);
-              pigtl.setTax(iitcl.getTax());
-              if (pEntity.getItsOwner().getForeignCurrency() != null) {
-                BigDecimal addTxFc = pEntity.getForeignSubtotal().multiply(iitcl
-              .getItsPercentage()).divide(bigDecimal100, getSrvAccSettings()
-            .lazyGetAccSettings(pAddParam).getPricePrecision(),
-          getSrvAccSettings().lazyGetAccSettings(pAddParam).getRoundingMode());
-                totalTaxesFc = totalTaxesFc.add(addTxFc);
-                pigtl.setForeignTotalTaxes(addTxFc);
+              if (isItemBasis) {
+                totalTaxes = totalTaxes.add(addTx);
+                PurchaseInvoiceGoodsTaxLine pigtl =
+                  new PurchaseInvoiceGoodsTaxLine();
+                pigtl.setIsNew(true);
+                pigtl.setIdDatabaseBirth(this.srvOrm.getIdDatabase());
+                pigtl.setItsTotal(addTx);
+                pigtl.setTax(iitcl.getTax());
+                if (pEntity.getItsOwner().getForeignCurrency() != null) {
+                  BigDecimal addTxFc = pEntity.getForeignSubtotal().multiply(
+                iitcl.getItsPercentage()).divide(bigDecimal100,
+              getSrvAccSettings().lazyGetAccSettings(pAddParam)
+            .getPricePrecision(), getSrvAccSettings()
+          .lazyGetAccSettings(pAddParam).getRoundingMode());
+                  totalTaxesFc = totalTaxesFc.add(addTxFc);
+                  pigtl.setForeignTotalTaxes(addTxFc);
+                }
+                tls.add(pigtl);
+                sb.append(iitcl.getTax().getItsName() + " "
+                  + prn(pAddParam, addTx));
+              } else {
+                sb.append(iitcl.getTax().getItsName());
               }
-              tls.add(pigtl);
-              sb.append(iitcl.getTax().getItsName() + " "
-                + prn(pAddParam, addTx));
             }
           }
           taxesDescription = sb.toString();
