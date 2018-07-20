@@ -179,18 +179,6 @@ public class AccSettings extends AHasIdLongVersion {
   private Boolean printCurrencyLeft = false;
 
   /**
-   * <pre>Not Null, if rip decimal places of sales tax before rounding.
-   * price = 4.83
-   * tax rate = 9%
-   * tax calculation:
-   * step#1: 4.83 * 0.09 = 0.4347
-   * step#2: ripDecPl(0.4347, 3) = 0.434
-   * step#3: round(0.434, 2) = 0.43
-   * </pre>
-   **/
-  private Integer salTaxRipDecPl = 0;
-
-  /**
    * <p>Rounding mode for sales taxes.</p>
    **/
   private RoundingMode salTaxRoundMode = RoundingMode.HALF_UP;
@@ -667,22 +655,6 @@ public class AccSettings extends AHasIdLongVersion {
    **/
   public final void setPrintCurrencyLeft(final Boolean pPrintCurrencyLeft) {
     this.printCurrencyLeft = pPrintCurrencyLeft;
-  }
-
-  /**
-   * <p>Getter for salTaxRipDecPl.</p>
-   * @return Integer
-   **/
-  public final Integer getSalTaxRipDecPl() {
-    return this.salTaxRipDecPl;
-  }
-
-  /**
-   * <p>Setter for salTaxRipDecPl.</p>
-   * @param pSalTaxRipDecPl reference
-   **/
-  public final void setSalTaxRipDecPl(final Integer pSalTaxRipDecPl) {
-    this.salTaxRipDecPl = pSalTaxRipDecPl;
   }
 
   /**

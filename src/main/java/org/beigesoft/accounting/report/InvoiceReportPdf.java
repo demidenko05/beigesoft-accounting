@@ -347,8 +347,14 @@ public class InvoiceReportPdf<RS, WI>
       docMaker.makeDocTableWrapping(tblTiGoods);
       doc.setContentPadding(1.0);
       doc.setContentPaddingBottom(1.5);
+      int rowc;
+      if (accSet.getSalTaxIsInvoiceBase()) {
+        rowc = 6;
+      } else {
+        rowc = 8;
+      }
       DocTable<WI> tblGoods = docMaker
-        .addDocTable(doc, 8, inv.getItsLines().size() + 1);
+        .addDocTable(doc, rowc, inv.getItsLines().size() + 1);
       tblGoods.setIsRepeatHead(true);
       tblGoods.getItsRows().get(0).setIsHead(true);
       tblGoods.getItsCells().get(0).setItsContent(this.srvI18n
@@ -369,13 +375,15 @@ public class InvoiceReportPdf<RS, WI>
       tblGoods.getItsColumns().get(4).setWraping(EWraping.WRAP_CONTENT);
       tblGoods.getItsCells().get(5)
         .setItsContent(this.srvI18n.getMsg("taxesDescription", lang));
-      tblGoods.getItsCells().get(6).setItsContent(this.srvI18n
-        .getMsg("totalTaxes", lang).replace(" ", "\n"));
-      tblGoods.getItsColumns().get(6).setWraping(EWraping.WRAP_CONTENT);
-      tblGoods.getItsCells().get(7).setItsContent(this.srvI18n
-        .getMsg("itsTotal", lang).replace(" ", "\n"));
-      tblGoods.getItsColumns().get(7).setWraping(EWraping.WRAP_CONTENT);
-      for (int i = 0; i < 8; i++) {
+      if (!accSet.getSalTaxIsInvoiceBase()) {
+        tblGoods.getItsCells().get(6).setItsContent(this.srvI18n
+          .getMsg("totalTaxes", lang).replace(" ", "\n"));
+        tblGoods.getItsColumns().get(6).setWraping(EWraping.WRAP_CONTENT);
+        tblGoods.getItsCells().get(7).setItsContent(this.srvI18n
+          .getMsg("itsTotal", lang).replace(" ", "\n"));
+        tblGoods.getItsColumns().get(7).setWraping(EWraping.WRAP_CONTENT);
+      }
+      for (int i = 0; i < rowc; i++) {
         tblGoods.getItsCells().get(i).setFontNumber(1);
         tblGoods.getItsCells().get(i)
           .setAlignHorizontal(EAlignHorizontal.CENTER);
@@ -394,44 +402,46 @@ public class InvoiceReportPdf<RS, WI>
           total = ln.getItsTotal();
         }
         int i = 0;
-        int k = j * 8 + i++;
+        int k = j * rowc + i++;
         tblGoods.getItsCells().get(k)
           .setItsContent(ln.getInvItem().getItsName());
-        k = j * 8 + i++;
+        k = j * rowc + i++;
         tblGoods.getItsCells().get(k)
           .setAlignHorizontal(EAlignHorizontal.CENTER);
         tblGoods.getItsCells().get(k)
           .setItsContent(ln.getUnitOfMeasure().getItsName());
-        k = j * 8 + i++;
+        k = j * rowc + i++;
         tblGoods.getItsCells().get(k)
           .setAlignHorizontal(EAlignHorizontal.RIGHT);
         tblGoods.getItsCells().get(k)
           .setItsContent(prn(pReqVars, price));
-        k = j * 8 + i++;
+        k = j * rowc + i++;
         tblGoods.getItsCells().get(k)
           .setAlignHorizontal(EAlignHorizontal.RIGHT);
         tblGoods.getItsCells().get(k)
           .setItsContent(prn(pReqVars, ln.getItsQuantity()));
-        k = j * 8 + i++;
+        k = j * rowc + i++;
         tblGoods.getItsCells().get(k)
           .setAlignHorizontal(EAlignHorizontal.RIGHT);
         tblGoods.getItsCells().get(k)
           .setItsContent(prn(pReqVars, subtotal));
-        k = j * 8 + i++;
+        k = j * rowc + i++;
         tblGoods.getItsCells().get(k)
           .setAlignHorizontal(EAlignHorizontal.CENTER);
         tblGoods.getItsCells().get(k)
           .setItsContent(ln.getTaxesDescription());
-        k = j * 8 + i++;
-        tblGoods.getItsCells().get(k)
-          .setAlignHorizontal(EAlignHorizontal.RIGHT);
-        tblGoods.getItsCells().get(k)
-          .setItsContent(prn(pReqVars, totalTaxes));
-        k = j * 8 + i++;
-        tblGoods.getItsCells().get(k)
-          .setAlignHorizontal(EAlignHorizontal.RIGHT);
-        tblGoods.getItsCells().get(k)
-          .setItsContent(prn(pReqVars, total));
+        if (!accSet.getSalTaxIsInvoiceBase()) {
+          k = j * rowc + i++;
+          tblGoods.getItsCells().get(k)
+            .setAlignHorizontal(EAlignHorizontal.RIGHT);
+          tblGoods.getItsCells().get(k)
+            .setItsContent(prn(pReqVars, totalTaxes));
+          k = j * rowc + i++;
+          tblGoods.getItsCells().get(k)
+            .setAlignHorizontal(EAlignHorizontal.RIGHT);
+          tblGoods.getItsCells().get(k)
+            .setItsContent(prn(pReqVars, total));
+        }
         j++;
       }
     }
@@ -445,8 +455,17 @@ public class InvoiceReportPdf<RS, WI>
       docMaker.makeDocTableWrapping(tblTiServices);
       doc.setContentPadding(1.0);
       doc.setContentPaddingBottom(1.5);
+      int rowc;
+      double wd15;
+      if (accSet.getSalTaxIsInvoiceBase()) {
+        rowc = 6;
+        wd15 = 30.0d;
+      } else {
+        rowc = 8;
+        wd15 = 15.0d;
+      }
       DocTable<WI> tblServices = docMaker
-        .addDocTable(doc, 8, inv.getServices().size() + 1);
+        .addDocTable(doc, rowc, inv.getServices().size() + 1);
       tblServices.setIsRepeatHead(true);
       tblServices.getItsRows().get(0).setIsHead(true);
       tblServices.getItsCells().get(0)
@@ -459,7 +478,7 @@ public class InvoiceReportPdf<RS, WI>
       tblServices.getItsCells().get(2)
         .setItsContent(this.srvI18n.getMsg("itsPrice", lang));
       tblServices.getItsColumns().get(2).setIsWidthFixed(true);
-      tblServices.getItsColumns().get(2).setWidthInPercentage(15.0);
+      tblServices.getItsColumns().get(2).setWidthInPercentage(wd15);
       tblServices.getItsCells().get(3).setItsContent(this.srvI18n
         .getMsg("itsQuantity", lang).replace(" ", "\n"));
       tblServices.getItsColumns().get(3).setWraping(EWraping.WRAP_CONTENT);
@@ -468,17 +487,19 @@ public class InvoiceReportPdf<RS, WI>
       tblServices.getItsColumns().get(4).setWraping(EWraping.WRAP_CONTENT);
       tblServices.getItsCells().get(5)
         .setItsContent(this.srvI18n.getMsg("taxesDescription", lang));
-      tblServices.getItsColumns().get(5).setIsWidthFixed(true);
-      tblServices.getItsColumns().get(5).setWidthInPercentage(20.0);
-      tblServices.getItsCells().get(6)
-        .setItsContent(this.srvI18n.getMsg("totalTaxes", lang));
-      tblServices.getItsColumns().get(6).setIsWidthFixed(true);
-      tblServices.getItsColumns().get(6).setWidthInPercentage(15.0);
-      tblServices.getItsCells().get(7)
-        .setItsContent(this.srvI18n.getMsg("itsTotal", lang));
-      tblServices.getItsColumns().get(7).setIsWidthFixed(true);
-      tblServices.getItsColumns().get(7).setWidthInPercentage(15.0);
-      for (int i = 0; i < 8; i++) {
+      if (!accSet.getSalTaxIsInvoiceBase()) {
+        tblServices.getItsColumns().get(5).setIsWidthFixed(true);
+        tblServices.getItsColumns().get(5).setWidthInPercentage(20.0);
+        tblServices.getItsCells().get(6)
+          .setItsContent(this.srvI18n.getMsg("totalTaxes", lang));
+        tblServices.getItsColumns().get(6).setIsWidthFixed(true);
+        tblServices.getItsColumns().get(6).setWidthInPercentage(wd15);
+        tblServices.getItsCells().get(7)
+          .setItsContent(this.srvI18n.getMsg("itsTotal", lang));
+        tblServices.getItsColumns().get(7).setIsWidthFixed(true);
+        tblServices.getItsColumns().get(7).setWidthInPercentage(wd15);
+      }
+      for (int i = 0; i < rowc; i++) {
         tblServices.getItsCells().get(i).setFontNumber(1);
         tblServices.getItsCells().get(i)
           .setAlignHorizontal(EAlignHorizontal.CENTER);
@@ -497,44 +518,46 @@ public class InvoiceReportPdf<RS, WI>
           total = ln.getItsTotal();
         }
         int i = 0;
-        int k = j * 8 + i++;
+        int k = j * rowc + i++;
         tblServices.getItsCells().get(k)
           .setItsContent(ln.getService().getItsName());
-        k = j * 8 + i++;
+        k = j * rowc + i++;
         tblServices.getItsCells().get(k)
           .setAlignHorizontal(EAlignHorizontal.CENTER);
         tblServices.getItsCells().get(k)
           .setItsContent(ln.getUnitOfMeasure().getItsName());
-        k = j * 8 + i++;
+        k = j * rowc + i++;
         tblServices.getItsCells().get(k)
           .setAlignHorizontal(EAlignHorizontal.RIGHT);
         tblServices.getItsCells().get(k)
           .setItsContent(prn(pReqVars, price));
-        k = j * 8 + i++;
+        k = j * rowc + i++;
         tblServices.getItsCells().get(k)
           .setAlignHorizontal(EAlignHorizontal.RIGHT);
         tblServices.getItsCells().get(k)
           .setItsContent(prn(pReqVars, ln.getItsQuantity()));
-        k = j * 8 + i++;
+        k = j * rowc + i++;
         tblServices.getItsCells().get(k)
           .setAlignHorizontal(EAlignHorizontal.RIGHT);
         tblServices.getItsCells().get(k)
           .setItsContent(prn(pReqVars, subtotal));
-        k = j * 8 + i++;
+        k = j * rowc + i++;
         tblServices.getItsCells().get(k)
           .setAlignHorizontal(EAlignHorizontal.CENTER);
         tblServices.getItsCells().get(k)
           .setItsContent(ln.getTaxesDescription());
-        k = j * 8 + i++;
-        tblServices.getItsCells().get(k)
-          .setAlignHorizontal(EAlignHorizontal.RIGHT);
-        tblServices.getItsCells().get(k)
-          .setItsContent(prn(pReqVars, totalTaxes));
-        k = j * 8 + i++;
-        tblServices.getItsCells().get(k)
-          .setAlignHorizontal(EAlignHorizontal.RIGHT);
-        tblServices.getItsCells().get(k)
-          .setItsContent(prn(pReqVars, total));
+        if (!accSet.getSalTaxIsInvoiceBase()) {
+          k = j * rowc + i++;
+          tblServices.getItsCells().get(k)
+            .setAlignHorizontal(EAlignHorizontal.RIGHT);
+          tblServices.getItsCells().get(k)
+            .setItsContent(prn(pReqVars, totalTaxes));
+          k = j * rowc + i++;
+          tblServices.getItsCells().get(k)
+            .setAlignHorizontal(EAlignHorizontal.RIGHT);
+          tblServices.getItsCells().get(k)
+            .setItsContent(prn(pReqVars, total));
+        }
         j++;
       }
     }
@@ -550,30 +573,53 @@ public class InvoiceReportPdf<RS, WI>
       docMaker.makeDocTableWrapping(tblTiTaxes);
       doc.setContentPadding(1.0);
       doc.setContentPaddingBottom(1.5);
+      int rowc;
+      double rowtw;
+      if (accSet.getSalTaxIsInvoiceBase()) {
+        rowc = 3;
+        rowtw = 40.0d;
+      } else {
+        rowc = 2;
+        rowtw = 70.0d;
+      }
       DocTable<WI> tblTaxes = docMaker
-        .addDocTable(doc, 2, inv.getTaxesLines().size() + 1);
+        .addDocTable(doc, rowc, inv.getTaxesLines().size() + 1);
       tblTaxes.getItsCells().get(0)
         .setItsContent(this.srvI18n.getMsg("tax", lang));
       tblTaxes.getItsColumns().get(0).setIsWidthFixed(true);
-      tblTaxes.getItsColumns().get(0).setWidthInPercentage(70.0);
-      tblTaxes.getItsCells().get(1)
+      tblTaxes.getItsColumns().get(0).setWidthInPercentage(rowtw);
+      if (accSet.getSalTaxIsInvoiceBase()) {
+        tblTaxes.getItsCells().get(1)
+          .setItsContent(this.srvI18n.getMsg("taxable", lang));
+      }
+      tblTaxes.getItsCells().get(rowc - 1)
         .setItsContent(this.srvI18n.getMsg("itsTotal", lang));
-      for (int i = 0; i < 2; i++) {
+      for (int i = 0; i < rowc; i++) {
         tblTaxes.getItsCells().get(i).setFontNumber(1);
         tblTaxes.getItsCells().get(i)
           .setAlignHorizontal(EAlignHorizontal.CENTER);
       }
+      BigDecimal taxable;
       int j = 1;
       for (SalesInvoiceTaxLine ln : inv.getTaxesLines()) {
         if (inv.getForeignCurrency() != null) {
+          taxable = ln.getTaxableInvBasFc();
           total = ln.getForeignTotalTaxes();
         } else {
+          taxable = ln.getTaxableInvBas();
           total = ln.getItsTotal();
         }
         int i = 0;
-        tblTaxes.getItsCells().get(j * 2 + i++)
+        tblTaxes.getItsCells().get(j * rowc + i++)
           .setItsContent(ln.getTax().getItsName());
-        int k = j * 2 + i++;
+        int k = j * rowc + i++;
+        if (accSet.getSalTaxIsInvoiceBase()) {
+          tblTaxes.getItsCells().get(k)
+            .setAlignHorizontal(EAlignHorizontal.RIGHT);
+          tblTaxes.getItsCells().get(k)
+            .setItsContent(prn(pReqVars, taxable));
+          k = j * rowc + i++;
+        }
         tblTaxes.getItsCells().get(k)
           .setAlignHorizontal(EAlignHorizontal.RIGHT);
         tblTaxes.getItsCells().get(k)

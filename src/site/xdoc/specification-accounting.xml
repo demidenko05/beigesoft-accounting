@@ -1819,6 +1819,15 @@ select null, 2
         </li>
       </ul>
       
+      <h5>TODO</h5>
+      <p>
+        <ul>
+          <li>warehouse withdrawal and load (issue and receipt) transactions must have read_commited isolation, cause loading (receipt) transactions might rollback.</li>
+          <li>check SQL injection vulnerability for list filtering with "explicit filters".</li>
+          <li>custom permissions - e.g. user permission for AccSettings - write...</li>
+        </ul>
+      </p>
+      
     </section>
 
   </body>

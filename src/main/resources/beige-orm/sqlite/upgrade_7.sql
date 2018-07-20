@@ -39,6 +39,5 @@ alter table PURCHASEINVOICETAXLINE add column TAXABLEINVBASFC real default 0;
 alter table PAYMENTTO add column FOREIGNTOTAL real default 0;
 alter table PREPAYMENTTO add column FOREIGNTOTAL real default 0;
 alter table ACCSETTINGS add column SALTAXISINVOICEBASE integer not null default 0;
-alter table ACCSETTINGS add column SALTAXRIPDECPL integer not null default 0;
 alter table ACCSETTINGS add column SALTAXROUNDMODE integer not null default 4;
 update DATABASEINFO set DATABASEVERSION=7, DESCRIPTION='Beige Accounting OIO DB version 7';

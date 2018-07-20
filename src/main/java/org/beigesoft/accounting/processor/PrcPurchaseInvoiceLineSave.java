@@ -29,6 +29,7 @@ import org.beigesoft.accounting.persistable.InvItemTaxCategoryLine;
 import org.beigesoft.accounting.persistable.PurchaseInvoiceGoodsTaxLine;
 import org.beigesoft.accounting.persistable.PurchaseInvoiceLine;
 import org.beigesoft.accounting.persistable.PurchaseInvoice;
+import org.beigesoft.accounting.persistable.AccSettings;
 import org.beigesoft.accounting.service.ISrvWarehouseEntry;
 import org.beigesoft.accounting.service.ISrvAccSettings;
 
@@ -145,47 +146,35 @@ public class PrcPurchaseInvoiceLineSave<RS>
           throw new ExceptionWithCode(ExceptionWithCode.WRONG_PARAMETER,
             "type_must_be_material_or_merchandise::" + pAddParam.get("user"));
         }
+        AccSettings as = getSrvAccSettings().lazyGetAccSettings(pAddParam);
         //rounding:
-        pEntity.setItsQuantity(pEntity.getItsQuantity().setScale(
-          getSrvAccSettings().lazyGetAccSettings(pAddParam)
-            .getQuantityPrecision(), getSrvAccSettings()
-              .lazyGetAccSettings(pAddParam).getRoundingMode()));
+        pEntity.setItsQuantity(pEntity.getItsQuantity().setScale(as
+          .getQuantityPrecision(), as.getRoundingMode()));
         if (pEntity.getItsOwner().getForeignCurrency() != null) {
-          pEntity.setForeignPrice(pEntity.getForeignPrice().setScale(
-        getSrvAccSettings().lazyGetAccSettings(pAddParam).getCostPrecision(),
-      getSrvAccSettings().lazyGetAccSettings(pAddParam).getRoundingMode()));
+          pEntity.setForeignPrice(pEntity.getForeignPrice().setScale(as
+            .getCostPrecision(), as.getRoundingMode()));
           pEntity.setItsCost(pEntity.getForeignPrice().multiply(pEntity
-        .getItsOwner().getExchangeRate()).setScale(getSrvAccSettings()
-      .lazyGetAccSettings(pAddParam).getCostPrecision(), getSrvAccSettings()
-    .lazyGetAccSettings(pAddParam).getRoundingMode()));
+            .getItsOwner().getExchangeRate()).setScale(as.getCostPrecision(),
+              as.getRoundingMode()));
           //without taxes:
           pEntity.setForeignSubtotal(pEntity.getItsQuantity().multiply(pEntity
-        .getForeignPrice()).setScale(getSrvAccSettings().lazyGetAccSettings(
-      pAddParam).getCostPrecision(), getSrvAccSettings()
-    .lazyGetAccSettings(pAddParam).getRoundingMode()));
+    .getForeignPrice()).setScale(as.getCostPrecision(), as.getRoundingMode()));
         } else {
-          pEntity.setItsCost(pEntity.getItsCost().setScale(getSrvAccSettings()
-        .lazyGetAccSettings(pAddParam).getCostPrecision(), getSrvAccSettings()
-      .lazyGetAccSettings(pAddParam).getRoundingMode()));
+          pEntity.setItsCost(pEntity.getItsCost().setScale(as
+            .getCostPrecision(), as.getRoundingMode()));
         }
         //without taxes:
         pEntity.setSubtotal(pEntity.getItsQuantity().multiply(pEntity
-          .getItsCost()).setScale(getSrvAccSettings()
-            .lazyGetAccSettings(pAddParam).getPricePrecision(),
-              getSrvAccSettings().lazyGetAccSettings(pAddParam)
-                .getRoundingMode()));
+      .getItsCost()).setScale(as.getPricePrecision(), as.getRoundingMode()));
         pEntity.setTheRest(pEntity.getItsQuantity());
         BigDecimal totalTaxes = BigDecimal.ZERO;
         BigDecimal totalTaxesFc = BigDecimal.ZERO;
         String taxesDescription = "";
         Set<PurchaseInvoiceGoodsTaxLine> tls = null;
-        boolean isItemBasis = !getSrvAccSettings()
-          .lazyGetAccSettings(pAddParam).getSalTaxIsInvoiceBase();
         if (!pEntity.getItsOwner().getVendor().getIsForeigner()
-          && getSrvAccSettings().lazyGetAccSettings(pAddParam)
-            .getIsExtractSalesTaxFromPurchase()
-              && pEntity.getInvItem().getTaxCategory() != null) {
-          if (isItemBasis) {
+          && as.getIsExtractSalesTaxFromPurchase()
+            && pEntity.getInvItem().getTaxCategory() != null) {
+          if (!as.getSalTaxIsInvoiceBase()) {
             tls = new HashSet<PurchaseInvoiceGoodsTaxLine>();
           }
           InvItemTaxCategoryLine iitcLn = new InvItemTaxCategoryLine();
@@ -199,14 +188,12 @@ public class PrcPurchaseInvoiceLineSave<RS>
             if (ETaxType.SALES_TAX_OUTITEM.equals(iitcl.getTax().getItsType())
             || ETaxType.SALES_TAX_INITEM.equals(iitcl.getTax().getItsType())) {
               BigDecimal addTx = pEntity.getSubtotal().multiply(iitcl
-                .getItsPercentage()).divide(bigDecimal100, getSrvAccSettings()
-                  .lazyGetAccSettings(pAddParam).getPricePrecision(),
-                    getSrvAccSettings()
-                      .lazyGetAccSettings(pAddParam).getRoundingMode());
+                .getItsPercentage()).divide(bigDecimal100, as
+                  .getPricePrecision(), as.getSalTaxRoundMode());
               if (i++ > 0) {
                 sb.append(", ");
               }
-              if (isItemBasis) {
+              if (!as.getSalTaxIsInvoiceBase()) {
                 totalTaxes = totalTaxes.add(addTx);
                 PurchaseInvoiceGoodsTaxLine pigtl =
                   new PurchaseInvoiceGoodsTaxLine();
@@ -216,10 +203,8 @@ public class PrcPurchaseInvoiceLineSave<RS>
                 pigtl.setTax(iitcl.getTax());
                 if (pEntity.getItsOwner().getForeignCurrency() != null) {
                   BigDecimal addTxFc = pEntity.getForeignSubtotal().multiply(
-                iitcl.getItsPercentage()).divide(bigDecimal100,
-              getSrvAccSettings().lazyGetAccSettings(pAddParam)
-            .getPricePrecision(), getSrvAccSettings()
-          .lazyGetAccSettings(pAddParam).getRoundingMode());
+                    iitcl.getItsPercentage()).divide(bigDecimal100, as
+                      .getPricePrecision(), as.getSalTaxRoundMode());
                   totalTaxesFc = totalTaxesFc.add(addTxFc);
                   pigtl.setForeignTotalTaxes(addTxFc);
                 }

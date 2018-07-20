@@ -37,19 +37,6 @@ round(2.244 + 2.244) != round(2.244) + round(2.244);
       </p>
       <p>>
         Common rounding method is Half-Up to the cent (minimal currency unit).
-        There are laws that demand additional actions, e.g. rip decimal places to 3 before rounding.
-        For example:
-<pre style="white-space: pre-wrap;">
-price = 4.83
-tax rate = 9%
-tax calculation:
-step#1: 4.83 * 0.09 = 0.4347
-step#2: ripDecPl(0.4347, 3) = 0.434
-step#3: round(0.434, 2) = 0.43
-
-* as you can see without step#2 result will be different: round(0.4347, 2) = 0.44
-</pre>
-        To implements this AccSettings has property "salTaxRipDecPl" of type Integer, 0 means no need to rip.
         To implements sales tax rounding mode AccSettings has property "salTaxRoundMode" of type java.math.RoundingMode.
         Beige-Accounting uses AccSettings.pricePrecision as number of decimal places for rounding tax.
       </p>
