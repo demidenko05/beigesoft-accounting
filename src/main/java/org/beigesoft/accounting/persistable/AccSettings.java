@@ -192,6 +192,11 @@ public class AccSettings extends AHasIdLongVersion {
    **/
   private Boolean salTaxIsInvoiceBase = Boolean.FALSE;
 
+  /**
+   * <p>Use aggregate tax rate for item basis method.</p>
+   **/
+  private Boolean salTaxUseAggregItBas = Boolean.FALSE;
+
   //Hiding references getters and setters:
   /**
    * <p>Getter for currentAccYear.</p>
@@ -687,5 +692,22 @@ public class AccSettings extends AHasIdLongVersion {
    **/
   public final void setSalTaxIsInvoiceBase(final Boolean pSalTaxIsInvoiceBase) {
     this.salTaxIsInvoiceBase = pSalTaxIsInvoiceBase;
+  }
+
+  /**
+   * <p>Getter for salTaxUseAggregItBas.</p>
+   * @return Boolean
+   **/
+  public final Boolean getSalTaxUseAggregItBas() {
+    return this.salTaxUseAggregItBas;
+  }
+
+  /**
+   * <p>Setter for salTaxUseAggregItBas.</p>
+   * @param pSalTaxUseAggregItBas reference
+   **/
+  public final void setSalTaxUseAggregItBas(
+    final Boolean pSalTaxUseAggregItBas) {
+    this.salTaxUseAggregItBas = pSalTaxUseAggregItBas;
   }
 }

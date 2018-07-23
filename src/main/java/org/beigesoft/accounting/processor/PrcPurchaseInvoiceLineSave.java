@@ -167,8 +167,10 @@ public class PrcPurchaseInvoiceLineSave<RS>
         pEntity.setSubtotal(pEntity.getItsQuantity().multiply(pEntity
       .getItsCost()).setScale(as.getPricePrecision(), as.getRoundingMode()));
         pEntity.setTheRest(pEntity.getItsQuantity());
+        BigDecimal aggrTaxRate = BigDecimal.ZERO;
         BigDecimal totalTaxes = BigDecimal.ZERO;
         BigDecimal totalTaxesFc = BigDecimal.ZERO;
+        BigDecimal bd100 = new BigDecimal("100.00");
         String taxesDescription = "";
         Set<PurchaseInvoiceGoodsTaxLine> tls = null;
         if (!pEntity.getItsOwner().getVendor().getIsForeigner()
@@ -181,42 +183,54 @@ public class PrcPurchaseInvoiceLineSave<RS>
           iitcLn.setItsOwner(pEntity.getInvItem().getTaxCategory());
           List<InvItemTaxCategoryLine> iitcll = getSrvOrm()
             .retrieveListForField(pAddParam, iitcLn, "itsOwner");
-          BigDecimal bigDecimal100 = new BigDecimal("100.00");
           StringBuffer sb = new StringBuffer();
           int i = 0;
           for (InvItemTaxCategoryLine iitcl : iitcll) {
             if (ETaxType.SALES_TAX_OUTITEM.equals(iitcl.getTax().getItsType())
             || ETaxType.SALES_TAX_INITEM.equals(iitcl.getTax().getItsType())) {
-              BigDecimal addTx = pEntity.getSubtotal().multiply(iitcl
-                .getItsPercentage()).divide(bigDecimal100, as
-                  .getPricePrecision(), as.getSalTaxRoundMode());
               if (i++ > 0) {
                 sb.append(", ");
               }
               if (!as.getSalTaxIsInvoiceBase()) {
-                totalTaxes = totalTaxes.add(addTx);
-                PurchaseInvoiceGoodsTaxLine pigtl =
-                  new PurchaseInvoiceGoodsTaxLine();
-                pigtl.setIsNew(true);
-                pigtl.setIdDatabaseBirth(this.srvOrm.getIdDatabase());
-                pigtl.setItsTotal(addTx);
-                pigtl.setTax(iitcl.getTax());
-                if (pEntity.getItsOwner().getForeignCurrency() != null) {
-                  BigDecimal addTxFc = pEntity.getForeignSubtotal().multiply(
-                    iitcl.getItsPercentage()).divide(bigDecimal100, as
+                if (as.getSalTaxUseAggregItBas()) {
+                  aggrTaxRate = aggrTaxRate.add(iitcl.getItsPercentage());
+                } else {
+                  BigDecimal addTx = pEntity.getSubtotal().multiply(iitcl
+                    .getItsPercentage()).divide(bd100, as
                       .getPricePrecision(), as.getSalTaxRoundMode());
-                  totalTaxesFc = totalTaxesFc.add(addTxFc);
-                  pigtl.setForeignTotalTaxes(addTxFc);
+                  totalTaxes = totalTaxes.add(addTx);
+                  PurchaseInvoiceGoodsTaxLine pigtl =
+                    new PurchaseInvoiceGoodsTaxLine();
+                  pigtl.setIsNew(true);
+                  pigtl.setIdDatabaseBirth(this.srvOrm.getIdDatabase());
+                  pigtl.setItsTotal(addTx);
+                  pigtl.setTax(iitcl.getTax());
+                  if (pEntity.getItsOwner().getForeignCurrency() != null) {
+                    BigDecimal addTxFc = pEntity.getForeignSubtotal().multiply(
+                      iitcl.getItsPercentage()).divide(bd100, as
+                        .getPricePrecision(), as.getSalTaxRoundMode());
+                    totalTaxesFc = totalTaxesFc.add(addTxFc);
+                    pigtl.setForeignTotalTaxes(addTxFc);
+                  }
+                  tls.add(pigtl);
+                  sb.append(iitcl.getTax().getItsName() + " "
+                    + prn(pAddParam, addTx));
                 }
-                tls.add(pigtl);
-                sb.append(iitcl.getTax().getItsName() + " "
-                  + prn(pAddParam, addTx));
-              } else {
+              }
+              if (as.getSalTaxIsInvoiceBase() || as.getSalTaxUseAggregItBas()) {
                 sb.append(iitcl.getTax().getItsName());
               }
             }
           }
           taxesDescription = sb.toString();
+        }
+        if (!as.getSalTaxIsInvoiceBase() && as.getSalTaxUseAggregItBas()) {
+          totalTaxes = pEntity.getSubtotal().multiply(aggrTaxRate).divide(
+            bd100, as.getPricePrecision(), as.getSalTaxRoundMode());
+          if (pEntity.getItsOwner().getForeignCurrency() != null) {
+            totalTaxesFc = pEntity.getForeignSubtotal().multiply(aggrTaxRate)
+              .divide(bd100, as.getPricePrecision(), as.getSalTaxRoundMode());
+          }
         }
         pEntity.setTaxesDescription(taxesDescription);
         pEntity.setTotalTaxes(totalTaxes);

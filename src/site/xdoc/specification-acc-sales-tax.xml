@@ -169,9 +169,14 @@ group by SOURCETYPE, SOURCEID, ITSDATE, ACCDEBIT, SUBACCDEBITTYPE, SUBACCDEBITID
       </pre>
       
       <h5>Sales taxes item basis method</h5>
-      <p>This method is more difficult and slowly than grouping method - invoice basis.</p>
+      <p>This method is more difficult and slowly than grouping method - invoice basis.
+      In case of aggregate tax, this is fast method.
+      </p>
       <p>
-        Persistable models that holds sales tax for an item (invoice line):
+        <b>Non-aggregate method (NAM) implementation</b>
+      </p>
+      <p>
+        Persistable models that holds sales tax for an item (invoice line) :
         PurchaseInvoiceGoodsTaxLine consist of:
         <ul>
           <li>ADocTaxLineFc fields</li>
@@ -203,7 +208,7 @@ group by SOURCETYPE, SOURCEID, ITSDATE, ACCDEBIT, SUBACCDEBITTYPE, SUBACCDEBITID
         This service update sales/purchase line with totalTaxes and taxDescription contains of taxes amount, e.g. "ST7% 12.13, ST5% 10.67"
       </p>
       <p>
-      Method "accounting/trade/purchInvSalTaxItemBasis.sql" that calculate purchase sales taxes for item basis method:
+      Method "accounting/trade/purchInvSalTaxItemBasis.sql" that calculate purchase sales taxes for item basis method (NAM):
       <pre style="white-space: pre-wrap;">
 select TAX as TAXID,  sum(ITSTOTAL) as TOTALTAX, sum(FOREIGNTOTALTAXES) as FOREIGNTOTALTAXES
 from
@@ -223,7 +228,7 @@ group by TAX;
         Retrieved data is used to make PurchaseInvoiceTaxLine for each tax.
       </p>
       <p>
-      Method "accounting/trade/salesInvSalTaxItemBasis.sql" that calculate sales invoice sales taxes for item basis method:
+      Method "accounting/trade/salesInvSalTaxItemBasis.sql" that calculate sales invoice sales taxes for item basis method (NAM):
       <pre style="white-space: pre-wrap;">
 select TAX as TAXID,  sum(ITSTOTAL) as TOTALTAX, sum(FOREIGNTOTALTAXES) as FOREIGNTOTALTAXES
 from
@@ -348,6 +353,102 @@ from
       </pre>
       </p>
       
+      <h5>Due on invoice basis, taxes per item</h5>
+      <p>When you use "invoice basis" method, then taxes per invoice line is ambiguous thing,  
+        e.g. two lines 56.67USD each and tax 11% give invoice basis tax 12.47USD, so what we have to do:
+<pre style="white-space: pre-wrap;">
+line#  price  taxes  total
+1.     56.67  6.23   62.90
+2.     56.67  6.24   62.91  ?
+
+OR?
+
+line#  price  taxes  total
+1.     56.67  6.24   62.91  ?
+2.     56.67  6.23   62.90
+</pre>
+      </p>
+      <p>Buyer can claims sales tax refund, but it's about tax in an invoice, not in a line.
+        It must be a law that instructs about this - is it needs to show taxes in lines and how to do it (calculate it depending of invoice total).
+      </p>
+
+      <h5>Multi sales taxes. Aggregate tax rate for due on item basis method.</h5>
+      <p>In case of multi sales taxes per item you can (or must according the law) use this method.</p>
+      <p>This method is useful only for "due on item basis" method. 
+        Aggregate tax rate for multi-taxes gives different tax result (against "non-aggregate").
+        For example tax1=11%, tax2=1.6%, tax3=3.3% for two lines (4.56USD and 51.13USD):
+<pre style="white-space: pre-wrap;">
+A.non-aggregate:
+item	price	tax1	tax2	tax3	total	t.tax
+1	    4.56	0.5	  0.07	0.15	5.28	0.72
+2	    53.13	5.84	0.85	1.75	61.57	8.44
+total taxes 9.16
+
+B.aggregate tax (15.9%):
+item	price	atax	total
+1	    4.56	0.73	5.29
+2	    53.13	8.45	61.58
+aggregate tax total 9.18
+</pre>
+The difference is 1 cent for each line. Difference is 2 cents for totals.
+      </p>
+      <p>
+This is performance friendly method, cause no need to keep multiply tax entries for each invoice line.
+      </p>
+      <p>This method allows to implement "taxes are included in price" with "no problems".</p>
+      <p>Total taxes are calculated from total of aggregated tax, for example above:
+<pre style="white-space: pre-wrap;">
+tax1 = 9.18 * 0.11 / 0.159 = 6.35
+tax2 = 9.18 * 0.016 / 0.159 = 0.92
+tax3 = 9.18 - (9.35 + 0.92) = 1.91
+</pre>
+To prevent difference between total aggregate from lines and total taxes cause grouping rounding error,
+the last tax total line is the rest of aggregate tax.
+      </p>
+      <p>Property AccSettings.salTaxUseAggregItBas (use aggregate tax rate for item basis method) is used to switch this method, default is false.
+      </p>
+      <p><b>Implementation of aggregate tax rate method (item basis)</b></p>
+      <p>Service that saves invoice line calculates total line's tax by using aggregate tax rate</p>
+      <p>Method "accounting/trade/purchInvSalTaxItBasAggr.sql" that retrieve aggregate total taxes from purchase invoice:
+      <pre style="white-space: pre-wrap;">
+select TAXCATEGORY, sum(TOTALTAXES) as TOTALTAXES, sum(FOREIGNTOTALTAXES) as FOREIGNTOTALTAXES
+from
+(
+  select INVITEM.TAXCATEGORY as TAXCATEGORY, TOTALTAXES, FOREIGNTOTALTAXES
+  from PURCHASEINVOICELINE 
+  join INVITEM on INVITEM.ITSID=PURCHASEINVOICELINE.INVITEM
+  where PURCHASEINVOICELINE.REVERSEDID is null and INVITEM.TAXCATEGORY is not null and PURCHASEINVOICELINE.ITSOWNER=:INVOICEID
+
+  union all
+
+  select SERVICEPURCHASED.TAXCATEGORY as TAXCATEGORY, TOTALTAXES, FOREIGNTOTALTAXES
+  from PURCHASEINVOICESERVICELINE 
+  join SERVICEPURCHASED on SERVICEPURCHASED.ITSID=PURCHASEINVOICESERVICELINE.SERVICE
+  where SERVICEPURCHASED.TAXCATEGORY is not null and PURCHASEINVOICESERVICELINE.ITSOWNER=:INVOICEID
+) as ALL_LINES
+group by TAXCATEGORY;
+      </pre>
+</p>
+      <p>Method "accounting/trade/salInvSalTaxItBasAggr.sql" that retrieve aggregate total taxes from sales invoice:
+      <pre style="white-space: pre-wrap;">
+select TAXCATEGORY, sum(TOTALTAXES) as TOTALTAXES, sum(FOREIGNTOTALTAXES) as FOREIGNTOTALTAXES
+from
+(
+  select INVITEM.TAXCATEGORY as TAXCATEGORY, TOTALTAXES, FOREIGNTOTALTAXES
+  from SALESINVOICELINE 
+  join INVITEM on INVITEM.ITSID=SALESINVOICELINE.INVITEM
+  where SALESINVOICELINE.REVERSEDID is null and INVITEM.TAXCATEGORY is not null and SALESINVOICELINE.ITSOWNER=:INVOICEID
+
+  union all
+
+  select SERVICETOSALE.TAXCATEGORY as TAXCATEGORY, TOTALTAXES, FOREIGNTOTALTAXES
+  from SALESINVOICESERVICELINE 
+  join SERVICETOSALE on SERVICETOSALE.ITSID=SALESINVOICESERVICELINE.SERVICE
+  where SERVICETOSALE.TAXCATEGORY is not null and SALESINVOICESERVICELINE.ITSOWNER=:INVOICEID
+) as ALL_LINES
+group by TAXCATEGORY;
+      </pre>
+</p>
     </section>
 
   </body>

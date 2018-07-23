@@ -48,6 +48,18 @@ public class UtlSalesGoodsServiceLine<RS> {
   private ISrvOrm<RS> srvOrm;
 
   /**
+   * <p>File with Query Sales Invoice Taxes item basis method
+   * aggregate tax rate.</p>
+   **/
+  private String fileQuSalInvSaTaxItBasAggr = "salInvSalTaxItBasAggr.sql";
+
+  /**
+   * <p>Query Sales Invoice Taxes invoice basis method
+   * aggregate tax rate.</p>
+   **/
+  private String quSalInvSaTaxItBasAggr;
+
+  /**
    * <p>File with Query Sales Invoice Taxes item basis method.</p>
    **/
   private String fileQuSalInvSaTaxItBas = "salesInvSalTaxItemBasis.sql";
@@ -122,6 +134,19 @@ public class UtlSalesGoodsServiceLine<RS> {
     pItsOwner.setForeignTotal(pItsOwner.getForeignSubtotal().
       add(pItsOwner.getForeignTotalTaxes()));
     getSrvOrm().updateEntity(pAddParam, pItsOwner);
+  }
+
+  /**
+   * <p>Lazy get quSalInvSaTaxItBasAggr.</p>
+   * @return quSalInvSaTaxItBasAggr
+   * @throws Exception - an exception
+   **/
+  public final String lazyGetQuSalInvSaTaxItBasAggr() throws Exception {
+    if (this.quSalInvSaTaxItBasAggr == null) {
+      String flName = "/accounting/trade/" + this.fileQuSalInvSaTaxItBasAggr;
+      this.quSalInvSaTaxItBasAggr = loadString(flName);
+    }
+    return this.quSalInvSaTaxItBasAggr;
   }
 
   /**
@@ -311,6 +336,31 @@ public class UtlSalesGoodsServiceLine<RS> {
    **/
   public final void setSrvOrm(final ISrvOrm<RS> pSrvOrm) {
     this.srvOrm = pSrvOrm;
+  }
+  /**
+   * <p>Getter for fileQuSalInvSaTaxItBasAggr.</p>
+   * @return String
+   **/
+  public final String getFileQuSalInvSaTaxItBasAggr() {
+    return this.fileQuSalInvSaTaxItBasAggr;
+  }
+
+  /**
+   * <p>Setter for fileQuSalInvSaTaxItBasAggr.</p>
+   * @param pFileQuSalInvSaTaxItBasAggr reference
+   **/
+  public final void setFileQuSalInvSaTaxItBasAggr(
+    final String pFileQuSalInvSaTaxItBasAggr) {
+    this.fileQuSalInvSaTaxItBasAggr = pFileQuSalInvSaTaxItBasAggr;
+  }
+
+  /**
+   * <p>Setter for quSalInvSaTaxItBasAggr.</p>
+   * @param pQuSalInvSaTaxItBasAggr reference
+   **/
+  public final void setQuSalInvSaTaxItBasAggr(
+    final String pQuSalInvSaTaxItBasAggr) {
+    this.quSalInvSaTaxItBasAggr = pQuSalInvSaTaxItBasAggr;
   }
 
   /**

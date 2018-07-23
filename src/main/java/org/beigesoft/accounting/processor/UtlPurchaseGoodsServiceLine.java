@@ -14,6 +14,7 @@ package org.beigesoft.accounting.processor;
 
 import java.util.Map;
 import java.util.List;
+import java.util.ArrayList;
 import java.math.BigDecimal;
 import java.io.IOException;
 import java.io.InputStream;
@@ -46,6 +47,18 @@ public class UtlPurchaseGoodsServiceLine<RS> {
    * <p>ORM service.</p>
    **/
   private ISrvOrm<RS> srvOrm;
+
+  /**
+   * <p>File with Query Vendor Invoice Taxes item basis method
+   * aggregate tax rate.</p>
+   **/
+  private String fileQuPurInvSaTaxItBasAggr = "purchInvSalTaxItBasAggr.sql";
+
+  /**
+   * <p>Query Vendor Invoice Taxes item basis method
+   * aggregate tax rate.</p>
+   **/
+  private String quPurInvSaTaxItBasAggr;
 
   /**
    * <p>File with Query Vendor Invoice Taxes item basis method.</p>
@@ -125,6 +138,19 @@ public class UtlPurchaseGoodsServiceLine<RS> {
   }
 
   /**
+   * <p>Lazy get quPurInvSaTaxItBasAggr.</p>
+   * @return quPurInvSaTaxItBasAggr
+   * @throws Exception - an exception
+   **/
+  public final String lazyGetQuPurchInvSalTaxItBasAggr() throws Exception {
+    if (this.quPurInvSaTaxItBasAggr == null) {
+      String flName = "/accounting/trade/" + this.fileQuPurInvSaTaxItBasAggr;
+      this.quPurInvSaTaxItBasAggr = loadString(flName);
+    }
+    return this.quPurInvSaTaxItBasAggr;
+  }
+
+  /**
    * <p>Lazy get quPurInvSaTaxItBas.</p>
    * @return quPurInvSaTaxItBas
    * @throws Exception - an exception
@@ -199,10 +225,10 @@ public class UtlPurchaseGoodsServiceLine<RS> {
    **/
   public final void updateTaxLines(final Map<String, Object> pAddParam,
     final PurchaseInvoice pItsOwner) throws Exception {
-    PurchaseInvoiceTaxLine pit = new PurchaseInvoiceTaxLine();
-    pit.setItsOwner(pItsOwner);
-    List<PurchaseInvoiceTaxLine> pitl = getSrvOrm()
-      .retrieveListForField(pAddParam, pit, "itsOwner");
+    PurchaseInvoiceTaxLine itl = new PurchaseInvoiceTaxLine();
+    itl.setItsOwner(pItsOwner);
+    List<PurchaseInvoiceTaxLine> itls = getSrvOrm()
+      .retrieveListForField(pAddParam, itl, "itsOwner");
     AccSettings as = getSrvAccSettings().lazyGetAccSettings(pAddParam);
     if (!pItsOwner.getVendor().getIsForeigner()
       && as.getIsExtractSalesTaxFromPurchase()) {
@@ -213,54 +239,33 @@ public class UtlPurchaseGoodsServiceLine<RS> {
         query = lazyGetQuPurchInvSalTaxItBas();
       }
       query = query.replace(":INVOICEID", pItsOwner.getItsId().toString());
-      int countUpdatedSitl = 0;
+      int countUpdatedItl = 0;
       IRecordSet<RS> recordSet = null;
+      List<Long> taxesOrCats = new ArrayList<Long>();
+      List<Double> dbResults = new ArrayList<Double>();
       try {
         recordSet = getSrvDatabase().retrieveRecords(query);
         if (recordSet.moveToFirst()) {
           do {
-            Long taxId = recordSet.getLong("TAXID");
-            Double totalTax;
-            Double foreignTotalTaxes;
-            Double taxable = null;
-            Double forTaxable = null;
             if (as.getSalTaxIsInvoiceBase()) {
+              taxesOrCats.add(recordSet.getLong("TAXID"));
               Double percent = recordSet.getDouble("ITSPERCENTAGE");
-              taxable = recordSet.getDouble("TAXABLE");
-              forTaxable = recordSet.getDouble("FOREIGNTAXABLE");
-              totalTax = taxable * percent / 100.0d;
-              foreignTotalTaxes = forTaxable * percent / 100.0d;
+              Double taxable = recordSet.getDouble("TAXABLE");
+              Double forTaxable = recordSet.getDouble("FOREIGNTAXABLE");
+              dbResults.add(taxable * percent / 100.0d);
+              dbResults.add(forTaxable * percent / 100.0d);
+              dbResults.add(taxable);
+              dbResults.add(forTaxable);
             } else {
-              totalTax = recordSet.getDouble("TOTALTAX");
-              foreignTotalTaxes = recordSet.getDouble("FOREIGNTOTALTAXES");
-            }
-            if (pitl.size() > countUpdatedSitl) {
-              pit = pitl.get(countUpdatedSitl);
-              countUpdatedSitl++;
-            } else {
-              pit = new PurchaseInvoiceTaxLine();
-              pit.setItsOwner(pItsOwner);
-              pit.setIsNew(true);
-              pit.setIdDatabaseBirth(this.srvOrm.getIdDatabase());
-            }
-            Tax tax = new Tax();
-            tax.setItsId(taxId);
-            pit.setTax(tax);
-            pit.setItsTotal(BigDecimal.valueOf(totalTax).setScale(
-              as.getPricePrecision(), as.getSalTaxRoundMode()));
-            pit.setForeignTotalTaxes(BigDecimal.valueOf(foreignTotalTaxes)
-              .setScale(as.getPricePrecision(), as.getSalTaxRoundMode()));
-            if (as.getSalTaxIsInvoiceBase()) {
-              pit.setTaxableInvBas(BigDecimal.valueOf(taxable).setScale(
-                as.getPricePrecision(), as.getRoundingMode()));
-              pit.setTaxableInvBasFc(BigDecimal.valueOf(forTaxable).setScale(
-                as.getPricePrecision(), as.getRoundingMode()));
-            }
-            if (pit.getIsNew()) {
-              getSrvOrm().insertEntity(pAddParam, pit);
-              pit.setIsNew(false);
-            } else {
-              getSrvOrm().updateEntity(pAddParam, pit);
+              if (as.getSalTaxUseAggregItBas()) {
+                taxesOrCats.add(recordSet.getLong("TAXCATEGORY"));
+                dbResults.add(recordSet.getDouble("TOTALTAXES"));
+                dbResults.add(recordSet.getDouble("FOREIGNTOTALTAXES"));
+              } else {
+                taxesOrCats.add(recordSet.getLong("TAXID"));
+                dbResults.add(recordSet.getDouble("TOTALTAX"));
+                dbResults.add(recordSet.getDouble("FOREIGNTOTALTAXES"));
+              }
             }
           } while (recordSet.moveToNext());
         }
@@ -269,15 +274,94 @@ public class UtlPurchaseGoodsServiceLine<RS> {
           recordSet.close();
         }
       }
-      if (countUpdatedSitl < pitl.size()) {
-        for (int j = countUpdatedSitl; j < pitl.size(); j++) {
-          getSrvOrm().deleteEntity(pAddParam, pitl.get(j));
+      int i = 0;
+      int aggrTaxCatRound = 0;
+      for (Long taxOrCat : taxesOrCats) {
+        Long taxId;
+        Double totalTax;
+        Double totalTaxFc;
+        Double taxable = null;
+        Double taxableFc = null;
+        if (as.getSalTaxIsInvoiceBase()) {
+          taxId = taxOrCat;
+          totalTax = dbResults.get(i * 4);
+          totalTaxFc = dbResults.get(i * 4 + 1);
+        } else {
+          if (as.getSalTaxUseAggregItBas()) {
+            aggrTaxCatRound++;
+            Long taxCatId = taxOrCat;
+  taxId = taxOrCat;
+            totalTax = dbResults.get(i * 2);
+            totalTaxFc = dbResults.get(i * 2 + 1);
+          } else {
+            taxId = taxOrCat;
+            totalTax = dbResults.get(i * 2);
+            totalTaxFc = dbResults.get(i * 2 + 1);
+          }
+        }
+        if (aggrTaxCatRound > 1) {
+          
+        } else if (itls.size() > countUpdatedItl) {
+          itl = itls.get(countUpdatedItl);
+          countUpdatedItl++;
+        } else {
+          itl = new PurchaseInvoiceTaxLine();
+          itl.setItsOwner(pItsOwner);
+          itl.setIsNew(true);
+          itl.setIdDatabaseBirth(this.srvOrm.getIdDatabase());
+        }
+        makeItl(pAddParam, itl, pItsOwner, taxId, totalTax, totalTaxFc,
+          taxable, taxableFc, as);
+        i++;
+      }
+      if (countUpdatedItl < itls.size()) {
+        for (int j = countUpdatedItl; j < itls.size(); j++) {
+          getSrvOrm().deleteEntity(pAddParam, itls.get(j));
         }
       }
-    } else if (pitl.size() > 0) {
-      for (PurchaseInvoiceTaxLine pitln : pitl) {
-        getSrvOrm().deleteEntity(pAddParam, pitln);
+    } else if (itls.size() > 0) {
+      for (PurchaseInvoiceTaxLine itln : itls) {
+        getSrvOrm().deleteEntity(pAddParam, itln);
       }
+    }
+  }
+
+  /**
+   * <p>Makes invoice tax line line.</p>
+   * @param pAddParam additional param
+   * @param pItl PurchaseInvoiceTaxLine
+   * @param pItsOwner invoice
+   * @param pTaxId Tax ID
+   * @param pTotalTax Total Tax
+   * @param pTotalTax Total Tax in foreign currency
+   * @param pTaxable Taxable
+   * @param pTaxableFc Taxable in foreign currency
+   * @param pAs ACC Settings
+   * @throws Exception an Exception
+   **/
+  public final void makeItl(final Map<String, Object> pAddParam,
+    final PurchaseInvoiceTaxLine pItl, final PurchaseInvoice pItsOwner,
+      final Long pTaxId, final Double pTotalTax, final Double pTotalTaxFc,
+        final Double pTaxable, final Double pTaxableFc,
+          final AccSettings pAs) throws Exception {
+    Tax tax = new Tax();
+    tax.setItsId(pTaxId);
+    pItl.setTax(tax);
+    pItl.setItsTotal(BigDecimal.valueOf(pTotalTax).setScale(
+      pAs.getPricePrecision(), pAs.getSalTaxRoundMode()));
+    pItl.setForeignTotalTaxes(BigDecimal.valueOf(pTotalTaxFc)
+      .setScale(pAs.getPricePrecision(), pAs.getSalTaxRoundMode()));
+    if (pAs.getSalTaxIsInvoiceBase()) {
+      pItl.setTaxableInvBas(BigDecimal.valueOf(pTaxable).setScale(
+        pAs.getPricePrecision(), pAs.getRoundingMode()));
+      pItl.setTaxableInvBasFc(BigDecimal.valueOf(pTaxableFc).setScale(
+        pAs.getPricePrecision(), pAs.getRoundingMode()));
+    }
+    if (pItl.getIsNew()) {
+      getSrvOrm().insertEntity(pAddParam, pItl);
+      pItl.setIsNew(false);
+    } else {
+      getSrvOrm().updateEntity(pAddParam, pItl);
     }
   }
 
@@ -312,6 +396,32 @@ public class UtlPurchaseGoodsServiceLine<RS> {
    **/
   public final void setSrvOrm(final ISrvOrm<RS> pSrvOrm) {
     this.srvOrm = pSrvOrm;
+  }
+
+  /**
+   * <p>Getter for fileQuPurInvSaTaxItBasAggr.</p>
+   * @return String
+   **/
+  public final String getFileQuPurInvSaTaxItBasAggr() {
+    return this.fileQuPurInvSaTaxItBasAggr;
+  }
+
+  /**
+   * <p>Setter for fileQuPurInvSaTaxItBasAggr.</p>
+   * @param pFileQuPurInvSaTaxItBasAggr reference
+   **/
+  public final void setFileQuPurInvSaTaxItBasAggr(
+    final String pFileQuPurInvSaTaxItBasAggr) {
+    this.fileQuPurInvSaTaxItBasAggr = pFileQuPurInvSaTaxItBasAggr;
+  }
+
+  /**
+   * <p>Setter for quPurInvSaTaxItBasAggr.</p>
+   * @param pQuPurInvSaTaxItBasAggr reference
+   **/
+  public final void setQuPurInvSaTaxItBasAggr(
+    final String pQuPurInvSaTaxItBasAggr) {
+    this.quPurInvSaTaxItBasAggr = pQuPurInvSaTaxItBasAggr;
   }
 
   /**
