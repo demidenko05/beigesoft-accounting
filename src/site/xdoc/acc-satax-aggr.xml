@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document xmlns="http://maven.apache.org/XDOC/2.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
+
+  <properties>
+    <title>Beigesoft™ Accounting</title>
+   </properties>
+
+  <body>
+
+    <section name="Multi sales taxes. Aggregate tax rate for due on item basis method.">
+      
+      <p>Keywords: Multi sales taxes, aggregate tax rate.</p>
+
+      <p>* New features described in this article available in version 1.1.7 (in source code right now).
+      </p>
+      
+      <h4>Multi sales taxes. Aggregate tax rate for item basis method.</h4>
+      <p>In case of multi sales taxes per item you can (or must according the law) use this method.</p>
+      <p>This method is useful only for "due on item basis" method. 
+        Aggregate tax rate for multi-taxes gives different tax result (against "non-aggregate").
+        For example tax1=11%, tax2=1.6%, tax3=3.3% for two lines (4.56USD and 51.13USD):
+<pre style="white-space: pre-wrap;">
+A.non-aggregate:
+item  price tax1  tax2  tax3  total t.tax
+1     4.56  0.5   0.07  0.15  5.28  0.72
+2     53.13 5.84  0.85  1.75  61.57 8.44
+total taxes 9.16
+
+B.aggregate tax (15.9%):
+item  price atax  total
+1     4.56  0.73  5.29
+2     53.13 8.45  61.58
+aggregate tax total 9.18
+</pre>
+The difference is 1 cent for each line. Difference is 2 cents for totals.
+      </p>
+      <p>
+This is performance friendly method, cause no need to keep multiply tax entries for each invoice line.
+      </p>
+      <p>This method allows to implement "taxes are included in price" with "no problems".</p>
+      <p>Total taxes are calculated from total of aggregated tax, for example above:
+<pre style="white-space: pre-wrap;">
+tax1 = 9.18 * 0.11 / 0.159 = 6.35
+tax2 = 9.18 * 0.016 / 0.159 = 0.92
+tax3 = 9.18 - (9.35 + 0.92) = 1.91
+</pre>
+To prevent difference between total aggregate from lines and total taxes cause grouping rounding error,
+the last tax total line is the rest of aggregate tax.
+      </p>
+      <p>Accounting Settings property "Use aggregate tax rate (item basis)" is used to switch this method, default is false.
+      </p>
+      
+      <h4>Example of sales invoices for both methods (aggregate and not).</h4>
+      
+      <p>
+        Set "invoice basis" method to false and add new invoice with two services with prices and taxes that described above:
+        <p align="center"><img style="max-width: 100%" src="images/staggr1.png" /></p>
+        <p align="center"><img style="max-width: 100%" src="images/staggr2.png" /></p>
+      </p>
+      <p>
+        Set "Use aggregate tax rate (item basis)" method to true and add new invoice with two services with prices and taxes that described above:
+        <p align="center"><img style="max-width: 100%" src="images/staggr3.png" /></p>
+        <p align="center"><img style="max-width: 100%" src="images/staggr4.png" /></p>
+        <p align="center"><img style="max-width: 100%" src="images/staggr5.png" /></p>
+      </p>
+    </section>
+
+  </body>
+
+</document>

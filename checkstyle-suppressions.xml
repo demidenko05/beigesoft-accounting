@@ -11,8 +11,10 @@
   <suppress checks="FileLength"
     files="FctBnAccEntitiesProcessors"/>
   <suppress checks="MethodLength"
-    files="FctBnAccEntitiesProcessors|InvoiceReportPdf|BalanceSheetPdf|PrcPurchaseReturnLineSave|PrcSalesReturnLineSave|PrcSalesInvoiceLineSave|PrcPurchaseInvoiceLineSave"/>
- <suppress checks="MagicNumberCheck"
+    files="FctBnAccEntitiesProcessors|InvoiceReportPdf|BalanceSheetPdf|PrcPurchaseReturnLineSave|PrcSalesReturnLineSave|PrcSalesInvoiceLineSave|PrcPurchaseInvoiceLineSave|UtlPurchaseGoodsServiceLine|UtlSalesGoodsServiceLine"/>
+  <suppress checks="ParameterNumber"
+    files="UtlPurchaseGoodsServiceLine|UtlSalesGoodsServiceLine"/>
+  <suppress checks="MagicNumberCheck"
     files="Manufacture|WarehouseEntry|PurchaseInvoiceLine|SalesInvoiceLine|UsedMaterialLine|AdditionCostLine"/>
   <suppress checks="MagicNumberCheck"
     files="Tax|InvItemType|AccountingEntries|InvItem|DebtorCreditor|InvItemCategory|ManufacturingProcess"/>
