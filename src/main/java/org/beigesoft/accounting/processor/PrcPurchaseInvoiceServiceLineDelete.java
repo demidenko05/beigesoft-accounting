@@ -13,7 +13,6 @@ package org.beigesoft.accounting.processor;
  */
 
 import java.util.Map;
-import java.util.List;
 
 import org.beigesoft.model.IRequestData;
 import org.beigesoft.service.IEntityProcessor;
@@ -61,13 +60,8 @@ public class PrcPurchaseInvoiceServiceLineDelete<RS>
     final Map<String, Object> pAddParam,
       final PurchaseInvoiceServiceLine pEntity,
         final IRequestData pRequestData) throws Exception {
-    PurchaseInvoiceServiceTaxLine pistlt = new PurchaseInvoiceServiceTaxLine();
-    pistlt.setItsOwner(pEntity);
-    List<PurchaseInvoiceServiceTaxLine> tls = getSrvOrm()
-      .retrieveListForField(pAddParam, pistlt, "itsOwner");
-    for (PurchaseInvoiceServiceTaxLine pistl : tls) {
-      getSrvOrm().deleteEntity(pAddParam, pistl);
-    }
+    getSrvOrm().deleteEntityWhere(pAddParam,
+      PurchaseInvoiceServiceTaxLine.class, "ITSOWNER=" + pEntity.getItsId());
     this.prcAccEntityPbDelete.process(pAddParam, pEntity, pRequestData);
     // Beige-Orm refresh:
     pEntity.setItsOwner(getSrvOrm()

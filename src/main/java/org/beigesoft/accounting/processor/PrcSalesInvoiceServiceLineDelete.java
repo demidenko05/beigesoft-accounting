@@ -1,7 +1,7 @@
 package org.beigesoft.accounting.processor;
 
 /*
- * Copyright (c) 2017 Beigesoft ™
+ * Copyright (c) 2017 Beigesoft™
  *
  * Licensed under the GNU General Public License (GPL), Version 2.0
  * (the "License");
@@ -12,7 +12,6 @@ package org.beigesoft.accounting.processor;
  * http://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html
  */
 
-import java.util.List;
 import java.util.Map;
 
 import org.beigesoft.model.IRequestData;
@@ -61,13 +60,8 @@ public class PrcSalesInvoiceServiceLineDelete<RS>
     final Map<String, Object> pAddParam,
       final SalesInvoiceServiceLine pEntity,
         final IRequestData pRequestData) throws Exception {
-    SalesInvoiceServiceTaxLine pistlt = new SalesInvoiceServiceTaxLine();
-    pistlt.setItsOwner(pEntity);
-    List<SalesInvoiceServiceTaxLine> tls = getSrvOrm()
-      .retrieveListForField(pAddParam, pistlt, "itsOwner");
-    for (SalesInvoiceServiceTaxLine pistl : tls) {
-      getSrvOrm().deleteEntity(pAddParam, pistl);
-    }
+    getSrvOrm().deleteEntityWhere(pAddParam,
+      SalesInvoiceServiceTaxLine.class, "ITSOWNER=" + pEntity.getItsId());
     this.prcAccEntityPbDelete.process(pAddParam, pEntity, pRequestData);
     // Beige-Orm refresh:
     pEntity.setItsOwner(getSrvOrm()

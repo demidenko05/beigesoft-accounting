@@ -61,7 +61,7 @@ public class PrcPurchaseInvoiceServiceLineSave<RS>
 
   /**
    * <p>Process entity request.</p>
-   * @param pAddParam additional param, e.g. return this line's
+   * @param pReqVars additional param, e.g. return this line's
    * document in "nextEntity" for farther process
    * @param pRequestData Request Data
    * @param pEntity Entity to process
@@ -70,29 +70,29 @@ public class PrcPurchaseInvoiceServiceLineSave<RS>
    **/
   @Override
   public final PurchaseInvoiceServiceLine process(
-    final Map<String, Object> pAddParam,
+    final Map<String, Object> pReqVars,
       final PurchaseInvoiceServiceLine pEntity,
         final IRequestData pRequestData) throws Exception {
     if (pEntity.getItsQuantity().doubleValue() <= 0) {
       throw new ExceptionWithCode(ExceptionWithCode.WRONG_PARAMETER,
-        "quantity_less_or_equal_zero::" + pAddParam.get("user"));
+        "quantity_less_or_equal_zero::" + pReqVars.get("user"));
     }
     if (!(pEntity.getItsCost().compareTo(BigDecimal.ZERO) > 0
       || pEntity.getForeignPrice().compareTo(BigDecimal.ZERO) > 0)) {
       throw new ExceptionWithCode(ExceptionWithCode.WRONG_PARAMETER,
-        "cost_less_or_eq_zero::" + pAddParam.get("user"));
+        "cost_less_or_eq_zero::" + pReqVars.get("user"));
     }
-    AccSettings as = getSrvAccSettings().lazyGetAccSettings(pAddParam);
+    AccSettings as = getSrvAccSettings().lazyGetAccSettings(pReqVars);
     // Beige-Orm refresh:
     pEntity.setItsOwner(getSrvOrm()
-      .retrieveEntity(pAddParam, pEntity.getItsOwner()));
+      .retrieveEntity(pReqVars, pEntity.getItsOwner()));
     pEntity.setService(getSrvOrm()
-      .retrieveEntity(pAddParam, pEntity.getService()));
+      .retrieveEntity(pReqVars, pEntity.getService()));
     //rounding:
     pEntity.setItsQuantity(pEntity.getItsQuantity().setScale(
       as
         .getQuantityPrecision(), getSrvAccSettings()
-          .lazyGetAccSettings(pAddParam).getRoundingMode()));
+          .lazyGetAccSettings(pReqVars).getRoundingMode()));
     if (pEntity.getItsOwner().getForeignCurrency() != null) {
       pEntity.setForeignPrice(pEntity.getForeignPrice().setScale(as
         .getCostPrecision(), as.getRoundingMode()));
@@ -121,10 +121,12 @@ public class PrcPurchaseInvoiceServiceLineSave<RS>
       if (!as.getSalTaxIsInvoiceBase()) {
         tls = new ArrayList<PurchaseInvoiceServiceTaxLine>();
       }
+      pReqVars.put("InvItemTaxCategoryLineitsOwnerdeepLevel", 1);
       List<InvItemTaxCategoryLine> pstl = getSrvOrm()
-        .retrieveListWithConditions(pAddParam,
+        .retrieveListWithConditions(pReqVars,
           InvItemTaxCategoryLine.class, "where ITSOWNER="
             + pEntity.getService().getTaxCategory().getItsId());
+      pReqVars.remove("InvItemTaxCategoryLineitsOwnerdeepLevel");
       StringBuffer sb = new StringBuffer();
       int i = 0;
       for (InvItemTaxCategoryLine pst : pstl) {
@@ -156,7 +158,7 @@ public class PrcPurchaseInvoiceServiceLineSave<RS>
               }
               tls.add(pistl);
               sb.append(pst.getTax().getItsName() + " "
-                + prn(pAddParam, addTx));
+                + prn(pReqVars, addTx));
             }
           }
           if (as.getSalTaxIsInvoiceBase() || as.getSalTaxUseAggregItBas()) {
@@ -180,34 +182,36 @@ public class PrcPurchaseInvoiceServiceLineSave<RS>
     pEntity.setForeignTotalTaxes(totalTaxesFc);
     pEntity.setForeignTotal(pEntity.getForeignSubtotal().add(totalTaxesFc));
     if (pEntity.getIsNew()) {
-      getSrvOrm().insertEntity(pAddParam, pEntity);
+      getSrvOrm().insertEntity(pReqVars, pEntity);
       pEntity.setIsNew(false);
     } else {
-      getSrvOrm().updateEntity(pAddParam, pEntity);
+      getSrvOrm().updateEntity(pReqVars, pEntity);
     }
     PurchaseInvoiceServiceTaxLine pistlt = new PurchaseInvoiceServiceTaxLine();
     pistlt.setItsOwner(pEntity);
+    pReqVars.put("PurchaseInvoiceServiceTaxLineitsOwnerdeepLevel", 1);
     List<PurchaseInvoiceServiceTaxLine> tlsw = getSrvOrm()
-      .retrieveListForField(pAddParam, pistlt, "itsOwner");
+      .retrieveListForField(pReqVars, pistlt, "itsOwner");
+    pReqVars.remove("PurchaseInvoiceServiceTaxLineitsOwnerdeepLevel");
     if (tls != null) {
       for (int i = 0; i < tls.size(); i++) {
         if (i < tlsw.size()) {
           tlsw.get(i).setTax(tls.get(i).getTax());
           tlsw.get(i).setItsTotal(tls.get(i).getItsTotal());
-          getSrvOrm().updateEntity(pAddParam, tlsw.get(i));
+          getSrvOrm().updateEntity(pReqVars, tlsw.get(i));
         } else {
           tls.get(i).setItsOwner(pEntity);
           tls.get(i).setInvoiceId(pEntity.getItsOwner().getItsId());
-          getSrvOrm().insertEntity(pAddParam, tls.get(i));
+          getSrvOrm().insertEntity(pReqVars, tls.get(i));
           tls.get(i).setIsNew(false);
         }
       }
       for (int j = tls.size(); j < tlsw.size(); j++) {
-        getSrvOrm().deleteEntity(pAddParam, tlsw.get(j));
+        getSrvOrm().deleteEntity(pReqVars, tlsw.get(j));
       }
     } else {
       for (PurchaseInvoiceServiceTaxLine pistlw : tlsw) {
-        getSrvOrm().deleteEntity(pAddParam, pistlw);
+        getSrvOrm().deleteEntity(pReqVars, pistlw);
       }
     }
     // optimistic locking (dirty check):
@@ -215,25 +219,25 @@ public class PrcPurchaseInvoiceServiceLineSave<RS>
       .getParameter(PurchaseInvoice.class.getSimpleName() + ".ownerVersion"));
     pEntity.getItsOwner().setItsVersion(ownerVersion);
     this.utlPurchaseGoodsServiceLine
-      .updateOwner(pAddParam, pEntity.getItsOwner());
-    pAddParam.put("nextEntity", pEntity.getItsOwner());
-    pAddParam.put("nameOwnerEntity", PurchaseInvoice.class.getSimpleName());
+      .updateOwner(pReqVars, pEntity.getItsOwner());
+    pReqVars.put("nextEntity", pEntity.getItsOwner());
+    pReqVars.put("nameOwnerEntity", PurchaseInvoice.class.getSimpleName());
     return null;
   }
 
   /**
    * <p>Simple delegator to print number.</p>
-   * @param pAddParam additional param
+   * @param pReqVars additional param
    * @param pVal value
    * @return String
    **/
-  public final String prn(final Map<String, Object> pAddParam,
+  public final String prn(final Map<String, Object> pReqVars,
     final BigDecimal pVal) {
     return this.srvNumberToString.print(pVal.toString(),
-      (String) pAddParam.get("dseparatorv"),
-        (String) pAddParam.get("dgseparatorv"),
-          (Integer) pAddParam.get("pricePrecision"),
-            (Integer) pAddParam.get("digitsInGroup"));
+      (String) pReqVars.get("dseparatorv"),
+        (String) pReqVars.get("dgseparatorv"),
+          (Integer) pReqVars.get("pricePrecision"),
+            (Integer) pReqVars.get("digitsInGroup"));
   }
 
   //Simple getters and setters:

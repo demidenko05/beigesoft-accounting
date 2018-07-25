@@ -99,13 +99,13 @@ public class UtlSalesGoodsServiceLine<RS> {
 
   /**
    * <p>Insert immutable line into DB.</p>
-   * @param pAddParam additional param
+   * @param pReqVars additional param
    * @param pItsOwner SalesInvoice
    * @throws Exception - an exception
    **/
-  public final void updateOwner(final Map<String, Object> pAddParam,
+  public final void updateOwner(final Map<String, Object> pReqVars,
     final SalesInvoice pItsOwner) throws Exception {
-    updateTaxLines(pAddParam, pItsOwner);
+    updateTaxLines(pReqVars, pItsOwner);
     String query = lazyGetQuerySalesInvoiceTotals();
     query = query.replace(":ITSOWNER", pItsOwner.getItsId().toString());
     String[] columns = new String[]
@@ -123,7 +123,7 @@ public class UtlSalesGoodsServiceLine<RS> {
     if (totals[3] == null) {
       totals[3] = 0d;
     }
-    AccSettings as = getSrvAccSettings().lazyGetAccSettings(pAddParam);
+    AccSettings as = getSrvAccSettings().lazyGetAccSettings(pReqVars);
     pItsOwner.setSubtotal(BigDecimal.valueOf(totals[0]).setScale(
       as.getPricePrecision(), as.getRoundingMode()));
     pItsOwner.setTotalTaxes(BigDecimal.valueOf(totals[1]).setScale(
@@ -136,7 +136,7 @@ public class UtlSalesGoodsServiceLine<RS> {
       as.getPricePrecision(), as.getSalTaxRoundMode()));
     pItsOwner.setForeignTotal(pItsOwner.getForeignSubtotal().
       add(pItsOwner.getForeignTotalTaxes()));
-    getSrvOrm().updateEntity(pAddParam, pItsOwner);
+    getSrvOrm().updateEntity(pReqVars, pItsOwner);
   }
 
   /**
@@ -220,16 +220,18 @@ public class UtlSalesGoodsServiceLine<RS> {
 
   /**
    * <p>Update invoice Tax Lines.</p>
-   * @param pAddParam additional param
+   * @param pReqVars additional param
    * @param pOwner SalesInvoice
    * @throws Exception - an exception
    **/
-  public final void updateTaxLines(final Map<String, Object> pAddParam,
+  public final void updateTaxLines(final Map<String, Object> pReqVars,
     final SalesInvoice pOwner) throws Exception {
+    pReqVars.put("SalesInvoiceTaxLineitsOwnerdeepLevel", 1);
     List<SalesInvoiceTaxLine> itls = getSrvOrm().retrieveListWithConditions(
-        pAddParam, SalesInvoiceTaxLine.class, "where ITSOWNER="
+        pReqVars, SalesInvoiceTaxLine.class, "where ITSOWNER="
           + pOwner.getItsId());
-    AccSettings as = getSrvAccSettings().lazyGetAccSettings(pAddParam);
+    pReqVars.remove("SalesInvoiceTaxLineitsOwnerdeepLevel");
+    AccSettings as = getSrvAccSettings().lazyGetAccSettings(pReqVars);
     if (!pOwner.getCustomer().getIsForeigner()
       && as.getIsExtractSalesTaxFromSales()) {
       String query;
@@ -295,9 +297,11 @@ public class UtlSalesGoodsServiceLine<RS> {
           totalTax = dbResults.get(i * 2);
           totalTaxFc = dbResults.get(i * 2 + 1);
           if (as.getSalTaxUseAggregItBas()) {
+            pReqVars.put("InvItemTaxCategoryLineitsOwnerdeepLevel", 1);
             List<InvItemTaxCategoryLine> ittcls = getSrvOrm()
-              .retrieveListWithConditions(pAddParam, InvItemTaxCategoryLine
+              .retrieveListWithConditions(pReqVars, InvItemTaxCategoryLine
                 .class, "where ITSOWNER=" + taxesOrCats.get(i));
+            pReqVars.remove("InvItemTaxCategoryLineitsOwnerdeepLevel");
             for (InvItemTaxCategoryLine ittcl : ittcls) {
               if (ETaxType.SALES_TAX_OUTITEM.equals(ittcl.getTax().getItsType())
             || ETaxType.SALES_TAX_INITEM.equals(ittcl.getTax().getItsType())) {
@@ -364,31 +368,31 @@ public class UtlSalesGoodsServiceLine<RS> {
               countUpdatedItl++;
             } else {
               itl = new SalesInvoiceTaxLine();
-              itl.setItsOwner(pOwner);
               itl.setIsNew(true);
               itl.setIdDatabaseBirth(this.srvOrm.getIdDatabase());
             }
           }
-          makeItl(pAddParam, itl, taxes.get(j), totalTax, totalTaxFc,
+          itl.setItsOwner(pOwner);
+          makeItl(pReqVars, itl, taxes.get(j), totalTax, totalTaxFc,
             taxable, taxableFc, as);
         }
         taxes.clear();
       }
       if (countUpdatedItl < itls.size()) {
         for (int j = countUpdatedItl; j < itls.size(); j++) {
-          getSrvOrm().deleteEntity(pAddParam, itls.get(j));
+          getSrvOrm().deleteEntity(pReqVars, itls.get(j));
         }
       }
     } else if (itls.size() > 0) {
       for (SalesInvoiceTaxLine sitln : itls) {
-        getSrvOrm().deleteEntity(pAddParam, sitln);
+        getSrvOrm().deleteEntity(pReqVars, sitln);
       }
     }
   }
 
   /**
    * <p>Makes invoice tax line line.</p>
-   * @param pAddParam additional param
+   * @param pReqVars additional param
    * @param pItl PurchaseInvoiceTaxLine
    * @param pTax Tax
    * @param pTotalTax Total Tax
@@ -398,7 +402,7 @@ public class UtlSalesGoodsServiceLine<RS> {
    * @param pAs ACC Settings
    * @throws Exception an Exception
    **/
-  public final void makeItl(final Map<String, Object> pAddParam,
+  public final void makeItl(final Map<String, Object> pReqVars,
     final SalesInvoiceTaxLine pItl, final Tax pTax, final Double pTotalTax,
       final Double pTotalTaxFc, final Double pTaxable, final Double pTaxableFc,
           final AccSettings pAs) throws Exception {
@@ -422,10 +426,10 @@ public class UtlSalesGoodsServiceLine<RS> {
         pAs.getPricePrecision(), pAs.getRoundingMode()));
     }
     if (pItl.getIsNew()) {
-      getSrvOrm().insertEntity(pAddParam, pItl);
+      getSrvOrm().insertEntity(pReqVars, pItl);
       pItl.setIsNew(false);
     } else {
-      getSrvOrm().updateEntity(pAddParam, pItl);
+      getSrvOrm().updateEntity(pReqVars, pItl);
     }
   }
 

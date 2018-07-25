@@ -69,7 +69,7 @@ public class PrcPurchaseInvoiceLineSave<RS>
 
   /**
    * <p>Process entity request.</p>
-   * @param pAddParam additional param, e.g. return this line's
+   * @param pReqVars additional param, e.g. return this line's
    * document in "nextEntity" for farther process
    * @param pRequestData Request Data
    * @param pEntity Entity to process
@@ -78,28 +78,28 @@ public class PrcPurchaseInvoiceLineSave<RS>
    **/
   @Override
   public final PurchaseInvoiceLine process(
-    final Map<String, Object> pAddParam,
+    final Map<String, Object> pReqVars,
       final PurchaseInvoiceLine pEntity,
         final IRequestData pRequestData) throws Exception {
     if (pEntity.getIsNew()) {
       // Beige-Orm refresh:
       pEntity.setItsOwner(getSrvOrm()
-        .retrieveEntity(pAddParam, pEntity.getItsOwner()));
+        .retrieveEntity(pReqVars, pEntity.getItsOwner()));
       // optimistic locking (dirty check):
       Long ownerVersion = Long.valueOf(pRequestData
         .getParameter(PurchaseInvoice.class.getSimpleName() + ".ownerVersion"));
       pEntity.getItsOwner().setItsVersion(ownerVersion);
       if (pEntity.getReversedId() != null) {
         PurchaseInvoiceLine reversed = getSrvOrm().retrieveEntityById(
-          pAddParam, PurchaseInvoiceLine.class, pEntity.getReversedId());
+          pReqVars, PurchaseInvoiceLine.class, pEntity.getReversedId());
         if (reversed.getReversedId() != null) {
           throw new ExceptionWithCode(ExceptionWithCode.FORBIDDEN,
-            "attempt_to_reverse_reversed::" + pAddParam.get("user"));
+            "attempt_to_reverse_reversed::" + pReqVars.get("user"));
         }
         if (!reversed.getItsQuantity().equals(reversed.getTheRest())) {
           throw new ExceptionWithCode(ExceptionWithCode
             .WRONG_PARAMETER, "where_is_withdrawals_from_this_source::"
-              + pAddParam.get("user"));
+              + pReqVars.get("user"));
         }
         pEntity.setTheRest(BigDecimal.ZERO);
         pEntity.setInvItem(reversed.getInvItem());
@@ -115,38 +115,33 @@ public class PrcPurchaseInvoiceLineSave<RS>
         pEntity.setForeignSubtotal(reversed.getForeignSubtotal().negate());
         pEntity.setForeignTotalTaxes(reversed.getForeignTotalTaxes().negate());
         pEntity.setForeignTotal(reversed.getForeignTotal().negate());
-        getSrvOrm().insertEntity(pAddParam, pEntity);
+        getSrvOrm().insertEntity(pReqVars, pEntity);
         pEntity.setIsNew(false);
         reversed.setTheRest(BigDecimal.ZERO);
         reversed.setReversedId(pEntity.getItsId());
-        getSrvOrm().updateEntity(pAddParam, reversed);
-        PurchaseInvoiceGoodsTaxLine pigtlt = new PurchaseInvoiceGoodsTaxLine();
-        pigtlt.setItsOwner(reversed);
-        List<PurchaseInvoiceGoodsTaxLine> tls = getSrvOrm()
-          .retrieveListForField(pAddParam, pigtlt, "itsOwner");
-        for (PurchaseInvoiceGoodsTaxLine pigtl : tls) {
-          getSrvOrm().deleteEntity(pAddParam, pigtl);
-        }
+        getSrvOrm().updateEntity(pReqVars, reversed);
+        getSrvOrm().deleteEntityWhere(pReqVars,
+          PurchaseInvoiceGoodsTaxLine.class, "ITSOWNER=" + reversed.getItsId());
       } else {
         if (pEntity.getItsQuantity().doubleValue() <= 0) {
           throw new ExceptionWithCode(ExceptionWithCode.WRONG_PARAMETER,
-            "quantity_less_or_equal_zero::" + pAddParam.get("user"));
+            "quantity_less_or_equal_zero::" + pReqVars.get("user"));
         }
         if (!(pEntity.getItsCost().compareTo(BigDecimal.ZERO) > 0
           || pEntity.getForeignPrice().compareTo(BigDecimal.ZERO) > 0)) {
           throw new ExceptionWithCode(ExceptionWithCode.WRONG_PARAMETER,
-            "cost_less_or_eq_zero::" + pAddParam.get("user"));
+            "cost_less_or_eq_zero::" + pReqVars.get("user"));
         }
         // Beige-Orm refresh:
         pEntity.setInvItem(getSrvOrm()
-          .retrieveEntity(pAddParam, pEntity.getInvItem()));
+          .retrieveEntity(pReqVars, pEntity.getInvItem()));
         if (!(InvItem.MATERIAL_ID.equals(pEntity.getInvItem().getItsType()
           .getItsId()) || InvItem.MERCHANDISE_ID.equals(pEntity.getInvItem()
             .getItsType().getItsId()))) {
           throw new ExceptionWithCode(ExceptionWithCode.WRONG_PARAMETER,
-            "type_must_be_material_or_merchandise::" + pAddParam.get("user"));
+            "type_must_be_material_or_merchandise::" + pReqVars.get("user"));
         }
-        AccSettings as = getSrvAccSettings().lazyGetAccSettings(pAddParam);
+        AccSettings as = getSrvAccSettings().lazyGetAccSettings(pReqVars);
         //rounding:
         pEntity.setItsQuantity(pEntity.getItsQuantity().setScale(as
           .getQuantityPrecision(), as.getRoundingMode()));
@@ -181,8 +176,10 @@ public class PrcPurchaseInvoiceLineSave<RS>
           }
           InvItemTaxCategoryLine iitcLn = new InvItemTaxCategoryLine();
           iitcLn.setItsOwner(pEntity.getInvItem().getTaxCategory());
+          pReqVars.put("InvItemTaxCategoryLineitsOwnerdeepLevel", 1);
           List<InvItemTaxCategoryLine> iitcll = getSrvOrm()
-            .retrieveListForField(pAddParam, iitcLn, "itsOwner");
+            .retrieveListForField(pReqVars, iitcLn, "itsOwner");
+          pReqVars.remove("InvItemTaxCategoryLineitsOwnerdeepLevel");
           StringBuffer sb = new StringBuffer();
           int i = 0;
           for (InvItemTaxCategoryLine iitcl : iitcll) {
@@ -214,7 +211,7 @@ public class PrcPurchaseInvoiceLineSave<RS>
                   }
                   tls.add(pigtl);
                   sb.append(iitcl.getTax().getItsName() + " "
-                    + prn(pAddParam, addTx));
+                    + prn(pReqVars, addTx));
                 }
               }
               if (as.getSalTaxIsInvoiceBase() || as.getSalTaxUseAggregItBas()) {
@@ -237,42 +234,42 @@ public class PrcPurchaseInvoiceLineSave<RS>
         pEntity.setItsTotal(pEntity.getSubtotal().add(totalTaxes));
         pEntity.setForeignTotalTaxes(totalTaxesFc);
         pEntity.setForeignTotal(pEntity.getForeignSubtotal().add(totalTaxesFc));
-        getSrvOrm().insertEntity(pAddParam, pEntity);
+        getSrvOrm().insertEntity(pReqVars, pEntity);
         pEntity.setIsNew(false);
         if (tls != null) {
           for (PurchaseInvoiceGoodsTaxLine pigtl : tls) {
             pigtl.setItsOwner(pEntity);
             pigtl.setInvoiceId(pEntity.getItsOwner().getItsId());
-            getSrvOrm().insertEntity(pAddParam, pigtl);
+            getSrvOrm().insertEntity(pReqVars, pigtl);
           }
         }
       }
       //draw or reverse warehouse entries:
-      srvWarehouseEntry.load(pAddParam, pEntity, pEntity.getWarehouseSite());
+      srvWarehouseEntry.load(pReqVars, pEntity, pEntity.getWarehouseSite());
       this.utlPurchaseGoodsServiceLine
-        .updateOwner(pAddParam, pEntity.getItsOwner());
-      pAddParam.put("nextEntity", pEntity.getItsOwner());
-      pAddParam.put("nameOwnerEntity", PurchaseInvoice.class.getSimpleName());
+        .updateOwner(pReqVars, pEntity.getItsOwner());
+      pReqVars.put("nextEntity", pEntity.getItsOwner());
+      pReqVars.put("nameOwnerEntity", PurchaseInvoice.class.getSimpleName());
       return null;
     } else {
       throw new ExceptionWithCode(ExceptionWithCode.FORBIDDEN,
-        "edit_not_allowed::" + pAddParam.get("user"));
+        "edit_not_allowed::" + pReqVars.get("user"));
     }
   }
 
   /**
    * <p>Simple delegator to print number.</p>
-   * @param pAddParam additional param
+   * @param pReqVars additional param
    * @param pVal value
    * @return String
    **/
-  public final String prn(final Map<String, Object> pAddParam,
+  public final String prn(final Map<String, Object> pReqVars,
     final BigDecimal pVal) {
     return this.srvNumberToString.print(pVal.toString(),
-      (String) pAddParam.get("dseparatorv"),
-        (String) pAddParam.get("dgseparatorv"),
-          (Integer) pAddParam.get("pricePrecision"),
-            (Integer) pAddParam.get("digitsInGroup"));
+      (String) pReqVars.get("dseparatorv"),
+        (String) pReqVars.get("dgseparatorv"),
+          (Integer) pReqVars.get("pricePrecision"),
+            (Integer) pReqVars.get("digitsInGroup"));
   }
 
   //Simple getters and setters:

@@ -11,7 +11,7 @@
   <suppress checks="FileLength"
     files="FctBnAccEntitiesProcessors"/>
   <suppress checks="MethodLength"
-    files="FctBnAccEntitiesProcessors|InvoiceReportPdf|BalanceSheetPdf|PrcPurchaseReturnLineSave|PrcSalesReturnLineSave|PrcSalesInvoiceLineSave|PrcPurchaseInvoiceLineSave|UtlPurchaseGoodsServiceLine|UtlSalesGoodsServiceLine"/>
+    files="FctBnAccEntitiesProcessors|InvoiceReportPdf|BalanceSheetPdf|PrcPurchaseReturnLineSave|PrcSalesReturnLineSave|PrcSalesInvoiceLineSave|PrcPurchaseInvoiceLineSave|UtlPurchaseGoodsServiceLine|UtlSalesGoodsServiceLine|PrcSalesInvoiceServiceLineSave|PrcPurchaseInvoiceServiceLineSave"/>
   <suppress checks="ParameterNumber"
     files="UtlPurchaseGoodsServiceLine|UtlSalesGoodsServiceLine"/>
   <suppress checks="MagicNumberCheck"

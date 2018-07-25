@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document xmlns="http://maven.apache.org/XDOC/2.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
+
+  <properties>
+    <title>Beigesoft™ Accounting. Export/import data to/from CSV file.</title>
+  </properties>
+
+  <body>
+
+    <!-- The body of the document contains a number of sections -->
+    <section name="Beigesoft™ Accounting. Export/import data to/from CSV file.">
+
+      <h4>CSV format</h4>
+      <p>
+        Data separators:
+        <ul>
+          <li>comma</li>
+          <li>semicolon</li>
+          <li>etc</li>
+        </ul>
+        line ending:
+        <ul>
+          <li>CR/LF - Windows</li>
+          <li>LF - Linux</li>
+          <li>CR - Mac</li>
+        </ul>
+        Date formats:
+        <ul>
+          <li>mm/dd/yyyy - USA</li>
+          <li>dd/mm/yyyy - others</li>
+          <li>etc</li>
+        </ul>
+        Text encoding:
+        <ul>
+          <li>UTF-8</li>
+          <li>US-ASCII</li>
+          <li>ISO-8859-1</li>
+          <li>etc</li>
+        </ul>
+        Columns names may be present or not.
+      </p>
+      
+      <h4>Common CSV data models and services</h4>
+      <p> Model org.beigesoft.model.ECsvColumnType:
+        <ul>
+          <li>STRING</li>
+          <li>BOOLEAN</li>
+          <li>INTEGER</li>
+          <li>NUMERIC</li>
+          <li>DATE</li>
+        </ul>
+      </p>
+      <p>
+        Persistable model org.beigesoft.persistable.CsvMethod
+        <ul>
+          <li>AHasIdLongVersion fields</li>
+          <li>charsetName, String, not null, Charset encoding name, "UTF-8" default.</li>
+          <li>columnSep, String[5], not null, Column separator, comma default.</li>
+          <li>hasHeader, Boolean, not null, if the first row contains of columns names, false default.</li>
+          <li>columns - List(CsvColumn), Csv Columns all or useful to read</li>
+        </ul>
+      </p>
+      <p>
+        Persistable model org.beigesoft.persistable.CsvColumn
+        <ul>
+          <li>AHasIdLongVersion fields</li>
+          <li>itsOwner - CsvMethod</li>
+          <li>itsType, ECsvColumnType, not null</li>
+          <li>itsIndex, Integer, not null, start from 1 index.</li>
+          <li>textDelimiter - String, null default, Column's text braced with delimiters, null default,
+            e.g. quoted - "taxes, penalty and other fees are included"</li>
+          <li>dataFormat - String, null default, Column's data format, null default, e.g. "dd/MM/yyyy" for Date,
+            "space,comma" for number "123 31,78EUR", "true,false" for Boolean</li>
+        </ul>
+      </p>
+      <p>Basic reading service that reads next line from CSV file ICsvReader, methods:
+        <ul>
+          <li>readNextRow(Map&lt;String, Object&gt; pReqVars, pReader Reader, CsvMethod pCsvMethod) - returns List&lt;String&gt; list of String values of all columns from next row, null if no more rows left. May throws an Exception</li>
+        </ul>
+        This is performance, memory and algorithmically friendly service.
+      </p>
+
+      <h4>Import bank statement. Semi-automatically bank reconciliation.</h4>
+      <p>
+      </p>
+
+    </section>
+
+  </body>
+
+</document>

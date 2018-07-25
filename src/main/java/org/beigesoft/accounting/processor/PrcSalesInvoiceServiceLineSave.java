@@ -61,7 +61,7 @@ public class PrcSalesInvoiceServiceLineSave<RS>
 
   /**
    * <p>Process entity request.</p>
-   * @param pAddParam additional param, e.g. return this line's
+   * @param pReqVars additional param, e.g. return this line's
    * document in "nextEntity" for farther process
    * @param pRequestData Request Data
    * @param pEntity Entity to process
@@ -70,24 +70,24 @@ public class PrcSalesInvoiceServiceLineSave<RS>
    **/
   @Override
   public final SalesInvoiceServiceLine process(
-    final Map<String, Object> pAddParam,
+    final Map<String, Object> pReqVars,
       final SalesInvoiceServiceLine pEntity,
         final IRequestData pRequestData) throws Exception {
     if (pEntity.getItsQuantity().compareTo(BigDecimal.ZERO) <= 0) {
       throw new ExceptionWithCode(ExceptionWithCode.WRONG_PARAMETER,
-        "quantity_less_or_equal_zero::" + pAddParam.get("user"));
+        "quantity_less_or_equal_zero::" + pReqVars.get("user"));
     }
     if (!(pEntity.getItsPrice().compareTo(BigDecimal.ZERO) > 0
       || pEntity.getForeignPrice().compareTo(BigDecimal.ZERO) > 0)) {
       throw new ExceptionWithCode(ExceptionWithCode.WRONG_PARAMETER,
         "price_less_or_eq_zero");
     }
-    AccSettings as = getSrvAccSettings().lazyGetAccSettings(pAddParam);
+    AccSettings as = getSrvAccSettings().lazyGetAccSettings(pReqVars);
     // Beige-Orm refresh:
     pEntity.setItsOwner(getSrvOrm()
-      .retrieveEntity(pAddParam, pEntity.getItsOwner()));
+      .retrieveEntity(pReqVars, pEntity.getItsOwner()));
     pEntity.setService(getSrvOrm()
-      .retrieveEntity(pAddParam, pEntity.getService()));
+      .retrieveEntity(pReqVars, pEntity.getService()));
     //rounding:
     pEntity.setItsQuantity(pEntity.getItsQuantity().setScale(
       as.getQuantityPrecision(), as.getRoundingMode()));
@@ -120,10 +120,12 @@ public class PrcSalesInvoiceServiceLineSave<RS>
       if (!as.getSalTaxIsInvoiceBase()) {
         tls = new ArrayList<SalesInvoiceServiceTaxLine>();
       }
+      pReqVars.put("InvItemTaxCategoryLineitsOwnerdeepLevel", 1);
       List<InvItemTaxCategoryLine> pstl = getSrvOrm()
-        .retrieveListWithConditions(pAddParam,
+        .retrieveListWithConditions(pReqVars,
           InvItemTaxCategoryLine.class, "where ITSOWNER="
             + pEntity.getService().getTaxCategory().getItsId());
+      pReqVars.remove("InvItemTaxCategoryLineitsOwnerdeepLevel");
       StringBuffer sb = new StringBuffer();
       int i = 0;
       for (InvItemTaxCategoryLine pst : pstl) {
@@ -155,7 +157,7 @@ public class PrcSalesInvoiceServiceLineSave<RS>
               }
               tls.add(pistl);
               sb.append(pst.getTax().getItsName() + " "
-                + prn(pAddParam, addTx));
+                + prn(pReqVars, addTx));
             }
           }
           if (as.getSalTaxIsInvoiceBase() || as.getSalTaxUseAggregItBas()) {
@@ -179,34 +181,37 @@ public class PrcSalesInvoiceServiceLineSave<RS>
     pEntity.setForeignTotalTaxes(totalTaxesFc);
     pEntity.setForeignTotal(pEntity.getForeignSubtotal().add(totalTaxesFc));
     if (pEntity.getIsNew()) {
-      getSrvOrm().insertEntity(pAddParam, pEntity);
+      getSrvOrm().insertEntity(pReqVars, pEntity);
       pEntity.setIsNew(false);
     } else {
-      getSrvOrm().updateEntity(pAddParam, pEntity);
+      getSrvOrm().updateEntity(pReqVars, pEntity);
     }
     SalesInvoiceServiceTaxLine pistlt = new SalesInvoiceServiceTaxLine();
     pistlt.setItsOwner(pEntity);
+    pReqVars.put("SalesInvoiceServiceTaxLineitsOwnerdeepLevel", 1);
     List<SalesInvoiceServiceTaxLine> tlsw = getSrvOrm()
-      .retrieveListForField(pAddParam, pistlt, "itsOwner");
+      .retrieveListForField(pReqVars, pistlt, "itsOwner");
+    pReqVars.remove("SalesInvoiceServiceTaxLineitsOwnerdeepLevel");
     if (tls != null) {
       for (int i = 0; i < tls.size(); i++) {
         if (i < tlsw.size()) {
           tlsw.get(i).setTax(tls.get(i).getTax());
           tlsw.get(i).setItsTotal(tls.get(i).getItsTotal());
-          getSrvOrm().updateEntity(pAddParam, tlsw.get(i));
+          tlsw.get(i).setItsOwner(pEntity);
+          getSrvOrm().updateEntity(pReqVars, tlsw.get(i));
         } else {
           tls.get(i).setItsOwner(pEntity);
           tls.get(i).setInvoiceId(pEntity.getItsOwner().getItsId());
-          getSrvOrm().insertEntity(pAddParam, tls.get(i));
+          getSrvOrm().insertEntity(pReqVars, tls.get(i));
           tls.get(i).setIsNew(false);
         }
       }
       for (int j = tls.size(); j < tlsw.size(); j++) {
-        getSrvOrm().deleteEntity(pAddParam, tlsw.get(j));
+        getSrvOrm().deleteEntity(pReqVars, tlsw.get(j));
       }
     } else {
       for (SalesInvoiceServiceTaxLine pistlw : tlsw) {
-        getSrvOrm().deleteEntity(pAddParam, pistlw);
+        getSrvOrm().deleteEntity(pReqVars, pistlw);
       }
     }
     // optimistic locking (dirty check):
@@ -214,25 +219,25 @@ public class PrcSalesInvoiceServiceLineSave<RS>
       .getParameter(SalesInvoice.class.getSimpleName() + ".ownerVersion"));
     pEntity.getItsOwner().setItsVersion(ownerVersion);
     this.utlSalesGoodsServiceLine
-      .updateOwner(pAddParam, pEntity.getItsOwner());
-    pAddParam.put("nextEntity", pEntity.getItsOwner());
-    pAddParam.put("nameOwnerEntity", SalesInvoice.class.getSimpleName());
+      .updateOwner(pReqVars, pEntity.getItsOwner());
+    pReqVars.put("nextEntity", pEntity.getItsOwner());
+    pReqVars.put("nameOwnerEntity", SalesInvoice.class.getSimpleName());
     return null;
   }
 
   /**
    * <p>Simple delegator to print number.</p>
-   * @param pAddParam additional param
+   * @param pReqVars additional param
    * @param pVal value
    * @return String
    **/
-  public final String prn(final Map<String, Object> pAddParam,
+  public final String prn(final Map<String, Object> pReqVars,
     final BigDecimal pVal) {
     return this.srvNumberToString.print(pVal.toString(),
-      (String) pAddParam.get("dseparatorv"), //TODO default I18N
-        (String) pAddParam.get("dgseparatorv"),
-          (Integer) pAddParam.get("pricePrecision"),
-            (Integer) pAddParam.get("digitsInGroup"));
+      (String) pReqVars.get("dseparatorv"), //TODO default I18N
+        (String) pReqVars.get("dgseparatorv"),
+          (Integer) pReqVars.get("pricePrecision"),
+            (Integer) pReqVars.get("digitsInGroup"));
   }
 
   //Simple getters and setters:
