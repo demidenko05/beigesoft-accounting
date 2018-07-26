@@ -15,4 +15,25 @@
      <Class name="org.beigesoft.accounting.report.InvoiceReportPdf" />
      <Bug pattern="IS2_INCONSISTENT_SYNC" />
   </Match>
+  <!--EI_EXPOSE_REP/2 is resource unfriendly approach to avoid object's unexpected changes.
+  In real program the most of objects (not only Date and arrays) is mutable.
+  These are also POJO-unfriendly rules.
+  Using annotation "immutable" is the best way to implements logic: "do not change
+  mutable object outside or better - by annotated allowChangeImmutableFor[]".-->
+  <Match>
+     <Class name="org.beigesoft.accounting.persistable.BankStatementLine" />
+     <Bug pattern="EI_EXPOSE_REP" />
+  </Match>
+  <Match>
+     <Class name="org.beigesoft.accounting.persistable.BankStatementLine" />
+     <Bug pattern="EI_EXPOSE_REP2" />
+  </Match>
+  <Match>
+     <Class name="org.beigesoft.accounting.persistable.BankStatement" />
+     <Bug pattern="EI_EXPOSE_REP" />
+  </Match>
+  <Match>
+     <Class name="org.beigesoft.accounting.persistable.BankStatement" />
+     <Bug pattern="EI_EXPOSE_REP2" />
+  </Match>
 </FindBugsFilter>

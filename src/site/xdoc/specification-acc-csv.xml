@@ -55,7 +55,7 @@
       <p>
         Persistable model org.beigesoft.persistable.CsvMethod
         <ul>
-          <li>AHasIdLongVersion fields</li>
+          <li>AHasIdLongNameVersion fields</li>
           <li>charsetName, String, not null, Charset encoding name, "UTF-8" default.</li>
           <li>columnSep, String[5], not null, Column separator, comma default.</li>
           <li>hasHeader, Boolean, not null, if the first row contains of columns names, false default.</li>
@@ -65,7 +65,7 @@
       <p>
         Persistable model org.beigesoft.persistable.CsvColumn
         <ul>
-          <li>AHasIdLongVersion fields</li>
+          <li>AHasIdLongNameVersion fields</li>
           <li>itsOwner - CsvMethod</li>
           <li>itsType, ECsvColumnType, not null</li>
           <li>itsIndex, Integer, not null, start from 1 index.</li>
@@ -84,6 +84,58 @@
 
       <h4>Import bank statement. Semi-automatically bank reconciliation.</h4>
       <p>
+        When CSV file contains of entry like:
+<pre style="white-space: pre-wrap;">
+  01/01/2018,check#123 wrong signature,VOIDED,123.45
+</pre>
+then it means that check#123 for 123.45 was canceled, so application should try to find payment or prepayment with matching amount and date and suggest to reverse that document. 
+      </p>
+      <p>Actions that are made automatically for every line:
+      <ul>
+        <li><b>Only when "finding canceled mode" is set to on</b> - finding matching payment/prepayment for reversing in case if line marked as "canceled", if found - action "reverse" will be appeared</li>
+        <li>finding already entered records that match current line - accounting entries/payment/prepayment, matching records will be listed, actions "new payment/prepayment/accounting entry" will be appeared in any case</li>
+      </ul>
+      </p>
+      <p>
+        After user made any suggesting action, result should be listed for the line where action was made, e.g. "created reversing payment#67 for 12.34USD".
+      </p>
+      <p>Persistable model BankCsvMethod:
+        <ul>
+          <li>AHasIdLongNameVersion fields</li>
+          <li>csvMethod, CsvMethod, not null</li>
+          <li>dateCol - CsvColumn, not null, date</li>
+          <li>amountCol - CsvColumn, not null, amount</li>
+          <li>descriptionCol - CsvColumn, if used, description</li>
+          <li>statusCol - CsvColumn, if used, column that contains of CANCELED or NOT information</li>
+          <li>acceptedWords - String, if used, comma separated words that mean that entry was ACCEPTED, e.g. "OK,ACCEPTED" or single value "true"</li>
+          <li>voidedWords - String, if used, comma separated words that mean that entry was CANCELED, e.g. "VOIDED,CANCELED" or single value "false"</li>
+        </ul>
+        "finding canceled mode" is set to on when statusCol and voidedWords are filled.
+      </p>
+      <p>Persistable model BankStatement:
+        <ul>
+          <li>APersistableBaseVersion fields</li>
+          <li>bankAccount, BankAccount, not null</li>
+          <li>itsDate - Date, not null</li>
+          <li>sourceName - String, CSV file name + BankCsvMethod name</li>
+          <li>itsLines - List&lt;BankStatementLine&gt;</li>
+        </ul>
+      </p>
+      <p>Persistable model BankStatementLine, constTypeCode() = 1010:
+        <ul>
+          <li>APersistableBaseVersion fields, implements IHasTypeCode</li>
+          <li>itsOwner, BankStatement, not null, read only field</li>
+          <li>itsDate - Date, not null, from CSV, read only field</li>
+          <li>itsAmount - BigDecimal, not null, negative or positive - from CSV, read only field</li>
+          <li>descriptionStatus - String, from CSV if present, read only field, if statusCol present, then string value present here.</li>
+          <li>itsStatus - EBankEntryStatus.ACCEPTED/VOIDED, ACCEPTED default or from CSV according settings, read only field</li>
+          <li>matchingRecords, String, if found, read only field</li>
+          <li>resultAction, String, if action was made, read only field, e.g. "was made PaymentTo#12665"</li>
+          <li>resultRecordId, Long, if made, read only field</li>
+          <li>resultRecordType, EBankEntryResultType.ACC_ENTRY/PAYMENTFROM/PREPAYMENTFROM/PAYMENTTO/PREPAYMENTTO, if made, read only field</li>
+          <li>descriptionAdd - String, addition description created by user, e.g. "made mistake, see adjusting entry #123"</li>
+        </ul>
+        Only action per line is allowed. If user made mistake, then it should fix it "by hand", i.e. add adjusting accounting entry, etc.
       </p>
 
     </section>
