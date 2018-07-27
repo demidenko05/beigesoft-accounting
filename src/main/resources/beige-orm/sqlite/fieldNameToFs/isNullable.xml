@@ -65,4 +65,10 @@
 <entry key="prepaymentTo">true</entry>
 <entry key="prepaymentFrom">true</entry>
 <entry key="foreignCurrency">true</entry>
+<entry key="descriptionCol">true</entry>
+<entry key="statusCol">true</entry>
+<entry key="columnSep">false</entry>
+<entry key="itsIndex">false</entry>
+<entry key="charsetName">false</entry>
+<entry key="resultRecordType">true</entry>
 </properties>

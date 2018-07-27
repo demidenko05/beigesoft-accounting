@@ -16,6 +16,7 @@ import java.util.Date;
 import java.math.BigDecimal;
 
 import org.beigesoft.model.IOwned;
+import org.beigesoft.model.IHasTypeCode;
 import org.beigesoft.persistable.APersistableBase;
 import org.beigesoft.accounting.model.EBankEntryStatus;
 import org.beigesoft.accounting.model.EBankEntryResultType;
@@ -28,12 +29,13 @@ import org.beigesoft.accounting.model.EBankEntryResultType;
  * @author Yury Demidenko
  */
 public class BankStatementLine extends APersistableBase
-  implements IOwned<BankStatement> {
+  implements IHasTypeCode, IOwned<BankStatement> {
 
   /**
    * <p>Owner.</p>
    **/
   private BankStatement itsOwner;
+
   /**
    * <p>Date.</p>
    **/
@@ -81,6 +83,14 @@ public class BankStatementLine extends APersistableBase
    * e.g. "made mistake, see adjusting entry #123".</p>
    **/
   private String descriptionAdd;
+
+  /**
+   * <p>Constant of code type.</p>
+   * @return 1010
+   **/
+  public final Integer constTypeCode() {
+    return 1010;
+  }
 
   /**
    * <p>Getter for itsOwner.</p>

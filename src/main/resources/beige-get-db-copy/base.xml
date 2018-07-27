@@ -17,6 +17,8 @@
   org.beigesoft.persistable.DecimalSeparator,
   org.beigesoft.persistable.DecimalGroupSeparator,
   org.beigesoft.persistable.LangPreferences,
+  org.beigesoft.persistable.CsvMethod,
+  org.beigesoft.persistable.CsvColumn,
   org.beigesoft.accounting.persistable.Expense,
   org.beigesoft.accounting.persistable.ExpenseUsed,
   org.beigesoft.accounting.persistable.Account,
@@ -116,6 +118,9 @@
   org.beigesoft.accounting.persistable.PurchaseInvoiceGoodsTaxLine,
   org.beigesoft.accounting.persistable.PurchaseReturnGoodsTaxLine,
   org.beigesoft.accounting.persistable.SalesReturnGoodsTaxLine,
+  org.beigesoft.accounting.persistable.BankCsvMethod,
+  org.beigesoft.accounting.persistable.BankStatement,
+  org.beigesoft.accounting.persistable.BankStatementLine,
   org.beigesoft.accounting.persistable.WarehouseRest</entry>
 <entry key="settingsKeysForClasses">excludeFields</entry>
 <entry key="settingsKeysForFields">isEnabled, ISrvFieldWriter, ISrvEntityFieldFiller</entry>
