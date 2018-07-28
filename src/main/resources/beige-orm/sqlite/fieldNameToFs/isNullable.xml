@@ -69,6 +69,7 @@
 <entry key="statusCol">true</entry>
 <entry key="columnSep">false</entry>
 <entry key="itsIndex">false</entry>
+<entry key="sourceIndex">false</entry>
 <entry key="charsetName">false</entry>
 <entry key="resultRecordType">true</entry>
 </properties>

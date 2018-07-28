@@ -120,6 +120,8 @@ import org.beigesoft.accounting.processor.PrcMoveItemsLineSave;
 import org.beigesoft.accounting.processor.PrcMoveItemsRetrieve;
 import org.beigesoft.accounting.processor.PrcAccSettingsSave;
 import org.beigesoft.accounting.processor.PrcAccSettingsLineSave;
+import org.beigesoft.accounting.processor.PrcBankStatementSave;
+import org.beigesoft.accounting.persistable.BankStatement;
 import org.beigesoft.accounting.persistable.AccSettings;
 import org.beigesoft.accounting.persistable.AccEntriesSourcesLine;
 import org.beigesoft.accounting.persistable.base.ADrawItemSourcesLine;
@@ -367,6 +369,8 @@ public class HldAccEntitiesProcessorNames
       return PrcEmailMsgSave.class.getSimpleName();
     } else if (AccSettings.class == pClass) {
       return PrcAccSettingsSave.class.getSimpleName();
+    } else if (BankStatement.class == pClass) {
+      return PrcBankStatementSave.class.getSimpleName();
     } else if (SalesReturn.class == pClass) {
       return PrcSalesReturnSave.class.getSimpleName();
     } else if (Manufacture.class == pClass) {

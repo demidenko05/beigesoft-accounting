@@ -1,4 +1,4 @@
-package org.beigesoft.webstore.processor;
+package org.beigesoft.accounting.processor;
 
 /*
  * Copyright (c) 2018 Beigesoft™
@@ -12,17 +12,22 @@ package org.beigesoft.webstore.processor;
  * http://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html
  */
 
-import java.util.Date;
 import java.util.Map;
 import java.util.List;
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.text.ParsePosition;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 
+import org.beigesoft.exception.ExceptionWithCode;
 import org.beigesoft.model.IRequestData;
 import org.beigesoft.service.IEntityProcessor;
 import org.beigesoft.service.ISrvOrm;
 import org.beigesoft.service.ICsvReader;
+import org.beigesoft.persistable.CsvColumn;
+import org.beigesoft.accounting.model.EBankEntryStatus;
 import org.beigesoft.accounting.persistable.BankStatement;
 import org.beigesoft.accounting.persistable.BankStatementLine;
 import org.beigesoft.accounting.persistable.BankCsvMethod;
@@ -64,10 +69,12 @@ public class PrcBankStatementSave<RS>
     String fileToUploadName = (String) pRequestData
       .getAttribute("fileToUploadName");
     if (fileToUploadName != null) {
-      String bankCsvMethodId = (String) pRequestData
-        .getAttribute("bankCsvMethod");
+      String bankCsvMethodId = pRequestData.getParameter("bankCsvMethod");
       BankCsvMethod bankCsvMethod = getSrvOrm().retrieveEntityById(pAddParam,
         BankCsvMethod.class, Long.parseLong(bankCsvMethodId));
+      bankCsvMethod.getCsvMethod().setColumns(getSrvOrm()
+        .retrieveListWithConditions(pAddParam, CsvColumn.class,
+          "where ITSOWNER=" + bankCsvMethod.getCsvMethod().getItsId()));
       pEntity.setSourceName(fileToUploadName + "/"
         + bankCsvMethod.getItsName());
       if (pEntity.getIsNew()) {
@@ -82,12 +89,77 @@ public class PrcBankStatementSave<RS>
         reader = new InputStreamReader(ins, Charset
           .forName(bankCsvMethod.getCsvMethod().getCharsetName()).newDecoder());
         List<String> csvRow;
+        int r = 0;
         while ((csvRow = this.csvReader.readNextRow(pAddParam, reader,
           bankCsvMethod.getCsvMethod())) != null) {
+          r++;
+          if (r == 1 && bankCsvMethod.getCsvMethod().getHasHeader()) {
+            continue;
+          }
           BankStatementLine bsl = new BankStatementLine();
           bsl.setIdDatabaseBirth(getSrvOrm().getIdDatabase());
           bsl.setItsOwner(pEntity);
-          
+          String dateStr = csvRow
+            .get(bankCsvMethod.getDateCol().getItsIndex() - 1);
+          try {
+            SimpleDateFormat sdf = new SimpleDateFormat(bankCsvMethod
+              .getDateCol().getDataFormat());
+            bsl.setItsDate(sdf.parse(dateStr, new ParsePosition(0)));
+          } catch (Exception ee) {
+            throw new ExceptionWithCode(ExceptionWithCode.CONFIGURATION_MISTAKE,
+              "Wrong date or its format! Value/Format: " + dateStr
+                + "/" + bankCsvMethod.getDateCol().getDataFormat(), ee);
+          }
+          String amountStr = csvRow
+            .get(bankCsvMethod.getAmountCol().getItsIndex() - 1);
+          try {
+            if (bankCsvMethod.getAmountCol().getDataFormat() != null) {
+              String[] seps = bankCsvMethod.getAmountCol().getDataFormat()
+                .split(",");
+              for (int i = 0; i < 2; i++) {
+                if ("SPACE".equals(seps[i])) {
+                  seps[i] = " ";
+                } else if ("COMMA".equals(seps[i])) {
+                  seps[i] = ",";
+                }
+              }
+              if (!"NONE".equals(seps[0])) {
+                amountStr = amountStr.replace(seps[0], ".");
+              }
+              if (!"NONE".equals(seps[1])) {
+                amountStr = amountStr.replace(seps[1], "");
+              }
+            }
+            bsl.setItsAmount(new BigDecimal(amountStr));
+          } catch (Exception ee) {
+            throw new ExceptionWithCode(ExceptionWithCode.CONFIGURATION_MISTAKE,
+              "Wrong amount or its format! Value/Format: " + amountStr
+                + "/" + bankCsvMethod.getAmountCol().getDataFormat(), ee);
+          }
+          String descr = null;
+          if (bankCsvMethod.getDescriptionCol() != null) {
+            descr = csvRow
+              .get(bankCsvMethod.getDescriptionCol().getItsIndex() - 1);
+          }
+          if (bankCsvMethod.getStatusCol() != null) {
+            String statusStr = csvRow
+              .get(bankCsvMethod.getStatusCol().getItsIndex() - 1);
+            if (descr == null) {
+              descr = statusStr;
+            } else {
+              descr += "/" + statusStr;
+            }
+            if (bankCsvMethod.getAcceptedWords() != null
+              && !bankCsvMethod.getAcceptedWords().contains(statusStr)) {
+              bsl.setItsStatus(EBankEntryStatus.OTHER);
+            }
+            if (bankCsvMethod.getVoidedWords() != null
+              && bankCsvMethod.getVoidedWords().contains(statusStr)) {
+              bsl.setItsStatus(EBankEntryStatus.VOIDED);
+            }
+          }
+          bsl.setDescriptionStatus(descr);
+          getSrvOrm().insertEntity(pAddParam, bsl);
         }
       } finally {
         if (reader != null) {

@@ -23,6 +23,7 @@ import org.beigesoft.holder.IHolderForClassByName;
 import org.beigesoft.converter.IConverterToFromString;
 import org.beigesoft.exception.ExceptionWithCode;
 import org.beigesoft.service.IEntityProcessor;
+import org.beigesoft.service.ICsvReader;
 import org.beigesoft.service.ISrvI18n;
 import org.beigesoft.service.ISrvDate;
 import org.beigesoft.service.ISrvNumberToString;
@@ -131,6 +132,7 @@ import org.beigesoft.accounting.processor.PrcAccEntryCopy;
 import org.beigesoft.accounting.processor.PrcMoveItemsLineSave;
 import org.beigesoft.accounting.processor.PrcMoveItemsRetrieve;
 import org.beigesoft.accounting.processor.PrcAccSettingsSave;
+import org.beigesoft.accounting.processor.PrcBankStatementSave;
 import org.beigesoft.accounting.processor.PrcAccSettingsLineSave;
 import org.beigesoft.replicator.persistable.
   base.AReplExcludeAccountsDebitCredit;
@@ -276,6 +278,11 @@ public class FctBnAccEntitiesProcessors<RS>
    * <p>Service print number.</p>
    **/
   private ISrvNumberToString srvNumberToString;
+
+  /**
+   * <p>CSV reader.</p>
+   **/
+  private ICsvReader csvReader;
 
   /**
    * <p>Converters map "converter name"-"object' s converter".</p>
@@ -506,6 +513,9 @@ public class FctBnAccEntitiesProcessors<RS>
             .equals(PrcAdditionCostLineDelete.class.getSimpleName())) {
             proc = lazyGetPrcAdditionCostLineDelete(pAddParam);
           } else if (pBeanName
+            .equals(PrcBankStatementSave.class.getSimpleName())) {
+            proc = lazyGetPrcBankStatementSave(pAddParam);
+          } else if (pBeanName
             .equals(PrcAdditionCostLineSave.class.getSimpleName())) {
             proc = lazyGetPrcAdditionCostLineSave(pAddParam);
           } else if (pBeanName
@@ -640,16 +650,13 @@ public class FctBnAccEntitiesProcessors<RS>
    * @return requested PrcAccEntrySaveDescr
    * @throws Exception - an exception
    */
-  protected final PrcAccEntrySaveDescr<RS>
-    createPutPrcAccEntrySaveDescr(
-      final Map<String, Object> pAddParam) throws Exception {
-    PrcAccEntrySaveDescr<RS> proc =
-      new PrcAccEntrySaveDescr<RS>();
+  protected final PrcAccEntrySaveDescr<RS> createPutPrcAccEntrySaveDescr(
+    final Map<String, Object> pAddParam) throws Exception {
+    PrcAccEntrySaveDescr<RS> proc = new PrcAccEntrySaveDescr<RS>();
     proc.setSrvAccSettings(getSrvAccSettings());
     proc.setSrvOrm(getSrvOrm());
     //assigning fully initialized object:
-    this.processorsMap
-      .put(PrcAccEntrySaveDescr.class.getSimpleName(), proc);
+    this.processorsMap.put(PrcAccEntrySaveDescr.class.getSimpleName(), proc);
     return proc;
   }
 
@@ -681,13 +688,11 @@ public class FctBnAccEntitiesProcessors<RS>
   protected final PrcSubaccountLineCreate<RS>
     createPutPrcSubaccountLineCreate(
       final Map<String, Object> pAddParam) throws Exception {
-    PrcSubaccountLineCreate<RS> proc =
-      new PrcSubaccountLineCreate<RS>();
+    PrcSubaccountLineCreate<RS> proc = new PrcSubaccountLineCreate<RS>();
     @SuppressWarnings("unchecked")
     IEntityProcessor<SubaccountLine, Long> procDlg =
-      (IEntityProcessor<SubaccountLine, Long>)
-        this.fctBnEntitiesProcessors
-          .lazyGet(pAddParam, PrcEntityCreate.class.getSimpleName());
+      (IEntityProcessor<SubaccountLine, Long>) this.fctBnEntitiesProcessors
+        .lazyGet(pAddParam, PrcEntityCreate.class.getSimpleName());
     proc.setPrcAccEntityCreate(procDlg);
     proc.setSrvTypeCode(getSrvTypeCode());
     proc.setSrvOrm(getSrvOrm());
@@ -788,8 +793,7 @@ public class FctBnAccEntitiesProcessors<RS>
         this.fctBnEntitiesProcessors
           .lazyGet(pAddParam, PrcEntityFfolDelete.class.getSimpleName());
     //assigning fully initialized object:
-    this.processorsMap
-      .put(PrcEntityFfolDelete.class.getSimpleName(), proc);
+    this.processorsMap.put(PrcEntityFfolDelete.class.getSimpleName(), proc);
     return proc;
   }
 
@@ -808,8 +812,7 @@ public class FctBnAccEntitiesProcessors<RS>
         this.fctBnEntitiesProcessors
           .lazyGet(pAddParam, PrcEntityFfolSave.class.getSimpleName());
     //assigning fully initialized object:
-    this.processorsMap
-      .put(PrcEntityFfolSave.class.getSimpleName(), proc);
+    this.processorsMap.put(PrcEntityFfolSave.class.getSimpleName(), proc);
     return proc;
   }
 
@@ -819,22 +822,19 @@ public class FctBnAccEntitiesProcessors<RS>
    * @return requested PrcAccSettingsLineSave
    * @throws Exception - an exception
    */
-  protected final PrcAccSettingsLineSave
-    lazyGetPrcAccSettingsLineSave(
-      final Map<String, Object> pAddParam) throws Exception {
+  protected final PrcAccSettingsLineSave lazyGetPrcAccSettingsLineSave(
+    final Map<String, Object> pAddParam) throws Exception {
     @SuppressWarnings("unchecked")
     PrcAccSettingsLineSave<RS, IHasId<Long>> proc =
-      (PrcAccSettingsLineSave<RS, IHasId<Long>>)
-        this.processorsMap
-          .get(PrcAccSettingsLineSave.class.getSimpleName());
+      (PrcAccSettingsLineSave<RS, IHasId<Long>>) this.processorsMap
+        .get(PrcAccSettingsLineSave.class.getSimpleName());
     if (proc == null) {
       proc = new PrcAccSettingsLineSave<RS, IHasId<Long>>();
       proc.setSrvAccSettings(getSrvAccSettings());
       @SuppressWarnings("unchecked")
       PrcEntityFolSave<RS, IHasId<Long>, Long> procDlg =
-        (PrcEntityFolSave<RS, IHasId<Long>, Long>)
-          this.fctBnEntitiesProcessors
-            .lazyGet(pAddParam, PrcEntityFolSave.class.getSimpleName());
+        (PrcEntityFolSave<RS, IHasId<Long>, Long>) this.fctBnEntitiesProcessors
+          .lazyGet(pAddParam, PrcEntityFolSave.class.getSimpleName());
       proc.setPrcEntityFolSave(procDlg);
       //assigning fully initialized object:
       this.processorsMap
@@ -854,9 +854,8 @@ public class FctBnAccEntitiesProcessors<RS>
       final Map<String, Object> pAddParam) throws Exception {
     @SuppressWarnings("unchecked")
     PrcPurchaseInvoiceServiceLineCreate<RS> proc =
-      (PrcPurchaseInvoiceServiceLineCreate<RS>)
-        this.processorsMap
-          .get(PrcPurchaseInvoiceServiceLineCreate.class.getSimpleName());
+      (PrcPurchaseInvoiceServiceLineCreate<RS>) this.processorsMap
+        .get(PrcPurchaseInvoiceServiceLineCreate.class.getSimpleName());
     if (proc == null) {
       proc = new PrcPurchaseInvoiceServiceLineCreate<RS>();
       @SuppressWarnings("unchecked")
@@ -882,10 +881,8 @@ public class FctBnAccEntitiesProcessors<RS>
     lazyGetPrcPurchaseInvoiceLineCreate(
       final Map<String, Object> pAddParam) throws Exception {
     @SuppressWarnings("unchecked")
-    PrcPurchaseInvoiceLineCreate<RS> proc =
-      (PrcPurchaseInvoiceLineCreate<RS>)
-        this.processorsMap
-          .get(PrcPurchaseInvoiceLineCreate.class.getSimpleName());
+    PrcPurchaseInvoiceLineCreate<RS> proc = (PrcPurchaseInvoiceLineCreate<RS>)
+  this.processorsMap.get(PrcPurchaseInvoiceLineCreate.class.getSimpleName());
     if (proc == null) {
       proc = new PrcPurchaseInvoiceLineCreate<RS>();
       @SuppressWarnings("unchecked")
@@ -936,14 +933,11 @@ public class FctBnAccEntitiesProcessors<RS>
    * @return requested PrcSalesInvoiceLineCreate
    * @throws Exception - an exception
    */
-  protected final PrcSalesInvoiceLineCreate
-    lazyGetPrcSalesInvoiceLineCreate(
-      final Map<String, Object> pAddParam) throws Exception {
+  protected final PrcSalesInvoiceLineCreate lazyGetPrcSalesInvoiceLineCreate(
+    final Map<String, Object> pAddParam) throws Exception {
     @SuppressWarnings("unchecked")
-    PrcSalesInvoiceLineCreate<RS> proc =
-      (PrcSalesInvoiceLineCreate<RS>)
-        this.processorsMap
-          .get(PrcSalesInvoiceLineCreate.class.getSimpleName());
+    PrcSalesInvoiceLineCreate<RS> proc = (PrcSalesInvoiceLineCreate<RS>)
+      this.processorsMap.get(PrcSalesInvoiceLineCreate.class.getSimpleName());
     if (proc == null) {
       proc = new PrcSalesInvoiceLineCreate<RS>();
       @SuppressWarnings("unchecked")
@@ -969,10 +963,8 @@ public class FctBnAccEntitiesProcessors<RS>
     lazyGetPrcPurchaseReturnLineCreate(
       final Map<String, Object> pAddParam) throws Exception {
     @SuppressWarnings("unchecked")
-    PrcPurchaseReturnLineCreate<RS> proc =
-      (PrcPurchaseReturnLineCreate<RS>)
-        this.processorsMap
-          .get(PrcPurchaseReturnLineCreate.class.getSimpleName());
+    PrcPurchaseReturnLineCreate<RS> proc = (PrcPurchaseReturnLineCreate<RS>)
+      this.processorsMap.get(PrcPurchaseReturnLineCreate.class.getSimpleName());
     if (proc == null) {
       proc = new PrcPurchaseReturnLineCreate<RS>();
       @SuppressWarnings("unchecked")
@@ -994,21 +986,17 @@ public class FctBnAccEntitiesProcessors<RS>
    * @return requested PrcPurchaseReturnLineGfr
    * @throws Exception - an exception
    */
-  protected final PrcPurchaseReturnLineGfr
-    lazyGetPrcPurchaseReturnLineGfr(
-      final Map<String, Object> pAddParam) throws Exception {
+  protected final PrcPurchaseReturnLineGfr lazyGetPrcPurchaseReturnLineGfr(
+    final Map<String, Object> pAddParam) throws Exception {
     @SuppressWarnings("unchecked")
-    PrcPurchaseReturnLineGfr<RS> proc =
-      (PrcPurchaseReturnLineGfr<RS>)
-        this.processorsMap
-          .get(PrcPurchaseReturnLineGfr.class.getSimpleName());
+    PrcPurchaseReturnLineGfr<RS> proc = (PrcPurchaseReturnLineGfr<RS>)
+      this.processorsMap.get(PrcPurchaseReturnLineGfr.class.getSimpleName());
     if (proc == null) {
       proc = new PrcPurchaseReturnLineGfr<RS>();
       @SuppressWarnings("unchecked")
       PrcEntityPbCopy<RS, PurchaseReturnLine> procDlg =
-        (PrcEntityPbCopy<RS, PurchaseReturnLine>)
-          this.fctBnEntitiesProcessors
-            .lazyGet(pAddParam, PrcEntityPbCopy.class.getSimpleName());
+        (PrcEntityPbCopy<RS, PurchaseReturnLine>) this.fctBnEntitiesProcessors
+          .lazyGet(pAddParam, PrcEntityPbCopy.class.getSimpleName());
       proc.setPrcAccEntityPbCopy(procDlg);
       //assigning fully initialized object:
       this.processorsMap
@@ -1027,17 +1015,14 @@ public class FctBnAccEntitiesProcessors<RS>
     lazyGetPrcPurchaseReturnLineCopy(
       final Map<String, Object> pAddParam) throws Exception {
     @SuppressWarnings("unchecked")
-    PrcPurchaseReturnLineCopy<RS> proc =
-      (PrcPurchaseReturnLineCopy<RS>)
-        this.processorsMap
-          .get(PrcPurchaseReturnLineCopy.class.getSimpleName());
+    PrcPurchaseReturnLineCopy<RS> proc = (PrcPurchaseReturnLineCopy<RS>)
+      this.processorsMap.get(PrcPurchaseReturnLineCopy.class.getSimpleName());
     if (proc == null) {
       proc = new PrcPurchaseReturnLineCopy<RS>();
       @SuppressWarnings("unchecked")
       PrcEntityPbCopy<RS, PurchaseReturnLine> procDlg =
-        (PrcEntityPbCopy<RS, PurchaseReturnLine>)
-          this.fctBnEntitiesProcessors
-            .lazyGet(pAddParam, PrcEntityPbCopy.class.getSimpleName());
+        (PrcEntityPbCopy<RS, PurchaseReturnLine>) this.fctBnEntitiesProcessors
+          .lazyGet(pAddParam, PrcEntityPbCopy.class.getSimpleName());
       proc.setPrcAccEntityPbCopy(procDlg);
       //assigning fully initialized object:
       this.processorsMap
@@ -1052,25 +1037,20 @@ public class FctBnAccEntitiesProcessors<RS>
    * @return requested PrcSalesReturnLineGfr
    * @throws Exception - an exception
    */
-  protected final PrcSalesReturnLineGfr
-    lazyGetPrcSalesReturnLineGfr(
-      final Map<String, Object> pAddParam) throws Exception {
+  protected final PrcSalesReturnLineGfr lazyGetPrcSalesReturnLineGfr(
+    final Map<String, Object> pAddParam) throws Exception {
     @SuppressWarnings("unchecked")
-    PrcSalesReturnLineGfr<RS> proc =
-      (PrcSalesReturnLineGfr<RS>)
-        this.processorsMap
-          .get(PrcSalesReturnLineGfr.class.getSimpleName());
+    PrcSalesReturnLineGfr<RS> proc = (PrcSalesReturnLineGfr<RS>)
+      this.processorsMap.get(PrcSalesReturnLineGfr.class.getSimpleName());
     if (proc == null) {
       proc = new PrcSalesReturnLineGfr<RS>();
       @SuppressWarnings("unchecked")
       PrcEntityPbCopy<RS, SalesReturnLine> procDlg =
-        (PrcEntityPbCopy<RS, SalesReturnLine>)
-          this.fctBnEntitiesProcessors
-            .lazyGet(pAddParam, PrcEntityPbCopy.class.getSimpleName());
+        (PrcEntityPbCopy<RS, SalesReturnLine>) this.fctBnEntitiesProcessors
+          .lazyGet(pAddParam, PrcEntityPbCopy.class.getSimpleName());
       proc.setPrcAccEntityPbCopy(procDlg);
       //assigning fully initialized object:
-      this.processorsMap
-        .put(PrcSalesReturnLineGfr.class.getSimpleName(), proc);
+      this.processorsMap.put(PrcSalesReturnLineGfr.class.getSimpleName(), proc);
     }
     return proc;
   }
@@ -1081,21 +1061,17 @@ public class FctBnAccEntitiesProcessors<RS>
    * @return requested PrcSalesReturnLineCopy
    * @throws Exception - an exception
    */
-  protected final PrcSalesReturnLineCopy
-    lazyGetPrcSalesReturnLineCopy(
-      final Map<String, Object> pAddParam) throws Exception {
+  protected final PrcSalesReturnLineCopy lazyGetPrcSalesReturnLineCopy(
+    final Map<String, Object> pAddParam) throws Exception {
     @SuppressWarnings("unchecked")
-    PrcSalesReturnLineCopy<RS> proc =
-      (PrcSalesReturnLineCopy<RS>)
-        this.processorsMap
-          .get(PrcSalesReturnLineCopy.class.getSimpleName());
+    PrcSalesReturnLineCopy<RS> proc = (PrcSalesReturnLineCopy<RS>)
+      this.processorsMap.get(PrcSalesReturnLineCopy.class.getSimpleName());
     if (proc == null) {
       proc = new PrcSalesReturnLineCopy<RS>();
       @SuppressWarnings("unchecked")
       PrcEntityPbCopy<RS, SalesReturnLine> procDlg =
-        (PrcEntityPbCopy<RS, SalesReturnLine>)
-          this.fctBnEntitiesProcessors
-            .lazyGet(pAddParam, PrcEntityPbCopy.class.getSimpleName());
+        (PrcEntityPbCopy<RS, SalesReturnLine>) this.fctBnEntitiesProcessors
+          .lazyGet(pAddParam, PrcEntityPbCopy.class.getSimpleName());
       proc.setPrcAccEntityPbCopy(procDlg);
       //assigning fully initialized object:
       this.processorsMap
@@ -1110,21 +1086,17 @@ public class FctBnAccEntitiesProcessors<RS>
    * @return requested PrcUsedMaterialLineGfr
    * @throws Exception - an exception
    */
-  protected final PrcUsedMaterialLineGfr
-    lazyGetPrcUsedMaterialLineGfr(
-      final Map<String, Object> pAddParam) throws Exception {
+  protected final PrcUsedMaterialLineGfr lazyGetPrcUsedMaterialLineGfr(
+    final Map<String, Object> pAddParam) throws Exception {
     @SuppressWarnings("unchecked")
-    PrcUsedMaterialLineGfr<RS> proc =
-      (PrcUsedMaterialLineGfr<RS>)
-        this.processorsMap
-          .get(PrcUsedMaterialLineGfr.class.getSimpleName());
+    PrcUsedMaterialLineGfr<RS> proc = (PrcUsedMaterialLineGfr<RS>)
+      this.processorsMap.get(PrcUsedMaterialLineGfr.class.getSimpleName());
     if (proc == null) {
       proc = new PrcUsedMaterialLineGfr<RS>();
       @SuppressWarnings("unchecked")
       PrcEntityPbCopy<RS, UsedMaterialLine> procDlg =
-        (PrcEntityPbCopy<RS, UsedMaterialLine>)
-          this.fctBnEntitiesProcessors
-            .lazyGet(pAddParam, PrcEntityPbCopy.class.getSimpleName());
+        (PrcEntityPbCopy<RS, UsedMaterialLine>) this.fctBnEntitiesProcessors
+          .lazyGet(pAddParam, PrcEntityPbCopy.class.getSimpleName());
       proc.setPrcAccEntityPbCopy(procDlg);
       //assigning fully initialized object:
       this.processorsMap
@@ -1139,21 +1111,17 @@ public class FctBnAccEntitiesProcessors<RS>
    * @return requested PrcUsedMaterialLineCopy
    * @throws Exception - an exception
    */
-  protected final PrcUsedMaterialLineCopy
-    lazyGetPrcUsedMaterialLineCopy(
-      final Map<String, Object> pAddParam) throws Exception {
+  protected final PrcUsedMaterialLineCopy lazyGetPrcUsedMaterialLineCopy(
+    final Map<String, Object> pAddParam) throws Exception {
     @SuppressWarnings("unchecked")
-    PrcUsedMaterialLineCopy<RS> proc =
-      (PrcUsedMaterialLineCopy<RS>)
-        this.processorsMap
-          .get(PrcUsedMaterialLineCopy.class.getSimpleName());
+    PrcUsedMaterialLineCopy<RS> proc = (PrcUsedMaterialLineCopy<RS>)
+      this.processorsMap.get(PrcUsedMaterialLineCopy.class.getSimpleName());
     if (proc == null) {
       proc = new PrcUsedMaterialLineCopy<RS>();
       @SuppressWarnings("unchecked")
       PrcEntityPbCopy<RS, UsedMaterialLine> procDlg =
-        (PrcEntityPbCopy<RS, UsedMaterialLine>)
-          this.fctBnEntitiesProcessors
-            .lazyGet(pAddParam, PrcEntityPbCopy.class.getSimpleName());
+        (PrcEntityPbCopy<RS, UsedMaterialLine>) this.fctBnEntitiesProcessors
+          .lazyGet(pAddParam, PrcEntityPbCopy.class.getSimpleName());
       proc.setPrcAccEntityPbCopy(procDlg);
       //assigning fully initialized object:
       this.processorsMap
@@ -1168,14 +1136,11 @@ public class FctBnAccEntitiesProcessors<RS>
    * @return requested PrcMoveItemsLineSave
    * @throws Exception - an exception
    */
-  protected final PrcMoveItemsLineSave<RS>
-    lazyGetPrcMoveItemsLineSave(
-      final Map<String, Object> pAddParam) throws Exception {
+  protected final PrcMoveItemsLineSave<RS> lazyGetPrcMoveItemsLineSave(
+    final Map<String, Object> pAddParam) throws Exception {
     @SuppressWarnings("unchecked")
-    PrcMoveItemsLineSave<RS> proc =
-      (PrcMoveItemsLineSave<RS>)
-      this.processorsMap
-        .get(PrcMoveItemsLineSave.class.getSimpleName());
+    PrcMoveItemsLineSave<RS> proc = (PrcMoveItemsLineSave<RS>)
+      this.processorsMap.get(PrcMoveItemsLineSave.class.getSimpleName());
     if (proc == null) {
       proc = new PrcMoveItemsLineSave<RS>();
       proc.setSrvAccSettings(getSrvAccSettings());
@@ -1194,14 +1159,11 @@ public class FctBnAccEntitiesProcessors<RS>
    * @return requested PrcUsedMaterialLineSave
    * @throws Exception - an exception
    */
-  protected final PrcUsedMaterialLineSave<RS>
-    lazyGetPrcUsedMaterialLineSave(
-      final Map<String, Object> pAddParam) throws Exception {
+  protected final PrcUsedMaterialLineSave<RS> lazyGetPrcUsedMaterialLineSave(
+    final Map<String, Object> pAddParam) throws Exception {
     @SuppressWarnings("unchecked")
-    PrcUsedMaterialLineSave<RS> proc =
-      (PrcUsedMaterialLineSave<RS>)
-      this.processorsMap
-        .get(PrcUsedMaterialLineSave.class.getSimpleName());
+    PrcUsedMaterialLineSave<RS> proc = (PrcUsedMaterialLineSave<RS>)
+      this.processorsMap.get(PrcUsedMaterialLineSave.class.getSimpleName());
     if (proc == null) {
       proc = new PrcUsedMaterialLineSave<RS>();
       proc.setSrvAccSettings(getSrvAccSettings());
@@ -1222,25 +1184,20 @@ public class FctBnAccEntitiesProcessors<RS>
    * @return requested PrcGoodsLossLineGfr
    * @throws Exception - an exception
    */
-  protected final PrcGoodsLossLineGfr
-    lazyGetPrcGoodsLossLineGfr(
-      final Map<String, Object> pAddParam) throws Exception {
+  protected final PrcGoodsLossLineGfr lazyGetPrcGoodsLossLineGfr(
+    final Map<String, Object> pAddParam) throws Exception {
     @SuppressWarnings("unchecked")
-    PrcGoodsLossLineGfr<RS> proc =
-      (PrcGoodsLossLineGfr<RS>)
-        this.processorsMap
-          .get(PrcGoodsLossLineGfr.class.getSimpleName());
+    PrcGoodsLossLineGfr<RS> proc = (PrcGoodsLossLineGfr<RS>)
+      this.processorsMap.get(PrcGoodsLossLineGfr.class.getSimpleName());
     if (proc == null) {
       proc = new PrcGoodsLossLineGfr<RS>();
       @SuppressWarnings("unchecked")
       PrcEntityPbCopy<RS, GoodsLossLine> procDlg =
-        (PrcEntityPbCopy<RS, GoodsLossLine>)
-          this.fctBnEntitiesProcessors
-            .lazyGet(pAddParam, PrcEntityPbCopy.class.getSimpleName());
+        (PrcEntityPbCopy<RS, GoodsLossLine>) this.fctBnEntitiesProcessors
+          .lazyGet(pAddParam, PrcEntityPbCopy.class.getSimpleName());
       proc.setPrcAccEntityPbCopy(procDlg);
       //assigning fully initialized object:
-      this.processorsMap
-        .put(PrcGoodsLossLineGfr.class.getSimpleName(), proc);
+      this.processorsMap.put(PrcGoodsLossLineGfr.class.getSimpleName(), proc);
     }
     return proc;
   }
@@ -1251,21 +1208,17 @@ public class FctBnAccEntitiesProcessors<RS>
    * @return requested PrcGoodsLossLineCopy
    * @throws Exception - an exception
    */
-  protected final PrcGoodsLossLineCopy
-    lazyGetPrcGoodsLossLineCopy(
-      final Map<String, Object> pAddParam) throws Exception {
+  protected final PrcGoodsLossLineCopy lazyGetPrcGoodsLossLineCopy(
+    final Map<String, Object> pAddParam) throws Exception {
     @SuppressWarnings("unchecked")
-    PrcGoodsLossLineCopy<RS> proc =
-      (PrcGoodsLossLineCopy<RS>)
-        this.processorsMap
-          .get(PrcGoodsLossLineCopy.class.getSimpleName());
+    PrcGoodsLossLineCopy<RS> proc = (PrcGoodsLossLineCopy<RS>)
+        this.processorsMap.get(PrcGoodsLossLineCopy.class.getSimpleName());
     if (proc == null) {
       proc = new PrcGoodsLossLineCopy<RS>();
       @SuppressWarnings("unchecked")
       PrcEntityPbCopy<RS, GoodsLossLine> procDlg =
-        (PrcEntityPbCopy<RS, GoodsLossLine>)
-          this.fctBnEntitiesProcessors
-            .lazyGet(pAddParam, PrcEntityPbCopy.class.getSimpleName());
+        (PrcEntityPbCopy<RS, GoodsLossLine>) this.fctBnEntitiesProcessors
+          .lazyGet(pAddParam, PrcEntityPbCopy.class.getSimpleName());
       proc.setPrcAccEntityPbCopy(procDlg);
       //assigning fully initialized object:
       this.processorsMap
@@ -1280,14 +1233,11 @@ public class FctBnAccEntitiesProcessors<RS>
    * @return requested PrcGoodsLossLineSave
    * @throws Exception - an exception
    */
-  protected final PrcGoodsLossLineSave<RS>
-    lazyGetPrcGoodsLossLineSave(
-      final Map<String, Object> pAddParam) throws Exception {
+  protected final PrcGoodsLossLineSave<RS> lazyGetPrcGoodsLossLineSave(
+    final Map<String, Object> pAddParam) throws Exception {
     @SuppressWarnings("unchecked")
-    PrcGoodsLossLineSave<RS> proc =
-      (PrcGoodsLossLineSave<RS>)
-      this.processorsMap
-        .get(PrcGoodsLossLineSave.class.getSimpleName());
+    PrcGoodsLossLineSave<RS> proc = (PrcGoodsLossLineSave<RS>)
+      this.processorsMap.get(PrcGoodsLossLineSave.class.getSimpleName());
     if (proc == null) {
       proc = new PrcGoodsLossLineSave<RS>();
       proc.setSrvAccSettings(getSrvAccSettings());
@@ -1308,14 +1258,11 @@ public class FctBnAccEntitiesProcessors<RS>
    * @return requested PrcSalesInvoiceLineGfr
    * @throws Exception - an exception
    */
-  protected final PrcSalesInvoiceLineGfr
-    lazyGetPrcSalesInvoiceLineGfr(
-      final Map<String, Object> pAddParam) throws Exception {
+  protected final PrcSalesInvoiceLineGfr lazyGetPrcSalesInvoiceLineGfr(
+    final Map<String, Object> pAddParam) throws Exception {
     @SuppressWarnings("unchecked")
-    PrcSalesInvoiceLineGfr<RS> proc =
-      (PrcSalesInvoiceLineGfr<RS>)
-        this.processorsMap
-          .get(PrcSalesInvoiceLineGfr.class.getSimpleName());
+    PrcSalesInvoiceLineGfr<RS> proc = (PrcSalesInvoiceLineGfr<RS>)
+      this.processorsMap.get(PrcSalesInvoiceLineGfr.class.getSimpleName());
     if (proc == null) {
       proc = new PrcSalesInvoiceLineGfr<RS>();
       @SuppressWarnings("unchecked")
@@ -1337,14 +1284,11 @@ public class FctBnAccEntitiesProcessors<RS>
    * @return requested PrcSalesInvoiceLineCopy
    * @throws Exception - an exception
    */
-  protected final PrcSalesInvoiceLineCopy
-    lazyGetPrcSalesInvoiceLineCopy(
-      final Map<String, Object> pAddParam) throws Exception {
+  protected final PrcSalesInvoiceLineCopy lazyGetPrcSalesInvoiceLineCopy(
+    final Map<String, Object> pAddParam) throws Exception {
     @SuppressWarnings("unchecked")
-    PrcSalesInvoiceLineCopy<RS> proc =
-      (PrcSalesInvoiceLineCopy<RS>)
-        this.processorsMap
-          .get(PrcSalesInvoiceLineCopy.class.getSimpleName());
+    PrcSalesInvoiceLineCopy<RS> proc = (PrcSalesInvoiceLineCopy<RS>)
+      this.processorsMap.get(PrcSalesInvoiceLineCopy.class.getSimpleName());
     if (proc == null) {
       proc = new PrcSalesInvoiceLineCopy<RS>();
       @SuppressWarnings("unchecked")
@@ -1366,14 +1310,11 @@ public class FctBnAccEntitiesProcessors<RS>
    * @return requested PrcSalesInvoiceLineSave
    * @throws Exception - an exception
    */
-  protected final PrcSalesInvoiceLineSave<RS>
-    lazyGetPrcSalesInvoiceLineSave(
-      final Map<String, Object> pAddParam) throws Exception {
+  protected final PrcSalesInvoiceLineSave<RS> lazyGetPrcSalesInvoiceLineSave(
+    final Map<String, Object> pAddParam) throws Exception {
     @SuppressWarnings("unchecked")
-    PrcSalesInvoiceLineSave<RS> proc =
-      (PrcSalesInvoiceLineSave<RS>)
-      this.processorsMap
-        .get(PrcSalesInvoiceLineSave.class.getSimpleName());
+    PrcSalesInvoiceLineSave<RS> proc = (PrcSalesInvoiceLineSave<RS>)
+      this.processorsMap.get(PrcSalesInvoiceLineSave.class.getSimpleName());
     if (proc == null) {
       proc = new PrcSalesInvoiceLineSave<RS>();
       proc.setSrvAccSettings(getSrvAccSettings());
@@ -1401,9 +1342,8 @@ public class FctBnAccEntitiesProcessors<RS>
       final Map<String, Object> pAddParam) throws Exception {
     @SuppressWarnings("unchecked")
     PrcBeginningInventoryLineGfr<RS> proc =
-      (PrcBeginningInventoryLineGfr<RS>)
-        this.processorsMap
-          .get(PrcBeginningInventoryLineGfr.class.getSimpleName());
+      (PrcBeginningInventoryLineGfr<RS>) this.processorsMap
+        .get(PrcBeginningInventoryLineGfr.class.getSimpleName());
     if (proc == null) {
       proc = new PrcBeginningInventoryLineGfr<RS>();
       @SuppressWarnings("unchecked")
@@ -1430,9 +1370,8 @@ public class FctBnAccEntitiesProcessors<RS>
       final Map<String, Object> pAddParam) throws Exception {
     @SuppressWarnings("unchecked")
     PrcBeginningInventoryLineCopy<RS> proc =
-      (PrcBeginningInventoryLineCopy<RS>)
-        this.processorsMap
-          .get(PrcBeginningInventoryLineCopy.class.getSimpleName());
+      (PrcBeginningInventoryLineCopy<RS>) this.processorsMap
+        .get(PrcBeginningInventoryLineCopy.class.getSimpleName());
     if (proc == null) {
       proc = new PrcBeginningInventoryLineCopy<RS>();
       @SuppressWarnings("unchecked")
@@ -1458,10 +1397,8 @@ public class FctBnAccEntitiesProcessors<RS>
     lazyGetPrcBeginningInventoryLineSave(
       final Map<String, Object> pAddParam) throws Exception {
     @SuppressWarnings("unchecked")
-    PrcBeginningInventoryLineSave<RS> proc =
-      (PrcBeginningInventoryLineSave<RS>)
-      this.processorsMap
-        .get(PrcBeginningInventoryLineSave.class.getSimpleName());
+    PrcBeginningInventoryLineSave<RS> proc = (PrcBeginningInventoryLineSave<RS>)
+  this.processorsMap.get(PrcBeginningInventoryLineSave.class.getSimpleName());
     if (proc == null) {
       proc = new PrcBeginningInventoryLineSave<RS>();
       proc.setSrvAccSettings(getSrvAccSettings());
@@ -1481,14 +1418,11 @@ public class FctBnAccEntitiesProcessors<RS>
    * @return requested PrcPurchaseInvoiceLineGfr
    * @throws Exception - an exception
    */
-  protected final PrcPurchaseInvoiceLineGfr
-    lazyGetPrcPurchaseInvoiceLineGfr(
-      final Map<String, Object> pAddParam) throws Exception {
+  protected final PrcPurchaseInvoiceLineGfr lazyGetPrcPurchaseInvoiceLineGfr(
+    final Map<String, Object> pAddParam) throws Exception {
     @SuppressWarnings("unchecked")
-    PrcPurchaseInvoiceLineGfr<RS> proc =
-      (PrcPurchaseInvoiceLineGfr<RS>)
-        this.processorsMap
-          .get(PrcPurchaseInvoiceLineGfr.class.getSimpleName());
+    PrcPurchaseInvoiceLineGfr<RS> proc = (PrcPurchaseInvoiceLineGfr<RS>)
+      this.processorsMap.get(PrcPurchaseInvoiceLineGfr.class.getSimpleName());
     if (proc == null) {
       proc = new PrcPurchaseInvoiceLineGfr<RS>();
       @SuppressWarnings("unchecked")
@@ -1514,10 +1448,8 @@ public class FctBnAccEntitiesProcessors<RS>
     lazyGetPrcPurchaseInvoiceLineCopy(
       final Map<String, Object> pAddParam) throws Exception {
     @SuppressWarnings("unchecked")
-    PrcPurchaseInvoiceLineCopy<RS> proc =
-      (PrcPurchaseInvoiceLineCopy<RS>)
-        this.processorsMap
-          .get(PrcPurchaseInvoiceLineCopy.class.getSimpleName());
+    PrcPurchaseInvoiceLineCopy<RS> proc = (PrcPurchaseInvoiceLineCopy<RS>)
+      this.processorsMap.get(PrcPurchaseInvoiceLineCopy.class.getSimpleName());
     if (proc == null) {
       proc = new PrcPurchaseInvoiceLineCopy<RS>();
       @SuppressWarnings("unchecked")
@@ -1543,10 +1475,8 @@ public class FctBnAccEntitiesProcessors<RS>
     lazyGetPrcPurchaseInvoiceLineSave(
       final Map<String, Object> pAddParam) throws Exception {
     @SuppressWarnings("unchecked")
-    PrcPurchaseInvoiceLineSave<RS> proc =
-      (PrcPurchaseInvoiceLineSave<RS>)
-      this.processorsMap
-        .get(PrcPurchaseInvoiceLineSave.class.getSimpleName());
+    PrcPurchaseInvoiceLineSave<RS> proc = (PrcPurchaseInvoiceLineSave<RS>)
+      this.processorsMap.get(PrcPurchaseInvoiceLineSave.class.getSimpleName());
     if (proc == null) {
       proc = new PrcPurchaseInvoiceLineSave<RS>();
       proc.setSrvAccSettings(getSrvAccSettings());
@@ -1598,14 +1528,11 @@ public class FctBnAccEntitiesProcessors<RS>
    * @return requested PrcAccDocGetForReverse
    * @throws Exception - an exception
    */
-  protected final PrcAccDocGetForReverse
-    lazyGetPrcAccDocGetForReverse(
-      final Map<String, Object> pAddParam) throws Exception {
+  protected final PrcAccDocGetForReverse lazyGetPrcAccDocGetForReverse(
+    final Map<String, Object> pAddParam) throws Exception {
     @SuppressWarnings("unchecked")
-    PrcAccDocGetForReverse<RS, IDoc> proc =
-      (PrcAccDocGetForReverse<RS, IDoc>)
-        this.processorsMap
-          .get(PrcAccDocGetForReverse.class.getSimpleName());
+    PrcAccDocGetForReverse<RS, IDoc> proc = (PrcAccDocGetForReverse<RS, IDoc>)
+      this.processorsMap.get(PrcAccDocGetForReverse.class.getSimpleName());
     if (proc == null) {
       proc = new PrcAccDocGetForReverse<RS, IDoc>();
       proc.setSrvOrm(getSrvOrm());
@@ -1692,9 +1619,8 @@ public class FctBnAccEntitiesProcessors<RS>
       final Map<String, Object> pAddParam) throws Exception {
     @SuppressWarnings("unchecked")
     PrcAccDocWithTaxesGetForReverse<RS, ADocWithTaxes> proc =
-      (PrcAccDocWithTaxesGetForReverse<RS, ADocWithTaxes>)
-        this.processorsMap
-          .get(PrcAccDocWithTaxesGetForReverse.class.getSimpleName());
+      (PrcAccDocWithTaxesGetForReverse<RS, ADocWithTaxes>) this.processorsMap
+        .get(PrcAccDocWithTaxesGetForReverse.class.getSimpleName());
     if (proc == null) {
       proc =
         new PrcAccDocWithTaxesGetForReverse<RS, ADocWithTaxes>();
@@ -1723,9 +1649,8 @@ public class FctBnAccEntitiesProcessors<RS>
       new PrcAccEntityWithSubaccCopy<RS, IHasId<Object>, Object>();
     @SuppressWarnings("unchecked")
     PrcEntityCopy<RS, IHasId<Object>, Object> procDlg =
-      (PrcEntityCopy<RS, IHasId<Object>, Object>)
-        this.fctBnEntitiesProcessors
-          .lazyGet(pAddParam, PrcEntityCopy.class.getSimpleName());
+      (PrcEntityCopy<RS, IHasId<Object>, Object>) this.fctBnEntitiesProcessors
+        .lazyGet(pAddParam, PrcEntityCopy.class.getSimpleName());
     proc.setPrcAccEntityCopy(procDlg);
     proc.setSrvTypeCode(getSrvTypeCode());
     //assigning fully initialized object:
@@ -1740,16 +1665,14 @@ public class FctBnAccEntitiesProcessors<RS>
    * @return requested PrcEmailMsgSave
    * @throws Exception - an exception
    */
-  protected final PrcEmailMsgSave<RS>
-    createPutPrcEmailMsgSave(
-      final Map<String, Object> pAddParam) throws Exception {
+  protected final PrcEmailMsgSave<RS> createPutPrcEmailMsgSave(
+    final Map<String, Object> pAddParam) throws Exception {
     @SuppressWarnings("unchecked")
     PrcEmailMsgSave<RS> proc = (PrcEmailMsgSave<RS>)
       this.fctBnEntitiesProcessors
         .lazyGet(pAddParam, PrcEmailMsgSave.class.getSimpleName());
     //assigning fully initialized object:
-    this.processorsMap
-      .put(PrcEmailMsgSave.class.getSimpleName(), proc);
+    this.processorsMap.put(PrcEmailMsgSave.class.getSimpleName(), proc);
     return proc;
   }
 
@@ -1764,8 +1687,7 @@ public class FctBnAccEntitiesProcessors<RS>
       final Map<String, Object> pAddParam) throws Exception {
     @SuppressWarnings("unchecked")
     PrcSalesInvoiceServiceLineSave<RS> proc =
-      (PrcSalesInvoiceServiceLineSave<RS>)
-      this.processorsMap
+      (PrcSalesInvoiceServiceLineSave<RS>) this.processorsMap
         .get(PrcSalesInvoiceServiceLineSave.class.getSimpleName());
     if (proc == null) {
       proc = new PrcSalesInvoiceServiceLineSave<RS>();
@@ -1871,22 +1793,18 @@ public class FctBnAccEntitiesProcessors<RS>
    * @return requested PrcWageTaxLineSave
    * @throws Exception - an exception
    */
-  protected final PrcWageTaxLineSave<RS>
-    lazyGetPrcWageTaxLineSave(
-      final Map<String, Object> pAddParam) throws Exception {
+  protected final PrcWageTaxLineSave<RS> lazyGetPrcWageTaxLineSave(
+    final Map<String, Object> pAddParam) throws Exception {
     @SuppressWarnings("unchecked")
-    PrcWageTaxLineSave<RS> proc =
-      (PrcWageTaxLineSave<RS>)
-      this.processorsMap
-        .get(PrcWageTaxLineSave.class.getSimpleName());
+    PrcWageTaxLineSave<RS> proc = (PrcWageTaxLineSave<RS>)
+      this.processorsMap.get(PrcWageTaxLineSave.class.getSimpleName());
     if (proc == null) {
       proc = new PrcWageTaxLineSave<RS>();
       proc.setSrvAccSettings(getSrvAccSettings());
       proc.setSrvOrm(getSrvOrm());
       proc.setSrvDatabase(getSrvDatabase());
       //assigning fully initialized object:
-      this.processorsMap
-        .put(PrcWageTaxLineSave.class.getSimpleName(), proc);
+      this.processorsMap.put(PrcWageTaxLineSave.class.getSimpleName(), proc);
     }
     return proc;
   }
@@ -1897,22 +1815,18 @@ public class FctBnAccEntitiesProcessors<RS>
    * @return requested PrcWageLineDelete
    * @throws Exception - an exception
    */
-  protected final PrcWageLineDelete<RS>
-    lazyGetPrcWageLineDelete(
-      final Map<String, Object> pAddParam) throws Exception {
+  protected final PrcWageLineDelete<RS> lazyGetPrcWageLineDelete(
+    final Map<String, Object> pAddParam) throws Exception {
     @SuppressWarnings("unchecked")
-    PrcWageLineDelete<RS> proc =
-      (PrcWageLineDelete<RS>)
-      this.processorsMap
-        .get(PrcWageLineDelete.class.getSimpleName());
+    PrcWageLineDelete<RS> proc = (PrcWageLineDelete<RS>)
+      this.processorsMap.get(PrcWageLineDelete.class.getSimpleName());
     if (proc == null) {
       proc = new PrcWageLineDelete<RS>();
       proc.setSrvAccSettings(getSrvAccSettings());
       proc.setSrvOrm(getSrvOrm());
       proc.setSrvDatabase(getSrvDatabase());
       //assigning fully initialized object:
-      this.processorsMap
-        .put(PrcWageLineDelete.class.getSimpleName(), proc);
+      this.processorsMap.put(PrcWageLineDelete.class.getSimpleName(), proc);
     }
     return proc;
   }
@@ -1923,22 +1837,18 @@ public class FctBnAccEntitiesProcessors<RS>
    * @return requested PrcWageLineSave
    * @throws Exception - an exception
    */
-  protected final PrcWageLineSave<RS>
-    lazyGetPrcWageLineSave(
-      final Map<String, Object> pAddParam) throws Exception {
+  protected final PrcWageLineSave<RS> lazyGetPrcWageLineSave(
+    final Map<String, Object> pAddParam) throws Exception {
     @SuppressWarnings("unchecked")
-    PrcWageLineSave<RS> proc =
-      (PrcWageLineSave<RS>)
-      this.processorsMap
-        .get(PrcWageLineSave.class.getSimpleName());
+    PrcWageLineSave<RS> proc = (PrcWageLineSave<RS>)
+      this.processorsMap.get(PrcWageLineSave.class.getSimpleName());
     if (proc == null) {
       proc = new PrcWageLineSave<RS>();
       proc.setSrvAccSettings(getSrvAccSettings());
       proc.setSrvOrm(getSrvOrm());
       proc.setSrvDatabase(getSrvDatabase());
       //assigning fully initialized object:
-      this.processorsMap
-        .put(PrcWageLineSave.class.getSimpleName(), proc);
+      this.processorsMap.put(PrcWageLineSave.class.getSimpleName(), proc);
     }
     return proc;
   }
@@ -1949,14 +1859,11 @@ public class FctBnAccEntitiesProcessors<RS>
    * @return requested PrcSalesReturnLineSave
    * @throws Exception - an exception
    */
-  protected final PrcSalesReturnLineSave<RS>
-    lazyGetPrcSalesReturnLineSave(
-      final Map<String, Object> pAddParam) throws Exception {
+  protected final PrcSalesReturnLineSave<RS> lazyGetPrcSalesReturnLineSave(
+    final Map<String, Object> pAddParam) throws Exception {
     @SuppressWarnings("unchecked")
-    PrcSalesReturnLineSave<RS> proc =
-      (PrcSalesReturnLineSave<RS>)
-      this.processorsMap
-        .get(PrcSalesReturnLineSave.class.getSimpleName());
+    PrcSalesReturnLineSave<RS> proc = (PrcSalesReturnLineSave<RS>)
+      this.processorsMap.get(PrcSalesReturnLineSave.class.getSimpleName());
     if (proc == null) {
       proc = new PrcSalesReturnLineSave<RS>();
       proc.setSrvNumberToString(getSrvNumberToString());
@@ -1980,8 +1887,7 @@ public class FctBnAccEntitiesProcessors<RS>
   protected final UtlSalesGoodsServiceLine<RS>
     lazyGetUtlSalesGoodsServiceLine(
       final Map<String, Object> pAddParam) throws Exception {
-    UtlSalesGoodsServiceLine<RS> proc =
-      this.utlSalesGoodsServiceLine;
+    UtlSalesGoodsServiceLine<RS> proc = this.utlSalesGoodsServiceLine;
     if (proc == null) {
       proc = new UtlSalesGoodsServiceLine<RS>();
       proc.setSrvAccSettings(getSrvAccSettings());
@@ -2002,8 +1908,7 @@ public class FctBnAccEntitiesProcessors<RS>
   protected final UtlPurchaseGoodsServiceLine<RS>
     lazyGetUtlPurchaseGoodsServiceLine(
       final Map<String, Object> pAddParam) throws Exception {
-    UtlPurchaseGoodsServiceLine<RS> proc =
-      this.utlPurchaseGoodsServiceLine;
+    UtlPurchaseGoodsServiceLine<RS> proc = this.utlPurchaseGoodsServiceLine;
     if (proc == null) {
       proc = new UtlPurchaseGoodsServiceLine<RS>();
       proc.setSrvAccSettings(getSrvAccSettings());
@@ -2021,14 +1926,11 @@ public class FctBnAccEntitiesProcessors<RS>
    * @return requested PrcSalesReturnSave
    * @throws Exception - an exception
    */
-  protected final PrcSalesReturnSave<RS>
-    lazyGetPrcSalesReturnSave(
-      final Map<String, Object> pAddParam) throws Exception {
+  protected final PrcSalesReturnSave<RS> lazyGetPrcSalesReturnSave(
+    final Map<String, Object> pAddParam) throws Exception {
     @SuppressWarnings("unchecked")
-    PrcSalesReturnSave<RS> proc =
-      (PrcSalesReturnSave<RS>)
-      this.processorsMap
-        .get(PrcSalesReturnSave.class.getSimpleName());
+    PrcSalesReturnSave<RS> proc = (PrcSalesReturnSave<RS>)
+      this.processorsMap.get(PrcSalesReturnSave.class.getSimpleName());
     if (proc == null) {
       proc = new PrcSalesReturnSave<RS>();
       proc.setSrvAccSettings(getSrvAccSettings());
@@ -2039,8 +1941,7 @@ public class FctBnAccEntitiesProcessors<RS>
       proc.setSrvCogsEntry(getSrvCogsEntry());
       proc.setSrvUseMaterialEntry(getSrvUseMaterialEntry());
       //assigning fully initialized object:
-      this.processorsMap
-        .put(PrcSalesReturnSave.class.getSimpleName(), proc);
+      this.processorsMap.put(PrcSalesReturnSave.class.getSimpleName(), proc);
     }
     return proc;
   }
@@ -2051,14 +1952,11 @@ public class FctBnAccEntitiesProcessors<RS>
    * @return requested PrcGoodsLossSave
    * @throws Exception - an exception
    */
-  protected final PrcGoodsLossSave<RS>
-    lazyGetPrcGoodsLossSave(
-      final Map<String, Object> pAddParam) throws Exception {
+  protected final PrcGoodsLossSave<RS> lazyGetPrcGoodsLossSave(
+    final Map<String, Object> pAddParam) throws Exception {
     @SuppressWarnings("unchecked")
-    PrcGoodsLossSave<RS> proc =
-      (PrcGoodsLossSave<RS>)
-      this.processorsMap
-        .get(PrcGoodsLossSave.class.getSimpleName());
+    PrcGoodsLossSave<RS> proc = (PrcGoodsLossSave<RS>)
+      this.processorsMap.get(PrcGoodsLossSave.class.getSimpleName());
     if (proc == null) {
       proc = new PrcGoodsLossSave<RS>();
       proc.setSrvAccSettings(getSrvAccSettings());
@@ -2068,8 +1966,7 @@ public class FctBnAccEntitiesProcessors<RS>
       proc.setSrvWarehouseEntry(getSrvWarehouseEntry());
       proc.setSrvCogsEntry(getSrvCogsEntry());
       //assigning fully initialized object:
-      this.processorsMap
-        .put(PrcGoodsLossSave.class.getSimpleName(), proc);
+      this.processorsMap.put(PrcGoodsLossSave.class.getSimpleName(), proc);
     }
     return proc;
   }
@@ -2080,20 +1977,16 @@ public class FctBnAccEntitiesProcessors<RS>
    * @return requested PrcAccSettingsSave
    * @throws Exception - an exception
    */
-  protected final PrcAccSettingsSave<RS>
-    lazyGetPrcAccSettingsSave(
-      final Map<String, Object> pAddParam) throws Exception {
+  protected final PrcAccSettingsSave<RS> lazyGetPrcAccSettingsSave(
+    final Map<String, Object> pAddParam) throws Exception {
     @SuppressWarnings("unchecked")
-    PrcAccSettingsSave<RS> proc =
-      (PrcAccSettingsSave<RS>)
-      this.processorsMap
-        .get(PrcAccSettingsSave.class.getSimpleName());
+    PrcAccSettingsSave<RS> proc = (PrcAccSettingsSave<RS>)
+      this.processorsMap.get(PrcAccSettingsSave.class.getSimpleName());
     if (proc == null) {
       proc = new PrcAccSettingsSave<RS>();
       proc.setSrvAccSettings(getSrvAccSettings());
       //assigning fully initialized object:
-      this.processorsMap
-        .put(PrcAccSettingsSave.class.getSimpleName(), proc);
+      this.processorsMap.put(PrcAccSettingsSave.class.getSimpleName(), proc);
     }
     return proc;
   }
@@ -2104,14 +1997,11 @@ public class FctBnAccEntitiesProcessors<RS>
    * @return requested PrcSalesInvoiceSave
    * @throws Exception - an exception
    */
-  protected final PrcSalesInvoiceSave<RS>
-    lazyGetPrcSalesInvoiceSave(
-      final Map<String, Object> pAddParam) throws Exception {
+  protected final PrcSalesInvoiceSave<RS> lazyGetPrcSalesInvoiceSave(
+    final Map<String, Object> pAddParam) throws Exception {
     @SuppressWarnings("unchecked")
-    PrcSalesInvoiceSave<RS> proc =
-      (PrcSalesInvoiceSave<RS>)
-      this.processorsMap
-        .get(PrcSalesInvoiceSave.class.getSimpleName());
+    PrcSalesInvoiceSave<RS> proc = (PrcSalesInvoiceSave<RS>)
+      this.processorsMap.get(PrcSalesInvoiceSave.class.getSimpleName());
     if (proc == null) {
       proc = new PrcSalesInvoiceSave<RS>();
       proc.setSrvAccSettings(getSrvAccSettings());
@@ -2121,8 +2011,7 @@ public class FctBnAccEntitiesProcessors<RS>
       proc.setSrvWarehouseEntry(getSrvWarehouseEntry());
       proc.setSrvCogsEntry(getSrvCogsEntry());
       //assigning fully initialized object:
-      this.processorsMap
-        .put(PrcSalesInvoiceSave.class.getSimpleName(), proc);
+      this.processorsMap.put(PrcSalesInvoiceSave.class.getSimpleName(), proc);
     }
     return proc;
   }
@@ -2133,17 +2022,13 @@ public class FctBnAccEntitiesProcessors<RS>
    * @return requested PrcManufactureSave
    * @throws Exception - an exception
    */
-  protected final PrcManufactureSave<RS>
-    lazyGetPrcManufactureSave(
-      final Map<String, Object> pAddParam) throws Exception {
+  protected final PrcManufactureSave<RS> lazyGetPrcManufactureSave(
+    final Map<String, Object> pAddParam) throws Exception {
     @SuppressWarnings("unchecked")
-    PrcManufactureSave<RS> proc =
-      (PrcManufactureSave<RS>)
-      this.processorsMap
-        .get(PrcManufactureSave.class.getSimpleName());
+    PrcManufactureSave<RS> proc = (PrcManufactureSave<RS>)
+      this.processorsMap.get(PrcManufactureSave.class.getSimpleName());
     if (proc == null) {
-      proc =
-        new PrcManufactureSave<RS>();
+      proc = new PrcManufactureSave<RS>();
       proc.setSrvAccSettings(getSrvAccSettings());
       proc.setSrvAccEntry(getSrvAccEntry());
       proc.setSrvOrm(getSrvOrm());
@@ -2151,8 +2036,7 @@ public class FctBnAccEntitiesProcessors<RS>
       proc.setSrvWarehouseEntry(getSrvWarehouseEntry());
       proc.setSrvUseMaterialEntry(getSrvUseMaterialEntry());
       //assigning fully initialized object:
-      this.processorsMap
-        .put(PrcManufactureSave.class.getSimpleName(), proc);
+      this.processorsMap.put(PrcManufactureSave.class.getSimpleName(), proc);
     }
     return proc;
   }
@@ -2163,20 +2047,16 @@ public class FctBnAccEntitiesProcessors<RS>
    * @return requested PrcManufactureCopy
    * @throws Exception - an exception
    */
-  protected final PrcManufactureCopy<RS>
-    createPutPrcManufactureCopy(
-      final Map<String, Object> pAddParam) throws Exception {
-    PrcManufactureCopy<RS> proc =
-      new PrcManufactureCopy<RS>();
+  protected final PrcManufactureCopy<RS> createPutPrcManufactureCopy(
+    final Map<String, Object> pAddParam) throws Exception {
+    PrcManufactureCopy<RS> proc = new PrcManufactureCopy<RS>();
     @SuppressWarnings("unchecked")
     IEntityProcessor<Manufacture, Long> procDlg =
-      (IEntityProcessor<Manufacture, Long>)
-        this.fctBnEntitiesProcessors
-          .lazyGet(pAddParam, PrcEntityPbCopy.class.getSimpleName());
+      (IEntityProcessor<Manufacture, Long>) this.fctBnEntitiesProcessors
+        .lazyGet(pAddParam, PrcEntityPbCopy.class.getSimpleName());
     proc.setPrcAccEntityPbCopy(procDlg);
     //assigning fully initialized object:
-    this.processorsMap
-      .put(PrcManufactureCopy.class.getSimpleName(), proc);
+    this.processorsMap.put(PrcManufactureCopy.class.getSimpleName(), proc);
     return proc;
   }
 
@@ -2186,19 +2066,16 @@ public class FctBnAccEntitiesProcessors<RS>
    * @return requested PrcManufactureGfr
    * @throws Exception - an exception
    */
-  protected final PrcManufactureGfr<RS>
-    createPutPrcManufactureGfr(
-      final Map<String, Object> pAddParam) throws Exception {
-    PrcManufactureGfr<RS> proc =
-      new PrcManufactureGfr<RS>();
+  protected final PrcManufactureGfr<RS> createPutPrcManufactureGfr(
+    final Map<String, Object> pAddParam) throws Exception {
+    PrcManufactureGfr<RS> proc = new PrcManufactureGfr<RS>();
     @SuppressWarnings("unchecked")
     IEntityProcessor<Manufacture, Long> procDlg =
       (IEntityProcessor<Manufacture, Long>)
         lazyGetPrcAccDocGetForReverse(pAddParam);
     proc.setPrcAccDocGetForReverse(procDlg);
     //assigning fully initialized object:
-    this.processorsMap
-      .put(PrcManufactureGfr.class.getSimpleName(), proc);
+    this.processorsMap.put(PrcManufactureGfr.class.getSimpleName(), proc);
     return proc;
   }
 
@@ -2212,13 +2089,10 @@ public class FctBnAccEntitiesProcessors<RS>
     lazyGetPrcManufacturingProcessSave(
       final Map<String, Object> pAddParam) throws Exception {
     @SuppressWarnings("unchecked")
-    PrcManufacturingProcessSave<RS> proc =
-      (PrcManufacturingProcessSave<RS>)
-      this.processorsMap
-        .get(PrcManufacturingProcessSave.class.getSimpleName());
+    PrcManufacturingProcessSave<RS> proc = (PrcManufacturingProcessSave<RS>)
+      this.processorsMap.get(PrcManufacturingProcessSave.class.getSimpleName());
     if (proc == null) {
-      proc =
-        new PrcManufacturingProcessSave<RS>();
+      proc = new PrcManufacturingProcessSave<RS>();
       proc.setSrvAccEntry(getSrvAccEntry());
       proc.setSrvAccSettings(getSrvAccSettings());
       proc.setSrvOrm(getSrvOrm());
@@ -2241,8 +2115,7 @@ public class FctBnAccEntitiesProcessors<RS>
   protected final PrcManufacturingProcessGfr<RS>
     createPutPrcManufacturingProcessGfr(
       final Map<String, Object> pAddParam) throws Exception {
-    PrcManufacturingProcessGfr<RS> proc =
-      new PrcManufacturingProcessGfr<RS>();
+    PrcManufacturingProcessGfr<RS> proc = new PrcManufacturingProcessGfr<RS>();
     @SuppressWarnings("unchecked")
     IEntityProcessor<ManufacturingProcess, Long> procDlg =
       (IEntityProcessor<ManufacturingProcess, Long>)
@@ -2264,13 +2137,10 @@ public class FctBnAccEntitiesProcessors<RS>
     lazyGetPrcAdditionCostLineDelete(
       final Map<String, Object> pAddParam) throws Exception {
     @SuppressWarnings("unchecked")
-    PrcAdditionCostLineDelete<RS> proc =
-      (PrcAdditionCostLineDelete<RS>)
-      this.processorsMap
-        .get(PrcAdditionCostLineDelete.class.getSimpleName());
+    PrcAdditionCostLineDelete<RS> proc = (PrcAdditionCostLineDelete<RS>)
+      this.processorsMap.get(PrcAdditionCostLineDelete.class.getSimpleName());
     if (proc == null) {
-      proc =
-        new PrcAdditionCostLineDelete<RS>();
+      proc = new PrcAdditionCostLineDelete<RS>();
       proc.setSrvAccSettings(getSrvAccSettings());
       proc.setSrvOrm(getSrvOrm());
       proc.setSrvDatabase(getSrvDatabase());
@@ -2282,22 +2152,39 @@ public class FctBnAccEntitiesProcessors<RS>
   }
 
   /**
+   * <p>Get PrcBankStatementSave (create and put into map).</p>
+   * @param pAddParam additional param
+   * @return requested PrcBankStatementSave
+   * @throws Exception - an exception
+   */
+  protected final PrcBankStatementSave<RS> lazyGetPrcBankStatementSave(
+    final Map<String, Object> pAddParam) throws Exception {
+    @SuppressWarnings("unchecked")
+    PrcBankStatementSave<RS> proc = (PrcBankStatementSave<RS>)
+      this.processorsMap.get(PrcBankStatementSave.class.getSimpleName());
+    if (proc == null) {
+      proc = new PrcBankStatementSave<RS>();
+      proc.setSrvOrm(getSrvOrm());
+      proc.setCsvReader(getCsvReader());
+      //assigning fully initialized object:
+      this.processorsMap.put(PrcBankStatementSave.class.getSimpleName(), proc);
+    }
+    return proc;
+  }
+
+  /**
    * <p>Get PrcAdditionCostLineSave (create and put into map).</p>
    * @param pAddParam additional param
    * @return requested PrcAdditionCostLineSave
    * @throws Exception - an exception
    */
-  protected final PrcAdditionCostLineSave<RS>
-    lazyGetPrcAdditionCostLineSave(
-      final Map<String, Object> pAddParam) throws Exception {
+  protected final PrcAdditionCostLineSave<RS> lazyGetPrcAdditionCostLineSave(
+    final Map<String, Object> pAddParam) throws Exception {
     @SuppressWarnings("unchecked")
-    PrcAdditionCostLineSave<RS> proc =
-      (PrcAdditionCostLineSave<RS>)
-      this.processorsMap
-        .get(PrcAdditionCostLineSave.class.getSimpleName());
+    PrcAdditionCostLineSave<RS> proc = (PrcAdditionCostLineSave<RS>)
+      this.processorsMap.get(PrcAdditionCostLineSave.class.getSimpleName());
     if (proc == null) {
-      proc =
-        new PrcAdditionCostLineSave<RS>();
+      proc = new PrcAdditionCostLineSave<RS>();
       proc.setSrvAccSettings(getSrvAccSettings());
       proc.setSrvOrm(getSrvOrm());
       proc.setSrvDatabase(getSrvDatabase());
@@ -2319,12 +2206,10 @@ public class FctBnAccEntitiesProcessors<RS>
       final Map<String, Object> pAddParam) throws Exception {
     @SuppressWarnings("unchecked")
     PrcInvItemTaxCategoryLineDelete<RS> proc =
-      (PrcInvItemTaxCategoryLineDelete<RS>)
-      this.processorsMap
+      (PrcInvItemTaxCategoryLineDelete<RS>) this.processorsMap
         .get(PrcInvItemTaxCategoryLineDelete.class.getSimpleName());
     if (proc == null) {
-      proc =
-        new PrcInvItemTaxCategoryLineDelete<RS>();
+      proc = new PrcInvItemTaxCategoryLineDelete<RS>();
       proc.setSrvOrm(getSrvOrm());
       //assigning fully initialized object:
       this.processorsMap
@@ -2343,13 +2228,10 @@ public class FctBnAccEntitiesProcessors<RS>
     lazyGetPrcInvItemTaxCategoryLineSave(
       final Map<String, Object> pAddParam) throws Exception {
     @SuppressWarnings("unchecked")
-    PrcInvItemTaxCategoryLineSave<RS> proc =
-      (PrcInvItemTaxCategoryLineSave<RS>)
-      this.processorsMap
-        .get(PrcInvItemTaxCategoryLineSave.class.getSimpleName());
+    PrcInvItemTaxCategoryLineSave<RS> proc = (PrcInvItemTaxCategoryLineSave<RS>)
+  this.processorsMap.get(PrcInvItemTaxCategoryLineSave.class.getSimpleName());
     if (proc == null) {
-      proc =
-        new PrcInvItemTaxCategoryLineSave<RS>();
+      proc = new PrcInvItemTaxCategoryLineSave<RS>();
       proc.setSrvOrm(getSrvOrm());
       //assigning fully initialized object:
       this.processorsMap
@@ -2364,17 +2246,13 @@ public class FctBnAccEntitiesProcessors<RS>
    * @return requested PrcPurchaseReturnSave
    * @throws Exception - an exception
    */
-  protected final PrcPurchaseReturnSave<RS>
-    lazyGetPrcPurchaseReturnSave(
-      final Map<String, Object> pAddParam) throws Exception {
+  protected final PrcPurchaseReturnSave<RS> lazyGetPrcPurchaseReturnSave(
+    final Map<String, Object> pAddParam) throws Exception {
     @SuppressWarnings("unchecked")
-    PrcPurchaseReturnSave<RS> proc =
-      (PrcPurchaseReturnSave<RS>)
-      this.processorsMap
-        .get(PrcPurchaseReturnSave.class.getSimpleName());
+    PrcPurchaseReturnSave<RS> proc = (PrcPurchaseReturnSave<RS>)
+      this.processorsMap.get(PrcPurchaseReturnSave.class.getSimpleName());
     if (proc == null) {
-      proc =
-        new PrcPurchaseReturnSave<RS>();
+      proc = new PrcPurchaseReturnSave<RS>();
       proc.setSrvAccSettings(getSrvAccSettings());
       proc.setSrvAccEntry(getSrvAccEntry());
       proc.setSrvOrm(getSrvOrm());
@@ -2382,8 +2260,7 @@ public class FctBnAccEntitiesProcessors<RS>
       proc.setSrvWarehouseEntry(getSrvWarehouseEntry());
       proc.setSrvUseMaterialEntry(getSrvUseMaterialEntry());
       //assigning fully initialized object:
-      this.processorsMap
-        .put(PrcPurchaseReturnSave.class.getSimpleName(), proc);
+      this.processorsMap.put(PrcPurchaseReturnSave.class.getSimpleName(), proc);
     }
     return proc;
   }
@@ -2398,13 +2275,10 @@ public class FctBnAccEntitiesProcessors<RS>
     lazyGetPrcBeginningInventorySave(
       final Map<String, Object> pAddParam) throws Exception {
     @SuppressWarnings("unchecked")
-    PrcBeginningInventorySave<RS> proc =
-      (PrcBeginningInventorySave<RS>)
-      this.processorsMap
-        .get(PrcBeginningInventorySave.class.getSimpleName());
+    PrcBeginningInventorySave<RS> proc = (PrcBeginningInventorySave<RS>)
+      this.processorsMap.get(PrcBeginningInventorySave.class.getSimpleName());
     if (proc == null) {
-      proc =
-        new PrcBeginningInventorySave<RS>();
+      proc = new PrcBeginningInventorySave<RS>();
       proc.setSrvAccSettings(getSrvAccSettings());
       proc.setSrvAccEntry(getSrvAccEntry());
       proc.setSrvOrm(getSrvOrm());
@@ -2425,17 +2299,13 @@ public class FctBnAccEntitiesProcessors<RS>
    * @return requested PrcPurchaseInvoiceSave
    * @throws Exception - an exception
    */
-  protected final PrcPurchaseInvoiceSave<RS>
-    lazyGetPrcPurchaseInvoiceSave(
-      final Map<String, Object> pAddParam) throws Exception {
+  protected final PrcPurchaseInvoiceSave<RS> lazyGetPrcPurchaseInvoiceSave(
+    final Map<String, Object> pAddParam) throws Exception {
     @SuppressWarnings("unchecked")
-    PrcPurchaseInvoiceSave<RS> proc =
-      (PrcPurchaseInvoiceSave<RS>)
-      this.processorsMap
-        .get(PrcPurchaseInvoiceSave.class.getSimpleName());
+    PrcPurchaseInvoiceSave<RS> proc = (PrcPurchaseInvoiceSave<RS>)
+      this.processorsMap.get(PrcPurchaseInvoiceSave.class.getSimpleName());
     if (proc == null) {
-      proc =
-        new PrcPurchaseInvoiceSave<RS>();
+      proc = new PrcPurchaseInvoiceSave<RS>();
       proc.setSrvAccSettings(getSrvAccSettings());
       proc.setSrvAccEntry(getSrvAccEntry());
       proc.setSrvOrm(getSrvOrm());
@@ -2456,18 +2326,15 @@ public class FctBnAccEntitiesProcessors<RS>
    * @return requested PrcPrepaymentFromSave
    * @throws Exception - an exception
    */
-  protected final PrcPrepaymentFromSave<RS>
-    createPutPrcPrepaymentFromSave(
-      final Map<String, Object> pAddParam) throws Exception {
-    PrcPrepaymentFromSave<RS> proc =
-      new PrcPrepaymentFromSave<RS>();
+  protected final PrcPrepaymentFromSave<RS> createPutPrcPrepaymentFromSave(
+    final Map<String, Object> pAddParam) throws Exception {
+    PrcPrepaymentFromSave<RS> proc = new PrcPrepaymentFromSave<RS>();
     proc.setSrvAccSettings(getSrvAccSettings());
     proc.setSrvAccEntry(getSrvAccEntry());
     proc.setSrvOrm(getSrvOrm());
     proc.setSrvI18n(getSrvI18n());
     //assigning fully initialized object:
-    this.processorsMap
-      .put(PrcPrepaymentFromSave.class.getSimpleName(), proc);
+    this.processorsMap.put(PrcPrepaymentFromSave.class.getSimpleName(), proc);
     return proc;
   }
 
@@ -2477,11 +2344,9 @@ public class FctBnAccEntitiesProcessors<RS>
    * @return requested PrcPrepaymentFromGfr
    * @throws Exception - an exception
    */
-  protected final PrcPrepaymentFromGfr<RS>
-    createPutPrcPrepaymentFromGfr(
-      final Map<String, Object> pAddParam) throws Exception {
-    PrcPrepaymentFromGfr<RS> proc =
-      new PrcPrepaymentFromGfr<RS>();
+  protected final PrcPrepaymentFromGfr<RS> createPutPrcPrepaymentFromGfr(
+    final Map<String, Object> pAddParam) throws Exception {
+    PrcPrepaymentFromGfr<RS> proc = new PrcPrepaymentFromGfr<RS>();
     @SuppressWarnings("unchecked")
     IEntityProcessor<PrepaymentFrom, Long> procDlg =
       (IEntityProcessor<PrepaymentFrom, Long>)
@@ -2489,8 +2354,7 @@ public class FctBnAccEntitiesProcessors<RS>
     proc.setPrcAccDocGetForReverse(procDlg);
     proc.setSrvTypeCode(getSrvTypeCode());
     //assigning fully initialized object:
-    this.processorsMap
-      .put(PrcPrepaymentFromGfr.class.getSimpleName(), proc);
+    this.processorsMap.put(PrcPrepaymentFromGfr.class.getSimpleName(), proc);
     return proc;
   }
 
@@ -2500,11 +2364,9 @@ public class FctBnAccEntitiesProcessors<RS>
    * @return requested PrcPrepaymentFromCopy
    * @throws Exception - an exception
    */
-  protected final PrcPrepaymentFromCopy<RS>
-    createPutPrcPrepaymentFromCopy(
-      final Map<String, Object> pAddParam) throws Exception {
-    PrcPrepaymentFromCopy<RS> proc =
-      new PrcPrepaymentFromCopy<RS>();
+  protected final PrcPrepaymentFromCopy<RS> createPutPrcPrepaymentFromCopy(
+    final Map<String, Object> pAddParam) throws Exception {
+    PrcPrepaymentFromCopy<RS> proc = new PrcPrepaymentFromCopy<RS>();
     @SuppressWarnings("unchecked")
     IEntityProcessor<PrepaymentFrom, Long> procDlg =
       (IEntityProcessor<PrepaymentFrom, Long>)
@@ -2512,8 +2374,7 @@ public class FctBnAccEntitiesProcessors<RS>
     proc.setPrcAccEntityPbWithSubaccCopy(procDlg);
     proc.setSrvTypeCode(getSrvTypeCode());
     //assigning fully initialized object:
-    this.processorsMap
-      .put(PrcPrepaymentFromCopy.class.getSimpleName(), proc);
+    this.processorsMap.put(PrcPrepaymentFromCopy.class.getSimpleName(), proc);
     return proc;
   }
 
@@ -2523,18 +2384,15 @@ public class FctBnAccEntitiesProcessors<RS>
    * @return requested PrcPrepaymentToSave
    * @throws Exception - an exception
    */
-  protected final PrcPrepaymentToSave<RS>
-    createPutPrcPrepaymentToSave(
-      final Map<String, Object> pAddParam) throws Exception {
-    PrcPrepaymentToSave<RS> proc =
-      new PrcPrepaymentToSave<RS>();
-      proc.setSrvAccSettings(getSrvAccSettings());
+  protected final PrcPrepaymentToSave<RS> createPutPrcPrepaymentToSave(
+    final Map<String, Object> pAddParam) throws Exception {
+    PrcPrepaymentToSave<RS> proc = new PrcPrepaymentToSave<RS>();
+    proc.setSrvAccSettings(getSrvAccSettings());
     proc.setSrvAccEntry(getSrvAccEntry());
     proc.setSrvOrm(getSrvOrm());
     proc.setSrvI18n(getSrvI18n());
     //assigning fully initialized object:
-    this.processorsMap
-      .put(PrcPrepaymentToSave.class.getSimpleName(), proc);
+    this.processorsMap.put(PrcPrepaymentToSave.class.getSimpleName(), proc);
     return proc;
   }
 
@@ -2544,11 +2402,9 @@ public class FctBnAccEntitiesProcessors<RS>
    * @return requested PrcPrepaymentToGfr
    * @throws Exception - an exception
    */
-  protected final PrcPrepaymentToGfr<RS>
-    createPutPrcPrepaymentToGfr(
-      final Map<String, Object> pAddParam) throws Exception {
-    PrcPrepaymentToGfr<RS> proc =
-      new PrcPrepaymentToGfr<RS>();
+  protected final PrcPrepaymentToGfr<RS> createPutPrcPrepaymentToGfr(
+    final Map<String, Object> pAddParam) throws Exception {
+    PrcPrepaymentToGfr<RS> proc = new PrcPrepaymentToGfr<RS>();
     @SuppressWarnings("unchecked")
     IEntityProcessor<PrepaymentTo, Long> procDlg =
       (IEntityProcessor<PrepaymentTo, Long>)
@@ -2556,8 +2412,7 @@ public class FctBnAccEntitiesProcessors<RS>
     proc.setPrcAccDocGetForReverse(procDlg);
     proc.setSrvTypeCode(getSrvTypeCode());
     //assigning fully initialized object:
-    this.processorsMap
-      .put(PrcPrepaymentToGfr.class.getSimpleName(), proc);
+    this.processorsMap.put(PrcPrepaymentToGfr.class.getSimpleName(), proc);
     return proc;
   }
 
@@ -2567,11 +2422,9 @@ public class FctBnAccEntitiesProcessors<RS>
    * @return requested PrcPrepaymentToCopy
    * @throws Exception - an exception
    */
-  protected final PrcPrepaymentToCopy<RS>
-    createPutPrcPrepaymentToCopy(
-      final Map<String, Object> pAddParam) throws Exception {
-    PrcPrepaymentToCopy<RS> proc =
-      new PrcPrepaymentToCopy<RS>();
+  protected final PrcPrepaymentToCopy<RS> createPutPrcPrepaymentToCopy(
+    final Map<String, Object> pAddParam) throws Exception {
+    PrcPrepaymentToCopy<RS> proc = new PrcPrepaymentToCopy<RS>();
     @SuppressWarnings("unchecked")
     IEntityProcessor<PrepaymentTo, Long> procDlg =
       (IEntityProcessor<PrepaymentTo, Long>)
@@ -2579,8 +2432,7 @@ public class FctBnAccEntitiesProcessors<RS>
     proc.setPrcAccEntityPbWithSubaccCopy(procDlg);
     proc.setSrvTypeCode(getSrvTypeCode());
     //assigning fully initialized object:
-    this.processorsMap
-      .put(PrcPrepaymentToCopy.class.getSimpleName(), proc);
+    this.processorsMap.put(PrcPrepaymentToCopy.class.getSimpleName(), proc);
     return proc;
   }
 
@@ -2590,19 +2442,16 @@ public class FctBnAccEntitiesProcessors<RS>
    * @return requested PrcPaymentFromSave
    * @throws Exception - an exception
    */
-  protected final PrcPaymentFromSave<RS>
-    createPutPrcPaymentFromSave(
+  protected final PrcPaymentFromSave<RS> createPutPrcPaymentFromSave(
       final Map<String, Object> pAddParam) throws Exception {
-    PrcPaymentFromSave<RS> proc =
-      new PrcPaymentFromSave<RS>();
-      proc.setSrvAccSettings(getSrvAccSettings());
+    PrcPaymentFromSave<RS> proc = new PrcPaymentFromSave<RS>();
+    proc.setSrvAccSettings(getSrvAccSettings());
     proc.setSrvAccEntry(getSrvAccEntry());
     proc.setSrvOrm(getSrvOrm());
     proc.setSrvI18n(getSrvI18n());
     proc.setPrcSalesInvoiceSave(lazyGetPrcSalesInvoiceSave(pAddParam));
     //assigning fully initialized object:
-    this.processorsMap
-      .put(PrcPaymentFromSave.class.getSimpleName(), proc);
+    this.processorsMap.put(PrcPaymentFromSave.class.getSimpleName(), proc);
     return proc;
   }
 
@@ -2612,11 +2461,9 @@ public class FctBnAccEntitiesProcessors<RS>
    * @return requested PrcPaymentFromGfr
    * @throws Exception - an exception
    */
-  protected final PrcPaymentFromGfr<RS>
-    createPutPrcPaymentFromGfr(
-      final Map<String, Object> pAddParam) throws Exception {
-    PrcPaymentFromGfr<RS> proc =
-      new PrcPaymentFromGfr<RS>();
+  protected final PrcPaymentFromGfr<RS> createPutPrcPaymentFromGfr(
+    final Map<String, Object> pAddParam) throws Exception {
+    PrcPaymentFromGfr<RS> proc = new PrcPaymentFromGfr<RS>();
     @SuppressWarnings("unchecked")
     IEntityProcessor<PaymentFrom, Long> procDlg =
       (IEntityProcessor<PaymentFrom, Long>)
@@ -2624,8 +2471,7 @@ public class FctBnAccEntitiesProcessors<RS>
     proc.setPrcAccDocGetForReverse(procDlg);
     proc.setSrvTypeCode(getSrvTypeCode());
     //assigning fully initialized object:
-    this.processorsMap
-      .put(PrcPaymentFromGfr.class.getSimpleName(), proc);
+    this.processorsMap.put(PrcPaymentFromGfr.class.getSimpleName(), proc);
     return proc;
   }
 
@@ -2635,19 +2481,16 @@ public class FctBnAccEntitiesProcessors<RS>
    * @return requested PrcPaymentFromCopy
    * @throws Exception - an exception
    */
-  protected final PrcPaymentFromCopy<RS>
-    createPutPrcPaymentFromCopy(
-      final Map<String, Object> pAddParam) throws Exception {
-    PrcPaymentFromCopy<RS> proc =
-      new PrcPaymentFromCopy<RS>();
+  protected final PrcPaymentFromCopy<RS> createPutPrcPaymentFromCopy(
+    final Map<String, Object> pAddParam) throws Exception {
+    PrcPaymentFromCopy<RS> proc = new PrcPaymentFromCopy<RS>();
     @SuppressWarnings("unchecked")
     IEntityProcessor<PaymentFrom, Long> procDlg =
       (IEntityProcessor<PaymentFrom, Long>)
         lazyGetPrcAccEntityPbWithSubaccCopy(pAddParam);
     proc.setPrcAccEntityPbWithSubaccCopy(procDlg);
     //assigning fully initialized object:
-    this.processorsMap
-      .put(PrcPaymentFromCopy.class.getSimpleName(), proc);
+    this.processorsMap.put(PrcPaymentFromCopy.class.getSimpleName(), proc);
     return proc;
   }
 
@@ -2657,9 +2500,8 @@ public class FctBnAccEntitiesProcessors<RS>
    * @return requested PrcWageSave
    * @throws Exception - an exception
    */
-  protected final PrcWageSave<RS>
-    createPutPrcWageSave(
-      final Map<String, Object> pAddParam) throws Exception {
+  protected final PrcWageSave<RS> createPutPrcWageSave(
+    final Map<String, Object> pAddParam) throws Exception {
     PrcWageSave<RS> proc = new PrcWageSave<RS>();
     proc.setSrvAccSettings(getSrvAccSettings());
     proc.setSrvAccEntry(getSrvAccEntry());
@@ -2667,8 +2509,7 @@ public class FctBnAccEntitiesProcessors<RS>
     proc.setSrvI18n(getSrvI18n());
     proc.setFactoryAppBeans(getFactoryAppBeans());
     //assigning fully initialized object:
-    this.processorsMap
-      .put(PrcWageSave.class.getSimpleName(), proc);
+    this.processorsMap.put(PrcWageSave.class.getSimpleName(), proc);
     return proc;
   }
 
@@ -2678,19 +2519,15 @@ public class FctBnAccEntitiesProcessors<RS>
    * @return requested PrcWageGfr
    * @throws Exception - an exception
    */
-  protected final PrcWageGfr<RS>
-    createPutPrcWageGfr(
-      final Map<String, Object> pAddParam) throws Exception {
-    PrcWageGfr<RS> proc =
-      new PrcWageGfr<RS>();
+  protected final PrcWageGfr<RS> createPutPrcWageGfr(
+    final Map<String, Object> pAddParam) throws Exception {
+    PrcWageGfr<RS> proc = new PrcWageGfr<RS>();
     @SuppressWarnings("unchecked")
-    IEntityProcessor<Wage, Long> procDlg =
-      (IEntityProcessor<Wage, Long>)
-        lazyGetPrcAccDocGetForReverse(pAddParam);
+    IEntityProcessor<Wage, Long> procDlg = (IEntityProcessor<Wage, Long>)
+      lazyGetPrcAccDocGetForReverse(pAddParam);
     proc.setPrcAccDocGetForReverse(procDlg);
     //assigning fully initialized object:
-    this.processorsMap
-      .put(PrcWageGfr.class.getSimpleName(), proc);
+    this.processorsMap.put(PrcWageGfr.class.getSimpleName(), proc);
     return proc;
   }
 
@@ -2700,20 +2537,16 @@ public class FctBnAccEntitiesProcessors<RS>
    * @return requested PrcWageCopy
    * @throws Exception - an exception
    */
-  protected final PrcWageCopy<RS>
-    createPutPrcWageCopy(
-      final Map<String, Object> pAddParam) throws Exception {
-    PrcWageCopy<RS> proc =
-      new PrcWageCopy<RS>();
+  protected final PrcWageCopy<RS> createPutPrcWageCopy(
+    final Map<String, Object> pAddParam) throws Exception {
+    PrcWageCopy<RS> proc = new PrcWageCopy<RS>();
     @SuppressWarnings("unchecked")
-    IEntityProcessor<Wage, Long> procDlg =
-      (IEntityProcessor<Wage, Long>)
-        this.fctBnEntitiesProcessors
-          .lazyGet(pAddParam, PrcEntityPbCopy.class.getSimpleName());
+    IEntityProcessor<Wage, Long> procDlg = (IEntityProcessor<Wage, Long>)
+      this.fctBnEntitiesProcessors
+        .lazyGet(pAddParam, PrcEntityPbCopy.class.getSimpleName());
     proc.setPrcAccEntityPbCopy(procDlg);
     //assigning fully initialized object:
-    this.processorsMap
-      .put(PrcWageCopy.class.getSimpleName(), proc);
+    this.processorsMap.put(PrcWageCopy.class.getSimpleName(), proc);
     return proc;
   }
 
@@ -2723,19 +2556,16 @@ public class FctBnAccEntitiesProcessors<RS>
    * @return requested PrcPaymentToSave
    * @throws Exception - an exception
    */
-  protected final PrcPaymentToSave<RS>
-    createPutPrcPaymentToSave(
-      final Map<String, Object> pAddParam) throws Exception {
-    PrcPaymentToSave<RS> proc =
-      new PrcPaymentToSave<RS>();
+  protected final PrcPaymentToSave<RS> createPutPrcPaymentToSave(
+    final Map<String, Object> pAddParam) throws Exception {
+    PrcPaymentToSave<RS> proc = new PrcPaymentToSave<RS>();
     proc.setSrvAccSettings(getSrvAccSettings());
     proc.setSrvAccEntry(getSrvAccEntry());
     proc.setSrvOrm(getSrvOrm());
     proc.setSrvI18n(getSrvI18n());
     proc.setPrcPurchaseInvoiceSave(lazyGetPrcPurchaseInvoiceSave(pAddParam));
     //assigning fully initialized object:
-    this.processorsMap
-      .put(PrcPaymentToSave.class.getSimpleName(), proc);
+    this.processorsMap.put(PrcPaymentToSave.class.getSimpleName(), proc);
     return proc;
   }
 
@@ -2745,11 +2575,9 @@ public class FctBnAccEntitiesProcessors<RS>
    * @return requested PrcPaymentToGfr
    * @throws Exception - an exception
    */
-  protected final PrcPaymentToGfr<RS>
-    createPutPrcPaymentToGfr(
-      final Map<String, Object> pAddParam) throws Exception {
-    PrcPaymentToGfr<RS> proc =
-      new PrcPaymentToGfr<RS>();
+  protected final PrcPaymentToGfr<RS> createPutPrcPaymentToGfr(
+    final Map<String, Object> pAddParam) throws Exception {
+    PrcPaymentToGfr<RS> proc = new PrcPaymentToGfr<RS>();
     @SuppressWarnings("unchecked")
     IEntityProcessor<PaymentTo, Long> procDlg =
       (IEntityProcessor<PaymentTo, Long>)
@@ -2757,8 +2585,7 @@ public class FctBnAccEntitiesProcessors<RS>
     proc.setPrcAccDocGetForReverse(procDlg);
     proc.setSrvTypeCode(getSrvTypeCode());
     //assigning fully initialized object:
-    this.processorsMap
-      .put(PrcPaymentToGfr.class.getSimpleName(), proc);
+    this.processorsMap.put(PrcPaymentToGfr.class.getSimpleName(), proc);
     return proc;
   }
 
@@ -2768,19 +2595,16 @@ public class FctBnAccEntitiesProcessors<RS>
    * @return requested PrcPaymentToCopy
    * @throws Exception - an exception
    */
-  protected final PrcPaymentToCopy<RS>
-    createPutPrcPaymentToCopy(
-      final Map<String, Object> pAddParam) throws Exception {
-    PrcPaymentToCopy<RS> proc =
-      new PrcPaymentToCopy<RS>();
+  protected final PrcPaymentToCopy<RS> createPutPrcPaymentToCopy(
+    final Map<String, Object> pAddParam) throws Exception {
+    PrcPaymentToCopy<RS> proc = new PrcPaymentToCopy<RS>();
     @SuppressWarnings("unchecked")
     IEntityProcessor<PaymentTo, Long> procDlg =
       (IEntityProcessor<PaymentTo, Long>)
         lazyGetPrcAccEntityPbWithSubaccCopy(pAddParam);
     proc.setPrcAccEntityPbWithSubaccCopy(procDlg);
     //assigning fully initialized object:
-    this.processorsMap
-      .put(PrcPaymentToCopy.class.getSimpleName(), proc);
+    this.processorsMap.put(PrcPaymentToCopy.class.getSimpleName(), proc);
     return proc;
   }
 
@@ -2797,9 +2621,8 @@ public class FctBnAccEntitiesProcessors<RS>
       new PrcAccEntityPbWithSubaccEditDelete<RS, IPersistableBase>();
     @SuppressWarnings("unchecked")
     PrcEntityPbEditDelete<RS, IPersistableBase> procDlg =
-      (PrcEntityPbEditDelete<RS, IPersistableBase>)
-        this.fctBnEntitiesProcessors
-          .lazyGet(pAddParam, PrcEntityPbEditDelete.class.getSimpleName());
+      (PrcEntityPbEditDelete<RS, IPersistableBase>) this.fctBnEntitiesProcessors
+        .lazyGet(pAddParam, PrcEntityPbEditDelete.class.getSimpleName());
     proc.setPrcAccEntityPbEditDelete(procDlg);
     proc.setSrvTypeCode(getSrvTypeCode());
     //assigning fully initialized object:
@@ -2814,14 +2637,11 @@ public class FctBnAccEntitiesProcessors<RS>
    * @return requested PrcAccEntrySave
    * @throws Exception - an exception
    */
-  protected final PrcAccEntrySave
-    lazyGetPrcAccEntrySave(
-      final Map<String, Object> pAddParam) throws Exception {
+  protected final PrcAccEntrySave lazyGetPrcAccEntrySave(
+    final Map<String, Object> pAddParam) throws Exception {
     @SuppressWarnings("unchecked")
-    PrcAccEntrySave<RS> proc =
-      (PrcAccEntrySave<RS>)
-        this.processorsMap
-          .get(PrcAccEntrySave.class.getSimpleName());
+    PrcAccEntrySave<RS> proc = (PrcAccEntrySave<RS>)
+      this.processorsMap.get(PrcAccEntrySave.class.getSimpleName());
     if (proc == null) {
       proc = new PrcAccEntrySave<RS>();
       proc.setSrvAccSettings(getSrvAccSettings());
@@ -2829,8 +2649,7 @@ public class FctBnAccEntitiesProcessors<RS>
       proc.setSrvDatabase(getSrvDatabase());
       proc.setSrvBalance(getSrvBalance());
       //assigning fully initialized object:
-      this.processorsMap
-        .put(PrcAccEntrySave.class.getSimpleName(), proc);
+      this.processorsMap.put(PrcAccEntrySave.class.getSimpleName(), proc);
     }
     return proc;
   }
@@ -2841,14 +2660,11 @@ public class FctBnAccEntitiesProcessors<RS>
    * @return requested PrcAccEntryCopy
    * @throws Exception - an exception
    */
-  protected final PrcAccEntryCopy
-    lazyGetPrcAccEntryCopy(
-      final Map<String, Object> pAddParam) throws Exception {
+  protected final PrcAccEntryCopy lazyGetPrcAccEntryCopy(
+    final Map<String, Object> pAddParam) throws Exception {
     @SuppressWarnings("unchecked")
-    PrcAccEntryCopy<RS> proc =
-      (PrcAccEntryCopy<RS>)
-        this.processorsMap
-          .get(PrcAccEntryCopy.class.getSimpleName());
+    PrcAccEntryCopy<RS> proc = (PrcAccEntryCopy<RS>)
+      this.processorsMap.get(PrcAccEntryCopy.class.getSimpleName());
     if (proc == null) {
       proc = new PrcAccEntryCopy<RS>();
       proc.setSrvOrm(getSrvOrm());
@@ -2858,8 +2674,7 @@ public class FctBnAccEntitiesProcessors<RS>
       proc.setConvertersFieldsFatory(getConvertersFieldsFatory());
       proc.setFieldConverterNamesHolder(getFieldConverterNamesHolder());
       //assigning fully initialized object:
-      this.processorsMap
-        .put(PrcAccEntryCopy.class.getSimpleName(), proc);
+      this.processorsMap.put(PrcAccEntryCopy.class.getSimpleName(), proc);
     }
     return proc;
   }
@@ -2870,14 +2685,11 @@ public class FctBnAccEntitiesProcessors<RS>
    * @return requested PrcAccEntryCreate
    * @throws Exception - an exception
    */
-  protected final PrcAccEntryCreate
-    lazyGetPrcAccEntryCreate(
-      final Map<String, Object> pAddParam) throws Exception {
+  protected final PrcAccEntryCreate lazyGetPrcAccEntryCreate(
+    final Map<String, Object> pAddParam) throws Exception {
     @SuppressWarnings("unchecked")
-    PrcAccEntryCreate<RS> proc =
-      (PrcAccEntryCreate<RS>)
-        this.processorsMap
-          .get(PrcAccEntryCreate.class.getSimpleName());
+    PrcAccEntryCreate<RS> proc = (PrcAccEntryCreate<RS>) this.processorsMap
+      .get(PrcAccEntryCreate.class.getSimpleName());
     if (proc == null) {
       proc = new PrcAccEntryCreate<RS>();
       proc.setSrvOrm(getSrvOrm());
@@ -2887,8 +2699,7 @@ public class FctBnAccEntitiesProcessors<RS>
       proc.setConvertersFieldsFatory(getConvertersFieldsFatory());
       proc.setFieldConverterNamesHolder(getFieldConverterNamesHolder());
       //assigning fully initialized object:
-      this.processorsMap
-        .put(PrcAccEntryCreate.class.getSimpleName(), proc);
+      this.processorsMap.put(PrcAccEntryCreate.class.getSimpleName(), proc);
     }
     return proc;
   }
@@ -2899,14 +2710,12 @@ public class FctBnAccEntitiesProcessors<RS>
    * @return requested PrcInpAccEntriesRetrieve
    * @throws Exception - an exception
    */
-  protected final PrcInpAccEntriesRetrieve
-    lazyGetPrcInpAccEntriesRetrieve(
-      final Map<String, Object> pAddParam) throws Exception {
+  protected final PrcInpAccEntriesRetrieve lazyGetPrcInpAccEntriesRetrieve(
+    final Map<String, Object> pAddParam) throws Exception {
     @SuppressWarnings("unchecked")
     PrcInpAccEntriesRetrieve<RS> proc =
-      (PrcInpAccEntriesRetrieve<RS>)
-        this.processorsMap
-          .get(PrcInpAccEntriesRetrieve.class.getSimpleName());
+      (PrcInpAccEntriesRetrieve<RS>) this.processorsMap
+        .get(PrcInpAccEntriesRetrieve.class.getSimpleName());
     if (proc == null) {
       proc = new PrcInpAccEntriesRetrieve<RS>();
       proc.setSrvOrm(getSrvOrm());
@@ -2936,13 +2745,11 @@ public class FctBnAccEntitiesProcessors<RS>
         this.processorsMap
           .get(PrcAccEntityWithSubaccRetrieve.class.getSimpleName());
     if (proc == null) {
-      proc =
-        new PrcAccEntityWithSubaccRetrieve<RS, IHasId<Object>, Object>();
+      proc = new PrcAccEntityWithSubaccRetrieve<RS, IHasId<Object>, Object>();
       @SuppressWarnings("unchecked")
       IEntityProcessor<IHasId<Object>, Object> procDlg =
-        (IEntityProcessor<IHasId<Object>, Object>)
-          this.fctBnEntitiesProcessors
-            .lazyGet(pAddParam, PrcEntityRetrieve.class.getSimpleName());
+        (IEntityProcessor<IHasId<Object>, Object>) this.fctBnEntitiesProcessors
+          .lazyGet(pAddParam, PrcEntityRetrieve.class.getSimpleName());
       proc.setPrcAccEntityRetrieve(procDlg);
       proc.setSrvTypeCode(getSrvTypeCode());
       //assigning fully initialized object:
@@ -2958,9 +2765,8 @@ public class FctBnAccEntitiesProcessors<RS>
    * @return requested PrcAccDocFullRetrieve
    * @throws Exception - an exception
    */
-  protected final PrcAccDocFullRetrieve
-    createPutPrcAccDocFullRetrieve(
-      final Map<String, Object> pAddParam) throws Exception {
+  protected final PrcAccDocFullRetrieve createPutPrcAccDocFullRetrieve(
+    final Map<String, Object> pAddParam) throws Exception {
     PrcAccDocFullRetrieve<RS, IDocWarehouse> proc =
       new PrcAccDocFullRetrieve<RS, IDocWarehouse>();
     proc.setSrvUseMaterialEntry(getSrvUseMaterialEntry());
@@ -2970,8 +2776,7 @@ public class FctBnAccEntitiesProcessors<RS>
         lazyGetPrcAccDocCogsRetrieve(pAddParam);
     proc.setPrcAccDocCogsRetrieve(delegate);
     //assigning fully initialized object:
-    this.processorsMap
-      .put(PrcAccDocFullRetrieve.class.getSimpleName(), proc);
+    this.processorsMap.put(PrcAccDocFullRetrieve.class.getSimpleName(), proc);
     return proc;
   }
 
@@ -2981,14 +2786,11 @@ public class FctBnAccEntitiesProcessors<RS>
    * @return requested PrcMoveItemsRetrieve
    * @throws Exception - an exception
    */
-  protected final PrcMoveItemsRetrieve
-    lazyGetPrcMoveItemsRetrieve(
-      final Map<String, Object> pAddParam) throws Exception {
+  protected final PrcMoveItemsRetrieve lazyGetPrcMoveItemsRetrieve(
+    final Map<String, Object> pAddParam) throws Exception {
     @SuppressWarnings("unchecked")
-    PrcMoveItemsRetrieve<RS> proc =
-      (PrcMoveItemsRetrieve<RS>)
-        this.processorsMap
-          .get(PrcMoveItemsRetrieve.class.getSimpleName());
+    PrcMoveItemsRetrieve<RS> proc = (PrcMoveItemsRetrieve<RS>)
+      this.processorsMap.get(PrcMoveItemsRetrieve.class.getSimpleName());
     if (proc == null) {
       proc = new PrcMoveItemsRetrieve<RS>();
       proc.setSrvWarehouseEntry(getSrvWarehouseEntry());
@@ -2999,8 +2801,7 @@ public class FctBnAccEntitiesProcessors<RS>
             .lazyGet(pAddParam, PrcEntityRetrieve.class.getSimpleName());
       proc.setPrcAccEntityRetrieve(delegate);
       //assigning fully initialized object:
-      this.processorsMap
-        .put(PrcMoveItemsRetrieve.class.getSimpleName(), proc);
+      this.processorsMap.put(PrcMoveItemsRetrieve.class.getSimpleName(), proc);
     }
     return proc;
   }
@@ -3041,9 +2842,8 @@ public class FctBnAccEntitiesProcessors<RS>
    * @return requested PrcAccDocCogsRetrieve
    * @throws Exception - an exception
    */
-  protected final PrcAccDocCogsRetrieve
-    lazyGetPrcAccDocCogsRetrieve(
-      final Map<String, Object> pAddParam) throws Exception {
+  protected final PrcAccDocCogsRetrieve lazyGetPrcAccDocCogsRetrieve(
+    final Map<String, Object> pAddParam) throws Exception {
     @SuppressWarnings("unchecked")
     PrcAccDocCogsRetrieve<RS, IDocWarehouse> proc =
       (PrcAccDocCogsRetrieve<RS, IDocWarehouse>)
@@ -3075,9 +2875,8 @@ public class FctBnAccEntitiesProcessors<RS>
       final Map<String, Object> pAddParam) throws Exception {
     @SuppressWarnings("unchecked")
     PrcAccDocWithSubaccRetrieve<RS, IDoc> proc =
-      (PrcAccDocWithSubaccRetrieve<RS, IDoc>)
-        this.processorsMap
-          .get(PrcAccDocWithSubaccRetrieve.class.getSimpleName());
+      (PrcAccDocWithSubaccRetrieve<RS, IDoc>) this.processorsMap
+        .get(PrcAccDocWithSubaccRetrieve.class.getSimpleName());
     if (proc == null) {
       proc = new PrcAccDocWithSubaccRetrieve<RS, IDoc>();
       proc.setSrvAccEntry(getSrvAccEntry());
@@ -3098,9 +2897,8 @@ public class FctBnAccEntitiesProcessors<RS>
    * @return requested PrcAccDocRetrieve
    * @throws Exception - an exception
    */
-  protected final PrcAccDocRetrieve
-    lazyGetPrcAccDocRetrieve(
-      final Map<String, Object> pAddParam) throws Exception {
+  protected final PrcAccDocRetrieve lazyGetPrcAccDocRetrieve(
+    final Map<String, Object> pAddParam) throws Exception {
     @SuppressWarnings("unchecked")
     PrcAccDocRetrieve<RS, IDoc> proc = (PrcAccDocRetrieve<RS, IDoc>)
       this.processorsMap.get(PrcAccDocRetrieve.class.getSimpleName());
@@ -3113,8 +2911,7 @@ public class FctBnAccEntitiesProcessors<RS>
           .lazyGet(pAddParam, PrcEntityRetrieve.class.getSimpleName());
       proc.setPrcAccEntityRetrieve(delegate);
       //assigning fully initialized object:
-      this.processorsMap
-        .put(PrcAccDocRetrieve.class.getSimpleName(), proc);
+      this.processorsMap.put(PrcAccDocRetrieve.class.getSimpleName(), proc);
     }
     return proc;
   }
@@ -3417,5 +3214,21 @@ public class FctBnAccEntitiesProcessors<RS>
   public final void setSrvNumberToString(
     final ISrvNumberToString pSrvNumberToString) {
     this.srvNumberToString = pSrvNumberToString;
+  }
+
+  /**
+   * <p>Getter for csvReader.</p>
+   * @return ICsvReader
+   **/
+  public final ICsvReader getCsvReader() {
+    return this.csvReader;
+  }
+
+  /**
+   * <p>Setter for csvReader.</p>
+   * @param pCsvReader reference
+   **/
+  public final void setCsvReader(final ICsvReader pCsvReader) {
+    this.csvReader = pCsvReader;
   }
 }

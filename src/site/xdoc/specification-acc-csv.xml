@@ -28,8 +28,8 @@
         </ul>
         Date formats:
         <ul>
-          <li>mm/dd/yyyy - USA</li>
-          <li>dd/mm/yyyy - others</li>
+          <li>MM/dd/yyyy - USA</li>
+          <li>dd/MM/yyyy - others</li>
           <li>etc</li>
         </ul>
         Text encoding:
@@ -69,6 +69,7 @@
           <li>itsOwner - CsvMethod</li>
           <li>itsType, ECsvColumnType, not null</li>
           <li>itsIndex, Integer, not null, start from 1 index.</li>
+          <li>sourceIndex, Integer, not null, start from 1 index in source file cause some columns might be omitted.</li>
           <li>textDelimiter - String, null default, Column's text braced with delimiters, null default,
             e.g. quoted - "taxes, penalty and other fees are included"</li>
           <li>dataFormat - String, null default, Column's data format, null default, e.g. "dd/MM/yyyy" for Date,
@@ -104,7 +105,12 @@ then it means that check#123 for 123.45 was canceled, so application should try 
           <li>AHasIdLongNameVersion fields</li>
           <li>csvMethod, CsvMethod, not null</li>
           <li>dateCol - CsvColumn, not null, date</li>
-          <li>amountCol - CsvColumn, not null, amount</li>
+          <li>amountCol - CsvColumn, not null, amount, Standard value is dot separated
+            number without group separators e.g. "11245.23", otherwise accepted
+            formats: "COMMA,SPACE" European standard - "11 245,45",
+            but in that case column value must be braced with text delimiter,
+            e.g. quotes; "COMMA,NONE" - "11245,45". All other separators should be
+            original, i.e. dot is ".", e.g. ".,NONE" is default format</li>
           <li>descriptionCol - CsvColumn, if used, description</li>
           <li>statusCol - CsvColumn, if used, column that contains of CANCELED or NOT information</li>
           <li>acceptedWords - String, if used, comma separated words that mean that entry was ACCEPTED, e.g. "OK,ACCEPTED" or single value "true"</li>

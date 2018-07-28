@@ -31,12 +31,18 @@ public class BankCsvMethod extends AHasNameIdLongVersion {
   private CsvMethod csvMethod;
 
   /**
-   * <p>Date CSV Column, not null.</p>
+   * <p>Date CSV Column, not null. Example formats:
+   * "dd/MM/yyyy", "MM/dd/yyyy", "MM-dd-yyyy"</p>
    **/
   private CsvColumn dateCol;
 
   /**
-   * <p>Amount CSV Column, not null.</p>
+   * <p>Amount CSV Column, not null. Standard value is dot separated
+   * number without group separators e.g. "11245.23", otherwise accepted
+   * formats: "COMMA,SPACE" European standard - "11 245,45",
+   * but in that case column value must be braced with text delimiter,
+   * e.g. quotes; "COMMA,NONE" - "11245,45". All other separators should be
+   * original, i.e. dot is ".", e.g. ".,NONE" is default format</p>
    **/
   private CsvColumn amountCol;
 
