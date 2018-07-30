@@ -83,6 +83,32 @@ public class PrcBankStatementSave<RS>
         getSrvOrm().updateEntity(pAddParam, pEntity);
       }
       InputStreamReader reader = null;
+      SimpleDateFormat sdf = null;
+      try {
+        sdf = new SimpleDateFormat(bankCsvMethod.getDateCol().getDataFormat());
+      } catch (Exception ee) {
+        throw new ExceptionWithCode(ExceptionWithCode.CONFIGURATION_MISTAKE,
+          "Wrong date format! Format: "
+            + bankCsvMethod.getDateCol().getDataFormat(), ee);
+      }
+      String[] seps = null;
+      if (bankCsvMethod.getAmountCol().getDataFormat() != null) {
+        try {
+          seps = bankCsvMethod.getAmountCol().getDataFormat()
+            .split(",");
+          for (int i = 0; i < 2; i++) {
+            if ("SPACE".equals(seps[i])) {
+              seps[i] = " ";
+            } else if ("COMMA".equals(seps[i])) {
+              seps[i] = ",";
+            }
+          }
+        } catch (Exception ee) {
+          throw new ExceptionWithCode(ExceptionWithCode.CONFIGURATION_MISTAKE,
+            "Wrong amount format! Format: "
+              + bankCsvMethod.getAmountCol().getDataFormat(), ee);
+        }
+      }
       try {
         InputStream ins = (InputStream) pRequestData
           .getAttribute("fileToUploadInputStream");
@@ -102,27 +128,16 @@ public class PrcBankStatementSave<RS>
           String dateStr = csvRow
             .get(bankCsvMethod.getDateCol().getItsIndex() - 1);
           try {
-            SimpleDateFormat sdf = new SimpleDateFormat(bankCsvMethod
-              .getDateCol().getDataFormat());
             bsl.setItsDate(sdf.parse(dateStr, new ParsePosition(0)));
           } catch (Exception ee) {
-            throw new ExceptionWithCode(ExceptionWithCode.CONFIGURATION_MISTAKE,
-              "Wrong date or its format! Value/Format: " + dateStr
+            throw new ExceptionWithCode(ExceptionWithCode.WRONG_PARAMETER,
+              "Wrong date value! Value/Format: " + dateStr
                 + "/" + bankCsvMethod.getDateCol().getDataFormat(), ee);
           }
           String amountStr = csvRow
             .get(bankCsvMethod.getAmountCol().getItsIndex() - 1);
           try {
-            if (bankCsvMethod.getAmountCol().getDataFormat() != null) {
-              String[] seps = bankCsvMethod.getAmountCol().getDataFormat()
-                .split(",");
-              for (int i = 0; i < 2; i++) {
-                if ("SPACE".equals(seps[i])) {
-                  seps[i] = " ";
-                } else if ("COMMA".equals(seps[i])) {
-                  seps[i] = ",";
-                }
-              }
+            if (seps != null) {
               if (!"NONE".equals(seps[0])) {
                 amountStr = amountStr.replace(seps[0], ".");
               }
@@ -133,7 +148,7 @@ public class PrcBankStatementSave<RS>
             bsl.setItsAmount(new BigDecimal(amountStr));
           } catch (Exception ee) {
             throw new ExceptionWithCode(ExceptionWithCode.CONFIGURATION_MISTAKE,
-              "Wrong amount or its format! Value/Format: " + amountStr
+              "Wrong amount value! Value/Format: " + amountStr
                 + "/" + bankCsvMethod.getAmountCol().getDataFormat(), ee);
           }
           String descr = null;

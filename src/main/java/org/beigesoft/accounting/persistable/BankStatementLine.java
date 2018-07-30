@@ -17,7 +17,7 @@ import java.math.BigDecimal;
 
 import org.beigesoft.model.IOwned;
 import org.beigesoft.model.IHasTypeCode;
-import org.beigesoft.persistable.APersistableBase;
+import org.beigesoft.persistable.APersistableBaseVersion;
 import org.beigesoft.accounting.model.EBankEntryStatus;
 import org.beigesoft.accounting.model.EBankEntryResultType;
 
@@ -28,7 +28,7 @@ import org.beigesoft.accounting.model.EBankEntryResultType;
  *
  * @author Yury Demidenko
  */
-public class BankStatementLine extends APersistableBase
+public class BankStatementLine extends APersistableBaseVersion
   implements IHasTypeCode, IOwned<BankStatement> {
 
   /**
@@ -56,11 +56,6 @@ public class BankStatementLine extends APersistableBase
    * <p>ACCEPTED default or from CSV according settings, read only field.</p>
    **/
   private EBankEntryStatus itsStatus = EBankEntryStatus.ACCEPTED;
-
-  /**
-   * <p>if found, read only field.</p>
-   **/
-  private String matchingRecords;
 
   /**
    * <p>if action was made, read only field,
@@ -173,22 +168,6 @@ public class BankStatementLine extends APersistableBase
    **/
   public final void setItsStatus(final EBankEntryStatus pItsStatus) {
     this.itsStatus = pItsStatus;
-  }
-
-  /**
-   * <p>Getter for matchingRecords.</p>
-   * @return String
-   **/
-  public final String getMatchingRecords() {
-    return this.matchingRecords;
-  }
-
-  /**
-   * <p>Setter for matchingRecords.</p>
-   * @param pMatchingRecords reference
-   **/
-  public final void setMatchingRecords(final String pMatchingRecords) {
-    this.matchingRecords = pMatchingRecords;
   }
 
   /**

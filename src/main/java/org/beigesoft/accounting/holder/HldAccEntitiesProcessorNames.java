@@ -121,7 +121,10 @@ import org.beigesoft.accounting.processor.PrcMoveItemsRetrieve;
 import org.beigesoft.accounting.processor.PrcAccSettingsSave;
 import org.beigesoft.accounting.processor.PrcAccSettingsLineSave;
 import org.beigesoft.accounting.processor.PrcBankStatementSave;
+import org.beigesoft.accounting.processor.PrcBankStatementLineGfe;
+import org.beigesoft.accounting.processor.PrcBankStatementLineSave;
 import org.beigesoft.accounting.persistable.BankStatement;
+import org.beigesoft.accounting.persistable.BankStatementLine;
 import org.beigesoft.accounting.persistable.AccSettings;
 import org.beigesoft.accounting.persistable.AccEntriesSourcesLine;
 import org.beigesoft.accounting.persistable.base.ADrawItemSourcesLine;
@@ -524,6 +527,8 @@ public class HldAccEntitiesProcessorNames
   protected final String getForFolSave(final Class<?> pClass) {
     if (PurchaseInvoiceServiceLine.class == pClass) {
       return PrcPurchaseInvoiceServiceLineSave.class.getSimpleName();
+    } else if (BankStatementLine.class == pClass) {
+      return PrcBankStatementLineSave.class.getSimpleName();
     } else if (SalesInvoiceServiceLine.class == pClass) {
       return PrcSalesInvoiceServiceLineSave.class.getSimpleName();
     } else if (PurchaseReturnLine.class == pClass) {
@@ -635,6 +640,8 @@ public class HldAccEntitiesProcessorNames
   protected final String getForRetrieveForEditDelete(final Class<?> pClass) {
     if (pClass == SubaccountLine.class || pClass == Account.class) {
       return PrcAccEntityWithSubaccRetrieve.class.getSimpleName();
+    } else if (pClass == BankStatementLine.class) {
+      return PrcBankStatementLineGfe.class.getSimpleName();
     } else if (pClass == PaymentFrom.class || pClass == PaymentTo.class
       || pClass == PrepaymentFrom.class || pClass == PrepaymentTo.class
         || pClass == AdditionCostLine.class) {

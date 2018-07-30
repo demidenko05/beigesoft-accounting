@@ -91,10 +91,12 @@
 </pre>
 then it means that check#123 for 123.45 was canceled, so application should try to find payment or prepayment with matching amount and date and suggest to reverse that document. 
       </p>
-      <p>Actions that are made automatically for every line:
+      <p>Business logic "completing bank statement line":
       <ul>
-        <li><b>Only when "finding canceled mode" is set to on</b> - finding matching payment/prepayment for reversing in case if line marked as "canceled", if found - action "reverse" will be appeared</li>
-        <li>finding already entered records that match current line - accounting entries/payment/prepayment, matching records will be listed, actions "new payment/prepayment/accounting entry" will be appeared in any case</li>
+        <li>when field "resultAction" is empty, then field is not yet completed</li>
+        <li>where is two complete actions - "adding new record" and "report already matching record"</li>
+        <li><b>when "finding canceled mode" is set to on and line marked as "canceled"</b> - matching non-reversed and reversed accounting prepayments/payments/accounting entries will be listed - action "reverse" will be appeared for non-reversed records and action "report matching" will be appeared for already reversed records.</li>
+        <li>when line has status "ACCEPTED", then matching non-reversed prepayments/payments/accounting entries will be listed to report "matching", actions "new payment/prepayment/accounting entry" will be appeared in any case</li>
       </ul>
       </p>
       <p>
@@ -120,7 +122,7 @@ then it means that check#123 for 123.45 was canceled, so application should try 
       </p>
       <p>Persistable model BankStatement:
         <ul>
-          <li>APersistableBaseVersion fields</li>
+          <li>APersistableBaseVersion fields, version changed time</li>
           <li>bankAccount, BankAccount, not null</li>
           <li>itsDate - Date, not null</li>
           <li>sourceName - String, CSV file name + BankCsvMethod name</li>
@@ -129,16 +131,15 @@ then it means that check#123 for 123.45 was canceled, so application should try 
       </p>
       <p>Persistable model BankStatementLine, constTypeCode() = 1010:
         <ul>
-          <li>APersistableBaseVersion fields, implements IHasTypeCode</li>
+          <li>APersistableBaseVersion fields, implements IHasTypeCode, version changed time</li>
           <li>itsOwner, BankStatement, not null, read only field</li>
           <li>itsDate - Date, not null, from CSV, read only field</li>
           <li>itsAmount - BigDecimal, not null, negative or positive - from CSV, read only field</li>
-          <li>descriptionStatus - String, from CSV if present, read only field, if statusCol present, then string value present here.</li>
+          <li>descriptionStatus - String, from CSV if present, read only field, if statusCol presents, then string value will be present here.</li>
           <li>itsStatus - EBankEntryStatus.ACCEPTED/VOIDED, ACCEPTED default or from CSV according settings, read only field</li>
-          <li>matchingRecords, String, if found, read only field</li>
-          <li>resultAction, String, if action was made, read only field, e.g. "was made PaymentTo#12665"</li>
-          <li>resultRecordId, Long, if made, read only field</li>
-          <li>resultRecordType, EBankEntryResultType.ACC_ENTRY/PAYMENTFROM/PREPAYMENTFROM/PAYMENTTO/PREPAYMENTTO, if made, read only field</li>
+          <li>resultAction, String, if line completed, read only field, e.g. "was made PaymentTo#12665" or "it already was PaymentTo#12665"</li>
+          <li>resultRecordId, Long, if new record made, read only field</li>
+          <li>resultRecordType, EBankEntryResultType.ACC_ENTRY/PAYMENTFROM/PREPAYMENTFROM/PAYMENTTO/PREPAYMENTTO, if new record made, read only field</li>
           <li>descriptionAdd - String, addition description created by user, e.g. "made mistake, see adjusting entry #123"</li>
         </ul>
         Only action per line is allowed. If user made mistake, then it should fix it "by hand", i.e. add adjusting accounting entry, etc.

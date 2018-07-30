@@ -35,6 +35,7 @@ import org.beigesoft.accounting.persistable.PurchaseReturn;
 import org.beigesoft.accounting.persistable.PurchaseReturnLine;
 import org.beigesoft.accounting.persistable.BeginningInventory;
 import org.beigesoft.accounting.persistable.BeginningInventoryLine;
+import org.beigesoft.accounting.persistable.BankStatementLine;
 
 
 /**
@@ -96,6 +97,8 @@ public class SrvTypeCodeAccSources implements ISrvTypeCode {
       BeginningInventory.class);
     typeCodeMap.put(new BeginningInventoryLine().constTypeCode(),
       BeginningInventoryLine.class);
+    typeCodeMap.put(new BankStatementLine().constTypeCode(),
+      BankStatementLine.class);
   }
 
   /**

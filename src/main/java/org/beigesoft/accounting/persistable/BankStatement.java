@@ -15,7 +15,7 @@ package org.beigesoft.accounting.persistable;
 import java.util.List;
 import java.util.Date;
 
-import org.beigesoft.persistable.APersistableBase;
+import org.beigesoft.persistable.APersistableBaseVersion;
 
 /**
  * <p>
@@ -24,7 +24,7 @@ import org.beigesoft.persistable.APersistableBase;
  *
  * @author Yury Demidenko
  */
-public class BankStatement extends APersistableBase {
+public class BankStatement extends APersistableBaseVersion {
 
   /**
    * <p>Date.</p>

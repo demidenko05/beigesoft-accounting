@@ -133,6 +133,8 @@ import org.beigesoft.accounting.processor.PrcMoveItemsLineSave;
 import org.beigesoft.accounting.processor.PrcMoveItemsRetrieve;
 import org.beigesoft.accounting.processor.PrcAccSettingsSave;
 import org.beigesoft.accounting.processor.PrcBankStatementSave;
+import org.beigesoft.accounting.processor.PrcBankStatementLineGfe;
+import org.beigesoft.accounting.processor.PrcBankStatementLineSave;
 import org.beigesoft.accounting.processor.PrcAccSettingsLineSave;
 import org.beigesoft.replicator.persistable.
   base.AReplExcludeAccountsDebitCredit;
@@ -147,6 +149,7 @@ import org.beigesoft.accounting.persistable.SubaccountLine;
 import org.beigesoft.accounting.persistable.PaymentFrom;
 import org.beigesoft.accounting.persistable.Wage;
 import org.beigesoft.accounting.persistable.PaymentTo;
+import org.beigesoft.accounting.persistable.BankStatementLine;
 import org.beigesoft.accounting.persistable.PrepaymentFrom;
 import org.beigesoft.accounting.persistable.Manufacture;
 import org.beigesoft.accounting.persistable.ManufacturingProcess;
@@ -512,6 +515,12 @@ public class FctBnAccEntitiesProcessors<RS>
           } else if (pBeanName
             .equals(PrcAdditionCostLineDelete.class.getSimpleName())) {
             proc = lazyGetPrcAdditionCostLineDelete(pAddParam);
+          } else if (pBeanName
+            .equals(PrcBankStatementLineSave.class.getSimpleName())) {
+            proc = lazyGetPrcBankStatementLineSave(pAddParam);
+          } else if (pBeanName
+            .equals(PrcBankStatementLineGfe.class.getSimpleName())) {
+            proc = lazyGetPrcBankStatementLineGfe(pAddParam);
           } else if (pBeanName
             .equals(PrcBankStatementSave.class.getSimpleName())) {
             proc = lazyGetPrcBankStatementSave(pAddParam);
@@ -2147,6 +2156,53 @@ public class FctBnAccEntitiesProcessors<RS>
       //assigning fully initialized object:
       this.processorsMap
         .put(PrcAdditionCostLineDelete.class.getSimpleName(), proc);
+    }
+    return proc;
+  }
+
+  /**
+   * <p>Get PrcBankStatementLineSave (create and put into map).</p>
+   * @param pAddParam additional param
+   * @return requested PrcBankStatementLineSave
+   * @throws Exception - an exception
+   */
+  protected final PrcBankStatementLineSave<RS> lazyGetPrcBankStatementLineSave(
+    final Map<String, Object> pAddParam) throws Exception {
+    @SuppressWarnings("unchecked")
+    PrcBankStatementLineSave<RS> proc = (PrcBankStatementLineSave<RS>)
+      this.processorsMap.get(PrcBankStatementLineSave.class.getSimpleName());
+    if (proc == null) {
+      proc = new PrcBankStatementLineSave<RS>();
+      proc.setSrvOrm(getSrvOrm());
+      //assigning fully initialized object:
+      this.processorsMap
+        .put(PrcBankStatementLineSave.class.getSimpleName(), proc);
+    }
+    return proc;
+  }
+
+  /**
+   * <p>Get PrcBankStatementLineGfe (create and put into map).</p>
+   * @param pAddParam additional param
+   * @return requested PrcBankStatementLineGfe
+   * @throws Exception - an exception
+   */
+  protected final PrcBankStatementLineGfe<RS> lazyGetPrcBankStatementLineGfe(
+    final Map<String, Object> pAddParam) throws Exception {
+    @SuppressWarnings("unchecked")
+    PrcBankStatementLineGfe<RS> proc = (PrcBankStatementLineGfe<RS>)
+      this.processorsMap.get(PrcBankStatementLineGfe.class.getSimpleName());
+    if (proc == null) {
+      proc = new PrcBankStatementLineGfe<RS>();
+      proc.setSrvOrm(getSrvOrm());
+      @SuppressWarnings("unchecked")
+      PrcEntityPbEditDelete<RS, BankStatementLine> procDlg =
+    (PrcEntityPbEditDelete<RS, BankStatementLine>) this.fctBnEntitiesProcessors
+  .lazyGet(pAddParam, PrcEntityPbEditDelete.class.getSimpleName());
+      proc.setPrcEntityPbEditDelete(procDlg);
+      //assigning fully initialized object:
+      this.processorsMap
+        .put(PrcBankStatementLineGfe.class.getSimpleName(), proc);
     }
     return proc;
   }
