@@ -46,6 +46,11 @@ public class BankStatement extends APersistableBaseVersion {
    **/
   private List<BankStatementLine> itsLines;
 
+  /**
+   * <p>Description.</p>
+   **/
+  private String description;
+
   //Simple getters and setters:
   /**
    * <p>Getter for itsDate.</p>
@@ -109,5 +114,21 @@ public class BankStatement extends APersistableBaseVersion {
    **/
   public final void setItsLines(final List<BankStatementLine> pItsLines) {
     this.itsLines = pItsLines;
+  }
+
+  /**
+   * <p>Getter for description.</p>
+   * @return String
+   **/
+  public final String getDescription() {
+    return this.description;
+  }
+
+  /**
+   * <p>Setter for description.</p>
+   * @param pDescription reference
+   **/
+  public final void setDescription(final String pDescription) {
+    this.description = pDescription;
   }
 }

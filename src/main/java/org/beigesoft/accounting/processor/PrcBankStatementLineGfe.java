@@ -30,6 +30,7 @@ import org.beigesoft.accounting.persistable.PrepaymentFrom;
 import org.beigesoft.accounting.persistable.PaymentTo;
 import org.beigesoft.accounting.persistable.PrepaymentTo;
 import org.beigesoft.accounting.persistable.AccountingEntry;
+import org.beigesoft.accounting.service.ISrvTypeCode;
 
 /**
  * <p>Service that retrieve BSL, check if it foreign
@@ -50,6 +51,11 @@ public class PrcBankStatementLineGfe<RS>
    * <p>ORM service.</p>
    **/
   private ISrvOrm<RS> srvOrm;
+
+  /**
+   * <p>Type Codes of sub-accounts service.</p>
+   **/
+  private ISrvTypeCode srvTypeCode;
 
   /**
    * <p>Process entity request.</p>
@@ -103,14 +109,14 @@ public class PrcBankStatementLineGfe<RS>
         pRequestData.setAttribute("payments", paymentsFrom);
       }
       String eWhereD =
-        "where SOURCETYPE=3 and SUBACCDEBITTYPE=2010 and SUBACCDEBITID="
+        "where SOURCETYPE=3 and SUBACCDEBITTYPE=2002 and SUBACCDEBITID="
           + bsl.getItsOwner().getBankAccount().getItsId() + whereReversed
             + " and DEBIT=" + amountStr + " and ITSDATE >= " + startEnd[0]
               + " and ITSDATE <= " + startEnd[1];
       List<AccountingEntry> entriesFrom = getSrvOrm()
         .retrieveListWithConditions(pAddParam, AccountingEntry.class, eWhereD);
       if (entriesFrom.size() > 0) {
-        pRequestData.setAttribute("entries", entriesFrom);
+        pRequestData.setAttribute("accentries", entriesFrom);
       }
     } else {
       //bank account credit
@@ -125,16 +131,18 @@ public class PrcBankStatementLineGfe<RS>
         pRequestData.setAttribute("payments", paymentsTo);
       }
       String eWhereC =
-        "where SOURCETYPE=3 and SUBACCCREDITTYPE=2010 and SUBACCCREDITID="
+        "where SOURCETYPE=3 and SUBACCCREDITTYPE=2002 and SUBACCCREDITID="
           + bsl.getItsOwner().getBankAccount().getItsId() + whereReversed
             + " and CREDIT=" + amountStr + " and ITSDATE >= " + startEnd[0]
               + " and ITSDATE <= " + startEnd[1];
       List<AccountingEntry> entriesTo = getSrvOrm()
         .retrieveListWithConditions(pAddParam, AccountingEntry.class, eWhereC);
       if (entriesTo.size() > 0) {
-        pRequestData.setAttribute("entries", entriesTo);
+        pRequestData.setAttribute("accentries", entriesTo);
       }
     }
+    pRequestData.setAttribute("typeCodeSubaccMap",
+      this.srvTypeCode.getTypeCodeMap());
     return bsl;
   }
 
@@ -193,5 +201,21 @@ public class PrcBankStatementLineGfe<RS>
    **/
   public final void setSrvOrm(final ISrvOrm<RS> pSrvOrm) {
     this.srvOrm = pSrvOrm;
+  }
+
+  /**
+   * <p>Geter for srvTypeCode.</p>
+   * @return ISrvTypeCode
+   **/
+  public final ISrvTypeCode getSrvTypeCode() {
+    return this.srvTypeCode;
+  }
+
+  /**
+   * <p>Setter for srvTypeCode.</p>
+   * @param pSrvTypeCode reference
+   **/
+  public final void setSrvTypeCode(final ISrvTypeCode pSrvTypeCode) {
+    this.srvTypeCode = pSrvTypeCode;
   }
 }

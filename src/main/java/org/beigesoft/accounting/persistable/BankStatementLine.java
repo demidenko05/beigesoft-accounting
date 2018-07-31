@@ -20,6 +20,7 @@ import org.beigesoft.model.IHasTypeCode;
 import org.beigesoft.persistable.APersistableBaseVersion;
 import org.beigesoft.accounting.model.EBankEntryStatus;
 import org.beigesoft.accounting.model.EBankEntryResultType;
+import org.beigesoft.accounting.model.EBankEntryResultAction;
 
 /**
  * <p>
@@ -59,9 +60,15 @@ public class BankStatementLine extends APersistableBaseVersion
 
   /**
    * <p>if action was made, read only field,
+   * CREATE or MATCH.</p>
+   **/
+  private EBankEntryResultAction resultAction;
+
+  /**
+   * <p>if action was made, read only field,
    * e.g. "was made PaymentTo#12665".</p>
    **/
-  private String resultAction;
+  private String resultDescription;
 
   /**
    * <p>if made, read only field.</p>
@@ -72,12 +79,6 @@ public class BankStatementLine extends APersistableBaseVersion
    * <p>if made, read only field.</p>
    **/
   private EBankEntryResultType resultRecordType;
-
-  /**
-   * <p>addition description created by user,
-   * e.g. "made mistake, see adjusting entry #123".</p>
-   **/
-  private String descriptionAdd;
 
   /**
    * <p>Constant of code type.</p>
@@ -172,9 +173,9 @@ public class BankStatementLine extends APersistableBaseVersion
 
   /**
    * <p>Getter for resultAction.</p>
-   * @return String
+   * @return EBankEntryResultAction
    **/
-  public final String getResultAction() {
+  public final EBankEntryResultAction getResultAction() {
     return this.resultAction;
   }
 
@@ -182,8 +183,25 @@ public class BankStatementLine extends APersistableBaseVersion
    * <p>Setter for resultAction.</p>
    * @param pResultAction reference
    **/
-  public final void setResultAction(final String pResultAction) {
+  public final void setResultAction(
+    final EBankEntryResultAction pResultAction) {
     this.resultAction = pResultAction;
+  }
+
+  /**
+   * <p>Getter for resultDescription.</p>
+   * @return String
+   **/
+  public final String getResultDescription() {
+    return this.resultDescription;
+  }
+
+  /**
+   * <p>Setter for resultDescription.</p>
+   * @param pResultDescription reference
+   **/
+  public final void setResultDescription(final String pResultDescription) {
+    this.resultDescription = pResultDescription;
   }
 
   /**
@@ -217,21 +235,5 @@ public class BankStatementLine extends APersistableBaseVersion
   public final void setResultRecordType(
     final EBankEntryResultType pResultRecordType) {
     this.resultRecordType = pResultRecordType;
-  }
-
-  /**
-   * <p>Getter for descriptionAdd.</p>
-   * @return String
-   **/
-  public final String getDescriptionAdd() {
-    return this.descriptionAdd;
-  }
-
-  /**
-   * <p>Setter for descriptionAdd.</p>
-   * @param pDescriptionAdd reference
-   **/
-  public final void setDescriptionAdd(final String pDescriptionAdd) {
-    this.descriptionAdd = pDescriptionAdd;
   }
 }

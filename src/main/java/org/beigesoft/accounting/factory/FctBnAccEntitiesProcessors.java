@@ -2174,6 +2174,8 @@ public class FctBnAccEntitiesProcessors<RS>
     if (proc == null) {
       proc = new PrcBankStatementLineSave<RS>();
       proc.setSrvOrm(getSrvOrm());
+      proc.setSrvI18n(getSrvI18n());
+      proc.setSrvAccEntry(getSrvAccEntry());
       //assigning fully initialized object:
       this.processorsMap
         .put(PrcBankStatementLineSave.class.getSimpleName(), proc);
@@ -2195,6 +2197,7 @@ public class FctBnAccEntitiesProcessors<RS>
     if (proc == null) {
       proc = new PrcBankStatementLineGfe<RS>();
       proc.setSrvOrm(getSrvOrm());
+      proc.setSrvTypeCode(getSrvTypeCode());
       @SuppressWarnings("unchecked")
       PrcEntityPbEditDelete<RS, BankStatementLine> procDlg =
     (PrcEntityPbEditDelete<RS, BankStatementLine>) this.fctBnEntitiesProcessors
