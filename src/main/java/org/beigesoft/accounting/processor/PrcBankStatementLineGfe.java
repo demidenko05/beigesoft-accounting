@@ -12,6 +12,8 @@ package org.beigesoft.accounting.processor;
  * http://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html
  */
 
+import java.util.Set;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.List;
 import java.util.Date;
@@ -59,7 +61,7 @@ public class PrcBankStatementLineGfe<RS>
 
   /**
    * <p>Process entity request.</p>
-   * @param pAddParam additional param, e.g. return this line's
+   * @param pReqVars additional param, e.g. return this line's
    * document in "nextEntity" for farther process
    * @param pRequestData Request Data
    * @param pEntity Entity to process
@@ -67,11 +69,11 @@ public class PrcBankStatementLineGfe<RS>
    * @throws Exception - an exception
    **/
   @Override
-  public final BankStatementLine process(final Map<String, Object> pAddParam,
+  public final BankStatementLine process(final Map<String, Object> pReqVars,
     final BankStatementLine pEntity,
       final IRequestData pRequestData) throws Exception {
     BankStatementLine bsl = this.prcEntityPbEditDelete
-      .process(pAddParam, pEntity, pRequestData);
+      .process(pReqVars, pEntity, pRequestData);
     if (bsl.getResultAction() != null) {
       throw new ExceptionWithCode(ExceptionWithCode.FORBIDDEN,
         "attempt_to_edit_completed_bank_statement_line");
@@ -85,7 +87,7 @@ public class PrcBankStatementLineGfe<RS>
       throw new ExceptionWithCode(ExceptionWithCode.WRONG_PARAMETER,
         "amount_is_zero");
     }
-    long[] startEnd = evalDayStartEndFor(pEntity.getItsDate());
+    long[] startEnd = evalDayStartEndFor(bsl.getItsDate());
     String whereReversed;
     if (EBankEntryStatus.VOIDED.equals(bsl.getItsStatus())) {
       whereReversed = "";
@@ -96,15 +98,25 @@ public class PrcBankStatementLineGfe<RS>
       "where HASMADEACCENTRIES=1 and ITSTOTAL="
         + amountStr + whereReversed + " and ITSDATE >= " + startEnd[0]
           + " and ITSDATE <= " + startEnd[1];
+    Set<String> ndFlDoc = new HashSet<String>();
+    ndFlDoc.add("itsId");
+    ndFlDoc.add("idDatabaseBirth");
+    ndFlDoc.add("idBirth");
+    ndFlDoc.add("itsTotal");
+    ndFlDoc.add("itsDate");
     if (bsl.getItsAmount().compareTo(BigDecimal.ZERO) > 0) {
       //bank account debit
+      pReqVars.put("PrepaymentFromneededFields", ndFlDoc);
       List<PrepaymentFrom> prepaymentsFrom = getSrvOrm()
-        .retrieveListWithConditions(pAddParam, PrepaymentFrom.class, dWhere);
+        .retrieveListWithConditions(pReqVars, PrepaymentFrom.class, dWhere);
+      pReqVars.remove("PrepaymentFromneededFields");
       if (prepaymentsFrom.size() > 0) {
         pRequestData.setAttribute("prepayments", prepaymentsFrom);
       }
+      pReqVars.put("PaymentFromneededFields", ndFlDoc);
       List<PaymentFrom> paymentsFrom = getSrvOrm()
-        .retrieveListWithConditions(pAddParam, PaymentFrom.class, dWhere);
+        .retrieveListWithConditions(pReqVars, PaymentFrom.class, dWhere);
+      pReqVars.remove("PaymentFromneededFields");
       if (paymentsFrom.size() > 0) {
         pRequestData.setAttribute("payments", paymentsFrom);
       }
@@ -114,19 +126,23 @@ public class PrcBankStatementLineGfe<RS>
             + " and DEBIT=" + amountStr + " and ITSDATE >= " + startEnd[0]
               + " and ITSDATE <= " + startEnd[1];
       List<AccountingEntry> entriesFrom = getSrvOrm()
-        .retrieveListWithConditions(pAddParam, AccountingEntry.class, eWhereD);
+        .retrieveListWithConditions(pReqVars, AccountingEntry.class, eWhereD);
       if (entriesFrom.size() > 0) {
         pRequestData.setAttribute("accentries", entriesFrom);
       }
     } else {
       //bank account credit
+      pReqVars.put("PrepaymentToneededFields", ndFlDoc);
       List<PrepaymentTo> prepaymentsTo = getSrvOrm()
-        .retrieveListWithConditions(pAddParam, PrepaymentTo.class, dWhere);
+        .retrieveListWithConditions(pReqVars, PrepaymentTo.class, dWhere);
+      pReqVars.remove("PrepaymentToneededFields");
       if (prepaymentsTo.size() > 0) {
         pRequestData.setAttribute("prepayments", prepaymentsTo);
       }
+      pReqVars.put("PaymentToneededFields", ndFlDoc);
       List<PaymentTo> paymentsTo = getSrvOrm()
-        .retrieveListWithConditions(pAddParam, PaymentTo.class, dWhere);
+        .retrieveListWithConditions(pReqVars, PaymentTo.class, dWhere);
+      pReqVars.remove("PaymentToneededFields");
       if (paymentsTo.size() > 0) {
         pRequestData.setAttribute("payments", paymentsTo);
       }
@@ -136,7 +152,7 @@ public class PrcBankStatementLineGfe<RS>
             + " and CREDIT=" + amountStr + " and ITSDATE >= " + startEnd[0]
               + " and ITSDATE <= " + startEnd[1];
       List<AccountingEntry> entriesTo = getSrvOrm()
-        .retrieveListWithConditions(pAddParam, AccountingEntry.class, eWhereC);
+        .retrieveListWithConditions(pReqVars, AccountingEntry.class, eWhereC);
       if (entriesTo.size() > 0) {
         pRequestData.setAttribute("accentries", entriesTo);
       }

@@ -16,7 +16,6 @@ import java.util.Map;
 import java.util.List;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
-import java.text.ParsePosition;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
@@ -128,7 +127,7 @@ public class PrcBankStatementSave<RS>
           String dateStr = csvRow
             .get(bankCsvMethod.getDateCol().getItsIndex() - 1);
           try {
-            bsl.setItsDate(sdf.parse(dateStr, new ParsePosition(0)));
+            bsl.setItsDate(sdf.parse(dateStr));
           } catch (Exception ee) {
             throw new ExceptionWithCode(ExceptionWithCode.WRONG_PARAMETER,
               "Wrong date value! Value/Format: " + dateStr

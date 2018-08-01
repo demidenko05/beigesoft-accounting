@@ -2176,6 +2176,8 @@ public class FctBnAccEntitiesProcessors<RS>
       proc.setSrvOrm(getSrvOrm());
       proc.setSrvI18n(getSrvI18n());
       proc.setSrvAccEntry(getSrvAccEntry());
+      proc.setPrcPurchaseInvoiceSave(lazyGetPrcPurchaseInvoiceSave(pAddParam));
+      proc.setPrcSalesInvoiceSave(lazyGetPrcSalesInvoiceSave(pAddParam));
       //assigning fully initialized object:
       this.processorsMap
         .put(PrcBankStatementLineSave.class.getSimpleName(), proc);

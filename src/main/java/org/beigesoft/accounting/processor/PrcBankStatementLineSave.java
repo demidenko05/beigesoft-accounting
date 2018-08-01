@@ -17,6 +17,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.math.BigDecimal;
 import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 
 import org.beigesoft.exception.ExceptionWithCode;
 import org.beigesoft.model.IRequestData;
@@ -37,6 +38,8 @@ import org.beigesoft.accounting.persistable.PrepaymentFrom;
 import org.beigesoft.accounting.persistable.PaymentTo;
 import org.beigesoft.accounting.persistable.PrepaymentTo;
 import org.beigesoft.accounting.persistable.AccountingEntry;
+import org.beigesoft.accounting.persistable.PurchaseInvoice;
+import org.beigesoft.accounting.persistable.SalesInvoice;
 import org.beigesoft.accounting.service.ISrvAccEntry;
 
 /**
@@ -64,6 +67,23 @@ public class PrcBankStatementLineSave<RS>
   private ISrvAccEntry srvAccEntry;
 
   /**
+   * <p>Processor SalesInvoice Save.</p>
+   **/
+  private PrcSalesInvoiceSave<RS> prcSalesInvoiceSave;
+
+  /**
+   * <p>Processor PurchaseInvoice Save.</p>
+   **/
+  private PrcPurchaseInvoiceSave<RS> prcPurchaseInvoiceSave;
+
+  /**
+   * <p>Format date-time ISO8601 no time zone,
+   * e.g. 2001-07-04T21:55.</p>
+   **/
+  private DateFormat dateTimeNoTzFormatIso8601 =
+    new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
+
+  /**
    * <p>Process entity request.</p>
    * @param pReqVars additional param, e.g. return this line's
    * document in "nextEntity" for farther process
@@ -89,6 +109,7 @@ public class PrcBankStatementLineSave<RS>
       throw new ExceptionWithCode(ExceptionWithCode.WRONG_PARAMETER,
         "amount_is_zero");
     }
+    bsl.setItsOwner(getSrvOrm().retrieveEntity(pReqVars, bsl.getItsOwner()));
     String langDef = (String) pReqVars.get("langDef");
     DateFormat dateFormat = DateFormat.getDateTimeInstance(
       DateFormat.MEDIUM, DateFormat.SHORT, new Locale(langDef));
@@ -110,11 +131,19 @@ public class PrcBankStatementLineSave<RS>
           String adjDocType = pRequestData.getParameter("adjDocType");
           if (adjDocType != null && !"".equals(adjDocType)
             && !"-".equals(adjDocType)) {
+            if (EBankEntryStatus.VOIDED.equals(bsl.getItsStatus())) {
+              throw new ExceptionWithCode(ExceptionWithCode.WRONG_PARAMETER,
+                "can_not_create_for_voided");
+            }
             if ("1".equals(adjDocType)) {
               createPrepayment(pReqVars, bsl, dateFormat, langDef,
                 pRequestData);
+            } else if ("2".equals(adjDocType)) {
+              createPayment(pReqVars, bsl, dateFormat, langDef,
+                pRequestData);
             } else {
-              throw new Exception("NEI");
+              createAccentry(pReqVars, bsl, dateFormat, langDef,
+                pRequestData);
             }
           } else {
             throw new ExceptionWithCode(ExceptionWithCode.WRONG_PARAMETER,
@@ -126,7 +155,127 @@ public class PrcBankStatementLineSave<RS>
     this.srvOrm.updateEntity(pReqVars, bsl);
     pReqVars.put("nextEntity", pEntity.getItsOwner());
     pReqVars.put("nameOwnerEntity", BankStatement.class.getSimpleName());
-    return bsl;
+    return null;
+  }
+
+  /**
+   * <p>Creates payment.</p>
+   * @param pReqVars additional param
+   * @param pBsl BSL
+   * @param pDateFormat Date Formatter
+   * @param pLangDef language
+   * @param pRequestData Request Data
+   * @throws Exception - an exception
+   **/
+  public final void createPayment(final Map<String, Object> pReqVars,
+    final BankStatementLine pBsl, final DateFormat pDateFormat,
+      final String pLangDef, final IRequestData pRequestData) throws Exception {
+    BigDecimal foreignTotal;
+    Account accCash;
+    Date itsDate;
+    try {
+      String forTotStr = pRequestData.getParameter("foreignTotal");
+      if (forTotStr == null || "".equals(forTotStr)) {
+        foreignTotal = BigDecimal.ZERO;
+      } else {
+        String dsep = (String) pReqVars.get("dseparatorv");
+        if (dsep != null) {
+          String dgsep = (String) pReqVars.get("dgseparatorv");
+          forTotStr = forTotStr.replace(dgsep, "").replace(dsep, ".");
+        }
+        foreignTotal = new BigDecimal(forTotStr);
+      }
+      String accCashStr = pRequestData.getParameter("accCash");
+      accCash = new Account();
+      accCash.setItsId(accCashStr);
+      accCash = getSrvOrm().retrieveEntity(pReqVars, accCash);
+      if (accCash == null) {
+        throw new Exception("cant_find_account");
+      }
+      String itsDateStr = pRequestData.getParameter("itsDate");
+      itsDate = this.dateTimeNoTzFormatIso8601.parse(itsDateStr);
+    } catch (Exception e) {
+      throw new ExceptionWithCode(ExceptionWithCode.WRONG_PARAMETER,
+        "you_have_to_complete_data", e);
+    }
+    EBankEntryResultType resultRecordType = null;
+    EBankEntryResultAction resultAction = EBankEntryResultAction.CREATE;
+    String resultDescription = null;
+    Long resultRecordId = null;
+    if (pBsl.getItsAmount().compareTo(BigDecimal.ZERO) > 0) {
+      SalesInvoice inv;
+      try {
+        String invStr = pRequestData.getParameter("invoice");
+        inv = new SalesInvoice();
+        inv.setItsId(Long.parseLong(invStr));
+        inv = getSrvOrm().retrieveEntity(pReqVars, inv);
+        if (inv == null) {
+          throw new Exception("cant_find_debtor_invoice");
+        }
+      } catch (Exception e) {
+        throw new ExceptionWithCode(ExceptionWithCode.WRONG_PARAMETER,
+          "you_have_to_complete_data", e);
+      }
+      resultRecordType = EBankEntryResultType.PREPAYMENTFROM;
+      PaymentFrom pay = new PaymentFrom();
+      pay.setIdDatabaseBirth(getSrvOrm().getIdDatabase());
+      pay.setItsDate(itsDate);
+      pay.setSalesInvoice(inv);
+      pay.setAccCash(accCash);
+      pay.setSubaccCash(pBsl.getItsOwner().getBankAccount().getItsName());
+      pay.setSubaccCashId(pBsl.getItsOwner().getBankAccount().getItsId());
+      pay.setSubaccCashType(2002);
+      pay.setItsTotal(pBsl.getItsAmount().abs());
+      pay.setForeignTotal(foreignTotal);
+      pay.setDescription(makeDescrForCreated(pBsl, pDateFormat, pLangDef));
+      getSrvOrm().insertEntity(pReqVars, pay);
+      this.srvAccEntry.makeEntries(pReqVars, pay);
+      this.prcSalesInvoiceSave.calculateTotalPayment(pReqVars, pay
+        .getSalesInvoice());
+      getSrvOrm().updateEntity(pReqVars, pay.getSalesInvoice());
+      resultRecordId = pay.getItsId();
+      resultDescription = makeBslResDescr(resultAction, pDateFormat, pay,
+        pay.getItsDate(), pLangDef);
+    } else {
+      PurchaseInvoice inv;
+      try {
+        String invStr = pRequestData.getParameter("invoice");
+        inv = new PurchaseInvoice();
+        inv.setItsId(Long.parseLong(invStr));
+        inv = getSrvOrm().retrieveEntity(pReqVars, inv);
+        if (inv == null) {
+          throw new Exception("cant_find_debtor_invoice");
+        }
+      } catch (Exception e) {
+        throw new ExceptionWithCode(ExceptionWithCode.WRONG_PARAMETER,
+          "you_have_to_complete_data", e);
+      }
+      resultRecordType = EBankEntryResultType.PREPAYMENTTO;
+      PaymentTo pay = new PaymentTo();
+      pay.setIdDatabaseBirth(getSrvOrm().getIdDatabase());
+      pay.setItsDate(itsDate);
+      pay.setPurchaseInvoice(inv);
+      pay.setAccCash(accCash);
+      pay.setSubaccCash(pBsl.getItsOwner().getBankAccount().getItsName());
+      pay.setSubaccCashId(pBsl.getItsOwner().getBankAccount().getItsId());
+      pay.setSubaccCashType(2002);
+      pay.setItsTotal(pBsl.getItsAmount().abs());
+      pay.setForeignTotal(foreignTotal);
+      pay.setDescription(makeDescrForCreated(pBsl, pDateFormat, pLangDef));
+      getSrvOrm().insertEntity(pReqVars, pay);
+      this.srvAccEntry.makeEntries(pReqVars, pay);
+      this.prcPurchaseInvoiceSave.calculateTotalPayment(pReqVars,
+        pay.getPurchaseInvoice());
+      getSrvOrm().updateEntity(pReqVars, pay.getPurchaseInvoice());
+      resultRecordId = pay.getItsId();
+      resultDescription = makeBslResDescr(resultAction, pDateFormat, pay,
+        pay.getItsDate(), pLangDef);
+    }
+    pBsl.setResultAction(resultAction);
+    pBsl.setResultRecordType(resultRecordType);
+    pBsl.setResultRecordId(resultRecordId);
+    pBsl.setResultDescription(resultDescription);
+    getSrvOrm().updateEntity(pReqVars, pBsl);
   }
 
   /**
@@ -141,15 +290,42 @@ public class PrcBankStatementLineSave<RS>
   public final void createPrepayment(final Map<String, Object> pReqVars,
     final BankStatementLine pBsl, final DateFormat pDateFormat,
       final String pLangDef, final IRequestData pRequestData) throws Exception {
-    //String foreignTotalStr = pRequestData.getParameter("foreignTotal");
-    String dcIdStr = pRequestData.getParameter("debtorCreditor");
-    DebtorCreditor dc = new DebtorCreditor();
-    dc.setItsId(Long.parseLong(dcIdStr));
-    dc = getSrvOrm().retrieveEntity(pReqVars, dc);
-    String accCashStr = pRequestData.getParameter("accCash");
-    Account accCash = new Account();
-    accCash.setItsId(accCashStr);
-    accCash = getSrvOrm().retrieveEntity(pReqVars, accCash);
+    BigDecimal foreignTotal;
+    DebtorCreditor dc;
+    Account accCash;
+    Date itsDate;
+    try {
+      String forTotStr = pRequestData.getParameter("foreignTotal");
+      if (forTotStr == null || "".equals(forTotStr)) {
+        foreignTotal = BigDecimal.ZERO;
+      } else {
+        String dsep = (String) pReqVars.get("dseparatorv");
+        if (dsep != null) {
+          String dgsep = (String) pReqVars.get("dgseparatorv");
+          forTotStr = forTotStr.replace(dgsep, "").replace(dsep, ".");
+        }
+        foreignTotal = new BigDecimal(forTotStr);
+      }
+      String dcIdStr = pRequestData.getParameter("debtorCreditor");
+      dc = new DebtorCreditor();
+      dc.setItsId(Long.parseLong(dcIdStr));
+      dc = getSrvOrm().retrieveEntity(pReqVars, dc);
+      if (dc == null) {
+        throw new Exception("cant_find_debtor_creditor");
+      }
+      String accCashStr = pRequestData.getParameter("accCash");
+      accCash = new Account();
+      accCash.setItsId(accCashStr);
+      accCash = getSrvOrm().retrieveEntity(pReqVars, accCash);
+      if (accCash == null) {
+        throw new Exception("cant_find_account");
+      }
+      String itsDateStr = pRequestData.getParameter("itsDate");
+      itsDate = this.dateTimeNoTzFormatIso8601.parse(itsDateStr);
+    } catch (Exception e) {
+      throw new ExceptionWithCode(ExceptionWithCode.WRONG_PARAMETER,
+        "you_have_to_complete_data", e);
+    }
     EBankEntryResultType resultRecordType = null;
     EBankEntryResultAction resultAction = EBankEntryResultAction.CREATE;
     String resultDescription = null;
@@ -158,18 +334,129 @@ public class PrcBankStatementLineSave<RS>
       resultRecordType = EBankEntryResultType.PREPAYMENTFROM;
       PrepaymentFrom prep = new PrepaymentFrom();
       prep.setIdDatabaseBirth(getSrvOrm().getIdDatabase());
+      prep.setItsDate(itsDate);
+      prep.setCustomer(dc);
       prep.setAccCash(accCash);
       prep.setSubaccCash(pBsl.getItsOwner().getBankAccount().getItsName());
       prep.setSubaccCashId(pBsl.getItsOwner().getBankAccount().getItsId());
       prep.setSubaccCashType(2002);
-      prep.setCustomer(dc);
       prep.setItsTotal(pBsl.getItsAmount().abs());
-      //prep.setForeignTotal(foreignTotal);
+      prep.setForeignTotal(foreignTotal);
+      prep.setDescription(makeDescrForCreated(pBsl, pDateFormat, pLangDef));
       getSrvOrm().insertEntity(pReqVars, prep);
+      this.srvAccEntry.makeEntries(pReqVars, prep);
       resultRecordId = prep.getItsId();
-      resultDescription = makeDescription(resultAction, pDateFormat, prep,
+      resultDescription = makeBslResDescr(resultAction, pDateFormat, prep,
+        prep.getItsDate(), pLangDef);
+    } else {
+      resultRecordType = EBankEntryResultType.PREPAYMENTTO;
+      PrepaymentTo prep = new PrepaymentTo();
+      prep.setIdDatabaseBirth(getSrvOrm().getIdDatabase());
+      prep.setVendor(dc);
+      prep.setItsDate(itsDate);
+      prep.setAccCash(accCash);
+      prep.setSubaccCash(pBsl.getItsOwner().getBankAccount().getItsName());
+      prep.setSubaccCashId(pBsl.getItsOwner().getBankAccount().getItsId());
+      prep.setSubaccCashType(2002);
+      prep.setItsTotal(pBsl.getItsAmount().abs());
+      prep.setForeignTotal(foreignTotal);
+      prep.setDescription(makeDescrForCreated(pBsl, pDateFormat, pLangDef));
+      getSrvOrm().insertEntity(pReqVars, prep);
+      this.srvAccEntry.makeEntries(pReqVars, prep);
+      resultRecordId = prep.getItsId();
+      resultDescription = makeBslResDescr(resultAction, pDateFormat, prep,
         prep.getItsDate(), pLangDef);
     }
+    pBsl.setResultAction(resultAction);
+    pBsl.setResultRecordType(resultRecordType);
+    pBsl.setResultRecordId(resultRecordId);
+    pBsl.setResultDescription(resultDescription);
+    getSrvOrm().updateEntity(pReqVars, pBsl);
+  }
+
+  /**
+   * <p>Create accentry.</p>
+   * @param pReqVars additional param
+   * @param pBsl BSL
+   * @param pDateFormat Date Formatter
+   * @param pLangDef language
+   * @param pRequestData Request Data
+   * @throws Exception - an exception
+   **/
+  public final void createAccentry(final Map<String, Object> pReqVars,
+    final BankStatementLine pBsl, final DateFormat pDateFormat,
+      final String pLangDef, final IRequestData pRequestData) throws Exception {
+    Account accCash;
+    Account corAcc;
+    String subcorAcc = null;
+    Long subcorAccId = null;
+    Integer subcorAccType = null;
+    Date itsDate;
+    try {
+      String accCashStr = pRequestData.getParameter("accCash");
+      accCash = new Account();
+      accCash.setItsId(accCashStr);
+      accCash = getSrvOrm().retrieveEntity(pReqVars, accCash);
+      if (accCash == null) {
+        throw new Exception("cant_find_account");
+      }
+      String corAccStr = pRequestData.getParameter("corAcc");
+      corAcc = new Account();
+      corAcc.setItsId(corAccStr);
+      corAcc = getSrvOrm().retrieveEntity(pReqVars, corAcc);
+      if (corAcc == null) {
+        throw new Exception("cant_find_account");
+      }
+      if (corAcc.getSubaccType() != null) {
+        subcorAcc = pRequestData.getParameter("subcorAcc");
+        String subcorAccTypeStr = pRequestData.getParameter("subcorAccType");
+        subcorAccType = Integer.parseInt(subcorAccTypeStr);
+        String subcorAccIdStr = pRequestData.getParameter("subcorAccId");
+        subcorAccId = Long.parseLong(subcorAccIdStr);
+      }
+      String itsDateStr = pRequestData.getParameter("itsDate");
+      itsDate = this.dateTimeNoTzFormatIso8601.parse(itsDateStr);
+    } catch (Exception e) {
+      throw new ExceptionWithCode(ExceptionWithCode.WRONG_PARAMETER,
+        "you_have_to_complete_data", e);
+    }
+    EBankEntryResultType resultRecordType = EBankEntryResultType.ACC_ENTRY;
+    EBankEntryResultAction resultAction = EBankEntryResultAction.CREATE;
+    String resultDescription = null;
+    Long resultRecordId = null;
+    AccountingEntry accent = new AccountingEntry();
+    if (pBsl.getItsAmount().compareTo(BigDecimal.ZERO) > 0) {
+      accent.setAccDebit(accCash);
+      accent.setSubaccDebit(pBsl.getItsOwner().getBankAccount().getItsName());
+      accent.setSubaccDebitId(pBsl.getItsOwner().getBankAccount().getItsId());
+      accent.setSubaccDebitType(2002);
+      accent.setAccCredit(corAcc);
+      accent.setSubaccCredit(subcorAcc);
+      accent.setSubaccCreditId(subcorAccId);
+      accent.setSubaccCreditType(subcorAccType);
+    } else {
+      accent.setAccDebit(corAcc);
+      accent.setSubaccDebit(subcorAcc);
+      accent.setSubaccDebitId(subcorAccId);
+      accent.setSubaccDebitType(subcorAccType);
+      accent.setAccCredit(accCash);
+      accent.setSubaccCredit(pBsl.getItsOwner().getBankAccount().getItsName());
+      accent.setSubaccCreditId(pBsl.getItsOwner().getBankAccount().getItsId());
+      accent.setSubaccCreditType(2002);
+    }
+    accent.setSourceType(pBsl.constTypeCode());
+    accent.setSourceId(pBsl.getItsId());
+    accent.setSourceDatabaseBirth(pBsl.getIdDatabaseBirth());
+    accent.setIdDatabaseBirth(pBsl.getIdDatabaseBirth());
+    accent.setItsDate(itsDate);
+    accent.setDebit(pBsl.getItsAmount().abs());
+    accent.setCredit(accent.getDebit());
+    accent.setDescription(makeDescrForCreated(pBsl, pDateFormat, pLangDef));
+    getSrvOrm().insertEntity(pReqVars, accent);
+    accent.setIsNew(false);
+    resultRecordId = accent.getItsId();
+    resultDescription = makeBslResDescr(resultAction, pDateFormat, accent,
+      accent.getItsDate(), pLangDef);
     pBsl.setResultAction(resultAction);
     pBsl.setResultRecordType(resultRecordType);
     pBsl.setResultRecordId(resultRecordId);
@@ -234,8 +521,9 @@ public class PrcBankStatementLineSave<RS>
       accent.setSubaccCreditId(reversed.getSubaccCreditId());
       accent.setSubaccCreditType(reversed.getSubaccCreditType());
       accent.setCredit(reversed.getCredit().negate());
-      accent.setDescription(getSrvI18n().getMsg("reversed_n", pLangDef)
-        + accent.getReversedIdDatabaseBirth() + "-" + accent.getReversedId());
+      accent.setDescription(makeDescrForCreated(pBsl, pDateFormat, pLangDef)
+        + " " + getSrvI18n().getMsg("reversed_n", pLangDef)
+          + accent.getReversedIdDatabaseBirth() + "-" + accent.getReversedId());
       getSrvOrm().insertEntity(pReqVars, accent);
       accent.setIsNew(false);
       String oldDesr = "";
@@ -252,7 +540,7 @@ public class PrcBankStatementLineSave<RS>
       resultAction = EBankEntryResultAction.MATCH;
     }
     resultRecordId = accent.getItsId();
-    resultDescription = makeDescription(resultAction, pDateFormat, accent,
+    resultDescription = makeBslResDescr(resultAction, pDateFormat, accent,
       accent.getItsDate(), pLangDef);
     pBsl.setResultAction(resultAction);
     pBsl.setResultRecordType(resultRecordType);
@@ -300,12 +588,15 @@ public class PrcBankStatementLineSave<RS>
         pay.setSubaccCashType(2002);
         pay.setSalesInvoice(reversed.getSalesInvoice());
         pay.setForeignTotal(reversed.getForeignTotal().negate());
+        pay.setDescription(makeDescrForCreated(pBsl, pDateFormat, pLangDef)
+          + " " + getSrvI18n().getMsg("reversed_n", pLangDef) + reversed
+            .getIdDatabaseBirth() + "-" + reversed.getItsId());
         makeDocReversed(pReqVars, pay, reversed, pLangDef);
       } else {
         resultAction = EBankEntryResultAction.MATCH;
       }
       resultRecordId = pay.getItsId();
-      resultDescription = makeDescription(resultAction, pDateFormat, pay,
+      resultDescription = makeBslResDescr(resultAction, pDateFormat, pay,
         pay.getItsDate(), pLangDef);
     } else {
       PaymentTo pay = getSrvOrm().retrieveEntityById(pReqVars,
@@ -329,12 +620,15 @@ public class PrcBankStatementLineSave<RS>
         pay.setSubaccCashType(2002);
         pay.setPurchaseInvoice(reversed.getPurchaseInvoice());
         pay.setForeignTotal(reversed.getForeignTotal().negate());
+        pay.setDescription(makeDescrForCreated(pBsl, pDateFormat, pLangDef)
+          + " " + getSrvI18n().getMsg("reversed_n", pLangDef) + reversed
+            .getIdDatabaseBirth() + "-" + reversed.getItsId());
         makeDocReversed(pReqVars, pay, reversed, pLangDef);
       } else {
         resultAction = EBankEntryResultAction.MATCH;
       }
       resultRecordId = pay.getItsId();
-      resultDescription = makeDescription(resultAction, pDateFormat, pay,
+      resultDescription = makeBslResDescr(resultAction, pDateFormat, pay,
         pay.getItsDate(), pLangDef);
     }
     pBsl.setResultAction(resultAction);
@@ -383,12 +677,15 @@ public class PrcBankStatementLineSave<RS>
         prep.setSubaccCashType(2002);
         prep.setCustomer(reversed.getCustomer());
         prep.setForeignTotal(reversed.getForeignTotal().negate());
+        prep.setDescription(makeDescrForCreated(pBsl, pDateFormat, pLangDef)
+          + " " + getSrvI18n().getMsg("reversed_n", pLangDef) + reversed
+            .getIdDatabaseBirth() + "-" + reversed.getItsId());
         makeDocReversed(pReqVars, prep, reversed, pLangDef);
       } else {
         resultAction = EBankEntryResultAction.MATCH;
       }
       resultRecordId = prep.getItsId();
-      resultDescription = makeDescription(resultAction, pDateFormat, prep,
+      resultDescription = makeBslResDescr(resultAction, pDateFormat, prep,
         prep.getItsDate(), pLangDef);
     } else {
       PrepaymentTo prep = getSrvOrm().retrieveEntityById(pReqVars,
@@ -412,12 +709,15 @@ public class PrcBankStatementLineSave<RS>
         prep.setSubaccCashType(2002);
         prep.setVendor(reversed.getVendor());
         prep.setForeignTotal(reversed.getForeignTotal().negate());
+        prep.setDescription(makeDescrForCreated(pBsl, pDateFormat, pLangDef)
+          + " " + getSrvI18n().getMsg("reversed_n", pLangDef) + reversed
+            .getIdDatabaseBirth() + "-" + reversed.getItsId());
         makeDocReversed(pReqVars, prep, reversed, pLangDef);
       } else {
         resultAction = EBankEntryResultAction.MATCH;
       }
       resultRecordId = prep.getItsId();
-      resultDescription = makeDescription(resultAction, pDateFormat, prep,
+      resultDescription = makeBslResDescr(resultAction, pDateFormat, prep,
         prep.getItsDate(), pLangDef);
     }
     pBsl.setResultAction(resultAction);
@@ -444,8 +744,6 @@ public class PrcBankStatementLineSave<RS>
     pReversing.setItsDate(new Date(pReversed.getItsDate().getTime() + 1));
     pReversing.setItsTotal(pReversed.getItsTotal().negate());
     pReversing.setHasMadeAccEntries(false);
-    pReversing.setDescription(getSrvI18n().getMsg("reversed_n", pLangDef)
-+ pReversing.getReversedIdDatabaseBirth() + "-" + pReversing.getReversedId());
     getSrvOrm().insertEntity(pReqVars, pReversing);
     pReversing.setIsNew(false);
     String oldDesr = "";
@@ -462,7 +760,7 @@ public class PrcBankStatementLineSave<RS>
   }
 
   /**
-   * <p>Makes description.</p>
+   * <p>Makes BSL result description.</p>
    * @param pResAct action
    * @param pDateFormat Date Formatter
    * @param pRecord Record
@@ -470,7 +768,7 @@ public class PrcBankStatementLineSave<RS>
    * @param pLangDef language
    * @return description
    **/
-  public final String makeDescription(final EBankEntryResultAction pResAct,
+  public final String makeBslResDescr(final EBankEntryResultAction pResAct,
     final DateFormat pDateFormat, final APersistableBase pRecord,
       final Date pDate, final String pLangDef) {
     StringBuffer sb = new StringBuffer();
@@ -480,9 +778,29 @@ public class PrcBankStatementLineSave<RS>
       sb.append(getSrvI18n().getMsg("Created", pLangDef));
     }
     sb.append(" " + getSrvI18n()
-      .getMsg(pRecord.getClass().getSimpleName(), pLangDef));
+      .getMsg(pRecord.getClass().getSimpleName() + "short", pLangDef));
     sb.append("#" + pRecord.getIdDatabaseBirth() + "-" + pRecord.getItsId()
       + ", " + pDateFormat.format(pDate));
+    return sb.toString();
+  }
+
+  /**
+   * <p>Makes description for created record.</p>
+   * @param pBsl BSL
+   * @param pDateFormat Date Formatter
+   * @param pLangDef language
+   * @return description
+   **/
+  public final String makeDescrForCreated(final BankStatementLine pBsl,
+    final DateFormat pDateFormat, final String pLangDef) {
+    StringBuffer sb = new StringBuffer();
+    sb.append(getSrvI18n().getMsg("Created", pLangDef)
+      + " " + getSrvI18n().getMsg("by", pLangDef));
+    sb.append(" " + getSrvI18n()
+      .getMsg(pBsl.getClass().getSimpleName() + "short", pLangDef));
+    sb.append("#" + pBsl.getIdDatabaseBirth() + "-" + pBsl.getItsId()
+      + ", " + pDateFormat.format(pBsl.getItsDate()));
+    sb.append(" (" + pBsl.getDescriptionStatus() + ")");
     return sb.toString();
   }
 
@@ -533,5 +851,39 @@ public class PrcBankStatementLineSave<RS>
    **/
   public final void setSrvAccEntry(final ISrvAccEntry pSrvAccEntry) {
     this.srvAccEntry = pSrvAccEntry;
+  }
+
+  /**
+   * <p>Getter for prcPurchaseInvoiceSave.</p>
+   * @return PrcPurchaseInvoiceSave<RS>
+   **/
+  public final PrcPurchaseInvoiceSave<RS> getPrcPurchaseInvoiceSave() {
+    return this.prcPurchaseInvoiceSave;
+  }
+
+  /**
+   * <p>Setter for prcPurchaseInvoiceSave.</p>
+   * @param pPrcPurchaseInvoiceSave reference
+   **/
+  public final void setPrcPurchaseInvoiceSave(
+    final PrcPurchaseInvoiceSave<RS> pPrcPurchaseInvoiceSave) {
+    this.prcPurchaseInvoiceSave = pPrcPurchaseInvoiceSave;
+  }
+
+  /**
+   * <p>Getter for prcSalesInvoiceSave.</p>
+   * @return PrcSalesInvoiceSave<RS>
+   **/
+  public final PrcSalesInvoiceSave<RS> getPrcSalesInvoiceSave() {
+    return this.prcSalesInvoiceSave;
+  }
+
+  /**
+   * <p>Setter for prcSalesInvoiceSave.</p>
+   * @param pPrcSalesInvoiceSave reference
+   **/
+  public final void setPrcSalesInvoiceSave(
+    final PrcSalesInvoiceSave<RS> pPrcSalesInvoiceSave) {
+    this.prcSalesInvoiceSave = pPrcSalesInvoiceSave;
   }
 }
