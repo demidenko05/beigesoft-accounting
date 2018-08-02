@@ -96,6 +96,9 @@
       <h5>
         <a href="acc-satax-aggr.html">Multi sales taxes. Aggregate tax rate for item basis method.</a>
       </h5>
+      <h5>
+        <a href="acc-bank-csv.html">Import bank statement from CSV file, semi-automatically bank reconciliation.</a>
+      </h5>
 
       <h5>
         * Sample databases <b>bobs-pizza-tax-new.sqlite (from scratch)</b>, <b>bobs-pizza-market-new.sqlite</b> and <b>bobs-pizza-nfs-new.sqlite (not from scratch)</b> you can download from <a href="https://sourceforge.net/projects/beige-accounting/">https://sourceforge.net/projects/beige-accounting/</a>

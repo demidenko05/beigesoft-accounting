@@ -96,7 +96,9 @@ public class PrcBankStatementLineSave<RS>
   public final BankStatementLine process(final Map<String, Object> pReqVars,
     final BankStatementLine pEntity,
       final IRequestData pRequestData) throws Exception {
+    pReqVars.put("BankStatementLineitsOwnerdeepLevel", 3);
     BankStatementLine bsl = getSrvOrm().retrieveEntity(pReqVars, pEntity);
+    pReqVars.remove("BankStatementLineitsOwnerdeepLevel");
     if (bsl.getIdDatabaseBirth() != getSrvOrm().getIdDatabase()) {
       throw new ExceptionWithCode(ExceptionWithCode.WRONG_PARAMETER,
         "can_not_change_foreign_src");
@@ -109,7 +111,6 @@ public class PrcBankStatementLineSave<RS>
       throw new ExceptionWithCode(ExceptionWithCode.WRONG_PARAMETER,
         "amount_is_zero");
     }
-    bsl.setItsOwner(getSrvOrm().retrieveEntity(pReqVars, bsl.getItsOwner()));
     String langDef = (String) pReqVars.get("langDef");
     DateFormat dateFormat = DateFormat.getDateTimeInstance(
       DateFormat.MEDIUM, DateFormat.SHORT, new Locale(langDef));
@@ -467,14 +468,14 @@ public class PrcBankStatementLineSave<RS>
   /**
    * <p>Makes accentry matching or reversed.</p>
    * @param pReqVars additional param
-   * @param pPayId Accentry Id
+   * @param pEntryId Accentry Id
    * @param pBsl BSL
    * @param pDateFormat Date Formatter
    * @param pLangDef language
    * @throws Exception - an exception
    **/
   public final void makeAccentryMatchingReversed(
-    final Map<String, Object> pReqVars, final String pPayId,
+    final Map<String, Object> pReqVars, final String pEntryId,
       final BankStatementLine pBsl, final DateFormat pDateFormat,
         final String pLangDef) throws Exception {
     EBankEntryResultType resultRecordType = EBankEntryResultType.ACC_ENTRY;
@@ -482,16 +483,24 @@ public class PrcBankStatementLineSave<RS>
     String resultDescription = null;
     Long resultRecordId = null;
     AccountingEntry accent = getSrvOrm().retrieveEntityById(pReqVars,
-      AccountingEntry.class, Long.parseLong(pPayId));
+      AccountingEntry.class, Long.parseLong(pEntryId));
+    if (accent == null) {
+      throw new ExceptionWithCode(ExceptionWithCode.WRONG_PARAMETER,
+        "cant_found_accentry");
+    }
+    if (accent.getSourceType() == 1010) {
+      throw new ExceptionWithCode(ExceptionWithCode.WRONG_PARAMETER,
+        "AlreadyDone");
+    }
     if (pBsl.getItsAmount().compareTo(BigDecimal.ZERO) > 0 && pBsl
-      .getItsAmount().abs().compareTo(accent.getDebit()) != 0
-        || accent.getSubaccDebitType() != 2002 || !pBsl.getItsOwner()
+      .getItsAmount().compareTo(accent.getDebit()) != 0
+        && accent.getSubaccDebitType() != 2002 && !pBsl.getItsOwner()
           .getBankAccount().getItsId().equals(accent.getSubaccDebitId())) {
       throw new ExceptionWithCode(ExceptionWithCode.WRONG_PARAMETER,
         "record_is_not_matching");
     } else if (pBsl.getItsAmount().compareTo(BigDecimal.ZERO) < 0 && pBsl
       .getItsAmount().abs().compareTo(accent.getCredit()) != 0
-        || accent.getSubaccCreditType() != 2002 || !pBsl.getItsOwner()
+        && accent.getSubaccCreditType() != 2002 && !pBsl.getItsOwner()
           .getBankAccount().getItsId().equals(accent.getSubaccCreditId())) {
       throw new ExceptionWithCode(ExceptionWithCode.WRONG_PARAMETER,
         "record_is_not_matching");

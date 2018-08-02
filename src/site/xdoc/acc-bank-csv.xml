@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document xmlns="http://maven.apache.org/XDOC/2.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
+
+  <properties>
+    <title>Beigesoft™ Accounting</title>
+   </properties>
+
+  <body>
+
+    <section name="Import bank statement from CSV file. Semi-automatically bank reconciliation.">
+      
+      <p>Keywords: Import bank statement from CSV file, semi-automatically bank reconciliation.</p>
+
+      <p>* New features described in this article available since version 1.1.7 (it's in source code right now).</p>
+      
+      <h4>Import bank statement from CSV file. Semi-automatically bank reconciliation.</h4>
+      <p>Beigesoft™ Accounting allows:
+        <ul>
+          <li>import bank statement entries from CSV file.</li>
+          <li>if entry has status "VOIDED" (canceled), then matching entries (if found) will be listed for reversing (canceling).</li>
+          <li>entries with others status allow to create new records, matching entries (if found) will be listed anyway to prevent duplicates</li>
+        </ul>
+      </p>
+      <h4>Semi-automatically bank reconciliation example.</h4>
+      <p>Assume Bob received prepayment from MINIMART check#175762 for 23.15USD and payment check#175763 for 33.15USD on Jan 25, 2016.
+      Bob has entered these checks into Beigesoft™ Accounting.
+      </p>
+      <p>Bob received on Jan 26 bank statement, its CSV file is:
+<pre style="white-space: pre-wrap;">
+01/25/2016,MINIMART check #175762,VOIDED,23.15,wrong signature
+01/25/2016,wrong check fine,OK,-11.15,
+01/25/2016,MINIMART check #175763,OK,33.15,
+01/25/2016,MINIMART check #175764,OK,43.23,
+01/25/2016,MINIMART check #175765,OK,20.00,
+</pre>
+That is check#175762 wasn't accepted, there is additional fee 11.15, check#175763 is already entered, and there are two checks that Bob hasn't entered yet.
+      </p>
+      <p>
+        At first, Bob created CSV Method for that file:
+        <p align="center"><img style="max-width: 100%" src="images/acc-bank-csv1.png" /></p>
+        its fields are:
+        <ul>
+          <li>Column separator - comma default</li>
+          <li>Charset name - file encoding, for English countries it's usually ASCII, international friendly systems use UTF-8, anyway, ask your bank about this</li>
+          <li>Has header - means if the first row consist of column names (here is not)</li>
+        </ul>
+        columns fields are:
+        <ul>
+          <li>name - any suitable name</li>
+          <li>data format - here used only for Date column, string "MM/dd/yyyy" means USA standard, "dd/MM/yyyy" the most used standard, for more details see <a href="https://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html">https://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html</a></li>
+          <li>type - "Date" for date columns, "Text" for most others columns, "Numeric" for amount column</li>
+          <li>index - imported column index, not all columns might be imported (part of them might be omitted), e.g. if you want to omit column status, then columns "Date,Description,Amount" will have indexes: "1,2,3"</li>
+          <li>index - imported column index in source file, not all columns might be imported (part of them might be omitted), e.g. if you want to omit column status, then columns "Date,Description,Amount" will have indexes: "1,2,4"</li>
+          <li>Text delimiter - cell string value delimiter,  e.g. quote for strings that contains column separator</li>
+        </ul>
+    here example of CSV file there description column has quota text delimiter:
+<pre style="white-space: pre-wrap;">
+01/25/2016,"MINIMART check #175762, wrong signature",VOIDED,23.15,wrong signature
+01/25/2016,"wrong check fine",OK,-11.15,
+</pre>
+      </p>
+      <p>Columns of type "Numeric" i.e. decimal numbers use scientist standard by default - dot is decimal separator without decimal group separator, e.g. number "12654865.45".
+        If your file has decimal numbers in different standard, then you should set format in "Data format" field according this pattern:
+<pre style="white-space: pre-wrap;">
+[decimal-separator],[decimal-group-separator]
+</pre>
+There are three special words for separator value:
+<ul>
+  <li>SPACE</li>
+  <li>COMMA</li>
+  <li>NONE</li>
+</ul>
+Examples:
+<pre style="white-space: pre-wrap;">
+.,NONE is default format, e.g. "112523.24",  it's analog of empty value
+
+COMMA,-  e.g. "112-523,24"
+
+COMMA,SPACE is European standard e.g. "112 523,24"
+
+COMMA,NONE e.g. "112523,24"
+</pre>
+*in cases that use COMMA decimal separator it should be either other than comma column separator or number should be braced with text separator e.g. quoted
+      </p>
+      <p>
+        Then Bob added Bank CSV method:
+        <p align="center"><img style="max-width: 100%" src="images/acc-bank-csv2.png" /></p>
+        here fields mean:
+        <ul>
+          <li>CSV method, required</li>
+          <li>Date column from chosen method, required</li>
+          <li>Amount column from chosen method, required</li>
+          <li>Description column from chosen method, optional</li>
+          <li>Status column from chosen method, optional, if you want (and CSV has this information) to cancel already created records</li>
+          <li>Voided words - comma separated words from status column that mean that record was voided, optional, if you want (and CSV has this information) to cancel already created records, here word "VOIDED" in the file means canceling</li>
+          <li>Accepted words - comma separated words from status column that mean that record wasn't accepted, optional, here is empty</li>
+        </ul>
+        *If you do not need to reverse (cancel) voided records, then column "Status" should be empty, and so does column "Voided words"
+      </p>
+      <p>
+        Then Bob created new Bank Statement:
+        <p align="center"><img style="max-width: 100%" src="images/acc-bank-csv3.png" /></p>
+      </p>
+      <p>
+        Then Bob pressed "Add reversing" in line#1 for reversing prepayment#1-2 cause wrong check:
+        <p align="center"><img style="max-width: 100%" src="images/acc-bank-csv4.png" /></p>
+      </p>
+      <p>
+        For entry#2 Bob created accounting entry that reports ordinal business expenses "bank fees":
+        <p align="center"><img style="max-width: 100%" src="images/acc-bank-csv5.png" /></p>
+      </p>
+      <p>
+        For entry#3 Bob reported "found matching payment#1-3":
+        <p align="center"><img style="max-width: 100%" src="images/acc-bank-csv6.png" /></p>
+      </p>
+      <p>
+        For entry#4 Bob created new prepayment:
+        <p align="center"><img style="max-width: 100%" src="images/acc-bank-csv7.png" /></p>
+      </p>
+      <p>
+        Finally, Bob created new payment for entry#5:
+        <p align="center"><img style="max-width: 100%" src="images/acc-bank-csv8.png" /></p>
+      </p>
+      <p>
+        Finally, Bob created new payment for entry#5:
+        <p align="center"><img style="max-width: 100%" src="images/acc-bank-csv8.png" /></p>
+      </p>
+      <p>
+        Bank statement report is:
+        <p align="center"><img style="max-width: 100%" src="images/acc-bank-csv9.png" /></p>
+      </p>
+      <p>
+        Accounting records on Jan 25 are:
+        <p align="center"><img style="max-width: 100%" src="images/acc-bank-csv10.png" /></p>
+      </p>
+    </section>
+
+  </body>
+
+</document>

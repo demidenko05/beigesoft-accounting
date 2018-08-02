@@ -25,7 +25,6 @@ import org.beigesoft.exception.ExceptionWithCode;
 import org.beigesoft.model.IRequestData;
 import org.beigesoft.service.IEntityProcessor;
 import org.beigesoft.service.ISrvOrm;
-import org.beigesoft.accounting.model.EBankEntryStatus;
 import org.beigesoft.accounting.persistable.BankStatementLine;
 import org.beigesoft.accounting.persistable.PaymentFrom;
 import org.beigesoft.accounting.persistable.PrepaymentFrom;
@@ -88,15 +87,9 @@ public class PrcBankStatementLineGfe<RS>
         "amount_is_zero");
     }
     long[] startEnd = evalDayStartEndFor(bsl.getItsDate());
-    String whereReversed;
-    if (EBankEntryStatus.VOIDED.equals(bsl.getItsStatus())) {
-      whereReversed = "";
-    } else {
-      whereReversed = " and REVERSEDID is null";
-    }
     String dWhere =
-      "where HASMADEACCENTRIES=1 and ITSTOTAL="
-        + amountStr + whereReversed + " and ITSDATE >= " + startEnd[0]
+      "where HASMADEACCENTRIES=1 and REVERSEDID is null and ITSTOTAL="
+        + amountStr + " and ITSDATE >= " + startEnd[0]
           + " and ITSDATE <= " + startEnd[1];
     Set<String> ndFlDoc = new HashSet<String>();
     ndFlDoc.add("itsId");
@@ -120,11 +113,10 @@ public class PrcBankStatementLineGfe<RS>
       if (paymentsFrom.size() > 0) {
         pRequestData.setAttribute("payments", paymentsFrom);
       }
-      String eWhereD =
-        "where SOURCETYPE=3 and SUBACCDEBITTYPE=2002 and SUBACCDEBITID="
-          + bsl.getItsOwner().getBankAccount().getItsId() + whereReversed
-            + " and DEBIT=" + amountStr + " and ITSDATE >= " + startEnd[0]
-              + " and ITSDATE <= " + startEnd[1];
+      String eWhereD = "where REVERSEDID is null and SOURCETYPE in (3,1010)"
+    + " and SUBACCDEBITTYPE=2002 and SUBACCDEBITID=" + bsl.getItsOwner()
+  .getBankAccount().getItsId() + " and DEBIT=" + amountStr + " and ITSDATE >= "
++ startEnd[0] + " and ITSDATE <= " + startEnd[1];
       List<AccountingEntry> entriesFrom = getSrvOrm()
         .retrieveListWithConditions(pReqVars, AccountingEntry.class, eWhereD);
       if (entriesFrom.size() > 0) {
@@ -146,11 +138,10 @@ public class PrcBankStatementLineGfe<RS>
       if (paymentsTo.size() > 0) {
         pRequestData.setAttribute("payments", paymentsTo);
       }
-      String eWhereC =
-        "where SOURCETYPE=3 and SUBACCCREDITTYPE=2002 and SUBACCCREDITID="
-          + bsl.getItsOwner().getBankAccount().getItsId() + whereReversed
-            + " and CREDIT=" + amountStr + " and ITSDATE >= " + startEnd[0]
-              + " and ITSDATE <= " + startEnd[1];
+      String eWhereC = "where REVERSEDID is null and SOURCETYPE in (3,1010)"
+    + " and SUBACCCREDITTYPE=2002 and SUBACCCREDITID=" + bsl.getItsOwner()
+  .getBankAccount().getItsId() + " and CREDIT=" + amountStr + " and ITSDATE >= "
++ startEnd[0] + " and ITSDATE <= " + startEnd[1];
       List<AccountingEntry> entriesTo = getSrvOrm()
         .retrieveListWithConditions(pReqVars, AccountingEntry.class, eWhereC);
       if (entriesTo.size() > 0) {
