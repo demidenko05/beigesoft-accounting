@@ -148,7 +148,7 @@ public class PrcBankStatementLineSave<RS>
             }
           } else {
             throw new ExceptionWithCode(ExceptionWithCode.WRONG_PARAMETER,
-              "you_have_to_complete_data");
+              "wrong_paramaters");
           }
         }
       }
@@ -197,7 +197,7 @@ public class PrcBankStatementLineSave<RS>
       itsDate = this.dateTimeNoTzFormatIso8601.parse(itsDateStr);
     } catch (Exception e) {
       throw new ExceptionWithCode(ExceptionWithCode.WRONG_PARAMETER,
-        "you_have_to_complete_data", e);
+        "wrong_paramaters", e);
     }
     EBankEntryResultType resultRecordType = null;
     EBankEntryResultAction resultAction = EBankEntryResultAction.CREATE;
@@ -215,7 +215,7 @@ public class PrcBankStatementLineSave<RS>
         }
       } catch (Exception e) {
         throw new ExceptionWithCode(ExceptionWithCode.WRONG_PARAMETER,
-          "you_have_to_complete_data", e);
+          "wrong_paramaters", e);
       }
       resultRecordType = EBankEntryResultType.PREPAYMENTFROM;
       PaymentFrom pay = new PaymentFrom();
@@ -249,7 +249,7 @@ public class PrcBankStatementLineSave<RS>
         }
       } catch (Exception e) {
         throw new ExceptionWithCode(ExceptionWithCode.WRONG_PARAMETER,
-          "you_have_to_complete_data", e);
+          "wrong_paramaters", e);
       }
       resultRecordType = EBankEntryResultType.PREPAYMENTTO;
       PaymentTo pay = new PaymentTo();
@@ -325,7 +325,7 @@ public class PrcBankStatementLineSave<RS>
       itsDate = this.dateTimeNoTzFormatIso8601.parse(itsDateStr);
     } catch (Exception e) {
       throw new ExceptionWithCode(ExceptionWithCode.WRONG_PARAMETER,
-        "you_have_to_complete_data", e);
+        "wrong_paramaters", e);
     }
     EBankEntryResultType resultRecordType = null;
     EBankEntryResultAction resultAction = EBankEntryResultAction.CREATE;
@@ -419,7 +419,7 @@ public class PrcBankStatementLineSave<RS>
       itsDate = this.dateTimeNoTzFormatIso8601.parse(itsDateStr);
     } catch (Exception e) {
       throw new ExceptionWithCode(ExceptionWithCode.WRONG_PARAMETER,
-        "you_have_to_complete_data", e);
+        "wrong_paramaters", e);
     }
     EBankEntryResultType resultRecordType = EBankEntryResultType.ACC_ENTRY;
     EBankEntryResultAction resultAction = EBankEntryResultAction.CREATE;

@@ -146,6 +146,57 @@ then it means that check#123 for 123.45 was canceled, so application should try 
         Only action per line is allowed. If user made mistake, then it should fix it "by hand", i.e. add adjusting accounting entry, etc.
       </p>
 
+      <h4>Export goods/services list to POS</h4>
+      <p>In theory, CSV price list should contains:
+        <ul>
+          <li><b>required data:</b></li>
+          <li>goods/service name</li>
+          <li>goods/service ID (code)</li>
+          <li>price (of course)</li>
+          <li>tax method - describes which taxes applies and how, is it included into price</li>
+          <li><b>optional data:</b></li>
+          <li>is it service</li>
+          <li>unit of measure</li>
+          <li>its category name and ID, e.g. "chocolate bars"/201</li>
+          <li>price method - describes discount, etc. e.g. 15% off at the mornings...</li>
+          <li>barcode</li>
+          <li>picture file name</li>
+          <li>available quantity - to prevent selling more than given number, it may be 0 to stop selling this goods.</li>
+        </ul>
+      </p>
+      <p>In real life POS wants other data, but most of them are usually optional:
+        <ul>
+          <li>is available</li>
+          <li>cost</li>
+          <li>supplier</li>
+          <li>location</li>
+          <li>etc</li>
+        </ul>
+      </p>
+      <p>
+        There are also numerous means to pass tax and price methods:
+        <li>
+          <li>several fields - tax rate, is included in price, etc</li>
+          <li>several fields - tax name, tax rate</li>
+          <li>several fields - tax name1, tax rate1, tax name2, tax rate2, etc</li>
+          <li>only field - aggregate tax rate</li>
+          <li>several fields - etc</li>
+          <li>only field - discount</li>
+          <li>only field - ID of tax method</li>
+          <li>only field - ID of price method</li>
+        </li>
+      </p>
+      <p>Tax method - on item or on invoice basis is settled in POS for all goods.</p>
+      <p>Shop in downtown use different prices than shop in suburb. In other hand online and retail prices usually different.
+        Beigesoft Webstore (it's actually trading system) has persistable models:
+        <ul>
+          <li>PriceCategoryOfItems - name (e.g. retail shop#1), description</li>
+          <li>PriceCategoryOfBuyers - name, description</li>
+          <li>PriceCategory - name (e.g. retail shop#1), item price category (required), buyer price category (optional), is retail only (to prevent use it in online WEB-Store)</li>
+          <li>PriceGoods - goods, price category (e.g. retail shop#1), price</li>
+        </ul>
+      </p>
+
     </section>
 
   </body>

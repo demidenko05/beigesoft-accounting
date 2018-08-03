@@ -12,11 +12,13 @@
     <!-- The body of the document contains a number of sections -->
     <section name="Beigesoft™ Accounting specification version #2">
       
-      <h5>Detailed specifications:</h5>
-      <p>
-        <a href="specification-acc-sales-tax.html">Beigesoft™ Accounting. Sales tax specification.</a>
-      </p>
+      <h4>Detailed specifications:</h4>
       
+      <h5><a href="specification-acc-sales-tax.html">Beigesoft™ Accounting. Sales tax specification.</a></h5>
+      <h5><a href="specification-acc-csv.html">Beigesoft™ Accounting. Export/import data to/from CSV file.</a></h5>
+      
+      <h4>Main specification</h4>
+
       <p>It consist of accounting methods.</p>
       <p>Any method is implemented with a persistable (stored in database) or not models, and business services that makes them.</p>
       <p>Main models:

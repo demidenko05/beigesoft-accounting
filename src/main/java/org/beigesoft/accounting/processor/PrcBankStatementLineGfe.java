@@ -97,6 +97,7 @@ public class PrcBankStatementLineGfe<RS>
     ndFlDoc.add("idBirth");
     ndFlDoc.add("itsTotal");
     ndFlDoc.add("itsDate");
+    ndFlDoc.add("description");
     if (bsl.getItsAmount().compareTo(BigDecimal.ZERO) > 0) {
       //bank account debit
       pReqVars.put("PrepaymentFromneededFields", ndFlDoc);
