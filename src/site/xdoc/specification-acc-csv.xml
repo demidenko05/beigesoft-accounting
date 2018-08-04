@@ -74,6 +74,12 @@
             e.g. quoted - "taxes, penalty and other fees are included"</li>
           <li>dataFormat - String, null default, Column's data format, null default, e.g. "dd/MM/yyyy" for Date,
             "space,comma" for number "123 31,78EUR", "true,false" for Boolean</li>
+          <li><b>rules to write:</b></li>
+          <li>constValue - String, null default, constant for default value for all rows, e.g. "1" for column "isTaxIncludedInPrice"</li>
+          <li>dataIndex - Integer, if used, index of data column, starts from 1.</li>
+          <li>fieldPath - String, if used, comma separated full class name plus fields names trough destination field, e.g.
+            "org.beigesoft.accounting.persistable.InvItem,itsCategory,itsId" to retrieve product.getItsCategory().getItsId() from column with given dataIndex.</li>
+          <li>matchForeign - MatchForeign method, if used.</li>
         </ul>
       </p>
       <p>Basic reading service that reads next line from CSV file ICsvReader, methods:
@@ -81,6 +87,85 @@
           <li>readNextRow(Map&lt;String, Object&gt; pReqVars, pReader Reader, CsvMethod pCsvMethod) - returns List&lt;String&gt; list of String values of all columns from next row, null if no more rows left. May throws an Exception</li>
         </ul>
         This is performance, memory and algorithmically friendly service.
+      </p>
+
+      <h4>Universal CSV writer</h4>
+      <p>Abstraction of retrieving data is table of objects. In simple cases it's list, i.e. row contains only column.
+        For example list of products List&lt;InvItem&gt;, in case of exporting to the same software result file example:
+<pre style="white-space: pre-wrap;">
+defUnitOfMeasure,itsCategory,itsId,itsName,itsType,knownCost,taxCategory
+1,1,1,Chocolate A,1,2.33,1
+1,1,2,Chocolate B,1,,1
+1,2,3,Chocolate C,1,,1
+</pre>
+here is no need to create CsvMethod with CsvColumn list, universal service (writer/reader) do it itself, field list ordered by name, owned entities passed as ID, enums as value index.
+      </p>
+      <p>In case of exporting into another software, other data might be required. Some of these data can be constant, empty (optional).
+      For example "tax is included in price" for price list is usually same for all products, recipient software accept 1 as "included" and 0 as "NOT", so just set property constValue in CsvColumn to used value.</p>
+      <p>So, in case of customized data exporting we have:
+        <li>List&lt;List&lt;Object&gt;&gt; - data table, where Object can be any business data model, e.g. InvItem, DebtorCreditor, BigDecimal, Boolean, String, etc.</li>
+        <li>CsvMethod with CsvColumn list that also handle data that is not present in data table.</li>
+      </p>
+      <p>Example of exporting price list. Required file example:
+<pre style="white-space: pre-wrap;">
+Product,ProductCode,Cost,Markup,Price,TaxPercent,IsTaxIncudedInPrice,Discount,Supplier,Place,Quantity,Category
+Chocolate A,1,1.00,20.00,1.20,3.4,0,0.00,,room1,12,food
+Chocolate B,2,1.00,25.00,1.25,3.4,0,0.00,,room1,11,food
+Beverage A,3,2.00,25.00,2.50,3.4,0,0.00,,room1,11,beverage
+</pre>
+      Retrieved data table columns:
+        <ul>
+          <li>InvItem - product</li>
+          <li>BigDecimal - price</li>
+          <li>BigDecimal - aggregate or only tax rate</li>
+        </ul>
+        We do not want to pass data: cost, markup, supplier, quantity.
+        So, markup is constant 0%, cost is price, supplier is empty, place constant "room a", quantity is constant 777777,
+        IsTaxIncudedInPrice is constant 0, discount is constant 0. Cost is volatile thing and depends of used method (FIFO,etc).
+        Sometimes, price can be less than cost.
+      </p>
+      <p>There are three methods to make other columns:
+        <ul>
+          <li>reveal value from data table by given class and fields names, e.g. Product = InvItem.get("itsName") and ProductCode = InvItem.get("itsId")</li>
+          <li>matching foreign value to value of retrieving field value of given class, e.g. ProductCategoryId = InvItem.get("itsCategory").get("itsId") -> findIn[{1,"food"},{2,"drink"}]</li>
+          <li>reveal value by equation and using data table, e.g. cost=round(price/1.2, 2)</li>
+        </ul>
+      </p>
+      <p>Implementation of "reveal value from data table by given class and fields names" method.
+        CsvColumn has fields "dataIndex" - index of data column, "fieldPath" - comma separated full class name plus fields
+        names trough destination field, e.g.
+        "org.beigesoft.accounting.persistable.InvItem,itsCategory,itsId"
+        to retrieve product.getItsCategory().getItsId() then farther matching to foreign value.
+        Java reflects API do this according given data.
+        JSP view should implements interactively pickup data class and destination field, to make this string automatically.
+      </p>
+      <p>Implementation of "reveal value by equation and using data table" method.
+        This method not yet implemented cause it's useless yet.</p>
+      <p>Implementation of "matching foreign value" method. In simple cases string like "1,food,2,drink" is enough.
+        In case when number of values is huge, e.g. product codes is different in source and destination software, then
+        persistable model MatchForeign is used:
+        <ul>
+          <li>AHasIdLongNameVersion fields</li>
+          <li>className - String, not null, full class name of the entity, e.g. org.beigesoft.accounting.persistable.InvItemCategory</li>
+          <li>fieldName - String, not null, field name to match, e.g. itsId</li>
+          <li>itsLines - List&lt;MatchForeignLine&gt;</li>
+        </ul>
+        persistable model MatchForeignLine:
+        <ul>
+          <li>AHasIdLongVersion fields</li>
+          <li>nativeVal - String, not null, native value</li>
+          <li>foreignVal - String, not null, foreign value</li>
+          <li>nativeValLong - Long, optional, only for ID value in current database to make SQL queries, hidden field</li>
+        </ul>
+        Because of easy "persistable models implementation" by BeigeORM and BeigeWEBCRUD, only it is used. So, CsvColumn has optional field matchForeign. If it's not empty, then this method will be applies.
+        Fields className and fieldName is used to interactively pickup native value. In additional, using nativeValLong to match entities with Long ID allows make SQL queries and retrieve foreign value in data table,
+        so no need additional matching.
+      </p>
+      <p>
+        Universal service that writes CSV file according given data table and CSV method ICsvWriter:
+        <ul>
+          <li>write(Map&lt;String, Object&gt; pReqVars, List&lt;List&lt;?&gt;&gt; pData, CsvMethod csvMethod, String pFilePath)</li>
+        </ul>
       </p>
 
       <h4>Import bank statement. Semi-automatically bank reconciliation.</h4>
@@ -186,7 +271,7 @@ then it means that check#123 for 123.45 was canceled, so application should try 
           <li>only field - ID of price method</li>
         </li>
       </p>
-      <p>Tax method - on item or on invoice basis is settled in POS for all goods.</p>
+      <p>Tax method - on item or on invoice basis is settled in POS for all goods, it's also applies for tax is included in price. If POS demand these data, then add these as constants.</p>
       <p>Shop in downtown use different prices than shop in suburb. In other hand online and retail prices usually different.
         Beigesoft Webstore (it's actually trading system) has persistable models:
         <ul>
