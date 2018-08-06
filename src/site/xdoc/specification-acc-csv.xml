@@ -77,8 +77,8 @@
           <li><b>rules to write:</b></li>
           <li>constValue - String, null default, constant for default value for all rows, e.g. "1" for column "isTaxIncludedInPrice"</li>
           <li>dataIndex - Integer, if used, index of data column, starts from 1.</li>
-          <li>fieldPath - String, if used, comma separated full class name plus fields names trough destination field, e.g.
-            "org.beigesoft.accounting.persistable.InvItem,itsCategory,itsId" to retrieve product.getItsCategory().getItsId() from column with given dataIndex.</li>
+          <li>fieldPath - String, if used, comma separated fields names trough destination field, e.g.
+            "itsCategory,itsId" to retrieve product.getItsCategory().getItsId() from product column with given dataIndex.</li>
           <li>matchForeign - MatchForeign method, if used.</li>
         </ul>
       </p>
@@ -132,9 +132,8 @@ Beverage A,3,2.00,25.00,2.50,3.4,0,0.00,,room1,11,beverage
         </ul>
       </p>
       <p>Implementation of "reveal value from data table by given class and fields names" method.
-        CsvColumn has fields "dataIndex" - index of data column, "fieldPath" - comma separated full class name plus fields
-        names trough destination field, e.g.
-        "org.beigesoft.accounting.persistable.InvItem,itsCategory,itsId"
+        CsvColumn has fields "dataIndex" - index of data column, "fieldPath" - comma separated fields
+        names trough destination field, e.g. "itsCategory,itsId"
         to retrieve product.getItsCategory().getItsId() then farther matching to foreign value.
         Java reflects API do this according given data.
         JSP view should implements interactively pickup data class and destination field, to make this string automatically.
@@ -164,8 +163,60 @@ Beverage A,3,2.00,25.00,2.50,3.4,0,0.00,,room1,11,beverage
       <p>
         Universal service that writes CSV file according given data table and CSV method ICsvWriter:
         <ul>
-          <li>write(Map&lt;String, Object&gt; pReqVars, List&lt;List&lt;?&gt;&gt; pData, CsvMethod csvMethod, String pFilePath)</li>
+          <li>write(Map&lt;String, Object&gt; pReqVars, List&lt;List&lt;Object&gt;&gt; pData, CsvMethod csvMethod, String pFilePath)</li>
         </ul>
+      </p>
+      <p>To make field retrieving interactively and describe which data is present, methods that retrieve table data should return sample data row, e.g:.
+<pre style="white-space: pre-wrap;">
+InvItem
+  itsId
+  itsName
+  defaultUom
+    itsId
+    itsName
+  itsCategory
+    itsId
+    itsName
+Price
+Cost
+Quantity
+IsAvailable
+WarehouseSite
+  itsId
+  itsName
+  Warehouse
+    itsId
+    itsName
+TaxWr tax1
+  tax
+  rate
+TaxWr tax2
+  tax
+  rate
+TaxWr tax3
+  tax
+  rate
+TaxCategoryWr tax1,tax2
+  taxCategory
+  aggrPercent
+  aggrRate
+TaxCategoryWr tax2,tax3
+  taxCategory
+  aggrPercent
+  aggrRate
+</pre>
+To pickup data column (index) only first level (non-tree) will be listed.
+To select field path all tree will be listed, user can select any sub-level field.
+Service that retrieves requested data ICsvDataRetriever has two methods:
+      <ul>
+        <li>List&lt;List&lt;Object&gt;&gt; retrieveData(Map&lt;String, Object&gt; pReqVars)</li>
+        <li>List&lt;Node&gt; getSampleDataRow(Map&lt;String, Object&gt; pReqVars)</li>
+      </ul>
+      where Node:
+      <ul>
+        <li>itsName - column name or owned field name</li>
+        <li>List&lt;Node&gt;</li>
+      </ul>
       </p>
 
       <h4>Import bank statement. Semi-automatically bank reconciliation.</h4>
@@ -264,6 +315,8 @@ then it means that check#123 for 123.45 was canceled, so application should try 
           <li>several fields - tax rate, is included in price, etc</li>
           <li>several fields - tax name, tax rate</li>
           <li>several fields - tax name1, tax rate1, tax name2, tax rate2, etc</li>
+          <li>several fields - tax rate1, tax rate2, tax rate2, e.g. "3.4,0,1.2" and "3.4,2.3,1.2"</li>
+          <li>several fields - has tax1, has tax2, e.g. "true,false,true" and "true,true,true" </li>
           <li>only field - aggregate tax rate</li>
           <li>several fields - etc</li>
           <li>only field - discount</li>
@@ -277,10 +330,84 @@ then it means that check#123 for 123.45 was canceled, so application should try 
         <ul>
           <li>PriceCategoryOfItems - name (e.g. retail shop#1), description</li>
           <li>PriceCategoryOfBuyers - name, description</li>
-          <li>PriceCategory - name (e.g. retail shop#1), item price category (required), buyer price category (optional), is retail only (to prevent use it in online WEB-Store)</li>
+          <li>PriceCategory - name (e.g. retail shop#1), item price category (required), buyer price category (optional, no need for retail price), is retail only (to prevent use it in online WEB-Store)</li>
           <li>PriceGoods - goods, price category (e.g. retail shop#1), price</li>
+          <li>ServicePrice - service, price category (e.g. retail shop#1), price</li>
         </ul>
       </p>
+      <p>Implementation of "available quantity". If product has PriceGoods, then it will be included in price list.
+        If it's need to prevent goods to be listed in POS terminal (in search page), then use "unavailable price method".
+        That is PriceGoods should has "unavailable price value", e.g. "99999.99".
+        Database table WarehowseRests has available quantity information.
+        Some products might not present in warehouse when price list is send to POS, so user can set "pessimistic available quantity" to set available quantity for such products.
+        If product marked with "unavailable price", then available quantity will be 0 any way.
+        If "pessimistic available quantity" is 0, then products that not present in warehouse will has 0 quantity and "false" isAvailable column.
+      </p>
+      <p>To prevent complexness and possible problems, price list for goods and services are always separated.</p>
+      <p>Final row data model of goods price list:
+      <ul>
+        <li>Item - InvItem itsTaxCategory has retrieved tax lines</li>
+        <li>Price - BigDecimal</li>
+        <li>Cost - BigDecimal, fake cost=price/1.2</li>
+        <li>Quantity - BigDecimal, available quantity, 0 and more</li>
+        <li>IsAvailable - Boolean</li>
+        <li>place - WarehousePlace, may be empty</li>
+        <li><b>all used taxes ordered by ID:</b></li>
+        <li>TaxWr - tax1</li>
+        <li>TaxWr - tax2</li>
+        <li>...</li>
+        <li><b>all used taxes category ordered by ID:</b></li>
+        <li>TaxCategoryWr - tax cat1</li>
+        <li>TaxCategoryWr - tax cat2</li>
+        <li>...</li>
+      </ul>
+      </p>
+      <p>Final row data model of service price list:
+      <ul>
+        <li>Service - ServiceToSale, itsTaxCategory has retrieved tax lines</li>
+        <li>Price- BigDecimal</li>
+        <li>Cost - BigDecimal, fake cost=price/1.2</li>
+        <li>Quantity - BigDecimal, available quantity, is 1 or 0 for unavailable price</li>
+        <li>IsAvailable - Boolean</li>
+        <li><b>all used taxes ordered by ID:</b></li>
+        <li>TaxWr - tax1</li>
+        <li>TaxWr - tax2</li>
+        <li>...</li>
+        <li><b>all used taxes category ordered by ID:</b></li>
+        <li>TaxCategoryWr - tax cat1</li>
+        <li>TaxCategoryWr - tax cat2</li>
+        <li>...</li>
+      </ul>
+      </p>
+      <p>There are unpersistable models to pass values that might be required by POS:
+        <ul>TaxWr:
+          <li>tax -Tax, if non-used in current item then itsPercentage is zero</li>
+          <li>isUsed - Boolean, if used for current item</li>
+          <li>rate - BigDecimal, rate = 1 + itsPercentage/100, e.g. 1.2 for 20%</li>
+        </ul>
+        <ul>TaxCategoryWr:
+          <li>taxCategory - InvItemTaxCategory - tax category</li>
+          <li>isUsed - Boolean, if used for current item</li>
+          <li>aggrPercent - BigDecimal, aggregate tax percent if used in current item, otherwise is zero</li>
+          <li>aggrRate - BigDecimal, aggrRate = 1 + aggrPercent/100, e.g. 1.2 for 20%</li>
+        </ul>
+      </p>
+      <p>Final form to make goods price list:
+        <ul>
+          <li>CsvMetod list to select</li>
+          <li>PriceCategory list to select</li>
+          <li>Pessimistic quantity - zero default</li>
+          <li>UnavailablePrice, empty means do not use</li>
+        </ul>
+      </p>
+      <p>Final form to make service price list:
+        <ul>
+          <li>CsvMetod list to select</li>
+          <li>PriceCategory list to select</li>
+          <li>UnavailablePrice, empty means do not use</li>
+        </ul>
+      </p>
+      <p>Price category name and current date (ddMMyy) will be used for CSV file name, e.g. GoodsPriceRetailShopA_010118.csv, where "RetailShopA" is price category name.</p>
 
     </section>
 
