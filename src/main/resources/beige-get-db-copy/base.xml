@@ -17,6 +17,8 @@
   org.beigesoft.persistable.DecimalSeparator,
   org.beigesoft.persistable.DecimalGroupSeparator,
   org.beigesoft.persistable.LangPreferences,
+  org.beigesoft.persistable.MatchForeign,
+  org.beigesoft.persistable.MatchForeignLine,
   org.beigesoft.persistable.CsvMethod,
   org.beigesoft.persistable.CsvColumn,
   org.beigesoft.accounting.persistable.Expense,

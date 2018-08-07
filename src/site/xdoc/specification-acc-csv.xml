@@ -75,6 +75,7 @@
           <li>dataFormat - String, null default, Column's data format, null default, e.g. "dd/MM/yyyy" for Date,
             "space,comma" for number "123 31,78EUR", "true,false" for Boolean</li>
           <li><b>rules to write:</b></li>
+          <li>retrieverName - String, null default, name to get ICsvDataRetriever</li>
           <li>constValue - String, null default, constant for default value for all rows, e.g. "1" for column "isTaxIncludedInPrice"</li>
           <li>dataIndex - Integer, if used, index of data column, starts from 1.</li>
           <li>fieldPath - String, if used, comma separated fields names trough destination field, e.g.
@@ -189,24 +190,38 @@ WarehouseSite
     itsName
 TaxWr tax1
   tax
+    itsId
+    itsName
+    itsPercentage
   rate
+  isUsed
 TaxWr tax2
   tax
+    itsId
+    itsName
+    itsPercentage
   rate
+  isUsed
 TaxWr tax3
   tax
   rate
+  isUsed
 TaxCategoryWr tax1,tax2
   taxCategory
+    itsId
+    itsName
   aggrPercent
   aggrRate
+  isUsed
 TaxCategoryWr tax2,tax3
   taxCategory
+    itsId
+    itsName
   aggrPercent
   aggrRate
+  isUsed
 </pre>
-To pickup data column (index) only first level (non-tree) will be listed.
-To select field path all tree will be listed, user can select any sub-level field.
+This tree will be listed to pickup both only column index (first level selected) and additionally field path (sub-level node selected)
 Service that retrieves requested data ICsvDataRetriever has two methods:
       <ul>
         <li>List&lt;List&lt;Object&gt;&gt; retrieveData(Map&lt;String, Object&gt; pReqVars)</li>
@@ -214,7 +229,8 @@ Service that retrieves requested data ICsvDataRetriever has two methods:
       </ul>
       where Node:
       <ul>
-        <li>itsName - column name or owned field name</li>
+        <li>itsName - String, column name or owned field name</li>
+        <li>itsValue - String, for columns it's index, for owned fields: [column_index];[comma_separated_field_path] </li>
         <li>List&lt;Node&gt;</li>
       </ul>
       </p>
@@ -339,19 +355,21 @@ then it means that check#123 for 123.45 was canceled, so application should try 
         If it's need to prevent goods to be listed in POS terminal (in search page), then use "unavailable price method".
         That is PriceGoods should has "unavailable price value", e.g. "99999.99".
         Database table WarehowseRests has available quantity information.
-        Some products might not present in warehouse when price list is send to POS, so user can set "pessimistic available quantity" to set available quantity for such products.
+        Some products might not present in warehouse when price list is send to POS, so user can set "optimistic available quantity" to set available quantity for such products.
         If product marked with "unavailable price", then available quantity will be 0 any way.
         If "pessimistic available quantity" is 0, then products that not present in warehouse will has 0 quantity and "false" isAvailable column.
       </p>
       <p>To prevent complexness and possible problems, price list for goods and services are always separated.</p>
-      <p>Final row data model of goods price list:
+      <p>Final row data model of goods price list by GoodsPriceListRetriever:
       <ul>
         <li>Item - InvItem itsTaxCategory has retrieved tax lines</li>
         <li>Price - BigDecimal</li>
         <li>Cost - BigDecimal, fake cost=price/1.2</li>
         <li>Quantity - BigDecimal, available quantity, 0 and more</li>
         <li>IsAvailable - Boolean</li>
-        <li>place - WarehousePlace, may be empty</li>
+        <li>place - WarehouseSite, may be empty</li>
+        <li>TaxWr - only tax, itsPercentage is zero for non-taxable items</li>
+        <li>TaxCategoryWr - tax category, aggPercent and tax.itsPercentage is zero for non-taxable items</li>
         <li><b>all used taxes ordered by ID:</b></li>
         <li>TaxWr - tax1</li>
         <li>TaxWr - tax2</li>
@@ -362,13 +380,15 @@ then it means that check#123 for 123.45 was canceled, so application should try 
         <li>...</li>
       </ul>
       </p>
-      <p>Final row data model of service price list:
+      <p>Final row data model of service price list by ServicePriceListRetriever:
       <ul>
         <li>Service - ServiceToSale, itsTaxCategory has retrieved tax lines</li>
         <li>Price- BigDecimal</li>
         <li>Cost - BigDecimal, fake cost=price/1.2</li>
         <li>Quantity - BigDecimal, available quantity, is 1 or 0 for unavailable price</li>
         <li>IsAvailable - Boolean</li>
+        <li>TaxWr - only tax, itsPercentage is zero for non-taxable items</li>
+        <li>TaxCategoryWr - tax category, aggPercent and tax.itsPercentage is zero for non-taxable items</li>
         <li><b>all used taxes ordered by ID:</b></li>
         <li>TaxWr - tax1</li>
         <li>TaxWr - tax2</li>
@@ -396,7 +416,7 @@ then it means that check#123 for 123.45 was canceled, so application should try 
         <ul>
           <li>CsvMetod list to select</li>
           <li>PriceCategory list to select</li>
-          <li>Pessimistic quantity - zero default</li>
+          <li>Optimistic quantity - zero default</li>
           <li>UnavailablePrice, empty means do not use</li>
         </ul>
       </p>
