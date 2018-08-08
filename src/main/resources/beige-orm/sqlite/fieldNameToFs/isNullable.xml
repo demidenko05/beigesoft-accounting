@@ -75,7 +75,6 @@
 <entry key="resultAction">true</entry>
 <entry key="matchForeign">true</entry>
 <entry key="className">false</entry>
-<entry key="fieldName">false</entry>
 <entry key="nativeVal">false</entry>
 <entry key="foreignVal">false</entry>
 </properties>
