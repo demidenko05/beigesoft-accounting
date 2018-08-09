@@ -59,6 +59,7 @@
           <li>charsetName, String, not null, Charset encoding name, "UTF-8" default.</li>
           <li>columnSep, String[5], not null, Column separator, comma default.</li>
           <li>hasHeader, Boolean, not null, if the first row contains of columns names, false default.</li>
+          <li>retrieverName - String, null default, name to get ICsvDataRetriever</li>
           <li>columns - List(CsvColumn), Csv Columns all or useful to read</li>
         </ul>
       </p>
@@ -75,7 +76,6 @@
           <li>dataFormat - String, null default, Column's data format, null default, e.g. "dd/MM/yyyy" for Date,
             "space,comma" for number "123 31,78EUR", "true,false" for Boolean</li>
           <li><b>rules to write:</b></li>
-          <li>retrieverName - String, null default, name to get ICsvDataRetriever</li>
           <li>constValue - String, null default, constant for default value for all rows, e.g. "1" for column "isTaxIncludedInPrice"</li>
           <li>dataIndex - Integer, if used, index of data column, starts from 1.</li>
           <li>fieldPath - String, if used, comma separated fields names trough destination field, e.g.
@@ -163,9 +163,9 @@ Beverage A,3,2.00,25.00,2.50,3.4,0,0.00,,room1,11,beverage
         so no need additional matching.
       </p>
       <p>
-        Universal service that writes CSV file according given data table and CSV method ICsvWriter:
+        Universal service that writes CSV data into given stream (servlet or file) according given data table and CSV method ICsvWriter:
         <ul>
-          <li>write(Map&lt;String, Object&gt; pReqVars, List&lt;List&lt;Object&gt;&gt; pData, CsvMethod csvMethod, String pFilePath)</li>
+          <li>write(Map&lt;String, Object&gt; pReqVars, List&lt;List&lt;Object&gt;&gt; pData, CsvMethod csvMethod, OutputStream pOus)</li>
         </ul>
       </p>
       <p>To make field retrieving interactively and describe which data is present, methods that retrieve table data should return sample data row, e.g:.

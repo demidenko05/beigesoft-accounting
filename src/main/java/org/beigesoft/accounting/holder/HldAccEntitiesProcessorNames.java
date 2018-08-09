@@ -17,6 +17,7 @@ import java.util.HashMap;
 
 import org.beigesoft.persistable.IPersistableBase;
 import org.beigesoft.persistable.EmailMsg;
+import org.beigesoft.persistable.CsvColumn;
 import org.beigesoft.holder.IHolderForClassByName;
 import org.beigesoft.orm.processor.PrcEntityFfolDelete;
 import org.beigesoft.orm.processor.PrcEntityFfolSave;
@@ -27,6 +28,7 @@ import org.beigesoft.orm.processor.PrcEntityDelete;
 import org.beigesoft.orm.processor.PrcEntityFolDelete;
 import org.beigesoft.orm.processor.PrcEntityPbDelete;
 import org.beigesoft.orm.processor.PrcEntityCreate;
+import org.beigesoft.orm.processor.PrcCsvColumnCreate;
 import org.beigesoft.orm.processor.PrcEntityFolSave;
 import org.beigesoft.orm.processor.PrcEntityPbCopy;
 import org.beigesoft.orm.processor.PrcEntitySave;
@@ -620,6 +622,8 @@ public class HldAccEntitiesProcessorNames
       return PrcSubaccountLineCreate.class.getSimpleName();
     } else if (pClass == AccountingEntry.class) {
       return PrcAccEntryCreate.class.getSimpleName();
+    } else if (pClass == CsvColumn.class) {
+      return PrcCsvColumnCreate.class.getSimpleName();
     } else {
       if (this.hldAddEntitiesProcessorNames != null) {
         String name = this.hldAddEntitiesProcessorNames
