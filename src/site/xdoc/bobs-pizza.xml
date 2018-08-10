@@ -99,6 +99,9 @@
       <h5>
         <a href="acc-bank-csv.html">Import bank statement from CSV file, semi-automatically bank reconciliation.</a>
       </h5>
+      <h5>
+        <a href="acc-price-list.html">Export price list into CSV file.</a>
+      </h5>
 
       <h5>
         * Sample databases <b>bobs-pizza-tax-new.sqlite (from scratch)</b>, <b>bobs-pizza-market-new.sqlite</b> and <b>bobs-pizza-nfs-new.sqlite (not from scratch)</b> you can download from <a href="https://sourceforge.net/projects/beige-accounting/">https://sourceforge.net/projects/beige-accounting/</a>

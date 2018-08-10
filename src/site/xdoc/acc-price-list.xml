@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document xmlns="http://maven.apache.org/XDOC/2.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
+
+  <properties>
+    <title>Beigesoft™ Accounting.</title>
+   </properties>
+
+  <body>
+
+    <section name="Export price list into CSV file.">
+      
+      <p>Keywords: export price list into CSV file.</p>
+
+      <p>* New features described in this article available in version 1.1.7 (in source code right now).</p>
+      
+      <h4>Export price list into CSV file.</h4>
+      <p>Right now Beigesoft™ Accounting has implemented only method "item price for price category", i.e. "product1[price for shop in downtown]=12.34".
+        Price methods that based on "base price" are not yet implemented. Price list is available in "Web-Store" part.
+      </p>
+      <p>The aim of this topic is exporting product list into a POS. You can also make price CSV lists for your customers (B2B).</p>
+      <p>There is no standard of product list data in CSV file for POS. For example, different POS require different tax formats, e.g. multi-tax TAX5% and TAX6%,
+        product1(TAX5%,TAX6%), product2(TAX5%), product3(non-taxable) (aggregate rate is not allowed):
+        <ul>
+          <li>POS1 required:
+<pre style="white-space: pre-wrap;">
+Product,ProductCode,Price,TaxMethod
+product1,1,12.4,TAXMETH1
+product2,2,11.41,TAXMETH2
+product3,2,4.6,
+</pre>
+          </li>
+          <li>POS2 required:
+<pre style="white-space: pre-wrap;">
+Product,ProductCode,Price,UseTax5%,UseTax6%
+product1,1,12.4,true,true
+product2,2,11.41,true,false
+product3,2,4.6,false,false
+</pre>
+          </li>
+          <li>POS3 required:
+<pre style="white-space: pre-wrap;">
+Product,ProductCode,Price,Tax5%,Tax6%
+product1,1,12.4,5,6
+product2,2,11.41,5,0
+product3,2,4.6,0,0
+</pre>
+          </li>
+          <li>there are else similar formats</li>
+        </ul>
+      </p>
+      <p>Beigesoft™ Accounting allows to make CSV file for numerous of demanded requirements. You can make any separated product or service price list.</p>
+      
+      <h4>Example of exporting price list into CSV file.</h4>
+      <p>Assume we have three sales taxes: 	STG4.7%, STG6.4%, STS11%. POS wants CSV file like this:
+<pre style="white-space: pre-wrap;">
+Product,ProductCode,Cost,Markup,Price,Tax,IsTaxIncudedInPrice,Discount,Supplier,Place,Quantity,Category,Variant,isService
+product1,1,1.00,20.00,1.20,11.1,0,0.00,,room1,12,food,regular,0
+product2,2,1.00,25.00,1.25,4.7,0,0.00,,room1,11,food,large,0
+product3,3,2.00,25.00,2.50,0,0,0.00,,room1,11,drink,regular,0
+</pre>
+where tax means aggregate tax rate (percent).
+      </p>
+      <p>
+        At first, add CsvMethod with data retriever "Product price list":
+        <p align="center"><img style="max-width: 100%" src="images/price-list-csv1.png" /></p>
+      </p>
+      <p>
+        The first column is "Product" name, just pick "product->name" in "data path picker":
+        <p align="center"><img style="max-width: 100%" src="images/price-list-csv2.png" /></p>
+        Second column is done in same way (pick product->ID).
+      </p>
+      <p>We do not want to pass data: cost, markup, supplier. Supplier is empty,
+        place is constant "room a", IsTaxIncudedInPrice is constant 0, discount is constant 0, markup is constant 20.
+        Cost is volatile thing and depends of used method (FIFO,etc). Sometimes, price can be less than cost.
+        Data retriever always makes fake cost=price/1.2, so just pick "cost" in the picker. You can make any constant
+        by putting its value to "constant" field.
+        <p align="center"><img style="max-width: 100%" src="images/price-list-csv.png" /></p>
+        leave empty "constant" and "data path" to pass column's empty value (e.g. for supplier).
+      </p>
+      <p>
+        Any product in beige-accounting can has only category (1-level category),
+        e.g. here product1 has category "Food regular", product2 - "Food large", product3 - "Drink large".
+        To make columns Category and Variant we will use product category ID and "Match Foreign" methods:
+        <p align="center"><img style="max-width: 100%" src="images/price-list-csv.png" /></p>
+      </p>
+      <p>
+        To add any product in price list you should add "Price category", e.g. "price for shop in downtown":
+        <p align="center"><img style="max-width: 100%" src="images/price-list-csv.png" /></p>
+        then "Good price":
+        <p align="center"><img style="max-width: 100%" src="images/price-list-csv.png" /></p>
+        if you want to list unavailable product in the list, then set "special unavailable price",
+        e.g. "999999".
+      </p>
+      <p>
+        Finally, to make CSV file open in menu "Pricing-Price list", select CSV Method and "Price category", then press "Report":
+        <p align="center"><img style="max-width: 100%" src="images/price-list-csv.png" /></p>
+        *set "optimistic quantity" any number, e.g. 20, to set quantity and "isAvailable" for products that
+        are not exist in warehouse. Set "Unavailable price" to make unavailable products that you want (i.e. their goods price = UP).
+      </p>
+      <h4>Troubleshooting.</h4>
+      <p>Some software may require excessive non-standard things. For example passing price with currency code, e.g. "125.67USD", or decimal number with exactly 1 decimal place i.e. it can't handle value "12.10".
+        Using excessive non-standard things is really not good feature. Any program language accepts decimal numbers "1" or "1.0" or "1.00" as 1.00.
+      </p>
+    </section>
+
+  </body>
+
+</document>
