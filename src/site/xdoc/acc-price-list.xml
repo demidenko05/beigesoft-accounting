@@ -13,7 +13,7 @@
       
       <p>Keywords: export price list into CSV file.</p>
 
-      <p>* New features described in this article available in version 1.1.7 (in source code right now).</p>
+      <p>* New features described in this article are available since version 1.1.7 (only in source code right now).</p>
       
       <h4>Export price list into CSV file.</h4>
       <p>Right now Beigesoft™ Accounting has implemented only method "item price for price category", i.e. "product1[price for shop in downtown]=12.34".
@@ -50,58 +50,99 @@ product3,2,4.6,0,0
           <li>there are else similar formats</li>
         </ul>
       </p>
-      <p>Beigesoft™ Accounting allows to make CSV file for numerous of demanded requirements. You can make any separated product or service price list.</p>
+      <p>Beigesoft™ Accounting allows to make CSV file for numerous of demanded requirements. You can make any separated products or services price list.</p>
       
       <h4>Example of exporting price list into CSV file.</h4>
       <p>Assume we have three sales taxes: 	STG4.7%, STG6.4%, STS11%. POS wants CSV file like this:
 <pre style="white-space: pre-wrap;">
-Product,ProductCode,Cost,Markup,Price,Tax,IsTaxIncudedInPrice,Discount,Supplier,Place,Quantity,Category,Variant,isService
-product1,1,1.00,20.00,1.20,11.1,0,0.00,,room1,12,food,regular,0
-product2,2,1.00,25.00,1.25,4.7,0,0.00,,room1,11,food,large,0
-product3,3,2.00,25.00,2.50,0,0,0.00,,room1,11,drink,regular,0
+Product,ProductCode,Cost,Markup,Price,Tax,IsTaxIncudedInPrice,Discount,Supplier,Place,Quantity,Category,Variant,isService,isAvailable
+product1,1,1.00,20.00,1.20,11.1,0,0.00,,room1,12,food,regular,0,1
+product2,2,1.00,25.00,1.25,4.7,0,0.00,,room1,11,food,large,0,1
+product3,3,2.00,25.00,2.50,0,0,0.00,,room1,11,drink,regular,0,1
 </pre>
-where tax means aggregate tax rate (percent).
+  where tax means aggregate tax rate (percent). Product1 has tax category #1 (STG4.7%, STG6.4%),
+  product2 has tax category#3 (STG4.7%), product3 - non-taxable.
       </p>
       <p>
-        At first, add CsvMethod with data retriever "Product price list":
+        At first, add CSV Method with data retriever "Product price list" in menu - "Web Store admin"-"..."-"CSV Methods":
         <p align="center"><img style="max-width: 100%" src="images/price-list-csv1.png" /></p>
+        where "Has header" means whether print or not columns names in the first line. UTF-8 is the most used encoding in modern software (POS).
       </p>
       <p>
-        The first column is "Product" name, just pick "product->name" in "data path picker":
+        The first column is "Product" name of type "Text", just pick "product->name" in "data path picker":
         <p align="center"><img style="max-width: 100%" src="images/price-list-csv2.png" /></p>
         Second column is done in same way (pick product->ID).
       </p>
+      <p>Do that (pick data in path picker) for "ProductCode"-ID, Cost.</p>
       <p>We do not want to pass data: cost, markup, supplier. Supplier is empty,
         place is constant "room a", IsTaxIncudedInPrice is constant 0, discount is constant 0, markup is constant 20.
         Cost is volatile thing and depends of used method (FIFO,etc). Sometimes, price can be less than cost.
         Data retriever always makes fake cost=price/1.2, so just pick "cost" in the picker. You can make any constant
-        by putting its value to "constant" field.
-        <p align="center"><img style="max-width: 100%" src="images/price-list-csv.png" /></p>
+        by putting its value to "constant" field, e.g. "Markup" is always 20.
+        <p align="center"><img style="max-width: 100%" src="images/price-list-csv3.png" /></p>
         leave empty "constant" and "data path" to pass column's empty value (e.g. for supplier).
       </p>
+      <p>Pick "Price" in data path picker to make "Price" column of type "Numeric" - decimal number.</p>
+      <p>
+        When you have only tax per item, e.g. a item has tax10%, another 18%, then picker will consist of <b>only tax</b>
+        data column with fields - "is used" (is false for non-taxable), "rate=1 + percent/100", tax ID, tax name, tax percent.
+        In our case, there are column "tax category" of current item, all used taxes, all used taxes categories. We have to point "aggregate tax percent",
+        so just pick it from item tax category (type is also Numeric):
+        <p align="center"><img style="max-width: 100%" src="images/price-list-csv4.png" /></p>
+      </p>
+      <p>IsTaxIncudedInPrice, Discount and Place are constants, Supplier is empty. Pick quantity from data picker, it's the rest (items left) in the warehouse.</p>
       <p>
         Any product in beige-accounting can has only category (1-level category),
         e.g. here product1 has category "Food regular", product2 - "Food large", product3 - "Drink large".
         To make columns Category and Variant we will use product category ID and "Match Foreign" methods:
-        <p align="center"><img style="max-width: 100%" src="images/price-list-csv.png" /></p>
+        <p align="center"><img style="max-width: 100%" src="images/price-list-csv5.png" /></p>
+        <p align="center"><img style="max-width: 100%" src="images/price-list-csv6.png" /></p>
+        after that, add Category and Variant columns with data path "Item category - ID" and dedicated "Match Foreign" method.
+      </p>
+      <p>Finally, add "isService" as constant "0" and "isAvailable" of type "Boolean" with "data path" "Available" and format "1,0".
+        Default format for "Boolean" is "true,false". CSV "Boolean" standard is often "1,0". Final CSV method is:
+        <p align="center"><img style="max-width: 100%" src="images/price-list-csv7.png" /></p>
       </p>
       <p>
         To add any product in price list you should add "Price category", e.g. "price for shop in downtown":
-        <p align="center"><img style="max-width: 100%" src="images/price-list-csv.png" /></p>
-        then "Good price":
-        <p align="center"><img style="max-width: 100%" src="images/price-list-csv.png" /></p>
-        if you want to list unavailable product in the list, then set "special unavailable price",
-        e.g. "999999".
+        <p align="center"><img style="max-width: 100%" src="images/price-list-csv8.png" /></p>
+        * in current version Beige-Webstore methods that based on "basic price" are not yet implemented,
+        so there is only method to make separated prices for "retail shop1", "retail shop2", "online web-store".
+        This method is "item's price for price category", so set "Retail only" to "Yes" to mark it as "non-online".
+        You should also add "item price category" to do this.
       </p>
       <p>
-        Finally, to make CSV file open in menu "Pricing-Price list", select CSV Method and "Price category", then press "Report":
-        <p align="center"><img style="max-width: 100%" src="images/price-list-csv.png" /></p>
-        *set "optimistic quantity" any number, e.g. 20, to set quantity and "isAvailable" for products that
-        are not exist in warehouse. Set "Unavailable price" to make unavailable products that you want (i.e. their goods price = UP).
+        Then add "Good price":
+        <p align="center"><img style="max-width: 100%" src="images/price-list-csv9.png" /></p>
+        *if you want to list unavailable product in the list, then set "special unavailable price", e.g. "999999".
       </p>
+      <p>
+        Finally, to make CSV file, open in menu "Pricing-Price list", select CSV Method and "Price category", then press "Report":
+        <p align="center"><img style="max-width: 100%" src="images/price-list-csv10.png" /></p>
+        *set "optimistic quantity" any number, e.g. 20, to set quantity and "isAvailable" for products that
+        are not exist in warehouse. Set "Unavailable price" to make products that you want unavailable (i.e. their goods price = UP).
+      </p>
+      <p>The result CSV file is:
+<pre style="white-space: pre-wrap;">
+Product1,17,9.41,20,11.29,11.1,0,0,,Room A,20,Food,Regular,0,1
+Product2,18,11.76,20,14.11,4.7,0,0,,Room A,20,Food,Large,0,1
+Product3,19,5.28,20,6.33,0,0,0,,Room A,20,Drink,Large,0,1
+</pre>
+      </p>
+      
       <h4>Troubleshooting.</h4>
-      <p>Some software may require excessive non-standard things. For example passing price with currency code, e.g. "125.67USD", or decimal number with exactly 1 decimal place i.e. it can't handle value "12.10".
-        Using excessive non-standard things is really not good feature. Any program language accepts decimal numbers "1" or "1.0" or "1.00" as 1.00.
+      <p>Some software may require excessive non-standard things. For example passing price with currency code, e.g. "125.67USD", or decimal number with exactly 1 decimal place, i.e. it can't handle value "12.10".
+        Using excessive non-standard things is really not good feature. Any program language accepts strings "1", "1.0" or "1.00" as decimal number 1.0,
+        but you can set required decimal places, decimal separator and decimal group separator in the "Data format" field.
+        Format is: "[decimal-separator],[group-separator],[decimal-places]", for example number is 12412.15:
+        <ul>
+          <li><b>.,NONE,1</b> gives 12412.2</li>
+          <li><b>COMMA,NONE,1</b> gives 12412,2</li>
+          <li><b>COMMA,NONE,2</b> gives 12412,15</li>
+          <li><b>COMMA,SPACE,4</b> gives 12 412,1500</li>
+          <li><b>.,COMMA,4</b> gives 12,412.1500</li>
+          <li><b>.,-,5</b> gives 12-412.15000</li>
+        </ul>
       </p>
     </section>
 
