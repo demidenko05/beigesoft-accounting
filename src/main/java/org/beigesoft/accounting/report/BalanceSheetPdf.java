@@ -1,7 +1,7 @@
 package org.beigesoft.accounting.report;
 
 /*
- * Copyright (c) 2017 Beigesoft ™
+ * Copyright (c) 2017 Beigesoft™
  *
  * Licensed under the GNU General Public License (GPL), Version 2.0
  * (the "License");
@@ -21,10 +21,8 @@ import java.math.BigDecimal;
 import org.beigesoft.doc.model.Document;
 import org.beigesoft.doc.model.DocTable;
 import org.beigesoft.doc.model.EAlignHorizontal;
-import org.beigesoft.doc.model.EPageSize;
-import org.beigesoft.doc.model.EPageOrientation;
+import org.beigesoft.doc.model.EUnitOfMeasure;
 import org.beigesoft.doc.service.IDocumentMaker;
-import org.beigesoft.pdf.model.ERegisteredTtfFont;
 import org.beigesoft.pdf.model.PdfDocument;
 import org.beigesoft.pdf.service.IPdfFactory;
 import org.beigesoft.pdf.service.IPdfMaker;
@@ -77,9 +75,6 @@ public class BalanceSheetPdf<RS, WI> implements IBalanceSheetPdf {
   public final void makeReport(final Map<String, Object> pAddParam,
     final BalanceSheet pBalance,
       final OutputStream pOus) throws Exception {
-    Document<WI> doc = this.pdfFactory.lazyGetFctDocument()
-      .createDoc(EPageSize.A4, EPageOrientation.PORTRAIT);
-    PdfDocument<WI> docPdf = this.pdfFactory.createPdfDoc(doc);
     AccSettings accSet = this.srvAccSettings.lazyGetAccSettings(pAddParam);
     String lang = (String) pAddParam.get("lang");
     DateFormat dateFormat = DateFormat
@@ -99,17 +94,28 @@ public class BalanceSheetPdf<RS, WI> implements IBalanceSheetPdf {
       curSign = (String) pAddParam.get("curSign");
       isPrnCurLf = accSet.getPrintCurrencyLeft();
     }
+    Document<WI> doc = this.pdfFactory.lazyGetFctDocument()
+      .createDoc(accSet.getPageSize(), accSet.getPageOrientation());
+    doc.setFontSize(accSet.getFontSize());
+    doc.getPages().get(0).setMarginBottom(accSet.getMarginBottom());
+    doc.getPages().get(0).setMarginTop(accSet.getMarginTop());
+    doc.getPages().get(0).setMarginLeft(accSet.getMarginLeft());
+    doc.getPages().get(0).setMarginRight(accSet.getMarginRight());
+    PdfDocument<WI> docPdf = this.pdfFactory.createPdfDoc(doc);
     IDocumentMaker<WI> docMaker = this.pdfFactory.lazyGetDocumentMaker();
     docPdf.getPdfInfo().setAuthor("Beigesoft (TM) Accounting, "
       + accSet.getOrganization());
     IPdfMaker<WI> pdfMaker = this.pdfFactory.lazyGetPdfMaker();
-    pdfMaker.addFontTtf(docPdf, ERegisteredTtfFont.DEJAVUSERIF.toString());
-    pdfMaker.addFontTtf(docPdf, ERegisteredTtfFont.DEJAVUSERIF_BOLD.toString());
+    pdfMaker.addFontTtf(docPdf, accSet.getTtfFileName());
+    if (accSet.getTtfBoldFileName() != null) {
+      pdfMaker.addFontTtf(docPdf, accSet.getTtfBoldFileName());
+    }
     double widthNdot = this.pdfFactory.lazyGetUomHelper()
       .fromPoints(2.0, 300.0, doc.getUnitOfMeasure()); //printer resolution
     doc.setBorder(widthNdot);
     doc.setContentPadding(0.0);
-    doc.setContentPaddingBottom(0.5);
+    doc.setContainerMarginBottom(mmToDocUom(3.5, doc.getUnitOfMeasure()));
+    doc.setContentPaddingBottom(mmToDocUom(0.5, doc.getUnitOfMeasure()));
     doc.setAlignHoriCont(EAlignHorizontal.CENTER);
     DocTable<WI> tblTitle = docMaker.addDocTableNoBorder(doc, 1, 3);
     I18nAccounting i18nAccounting =
@@ -126,7 +132,7 @@ public class BalanceSheetPdf<RS, WI> implements IBalanceSheetPdf {
       .setItsContent(dateFormat.format(pBalance.getItsDate()));
     tblTitle.setAlignHorizontal(EAlignHorizontal.CENTER);
     docMaker.makeDocTableWrapping(tblTitle);
-    doc.setContentPadding(1.0);
+    doc.setContentPadding(mmToDocUom(1.0, doc.getUnitOfMeasure()));
     doc.setAlignHoriCont(EAlignHorizontal.LEFT);
     DocTable<WI> tblBal = docMaker
       .addDocTable(doc, 4, pBalance.getDetailRowsCount() + 2);
@@ -266,6 +272,20 @@ public class BalanceSheetPdf<RS, WI> implements IBalanceSheetPdf {
         (String) pAddParam.get("dgseparatorv"),
           (Integer) pAddParam.get("balancePrecision"),
             (Integer) pAddParam.get("digitsInGroup"));
+  }
+
+  /**
+   * <p>Convert value from millimeters to document UOM.</p>
+   * @param pValue in millimeters
+   * @param pUom doc UOM
+   * @return in document UOM value
+   **/
+  public final double mmToDocUom(final double pValue,
+    final EUnitOfMeasure pUom) {
+    if (pUom.equals(EUnitOfMeasure.INCH)) {
+      return pValue / 25.4;
+    }
+    return pValue;
   }
 
   //Simple getters and setters:

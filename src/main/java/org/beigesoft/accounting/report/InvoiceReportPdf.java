@@ -1,7 +1,7 @@
 package org.beigesoft.accounting.report;
 
 /*
- * Copyright (c) 2017 Beigesoft ™
+ * Copyright (c) 2017 Beigesoft™
  *
  * Licensed under the GNU General Public License (GPL), Version 2.0
  * (the "License");
@@ -28,10 +28,8 @@ import org.beigesoft.doc.model.Document;
 import org.beigesoft.doc.model.DocTable;
 import org.beigesoft.doc.model.EWraping;
 import org.beigesoft.doc.model.EAlignHorizontal;
-import org.beigesoft.doc.model.EPageSize;
-import org.beigesoft.doc.model.EPageOrientation;
+import org.beigesoft.doc.model.EUnitOfMeasure;
 import org.beigesoft.doc.service.IDocumentMaker;
-import org.beigesoft.pdf.model.ERegisteredTtfFont;
 import org.beigesoft.pdf.model.PdfDocument;
 import org.beigesoft.pdf.service.IPdfFactory;
 import org.beigesoft.pdf.service.IPdfMaker;
@@ -152,19 +150,26 @@ public class InvoiceReportPdf<RS, WI>
       }
     }
     Document<WI> doc = this.pdfFactory.lazyGetFctDocument()
-      .createDoc(EPageSize.A4, EPageOrientation.PORTRAIT);
+      .createDoc(accSet.getPageSize(), accSet.getPageOrientation());
+    doc.setFontSize(accSet.getFontSize());
+    doc.getPages().get(0).setMarginBottom(accSet.getMarginBottom());
+    doc.getPages().get(0).setMarginTop(accSet.getMarginTop());
+    doc.getPages().get(0).setMarginLeft(accSet.getMarginLeft());
+    doc.getPages().get(0).setMarginRight(accSet.getMarginRight());
     PdfDocument<WI> docPdf = this.pdfFactory.createPdfDoc(doc);
     IDocumentMaker<WI> docMaker = this.pdfFactory.lazyGetDocumentMaker();
     docPdf.getPdfInfo().setAuthor("Beigesoft (TM) Accounting, "
       + accSet.getOrganization());
     IPdfMaker<WI> pdfMaker = this.pdfFactory.lazyGetPdfMaker();
-    pdfMaker.addFontTtf(docPdf, ERegisteredTtfFont.DEJAVUSERIF_BOLD.toString());
-    pdfMaker.addFontTtf(docPdf, ERegisteredTtfFont.DEJAVUSERIF.toString());
+    if (accSet.getTtfBoldFileName() != null) {
+      pdfMaker.addFontTtf(docPdf, accSet.getTtfBoldFileName());
+    }
+    pdfMaker.addFontTtf(docPdf, accSet.getTtfFileName());
     double widthNdot = this.pdfFactory.lazyGetUomHelper()
       .fromPoints(2.0, 300.0, doc.getUnitOfMeasure()); //printer resolution
     doc.setBorder(widthNdot);
     doc.setContentPadding(0.0);
-    doc.setContentPaddingBottom(1.0);
+    doc.setContentPaddingBottom(mmToDocUom(1.0, doc.getUnitOfMeasure()));
     DocTable<WI> tblOwner = docMaker.addDocTableNoBorder(doc, 1, 1);
     I18nAccounting i18nAccounting =
       (I18nAccounting) pReqVars.get("i18nAccounting");
@@ -255,7 +260,7 @@ public class InvoiceReportPdf<RS, WI>
     tblTitle.getItsCells().get(0).setItsContent(title);
     tblTitle.getItsCells().get(0).setFontNumber(1);
     tblTitle.setAlignHorizontal(EAlignHorizontal.CENTER);
-    doc.setContainerMarginBottom(1.0);
+    doc.setContainerMarginBottom(mmToDocUom(1.0, doc.getUnitOfMeasure()));
     docMaker.makeDocTableWrapping(tblTitle);
     DocTable<WI> tblCustomer = docMaker.addDocTableNoBorder(doc, 1, 1);
     I18nBuyer i18nBuyer = null;
@@ -338,15 +343,15 @@ public class InvoiceReportPdf<RS, WI>
     BigDecimal totalTaxes;
     BigDecimal total;
     if (inv.getItsLines() != null && inv.getItsLines().size() > 0) {
-      doc.setContainerMarginBottom(2.0);
+      doc.setContainerMarginBottom(mmToDocUom(2.0, doc.getUnitOfMeasure()));
       DocTable<WI> tblTiGoods = docMaker.addDocTableNoBorder(doc, 1, 1);
       tblTiGoods.getItsCells().get(0).setItsContent(this.srvI18n
         .getMsg(SalesInvoiceLine.class.getSimpleName() + "s", lang));
       tblTiGoods.getItsCells().get(0).setFontNumber(1);
       tblTiGoods.setAlignHorizontal(EAlignHorizontal.CENTER);
       docMaker.makeDocTableWrapping(tblTiGoods);
-      doc.setContentPadding(1.0);
-      doc.setContentPaddingBottom(1.5);
+      doc.setContentPadding(mmToDocUom(1.0, doc.getUnitOfMeasure()));
+      doc.setContentPaddingBottom(mmToDocUom(1.5, doc.getUnitOfMeasure()));
       int rowc;
       if (accSet.getSalTaxIsInvoiceBase()) {
         rowc = 6;
@@ -446,15 +451,15 @@ public class InvoiceReportPdf<RS, WI>
       }
     }
     if (inv.getServices() != null && inv.getServices().size() > 0) {
-      doc.setContainerMarginBottom(2.0);
+      doc.setContainerMarginBottom(mmToDocUom(2.0, doc.getUnitOfMeasure()));
       DocTable<WI> tblTiServices = docMaker.addDocTableNoBorder(doc, 1, 1);
       tblTiServices.getItsCells().get(0).setItsContent(this.srvI18n
         .getMsg(SalesInvoiceServiceLine.class.getSimpleName() + "s", lang));
       tblTiServices.getItsCells().get(0).setFontNumber(1);
       tblTiServices.setAlignHorizontal(EAlignHorizontal.CENTER);
       docMaker.makeDocTableWrapping(tblTiServices);
-      doc.setContentPadding(1.0);
-      doc.setContentPaddingBottom(1.5);
+      doc.setContentPadding(mmToDocUom(1.0, doc.getUnitOfMeasure()));
+      doc.setContentPaddingBottom(mmToDocUom(1.5, doc.getUnitOfMeasure()));
       int rowc;
       double wd15;
       if (accSet.getSalTaxIsInvoiceBase()) {
@@ -562,7 +567,7 @@ public class InvoiceReportPdf<RS, WI>
       }
     }
     if (inv.getTaxesLines() != null && inv.getTaxesLines().size() > 0) {
-      doc.setContainerMarginBottom(2.0);
+      doc.setContainerMarginBottom(mmToDocUom(2.0, doc.getUnitOfMeasure()));
       DocTable<WI> tblTiTaxes = docMaker.addDocTableNoBorder(doc, 1, 1);
       tblTiTaxes.setIsRepeatHead(true);
       tblTiTaxes.getItsRows().get(0).setIsHead(true);
@@ -571,8 +576,8 @@ public class InvoiceReportPdf<RS, WI>
       tblTiTaxes.getItsCells().get(0).setFontNumber(1);
       tblTiTaxes.setAlignHorizontal(EAlignHorizontal.CENTER);
       docMaker.makeDocTableWrapping(tblTiTaxes);
-      doc.setContentPadding(1.0);
-      doc.setContentPaddingBottom(1.5);
+      doc.setContentPadding(mmToDocUom(1.0, doc.getUnitOfMeasure()));
+      doc.setContentPaddingBottom(mmToDocUom(1.5, doc.getUnitOfMeasure()));
       int rowc;
       double rowtw;
       if (accSet.getSalTaxIsInvoiceBase()) {
@@ -853,6 +858,20 @@ public class InvoiceReportPdf<RS, WI>
         (String) pReqVars.get("dgseparatorv"),
           (Integer) pReqVars.get("pricePrecision"),
             (Integer) pReqVars.get("digitsInGroup"));
+  }
+
+  /**
+   * <p>Convert value from millimeters to document UOM.</p>
+   * @param pValue in millimeters
+   * @param pUom doc UOM
+   * @return in document UOM value
+   **/
+  public final double mmToDocUom(final double pValue,
+    final EUnitOfMeasure pUom) {
+    if (pUom.equals(EUnitOfMeasure.INCH)) {
+      return pValue / 25.4;
+    }
+    return pValue;
   }
 
   //Synchronized getters and setters:

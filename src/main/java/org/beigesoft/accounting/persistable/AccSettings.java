@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.Date;
 import java.math.RoundingMode;
 
+import org.beigesoft.doc.model.EPageSize;
+import org.beigesoft.doc.model.EPageOrientation;
 import org.beigesoft.model.EPeriod;
 import org.beigesoft.persistable.AHasIdLongVersion;
 
@@ -196,6 +198,56 @@ public class AccSettings extends AHasIdLongVersion {
    * <p>Use aggregate tax rate for item basis method.</p>
    **/
   private Boolean salTaxUseAggregItBas = Boolean.FALSE;
+
+  /**
+   * <p>TTF file name, DejaVuSerif default.</p>
+   **/
+  private String ttfFileName = "DejaVuSerif";
+
+  /**
+   * <p>TTF bold file name, DejaVuSerif-Bold default.
+   * May be empty for hieroglyph's fonts.</p>
+   **/
+  private String ttfBoldFileName = "DejaVuSerif-Bold";
+
+  /**
+   * <p>Invoice, balance reports page size, A4 default.</p>
+   **/
+  private EPageSize pageSize = EPageSize.A4;
+
+  /**
+   * <p>Invoice, balance reports page orientation, PORTRAIT default.</p>
+   **/
+  private EPageOrientation pageOrientation = EPageOrientation.PORTRAIT;
+
+  /**
+   * <p>Invoice, balance reports margin Left,
+   * Letter - inch, otherwise millimeters, default 30mm.</p>
+   **/
+  private Double marginLeft = 30.0;
+
+  /**
+   * <p>Invoice, balance reports Margin Right,
+   * Letter - inch, otherwise millimeters, default 15mm.</p>
+   **/
+  private Double marginRight = 15.0;
+
+  /**
+   * <p>Invoice, balance reports Margin Top.</p>
+   **/
+  private Double marginTop = 20.0;
+
+  /**
+   * <p>Invoice, balance reports Margin Bottom,
+   * Letter - inch, otherwise millimeters, default 20mm.</p>
+   **/
+  private Double marginBottom = 20.0;
+
+  /**
+   * <p>Invoice, balance reports Font size,
+   * Letter - inch, otherwise millimeters, default 3.5mm (0.1378INCH).</p>
+   **/
+  private Double fontSize = 3.5;
 
   //Hiding references getters and setters:
   /**
@@ -709,5 +761,151 @@ public class AccSettings extends AHasIdLongVersion {
   public final void setSalTaxUseAggregItBas(
     final Boolean pSalTaxUseAggregItBas) {
     this.salTaxUseAggregItBas = pSalTaxUseAggregItBas;
+  }
+
+
+  /**
+   * <p>Getter for ttfFileName.</p>
+   * @return String
+   **/
+  public final String getTtfFileName() {
+    return this.ttfFileName;
+  }
+
+  /**
+   * <p>Setter for ttfFileName.</p>
+   * @param pTtfFileName reference
+   **/
+  public final void setTtfFileName(final String pTtfFileName) {
+    this.ttfFileName = pTtfFileName;
+  }
+
+  /**
+   * <p>Getter for ttfBoldFileName.</p>
+   * @return String
+   **/
+  public final String getTtfBoldFileName() {
+    return this.ttfBoldFileName;
+  }
+
+  /**
+   * <p>Setter for ttfBoldFileName.</p>
+   * @param pTtfBoldFileName reference
+   **/
+  public final void setTtfBoldFileName(final String pTtfBoldFileName) {
+    this.ttfBoldFileName = pTtfBoldFileName;
+  }
+
+  /**
+   * <p>Getter for pageSize.</p>
+   * @return EPageSize
+   **/
+  public final EPageSize getPageSize() {
+    return this.pageSize;
+  }
+
+  /**
+   * <p>Setter for pageSize.</p>
+   * @param pPageSize reference
+   **/
+  public final void setPageSize(final EPageSize pPageSize) {
+    this.pageSize = pPageSize;
+  }
+
+  /**
+   * <p>Getter for pageOrientation.</p>
+   * @return EPageOrientation
+   **/
+  public final EPageOrientation getPageOrientation() {
+    return this.pageOrientation;
+  }
+
+  /**
+   * <p>Setter for pageOrientation.</p>
+   * @param pPageOrientation reference
+   **/
+  public final void setPageOrientation(
+    final EPageOrientation pPageOrientation) {
+    this.pageOrientation = pPageOrientation;
+  }
+
+  /**
+   * <p>Getter for marginLeft.</p>
+   * @return Double
+   **/
+  public final Double getMarginLeft() {
+    return this.marginLeft;
+  }
+
+  /**
+   * <p>Setter for marginLeft.</p>
+   * @param pMarginLeft reference
+   **/
+  public final void setMarginLeft(final Double pMarginLeft) {
+    this.marginLeft = pMarginLeft;
+  }
+
+  /**
+   * <p>Getter for marginRight.</p>
+   * @return Double
+   **/
+  public final Double getMarginRight() {
+    return this.marginRight;
+  }
+
+  /**
+   * <p>Setter for marginRight.</p>
+   * @param pMarginRight reference
+   **/
+  public final void setMarginRight(final Double pMarginRight) {
+    this.marginRight = pMarginRight;
+  }
+
+  /**
+   * <p>Getter for marginTop.</p>
+   * @return Double
+   **/
+  public final Double getMarginTop() {
+    return this.marginTop;
+  }
+
+  /**
+   * <p>Setter for marginTop.</p>
+   * @param pMarginTop reference
+   **/
+  public final void setMarginTop(final Double pMarginTop) {
+    this.marginTop = pMarginTop;
+  }
+
+  /**
+   * <p>Getter for marginBottom.</p>
+   * @return Double
+   **/
+  public final Double getMarginBottom() {
+    return this.marginBottom;
+  }
+
+  /**
+   * <p>Setter for marginBottom.</p>
+   * @param pMarginBottom reference
+   **/
+  public final void setMarginBottom(final Double pMarginBottom) {
+    this.marginBottom = pMarginBottom;
+  }
+
+  /**
+   * <p>Getter for fontSize.</p>
+   * @return Double
+   **/
+  public final Double getFontSize() {
+    return this.fontSize;
+  }
+
+  /**
+   * <p>Setter for fontSize.</p>
+   * @param pFontSize reference
+   **/
+  public final void setFontSize(final Double pFontSize) {
+    this.fontSize = pFontSize;
   }
 }
