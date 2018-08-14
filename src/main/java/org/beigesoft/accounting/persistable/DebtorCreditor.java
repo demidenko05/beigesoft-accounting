@@ -85,6 +85,11 @@ public class DebtorCreditor extends ASubaccount {
   private Boolean isForeigner;
 
   /**
+   * <p>Only for overseas/overstate buyers/vendors.</p>
+   **/
+  private TaxDestination taxDestination;
+
+  /**
    * <p>OOP friendly Constant of code type.</p>
    * @return 2004
    **/
@@ -286,5 +291,21 @@ public class DebtorCreditor extends ASubaccount {
    **/
   public final void setIsForeigner(final Boolean pIsForeigner) {
     this.isForeigner = pIsForeigner;
+  }
+
+  /**
+   * <p>Getter for taxDestination.</p>
+   * @return TaxDestination
+   **/
+  public final TaxDestination getTaxDestination() {
+    return this.taxDestination;
+  }
+
+  /**
+   * <p>Setter for taxDestination.</p>
+   * @param pTaxDestination reference
+   **/
+  public final void setTaxDestination(final TaxDestination pTaxDestination) {
+    this.taxDestination = pTaxDestination;
   }
 }

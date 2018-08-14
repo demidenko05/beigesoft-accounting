@@ -1,7 +1,7 @@
 package org.beigesoft.accounting.persistable;
 
 /*
- * Copyright (c) 2016 Beigesoft ™
+ * Copyright (c) 2016 Beigesoft™
  *
  * Licensed under the GNU General Public License (GPL), Version 2.0
  * (the "License");
@@ -12,16 +12,17 @@ package org.beigesoft.accounting.persistable;
  * http://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html
  */
 
+import java.util.List;
 import java.math.BigDecimal;
 
 import org.beigesoft.persistable.APersistableBaseNameVersion;
 
 /**
- * <pre>
+ * <p>
  * Model of invItem.
  * Version, changed time algorithm cause check dirty of
  * calculated from it (derived) records.
- * </pre>
+ * </p>
  *
  * @author Yury Demidenko
  */
@@ -80,9 +81,14 @@ public class InvItem extends APersistableBaseNameVersion {
   private BigDecimal knownCost;
 
   /**
-   * <p>Tax category e.g. "NY: tax1 10%, tax2 5%".</p>
+   * <p>Origin tax category e.g. "NY: tax1 10%, tax2 5%".</p>
    **/
   private InvItemTaxCategory taxCategory;
+
+  /**
+   * <p>Destination taxes categories and rules.</p>
+   **/
+  private List<DestTaxGoodsLn> destinationTaxes;
 
   //Simple getters and setters:
   /**
@@ -163,5 +169,22 @@ public class InvItem extends APersistableBaseNameVersion {
    **/
   public final void setTaxCategory(final InvItemTaxCategory pTaxCategory) {
     this.taxCategory = pTaxCategory;
+  }
+
+  /**
+   * <p>Getter for destinationTaxes.</p>
+   * @return List<DestTaxGoodsLn>
+   **/
+  public final List<DestTaxGoodsLn> getDestinationTaxes() {
+    return this.destinationTaxes;
+  }
+
+  /**
+   * <p>Setter for destinationTaxes.</p>
+   * @param pDestinationTaxes reference
+   **/
+  public final void setDestinationTaxes(
+    final List<DestTaxGoodsLn> pDestinationTaxes) {
+    this.destinationTaxes = pDestinationTaxes;
   }
 }

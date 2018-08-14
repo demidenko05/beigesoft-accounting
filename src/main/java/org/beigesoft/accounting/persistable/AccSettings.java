@@ -122,6 +122,11 @@ public class AccSettings extends AHasIdLongVersion {
   private Integer quantityPrecision = 2;
 
   /**
+   * <p>Tax precision.</p>
+   **/
+  private Integer taxPrecision = 3;
+
+  /**
    * <p>Rounding mode.</p>
    **/
   private RoundingMode roundingMode = RoundingMode.HALF_UP;
@@ -195,7 +200,7 @@ public class AccSettings extends AHasIdLongVersion {
   private Boolean salTaxIsInvoiceBase = Boolean.FALSE;
 
   /**
-   * <p>Use aggregate tax rate for item basis method.</p>
+   * <p>Use aggregate tax rate or only for item basis method.</p>
    **/
   private Boolean salTaxUseAggregItBas = Boolean.FALSE;
 
@@ -907,5 +912,21 @@ public class AccSettings extends AHasIdLongVersion {
    **/
   public final void setFontSize(final Double pFontSize) {
     this.fontSize = pFontSize;
+  }
+
+  /**
+   * <p>Getter for taxPrecision.</p>
+   * @return Integer
+   **/
+  public final Integer getTaxPrecision() {
+    return this.taxPrecision;
+  }
+
+  /**
+   * <p>Setter for taxPrecision.</p>
+   * @param pTaxPrecision reference
+   **/
+  public final void setTaxPrecision(final Integer pTaxPrecision) {
+    this.taxPrecision = pTaxPrecision;
   }
 }

@@ -408,13 +408,13 @@ then it means that check#123 for 123.45 was canceled, so application should try 
         <ul>TaxWr:
           <li>tax -Tax, if non-used in current item then itsPercentage is zero</li>
           <li>isUsed - Boolean, if used for current item</li>
-          <li>rate - BigDecimal, rate = 1 + itsPercentage/100, e.g. 1.2 for 20%</li>
+          <li>rate - BigDecimal, rate = itsPercentage/100, e.g. 0.2 for 20%</li>
         </ul>
         <ul>TaxCategoryWr:
           <li>taxCategory - InvItemTaxCategory - tax category</li>
           <li>isUsed - Boolean, if used for current item</li>
           <li>aggrPercent - BigDecimal, aggregate tax percent if used in current item, otherwise is zero</li>
-          <li>aggrRate - BigDecimal, aggrRate = 1 + aggrPercent/100, e.g. 1.2 for 20%</li>
+          <li>aggrRate - BigDecimal, aggrRate = aggrPercent/100, e.g. 0.2 for 20%</li>
         </ul>
       </p>
       <p>Final form to make goods price list:

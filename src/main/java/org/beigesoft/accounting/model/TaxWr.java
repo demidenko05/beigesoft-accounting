@@ -31,7 +31,7 @@ public class TaxWr {
   private Tax tax;
 
   /**
-   * <p>Rate=1+tax.itsPercentage/100.</p>
+   * <p>Rate=tax.itsPercentage/100.</p>
    **/
   private BigDecimal rate = BigDecimal.ZERO;
 

@@ -80,6 +80,11 @@ public class SalesInvoice extends ADocWithTaxesPayments
   private BigDecimal foreignTotal = BigDecimal.ZERO;
 
   /**
+   * <p>Price inclusive of taxes, false default.</p>
+   **/
+  private Boolean priceIncTax = Boolean.FALSE;
+
+  /**
    * <p>OOP friendly Constant of code type 2.</p>
    **/
   @Override
@@ -258,5 +263,21 @@ public class SalesInvoice extends ADocWithTaxesPayments
    **/
   public final void setForeignTotal(final BigDecimal pForeignTotal) {
     this.foreignTotal = pForeignTotal;
+  }
+
+  /**
+   * <p>Getter for priceIncTax.</p>
+   * @return Boolean
+   **/
+  public final Boolean getPriceIncTax() {
+    return this.priceIncTax;
+  }
+
+  /**
+   * <p>Setter for priceIncTax.</p>
+   * @param pPriceIncTax reference
+   **/
+  public final void setPriceIncTax(final Boolean pPriceIncTax) {
+    this.priceIncTax = pPriceIncTax;
   }
 }

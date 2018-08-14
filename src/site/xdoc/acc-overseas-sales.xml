@@ -58,7 +58,7 @@
       </p>
 
       <h4>How to add new language without recompiling.</h4>
-      <p>Beige-Accounting uses TTF fonts DejaVuSerif-Bold.ttf and DejaVuSerif.ttf contains many languages. For other languages you should add TTF file into Java archive file (see below).
+      <p>Beige-Accounting uses TTF fonts DejaVuSerif-Bold.ttf and DejaVuSerif.ttf that contains many languages. For other languages you should add TTF file into Java archive file (see below).
         Asian free TTF fonts you can find:
         <ul>
           <li>Japanese VL-Gothic fonts - <a href="http://vlgothic.dicey.org">http://vlgothic.dicey.org</a></li>

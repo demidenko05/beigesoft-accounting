@@ -12,9 +12,9 @@
     <!-- The body of the document contains a number of sections -->
     <section name="Beigesoft™ Accounting. Sales tax specification.">
 
-      <h5>Sales taxes common.</h5>
+      <h4>Sales taxes common.</h4>
 
-      <p>Sales taxes imposed on the buyer that seller must collect and pay.
+      <p>Sales taxes imposed on the buyer that seller must collect and remit to tax revenue authorities.
         This is in case when buyer that bought goods/service "is in the country/state where this sales taxes must be paid".
         Foreigners travelers can refund sales taxes when they leaves the country. E-Commerce is still the growing sphere business that often dials with foreigner buyers that bought goods in a WEB-shop
         and have delivered them by mail. In that case overseas (foreigner) buyers must not pay "foreign" sales taxes.
@@ -26,7 +26,56 @@
         Services Utl(Purchase/Sales)GoodsServiceLine/Prc(Purchase/Sales)(Invoice/Return)(Service)LineSave implements "omitting taxes if customer/vendor is foreign".
       </p>
       
-      <h5>Tax calculation methods.</h5>
+      <h4>Overseas, overstate sales.</h4>
+      <p>When you sell merchandise to buyer in other country, then buyer buyer have not to pay sales taxes of your country, but buyer have to pay sales taxes of its country.
+        Post office can charge local sales taxes then buyer takes its merchandise. But if you has branch in foreign country, then you must charge, collect and pay foreign sales taxes by yourself.
+        In USA it applies for other-state sales and it depends of merchandise type (e.g. car), and this may applies for sellers that have not "foreign-state" branch.
+        So, the same merchandise may has multiply tax methods:
+        <ul>
+          <li>local sales (without over-country/state delivering), even though for foreign tourists - local sales taxes must be charged</li>
+          <li>local sales (without over-country/state delivering), and buyer has proof of tax exemptions (e.g. foreign tourist's passport) - local sales taxes must not be charged. This is "in theory" case.</li>
+          <li>sales with delivering to a destination where other taxes apply for the merchandise and you have not to charge, collect and remit any sales taxes (foreign post office or tax authority do it).</li>
+          <li>sales with delivering to a destination where other taxes apply for the merchandise and you have to charge, collect and remit them.</li>
+          <li>sales with delivering to a destination where "foreign sales taxes" not apply to the merchandise and you have to charge, collect and remit origin sales taxes.</li>
+        </ul>
+        Local authority (even though in a small town) may introduce their own sales taxes, e.g. sales tax 2.235% when you sold merchandise in "town Hill".
+        In this way, sales taxes may be different in the same region (state).
+      </p>
+      <p>If a buyer is a reseller, and it bought merchandise for resale, then sales taxes may be omitted (according the law), e.g. this is applied in USA.</p>
+      <p>
+        The same invoice may consist of merchandises with different tax methods, e.g. you sold car and chair to overstate buyer, and origin taxes will applied for car,
+        for chair - foreign state taxes (this is example for USA).
+      </p>
+      <p>Use "Customer.isForeigner" method for completely omitting sales taxes.</p>
+      <p>To implements "sales taxes depends of buyer's destination", persistable models product/service - InvItem,
+        ServiceToSale, ServicePurchased have destinationTaxes lines of type DestTax[Goods/ServSel/ServPurch]Ln:
+        <ul>
+          <li>APersistableBaseVersion fields</li>
+          <li>itsOwner - InvItem/ServiceToSale/ServicePurchased, not-null</li>
+          <li>taxDestination - TaxDestination, not null</li>
+          <li>taxCategory - InvItemTaxCategory, not null</li>
+        </ul>
+        product/service taxCategory means origin (local) taxes.
+      </p>
+      <p>Cause taxes may be the same for all places (districts) in a region (many ZIP codes but taxes are the same) it's used TaxDestination model:
+      <ul>
+        <li>APersistableBaseHasNameVersion fields</li>
+        <li>salTaxRoundMode - RoundingMode, HALF_UP default</li>
+        <li>salTaxUseAggregItBas - Boolean, use aggregate tax rate or only tax for item basis method, false default, but this method is mostly used</li>
+        <li>salTaxIsInvoiceBase - Boolean, use invoice basis method, false default</li>
+      </ul>
+      For many countries there is only sales tax method inside whole country.
+      DebtorCreditor has taxDestination field (TaxDestination) to find and apply destination taxes (tax category).
+      If customer has "tax destination", then for every item will be searching matching "tax destination line", if found, then it will be used,
+      otherwise item.taxCategory will be used (it may be empty). Anyway, will be used rounding method, use aggregate rate and is invoice basis from customer's "tax destination".
+      </p>
+      
+
+      <h4>Tax calculation methods.</h4>
+      <p>
+        Service that saves invoice line, will calculates tax according given tax category (independent on form amount).
+        For purchase user can change tax amount in form, then saving service will use exactly that amount, this is because tax amount must be the same as in received purchase invoice.
+      </p>
       <p>There are two calculation methods - tax due on a transaction on an item or an invoice basis.
         These methods give different results:
 <pre style="white-space: pre-wrap;">
@@ -38,15 +87,29 @@ round(2.244 + 2.244) != round(2.244) + round(2.244);
       <p>>
         Common rounding method is Half-Up to the cent (minimal currency unit).
         To implements sales tax rounding mode AccSettings has property "salTaxRoundMode" of type java.math.RoundingMode.
-        Beige-Accounting uses AccSettings.pricePrecision as number of decimal places for rounding tax.
+        Beige-Accounting uses AccSettings.taxPrecision as number of decimal places for rounding tax.
       </p>
 
-      <h5>Tax due WHEN methods.</h5>
+      <h4>Price inclusive of taxes</h4>
+      <p>In case of only tax or aggregate tax rate, price inclusive of taxes may be used.
+        The equation of tax amount extraction is:
+<pre style="white-space: pre-wrap;">
+  price without taxes = price with taxes / (1 + tax percent/100)
+  taxes = price with taxes - price without taxes
+  
+  example: tax rate = 20%, price with taxes = 120:
+  price without taxes = 120 / 1.2 = 100
+  taxes = 120 - 100 = 20
+</pre>
+      </p>
+      <p>Persistable models SalesInvoice and PurchaseInvoice has property "priceIncTax", false default</p>
+            
+      <h4>Tax due WHEN methods.</h4>
       <p>There are two WHEN methods - cash and accrual. Cash method is seldom used, it is "headacheful" method.
         Beigesoft™ Accounting has implemented both these methods.
       </p>
 
-      <h5>Base and accounting data models.</h5>
+      <h4>Base and accounting data models.</h4>
       <p>Account itsId="SALES_TAX_PAYABLE", name="Sales Tax payable", normalBalanceType=CREDIT itsNumber="2310"
       Subaccounts - Tax</p>
       <p>Account itsId="SALES_TAX_RECIVABLE", name="Sales Tax recivable", normalBalanceType=DEBIT itsNumber="1310"
@@ -75,6 +138,7 @@ round(2.244 + 2.244) != round(2.244) + round(2.244);
             calculated from it (derived) records</li>
           <li>List(InvItemTaxCategoryLine) taxes</li>
           <li>taxesDescription - String , uneditable e.g. "NY Sales Tax 10%"</li>
+          <li>aggrOnlyPercent - BigDecimal, readonly, consist of only tax percentage (single line) or aggregate tax percent (multi-lines)</li>
         </ul>
         This model used to assign tax or set of taxes for an goods or service e.g. "NY sales tax 6%"
         for pizza hot. 
@@ -133,7 +197,7 @@ round(2.244 + 2.244) != round(2.244) + round(2.244);
         This model holds total tax amount for whole document for both item and invoice basis methods.
       </p>
       
-      <h5>SQL services that make accounting entries:</h5>
+      <h4>SQL services that make accounting entries:</h4>
       Method "PurInvSalTaxSelfDeductingDbtAccrual":
       "PurchaseInvoice, Debit SalesTaxFromPurchase per Tax."
       Accounting entries source: accounting/journalEntries/PurInvSalTaxSelfDeductingDbtAccrual.sql:
@@ -168,7 +232,7 @@ where SALESINVOICETAXLINE.REVERSEDID is null and SALESINVOICE.REVERSEDID is null
 group by SOURCETYPE, SOURCEID, ITSDATE, ACCDEBIT, SUBACCDEBITTYPE, SUBACCDEBITID, SUBACCDEBIT, ACCCREDIT, SUBACCCREDITTYPE, SUBACCCREDITID, SUBACCCREDIT
       </pre>
       
-      <h5>Sales taxes item basis method</h5>
+      <h4>Sales taxes item basis method</h4>
       <p>This method is more difficult and slowly than grouping method - invoice basis.
       In case of aggregate tax, this is fast method.
       </p>
@@ -248,7 +312,7 @@ group by TAX;
       Retrieved data is used to make SalesInvoiceTaxLine for each tax.
       </p>
 
-      <h5>Sales taxes invoice basis method</h5>
+      <h4>Sales taxes invoice basis method</h4>
       <p>This method is more ease and fast than item basis one, so this method is preferred for performance reasons.
         It's preferred also for retail sales.</p>
       <p>
@@ -303,7 +367,7 @@ group by TAX;
       Retrieved data is used to make PurchaseInvoiceTaxLine for each tax.
       </p>
 
-      <h5>Retrieve invoice totals</h5>
+      <h4>Retrieve invoice totals</h4>
       <p>
       Method "accounting/trade/salesInvoiceTotals.sql" that retrieve sales invoice totals for both item and invoice basis methods:
       <pre style="white-space: pre-wrap;">
@@ -353,7 +417,7 @@ from
       </pre>
       </p>
       
-      <h5>Due on invoice basis, taxes per item</h5>
+      <h4>Due on invoice basis, taxes per item</h4>
       <p>When you use "invoice basis" method, then taxes per invoice line is ambiguous thing,  
         e.g. two lines 56.67USD each and tax 11% give invoice basis tax 12.47USD, so what we have to do:
 <pre style="white-space: pre-wrap;">
@@ -372,7 +436,7 @@ line#  price  taxes  total
         It must be a law that instructs about this - is it needs to show taxes in lines and how to do it (calculate it depending of invoice total).
       </p>
 
-      <h5>Multi sales taxes. Aggregate tax rate for due on item basis method.</h5>
+      <h4>Multi sales taxes. Aggregate tax rate for due on item basis method.</h4>
       <p>In case of multi sales taxes per item you can (or must according the law) use this method.</p>
       <p>This method is useful only for "due on item basis" method. 
         Aggregate tax rate for multi-taxes gives different tax result (against "non-aggregate").
@@ -405,7 +469,7 @@ tax3 = 9.18 - (9.35 + 0.92) = 1.91
 To prevent difference between total aggregate from lines and total taxes cause grouping rounding error,
 the last tax total line is the rest of aggregate tax.
       </p>
-      <p>Property AccSettings.salTaxUseAggregItBas (use aggregate tax rate for item basis method) is used to switch this method, default is false.
+      <p>Property AccSettings.salTaxUseAggregItBas (use aggregate tax rate or only tax for item basis method) is used to switch this method, default is false.
       </p>
       <p><b>Implementation of aggregate tax rate method (item basis)</b></p>
       <p>Service that saves invoice line calculates total line's tax by using aggregate tax rate</p>

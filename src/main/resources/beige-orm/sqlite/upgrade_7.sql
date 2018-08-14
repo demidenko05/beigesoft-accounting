@@ -50,4 +50,8 @@ alter table ACCSETTINGS add column MARGINRIGHT real default 15;
 alter table ACCSETTINGS add column MARGINTOP real default 20;
 alter table ACCSETTINGS add column MARGINBOTTOM real default 20;
 alter table ACCSETTINGS add column FONTSIZE real default 3.5;
+alter table ACCSETTINGS add column TAXPRECISION integer not null default 3;
+alter table PURCHASEINVOICE add column PRICEINCTAX integer not null default 0;
+alter table SALESINVOICE add column PRICEINCTAX integer not null default 0;
+alter table DEBTORCREDITOR add column TAXDESTINATION integer default null references TAXDESTINATION(ITSID);
 update DATABASEINFO set DATABASEVERSION=7, DESCRIPTION='Beige Accounting OIO DB version 7';

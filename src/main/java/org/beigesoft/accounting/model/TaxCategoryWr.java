@@ -36,7 +36,7 @@ public class TaxCategoryWr {
   private BigDecimal aggrPercent = BigDecimal.ZERO;
 
   /**
-   * <p>aggrRate=1+aggrPercent/100.</p>
+   * <p>aggrRate=aggrPercent/100.</p>
    **/
   private BigDecimal aggrRate = BigDecimal.ZERO;
 
