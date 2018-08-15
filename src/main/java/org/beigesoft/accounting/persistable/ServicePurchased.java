@@ -12,6 +12,8 @@ package org.beigesoft.accounting.persistable;
  * http://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html
  */
 
+import java.util.List;
+
 import org.beigesoft.persistable.APersistableBaseNameVersion;
 
 /**
@@ -35,6 +37,11 @@ public class ServicePurchased extends APersistableBaseNameVersion {
    * <p>Tax category e.g. "NY: tax1 10%, tax2 5%".</p>
    **/
   private InvItemTaxCategory taxCategory;
+
+  /**
+   * <p>Destination taxes categories and rules.</p>
+   **/
+  private List<DestTaxServPurchLn> destinationTaxes;
 
   //Simple getters and setters:
   /**
@@ -68,5 +75,22 @@ public class ServicePurchased extends APersistableBaseNameVersion {
    **/
   public final void setTaxCategory(final InvItemTaxCategory pTaxCategory) {
     this.taxCategory = pTaxCategory;
+  }
+
+  /**
+   * <p>Getter for destinationTaxes.</p>
+   * @return List<DestTaxServPurchLn>
+   **/
+  public final List<DestTaxServPurchLn> getDestinationTaxes() {
+    return this.destinationTaxes;
+  }
+
+  /**
+   * <p>Setter for destinationTaxes.</p>
+   * @param pDestinationTaxes reference
+   **/
+  public final void setDestinationTaxes(
+    final List<DestTaxServPurchLn> pDestinationTaxes) {
+    this.destinationTaxes = pDestinationTaxes;
   }
 }

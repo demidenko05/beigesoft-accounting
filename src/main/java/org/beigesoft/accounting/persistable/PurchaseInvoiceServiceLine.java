@@ -113,6 +113,11 @@ public class PurchaseInvoiceServiceLine extends APersistableBaseVersion
   private BigDecimal foreignTotal = BigDecimal.ZERO;
 
   /**
+   * <p>Origin or destination tax category.</p>
+   **/
+  private InvItemTaxCategory taxCategory;
+
+  /**
    * <p>Geter for itsOwner.</p>
    * @return PurchaseInvoice
    **/
@@ -369,5 +374,21 @@ public class PurchaseInvoiceServiceLine extends APersistableBaseVersion
    **/
   public final void setForeignTotal(final BigDecimal pForeignTotal) {
     this.foreignTotal = pForeignTotal;
+  }
+
+  /**
+   * <p>Getter for taxCategory.</p>
+   * @return InvItemTaxCategory
+   **/
+  public final InvItemTaxCategory getTaxCategory() {
+    return this.taxCategory;
+  }
+
+  /**
+   * <p>Setter for taxCategory.</p>
+   * @param pTaxCategory reference
+   **/
+  public final void setTaxCategory(final InvItemTaxCategory pTaxCategory) {
+    this.taxCategory = pTaxCategory;
   }
 }

@@ -57,6 +57,7 @@
   org.beigesoft.accounting.persistable.ServiceToSaleCategory,
   org.beigesoft.accounting.persistable.ServiceToSaleCategoryUsed,
   org.beigesoft.accounting.persistable.ServiceToSale,
+  org.beigesoft.accounting.persistable.TaxDestination,
   org.beigesoft.accounting.persistable.DebtorCreditorCategory,
   org.beigesoft.accounting.persistable.DebtorCreditorCategoryUsed,
   org.beigesoft.accounting.persistable.DebtorCreditor,
@@ -129,6 +130,9 @@
   org.beigesoft.accounting.persistable.BankCsvMethod,
   org.beigesoft.accounting.persistable.BankStatement,
   org.beigesoft.accounting.persistable.BankStatementLine,
+  org.beigesoft.accounting.persistable.DestTaxGoodsLn,
+  org.beigesoft.accounting.persistable.DestTaxServSelLn,
+  org.beigesoft.accounting.persistable.DestTaxServPurchLn,
   org.beigesoft.accounting.persistable.WarehouseRest</entry>
 <entry key="settingsKeysForClasses">idColumnsNames, idFieldName, ownerFieldName, constraintAdd, excludeFields, versionAlgorithm</entry>
 <entry key="settingsKeysForFields">definition, isNullable</entry>

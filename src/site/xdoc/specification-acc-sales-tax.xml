@@ -53,7 +53,7 @@
           <li>APersistableBaseVersion fields</li>
           <li>itsOwner - InvItem/ServiceToSale/ServicePurchased, not-null</li>
           <li>taxDestination - TaxDestination, not null</li>
-          <li>taxCategory - InvItemTaxCategory, not null</li>
+          <li>taxCategory - InvItemTaxCategory, null if no taxes for this location</li>
         </ul>
         product/service taxCategory means origin (local) taxes.
       </p>
@@ -66,15 +66,36 @@
       </ul>
       For many countries there is only sales tax method inside whole country.
       DebtorCreditor has taxDestination field (TaxDestination) to find and apply destination taxes (tax category).
-      If customer has "tax destination", then for every item will be searching matching "tax destination line", if found, then it will be used,
+      If customer has "tax destination", then for every item will be searching matching "tax destination line", if found, then it will be used and it could be with empty tax category (null),
       otherwise item.taxCategory will be used (it may be empty). Anyway, will be used rounding method, use aggregate rate and is invoice basis from customer's "tax destination".
+      Invoice line has property "tax category", i.e. applied origin or destination tax category.
       </p>
-      
+      <p>If you have branch in foreign country, then you have to collect and remit foreign sales taxes and you usually have to pay all others foreign taxes and do accounting by using foreign rules (foreign language, currency, etc).
+        That is "tax destination" method is useful only inside a country where sales taxes depend of buyer's destination place (state, province, district, etc.).
+      </p>
 
       <h4>Tax calculation methods.</h4>
       <p>
         Service that saves invoice line, will calculates tax according given tax category (independent on form amount).
-        For purchase user can change tax amount in form, then saving service will use exactly that amount, this is because tax amount must be the same as in received purchase invoice.
+        Server side calculation policy (for invoice line):
+        <ul>
+          <li>getting from user's form price and quantity</li>
+          <li>getting from DB if price inclusive of taxes</li>
+          <li>getting from DB tax method</li>
+          <li>calculates line/invoice totals, subtotals, taxes</li>
+        </ul>
+      </p>
+      <p>
+        Purchase invoice calculation taxes policy (for invoice line, item basis):
+        <ul>
+          <li>getting from DB item tax method, if taxes applied then calculates with form's tax amount:</li>
+          <li>getting from DB if price inclusive of taxes</li>
+          <li>getting from user's form price, quantity, total taxes</li>
+          <li>calculates for line totals, subtotals, for invoice totals, subtotals, taxes</li>
+        </ul>
+        For purchase user can change tax amount in form, then saving service will use exactly that amount.
+        For invoice basis method, user can edit total tax lines.
+        This is because tax amount must be the same as in received purchase invoice.
       </p>
       <p>There are two calculation methods - tax due on a transaction on an item or an invoice basis.
         These methods give different results:
@@ -141,7 +162,7 @@ round(2.244 + 2.244) != round(2.244) + round(2.244);
           <li>aggrOnlyPercent - BigDecimal, readonly, consist of only tax percentage (single line) or aggregate tax percent (multi-lines)</li>
         </ul>
         This model used to assign tax or set of taxes for an goods or service e.g. "NY sales tax 6%"
-        for pizza hot. 
+        for pizza hot. For "destination tax" method it may be with empty taxes, i.e. no lines, aggrOnlyPercent=0.
       </p>
       <p>Persistable model InvItemTaxCategoryLine:
         <ul>
@@ -160,7 +181,7 @@ round(2.244 + 2.244) != round(2.244) + round(2.244);
       </p>
       <p>Persistable model PurchaseInvoice additionally consist of:
         <ul>
-          <li>taxesLines - List&lt;PurchaseInvoiceTaxLine&gt; list of summary sales taxes (if exists)</li>
+          <li>taxesLines - List&lt;PurchaseInvoiceTaxLine&gt; list of summary sales taxes (if applicable)</li>
         </ul>
       </p>
       <p>Persistable model ADocTaxLine consist of:

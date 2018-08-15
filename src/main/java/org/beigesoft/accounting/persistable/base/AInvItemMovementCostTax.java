@@ -1,7 +1,7 @@
 package org.beigesoft.accounting.persistable.base;
 
 /*
- * Copyright (c) 2016 Beigesoft ™
+ * Copyright (c) 2016 Beigesoft™
  *
  * Licensed under the GNU General Public License (GPL), Version 2.0
  * (the "License");
@@ -14,10 +14,12 @@ package org.beigesoft.accounting.persistable.base;
 
 import java.math.BigDecimal;
 
+import org.beigesoft.accounting.persistable.InvItemTaxCategory;
+
 /**
- * <pre>
+ * <p>
  * Abstract model of purchase with taxes.
- * </pre>
+ * </p>
  *
  * @author Yury Demidenko
  */
@@ -38,6 +40,11 @@ public abstract class AInvItemMovementCostTax extends AInvItemMovementCost {
    * e.g. "tax1 10%=12, tax2 5%=6".</p>
    **/
   private String taxesDescription;
+
+  /**
+   * <p>Origin or destination tax category.</p>
+   **/
+  private InvItemTaxCategory taxCategory;
 
   //Simple getters and setters:
   /**
@@ -86,5 +93,21 @@ public abstract class AInvItemMovementCostTax extends AInvItemMovementCost {
    **/
   public final void setTaxesDescription(final String pTaxesDescription) {
     this.taxesDescription = pTaxesDescription;
+  }
+
+  /**
+   * <p>Getter for taxCategory.</p>
+   * @return InvItemTaxCategory
+   **/
+  public final InvItemTaxCategory getTaxCategory() {
+    return this.taxCategory;
+  }
+
+  /**
+   * <p>Setter for taxCategory.</p>
+   * @param pTaxCategory reference
+   **/
+  public final void setTaxCategory(final InvItemTaxCategory pTaxCategory) {
+    this.taxCategory = pTaxCategory;
   }
 }

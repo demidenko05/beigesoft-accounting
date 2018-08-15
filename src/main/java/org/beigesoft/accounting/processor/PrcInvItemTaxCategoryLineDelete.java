@@ -14,6 +14,7 @@ package org.beigesoft.accounting.processor;
 
 import java.util.List;
 import java.util.Map;
+import java.math.BigDecimal;
 
 import org.beigesoft.model.IRequestData;
 import org.beigesoft.service.IEntityProcessor;
@@ -81,13 +82,15 @@ public class PrcInvItemTaxCategoryLineDelete<RS>
       .retrieveListForField(pAddParam, iitcl,  "itsOwner");
     StringBuffer sb = new StringBuffer("");
     int i = 0;
+    BigDecimal aggrPercent = BigDecimal.ZERO;
     for (InvItemTaxCategoryLine pt : ptl) {
+      aggrPercent = aggrPercent.add(pt.getItsPercentage());
       if (i++ > 0) {
         sb.append(", ");
       }
-      sb.append(pt.getTax().getItsName() + " "
-        + pt.getItsPercentage() + "%");
+      sb.append(pt.getTax().getItsName());
     }
+    pOwner.setAggrOnlyPercent(aggrPercent);
     pOwner.setTaxesDescription(sb.toString());
     getSrvOrm().updateEntity(pAddParam, pOwner);
   }

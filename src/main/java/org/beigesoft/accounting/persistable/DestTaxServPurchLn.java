@@ -17,18 +17,18 @@ import org.beigesoft.persistable.APersistableBaseVersion;
 
 /**
  * <p>
- * Model of item destination tax line.
+ * Model of service destination tax line.
  * </p>
  *
  * @author Yury Demidenko
  */
-public class DestTaxGoodsLn extends APersistableBaseVersion
-  implements IOwned<InvItem> {
+public class DestTaxServPurchLn extends APersistableBaseVersion
+  implements IOwned<ServicePurchased> {
 
   /**
    * <p>Owner.</p>
    **/
-  private InvItem itsOwner;
+  private ServicePurchased itsOwner;
 
   /**
    * <p>Tax destination.</p>
@@ -45,7 +45,7 @@ public class DestTaxGoodsLn extends APersistableBaseVersion
    * @return InvItemTaxCategory
    **/
   @Override
-  public final InvItem getItsOwner() {
+  public final ServicePurchased getItsOwner() {
     return this.itsOwner;
   }
 
@@ -54,7 +54,7 @@ public class DestTaxGoodsLn extends APersistableBaseVersion
    * @param pItsOwner reference
    **/
   @Override
-  public final void setItsOwner(final InvItem pItsOwner) {
+  public final void setItsOwner(final ServicePurchased pItsOwner) {
     this.itsOwner = pItsOwner;
   }
 

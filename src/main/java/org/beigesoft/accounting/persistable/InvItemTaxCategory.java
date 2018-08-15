@@ -1,7 +1,7 @@
 package org.beigesoft.accounting.persistable;
 
 /*
- * Copyright (c) 2016 Beigesoft ™
+ * Copyright (c) 2016 Beigesoft™
  *
  * Licensed under the GNU General Public License (GPL), Version 2.0
  * (the "License");
@@ -13,17 +13,18 @@ package org.beigesoft.accounting.persistable;
  */
 
 import java.util.List;
+import java.math.BigDecimal;
 
 import org.beigesoft.persistable.APersistableBaseNameVersion;
 
 /**
- * <pre>
+ * <p>
  * Model of tax category of a goods/material or service.
  * This model used to assign tax or set of taxes for an item/service
  * e.g. "NY sales taX 6%" for pizza hot.
  * Version, changed time algorithm cause check dirty of
  * calculated from it (derived) records.
- * </pre>
+ * </p>
  *
  * @author Yury Demidenko
  */
@@ -39,6 +40,12 @@ public class InvItemTaxCategory extends APersistableBaseNameVersion {
    * e.g. "NY Sales Tax 10%".</p>
    **/
   private String taxesDescription;
+
+  /**
+   * <p>Read-only, consist of only tax percentage (single line)
+   * or aggregate tax percent (multi-lines).</p>
+   **/
+  private BigDecimal aggrOnlyPercent = BigDecimal.ZERO;
 
   //Simple getters and setters:
   /**
@@ -71,5 +78,21 @@ public class InvItemTaxCategory extends APersistableBaseNameVersion {
    **/
   public final void setTaxesDescription(final String pTaxesDescription) {
     this.taxesDescription = pTaxesDescription;
+  }
+
+  /**
+   * <p>Getter for aggrOnlyPercent.</p>
+   * @return BigDecimal
+   **/
+  public final BigDecimal getAggrOnlyPercent() {
+    return this.aggrOnlyPercent;
+  }
+
+  /**
+   * <p>Setter for aggrOnlyPercent.</p>
+   * @param pAggrOnlyPercent reference
+   **/
+  public final void setAggrOnlyPercent(final BigDecimal pAggrOnlyPercent) {
+    this.aggrOnlyPercent = pAggrOnlyPercent;
   }
 }
