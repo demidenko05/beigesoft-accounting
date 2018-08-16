@@ -74,6 +74,17 @@
         That is "tax destination" method is useful only inside a country where sales taxes depend of buyer's destination place (state, province, district, etc.).
       </p>
 
+      <h4>Using tax destination method in an invoice. Omitting taxes is off (Customer->"is foreigner" is false).</h4>
+      <p>1. <b>Sales</b>. If customer has tax destination, then "reveal tax category" button will appeared when invoice line's item has been changed.
+        When user push this button, then service will return appropriative tax category, then button will disappeared.
+      </p>
+      <p>If customer has no tax destination, then item's tax category will be used for each line, i.e. when user select item in picker, then its tax category will be selected automatically.</p>
+      <p>User can't change tax category and tax amount.</p>
+      <p>2. <b>Purchase</b>. The same rules will applied, except user can change tax amount.
+      Service will calculate tax amount according tax category and other applied tax methods, if amount is different, then it reports this in the line's description.</p>
+      <p>In case of multi-taxes without aggregate rate user can't use "taxes included in price method" and it can't preview tax amount in the "invoice line form".</p>
+      <p>Sales and purchase returns use tax category from origin invoice (TODO sales return)</p>
+
       <h4>Tax calculation methods.</h4>
       <p>
         Service that saves invoice line, will calculates tax according given tax category (independent on form amount).

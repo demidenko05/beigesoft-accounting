@@ -248,7 +248,12 @@ public class PrcSalesInvoiceSave<RS>
   public final void checkOtherFraudUpdate(final Map<String, Object> pAddParam,
     final SalesInvoice pEntity, final IRequestData pRequestData,
       final SalesInvoice pOldEntity) throws Exception {
-    // nothing
+    if (pOldEntity.getCustomer().getTaxDestination() != null && pEntity
+      .getItsTotal().compareTo(BigDecimal.ZERO) == 1 && !pOldEntity
+        .getCustomer().getItsId().equals(pEntity.getCustomer().getItsId())) {
+      throw new ExceptionWithCode(ExceptionWithCode.WRONG_PARAMETER,
+        "can_not_cange_customer_with_another_tax_destination");
+    }
   }
 
   /**
@@ -294,23 +299,25 @@ public class PrcSalesInvoiceSave<RS>
       pEntity.setPaymentTotal(BigDecimal.ZERO);
       pEntity.setPaymentDescription("");
     }
-    List<PaymentFrom> payments = getSrvOrm()
-      .retrieveListWithConditions(pAddParam, PaymentFrom.class,
-        "where PAYMENTFROM.HASMADEACCENTRIES=1 and PAYMENTFROM.REVERSEDID"
-          + " is null and SALESINVOICE=" + pEntity.getItsId());
-    for (PaymentFrom payment : payments) {
-      if (pEntity.getForeignCurrency() != null) {
-        pEntity.setPaymentTotal(pEntity.getPaymentTotal()
-          .add(payment.getForeignTotal()));
-      } else {
-        pEntity.setPaymentTotal(pEntity.getPaymentTotal()
-          .add(payment.getItsTotal()));
-      }
-      pEntity.setPaymentDescription(pEntity.getPaymentDescription() + " "
+    if (!pEntity.getIsNew()) {
+      List<PaymentFrom> payments = getSrvOrm()
+        .retrieveListWithConditions(pAddParam, PaymentFrom.class,
+          "where PAYMENTFROM.HASMADEACCENTRIES=1 and PAYMENTFROM.REVERSEDID"
+            + " is null and SALESINVOICE=" + pEntity.getItsId());
+      for (PaymentFrom payment : payments) {
+        if (pEntity.getForeignCurrency() != null) {
+          pEntity.setPaymentTotal(pEntity.getPaymentTotal()
+            .add(payment.getForeignTotal()));
+        } else {
+          pEntity.setPaymentTotal(pEntity.getPaymentTotal()
+            .add(payment.getItsTotal()));
+        }
+        pEntity.setPaymentDescription(pEntity.getPaymentDescription() + " "
     + getSrvI18n().getMsg(PaymentFrom.class.getSimpleName() + "short", langDef)
       + " #" + payment.getIdDatabaseBirth() + "-" + payment.getItsId()
         + ", " + dateFormat.format(payment.getItsDate())
           + ", " + payment.getItsTotal());
+      }
     }
   }
 }

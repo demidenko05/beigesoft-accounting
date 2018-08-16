@@ -82,19 +82,19 @@ public class HndlAccVarsRequest<RS> implements IHandlerRequestDch {
     AccSettings as = srvAccSettings.lazyGetAccSettings(pReqVars);
     Boolean rSisUsePrecision0 = as.getPricePrecision() == 0
       || as.getCostPrecision() == 0 || as.getBalancePrecision() == 0
-        || as.getQuantityPrecision() == 0;
+        || as.getQuantityPrecision() == 0 || as.getTaxPrecision() == 0;
     Boolean rSisUsePrecision1 = as.getPricePrecision() == 1
       || as.getCostPrecision() == 1 || as.getBalancePrecision() == 1
-        || as.getQuantityPrecision() == 1;
+        || as.getQuantityPrecision() == 1 || as.getTaxPrecision() == 1;
     Boolean rSisUsePrecision2 = as.getPricePrecision() == 2
       || as.getCostPrecision() == 2 || as.getBalancePrecision() == 2
-        || as.getQuantityPrecision() == 2;
+        || as.getQuantityPrecision() == 2 || as.getTaxPrecision() == 2;
     Boolean rSisUsePrecision3 = as.getPricePrecision() == 3
       || as.getCostPrecision() == 3 || as.getBalancePrecision() == 3
-        || as.getQuantityPrecision() == 3;
+        || as.getQuantityPrecision() == 3 || as.getTaxPrecision() == 3;
     Boolean rSisUsePrecision4 = as.getPricePrecision() == 4
       || as.getCostPrecision() == 4 || as.getBalancePrecision() == 4
-        || as.getQuantityPrecision() == 4;
+        || as.getQuantityPrecision() == 4 || as.getTaxPrecision() == 4;
     String rSmRound;
     if (as.getRoundingMode().equals(RoundingMode.HALF_UP)) {
       rSmRound = "S";
@@ -128,10 +128,6 @@ public class HndlAccVarsRequest<RS> implements IHandlerRequestDch {
     pReqVars.put("pricePrecision", as.getPricePrecision());
     pReqVars.put("costPrecision", as.getCostPrecision());
     pReqVars.put("balancePrecision", as.getBalancePrecision());
-    pReqVars.put("isIncludedSalesTaxPurchases",
-      !as.getIsExtractSalesTaxFromPurchase());
-    pReqVars.put("isIncludedSalesTaxSales",
-      !as.getIsExtractSalesTaxFromSales());
     pReqVars.put("curSign", curSign);
     pReqVars.put("RSmRound", rSmRound);
     pReqVars.put("accSettings", as);

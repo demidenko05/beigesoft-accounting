@@ -1,7 +1,7 @@
 package org.beigesoft.accounting.persistable;
 
 /*
- * Copyright (c) 2016 Beigesoft ™
+ * Copyright (c) 2016 Beigesoft™
  *
  * Licensed under the GNU General Public License (GPL), Version 2.0
  * (the "License");
@@ -88,6 +88,12 @@ public class PurchaseReturnLine extends APersistableBaseVersion
    * <p>Description.</p>
    **/
   private String description;
+
+  /**
+   * <p>Origin or destination tax category.</p>
+   **/
+  private InvItemTaxCategory taxCategory;
+
 
   /**
    * <p>Setter for unitOfMeasure.</p>
@@ -346,5 +352,21 @@ public class PurchaseReturnLine extends APersistableBaseVersion
    **/
   public final void setWarehouseSiteFo(final WarehouseSite pWarehouseSiteFo) {
     this.warehouseSiteFo = pWarehouseSiteFo;
+  }
+
+  /**
+   * <p>Getter for taxCategory.</p>
+   * @return InvItemTaxCategory
+   **/
+  public final InvItemTaxCategory getTaxCategory() {
+    return this.taxCategory;
+  }
+
+  /**
+   * <p>Setter for taxCategory.</p>
+   * @param pTaxCategory reference
+   **/
+  public final void setTaxCategory(final InvItemTaxCategory pTaxCategory) {
+    this.taxCategory = pTaxCategory;
   }
 }

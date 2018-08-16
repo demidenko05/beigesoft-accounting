@@ -59,4 +59,6 @@ alter table PURCHASEINVOICELINE add column TAXCATEGORY integer default null refe
 alter table PURCHASEINVOICESERVICELINE add column TAXCATEGORY integer default null references INVITEMTAXCATEGORY(ITSID);
 alter table SALESINVOICELINE add column TAXCATEGORY integer default null references INVITEMTAXCATEGORY(ITSID);
 alter table SALESINVOICESERVICELINE add column TAXCATEGORY integer default null references INVITEMTAXCATEGORY(ITSID);
+alter table PURCHASERETURNLINE add column TAXCATEGORY integer default null references INVITEMTAXCATEGORY(ITSID);
+alter table SALESRETURNLINE add column TAXCATEGORY integer default null references INVITEMTAXCATEGORY(ITSID);
 update DATABASEINFO set DATABASEVERSION=7, DESCRIPTION='Beige Accounting OIO DB version 7';

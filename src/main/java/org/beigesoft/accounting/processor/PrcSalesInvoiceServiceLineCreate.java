@@ -35,7 +35,7 @@ public class PrcSalesInvoiceServiceLineCreate<RS>
 
   /**
    * <p>Process entity request.</p>
-   * @param pAddParam additional param, e.g. return this line's
+   * @param pReqVars additional param, e.g. return this line's
    * document in "nextEntity" for farther process
    * @param pRequestData Request Data
    * @param pEntity Entity to process
@@ -44,13 +44,15 @@ public class PrcSalesInvoiceServiceLineCreate<RS>
    **/
   @Override
   public final SalesInvoiceServiceLine process(
-    final Map<String, Object> pAddParam,
+    final Map<String, Object> pReqVars,
       final SalesInvoiceServiceLine pEntityPb,
         final IRequestData pRequestData) throws Exception {
     SalesInvoiceServiceLine entity = this.prcEntityCreate
-      .process(pAddParam, pEntityPb, pRequestData);
+      .process(pReqVars, pEntityPb, pRequestData);
+    pReqVars.put("DebtorCreditortaxDestinationdeepLevel", 2);
     entity.setItsOwner(this.prcEntityCreate.getSrvOrm()
-      .retrieveEntity(pAddParam, entity.getItsOwner()));
+      .retrieveEntity(pReqVars, entity.getItsOwner()));
+    pReqVars.remove("DebtorCreditortaxDestinationdeepLevel");
     return entity;
   }
 
