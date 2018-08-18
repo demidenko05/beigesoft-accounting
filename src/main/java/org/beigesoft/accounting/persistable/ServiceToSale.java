@@ -40,6 +40,11 @@ public class ServiceToSale extends APersistableBaseNameVersion {
   private InvItemTaxCategory taxCategory;
 
   /**
+   * <p>Default unit of measure.</p>
+   **/
+  private UnitOfMeasure defUnitOfMeasure;
+
+  /**
    * <p>Destination taxes categories and rules.</p>
    **/
   private List<DestTaxServSelLn> destinationTaxes;
@@ -93,5 +98,21 @@ public class ServiceToSale extends APersistableBaseNameVersion {
   public final void setDestinationTaxes(
     final List<DestTaxServSelLn> pDestinationTaxes) {
     this.destinationTaxes = pDestinationTaxes;
+  }
+
+  /**
+   * <p>Geter for defUnitOfMeasure.</p>
+   * @return UnitOfMeasure
+   **/
+  public final UnitOfMeasure getDefUnitOfMeasure() {
+    return this.defUnitOfMeasure;
+  }
+
+  /**
+   * <p>Setter for defUnitOfMeasure.</p>
+   * @param pDefUnitOfMeasure reference
+   **/
+  public final void setDefUnitOfMeasure(final UnitOfMeasure pDefUnitOfMeasure) {
+    this.defUnitOfMeasure = pDefUnitOfMeasure;
   }
 }

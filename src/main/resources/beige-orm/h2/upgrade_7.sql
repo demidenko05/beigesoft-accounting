@@ -70,4 +70,8 @@ alter table PURCHASERETURNLINE add column TAXCATEGORY bigint default null;
 alter table PURCHASERETURNLINE add constraint fksisltaxcat FOREIGN KEY (TAXCATEGORY) references INVITEMTAXCATEGORY(ITSID);
 alter table SALESRETURNLINE add column TAXCATEGORY bigint default null;
 alter table SALESRETURNLINE add constraint fksisltaxcat FOREIGN KEY (TAXCATEGORY) references INVITEMTAXCATEGORY(ITSID);
+alter table SERVICETOSALE add column DEFUNITOFMEASURE bigint default null;
+alter table SERVICETOSALE add constraint fksertoselduom FOREIGN KEY (DEFUNITOFMEASURE) REFERENCES UNITOFMEASURE(ITSID);
+alter table SERVICEPURCHASED add column DEFUNITOFMEASURE bigint default null;
+alter table SERVICEPURCHASED add constraint fkserpurchduom FOREIGN KEY (DEFUNITOFMEASURE) REFERENCES UNITOFMEASURE(ITSID);
 update DATABASEINFO set DATABASEVERSION=7, DESCRIPTION='Beige Accounting OIO DB version 7';

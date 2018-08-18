@@ -61,4 +61,6 @@ alter table SALESINVOICELINE add column TAXCATEGORY integer default null referen
 alter table SALESINVOICESERVICELINE add column TAXCATEGORY integer default null references INVITEMTAXCATEGORY(ITSID);
 alter table PURCHASERETURNLINE add column TAXCATEGORY integer default null references INVITEMTAXCATEGORY(ITSID);
 alter table SALESRETURNLINE add column TAXCATEGORY integer default null references INVITEMTAXCATEGORY(ITSID);
+alter table SERVICETOSALE add column DEFUNITOFMEASURE integer default null references UNITOFMEASURE(ITSID);
+alter table SERVICEPURCHASED add column DEFUNITOFMEASURE integer default null references UNITOFMEASURE(ITSID);
 update DATABASEINFO set DATABASEVERSION=7, DESCRIPTION='Beige Accounting OIO DB version 7';
