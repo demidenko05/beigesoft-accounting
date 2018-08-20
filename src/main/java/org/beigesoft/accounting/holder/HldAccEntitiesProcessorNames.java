@@ -127,6 +127,7 @@ import org.beigesoft.accounting.processor.PrcAccSettingsLineSave;
 import org.beigesoft.accounting.processor.PrcBankStatementSave;
 import org.beigesoft.accounting.processor.PrcBankStatementLineGfe;
 import org.beigesoft.accounting.processor.PrcBankStatementLineSave;
+import org.beigesoft.accounting.processor.PrcInvoiceGfe;
 import org.beigesoft.accounting.persistable.BankStatement;
 import org.beigesoft.accounting.persistable.BankStatementLine;
 import org.beigesoft.accounting.persistable.AccSettings;
@@ -206,7 +207,7 @@ public class HldAccEntitiesProcessorNames
   public final String getFor(final Class<?> pClass, final String pThingName) {
     if ("entityEdit".equals(pThingName)
       || "entityConfirmDelete".equals(pThingName)) {
-      return getForRetrieveForEditDelete(pClass);
+      return getForRetrieveForEditDelete(pClass, pThingName);
     } else if ("entityCopy".equals(pThingName)) {
       return getForCopy(pClass);
     } else if ("entityPrint".equals(pThingName)) {
@@ -643,13 +644,19 @@ public class HldAccEntitiesProcessorNames
   /**
    * <p>Get processor name for retrieve to edit/delete.</p>
    * @param pClass a Class
+   * @param pAction Action
    * @return a thing
    **/
-  protected final String getForRetrieveForEditDelete(final Class<?> pClass) {
+  protected final String getForRetrieveForEditDelete(final Class<?> pClass,
+    final String pAction) {
     if (pClass == SubaccountLine.class || pClass == Account.class) {
       return PrcAccEntityWithSubaccRetrieve.class.getSimpleName();
-    } else if (pClass == BankStatementLine.class) {
+    } else if (pClass == BankStatementLine.class
+      && pAction.equals("entityEdit")) {
       return PrcBankStatementLineGfe.class.getSimpleName();
+    } else if (pAction.equals("entityEdit") && (pClass == SalesInvoice.class
+      || pClass == PurchaseInvoice.class)) {
+      return PrcInvoiceGfe.class.getSimpleName();
     } else if (pClass == PaymentFrom.class || pClass == PaymentTo.class
       || pClass == PrepaymentFrom.class || pClass == PrepaymentTo.class
         || pClass == AdditionCostLine.class) {

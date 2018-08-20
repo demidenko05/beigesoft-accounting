@@ -1,7 +1,7 @@
 package org.beigesoft.accounting.processor;
 
 /*
- * Copyright (c) 2017 Beigesoft ™
+ * Copyright (c) 2017 Beigesoft™
  *
  * Licensed under the GNU General Public License (GPL), Version 2.0
  * (the "License");
@@ -30,7 +30,7 @@ import org.beigesoft.accounting.persistable.SalesInvoiceGoodsTaxLine;
 import org.beigesoft.accounting.persistable.SalesInvoiceServiceTaxLine;
 
 /**
- * <p>Process that save sales invoice.</p>
+ * <p>Process that saves sales invoice.</p>
  *
  * @param <RS> platform dependent record set type
  * @author Yury Demidenko
@@ -40,18 +40,18 @@ public class PrcSalesInvoiceSave<RS>
 
   /**
    * <p>Make save preparations before insert/update block if it's need.</p>
-   * @param pAddParam additional param
+   * @param pReqVars additional param
    * @param pEntity entity
    * @param pRequestData Request Data
    * @throws Exception - an exception
    **/
   @Override
-  public final void makeFirstPrepareForSave(final Map<String, Object> pAddParam,
+  public final void makeFirstPrepareForSave(final Map<String, Object> pReqVars,
     final SalesInvoice pEntity,
       final IRequestData pRequestData) throws Exception {
     if (pEntity.getPrepaymentFrom() != null) {
       pEntity.setPrepaymentFrom(getSrvOrm()
-        .retrieveEntity(pAddParam, pEntity.getPrepaymentFrom()));
+        .retrieveEntity(pReqVars, pEntity.getPrepaymentFrom()));
       if (pEntity.getReversedId() == null && pEntity.getPrepaymentFrom()
         .getSalesInvoiceId() != null && !pEntity.getHasMadeAccEntries()) {
         throw new ExceptionWithCode(ExceptionWithCode.WRONG_PARAMETER,
@@ -75,20 +75,23 @@ public class PrcSalesInvoiceSave<RS>
         "reverse_payments_first");
     }
     if (pEntity.getReversedId() == null) {
-      calculateTotalPayment(pAddParam, pEntity);
+      calculateTotalPayment(pReqVars, pEntity);
+    }
+    if (!pEntity.getIsNew()) {
+      pReqVars.put("DebtorCreditortaxDestinationdeepLevel", 2);
     }
   }
 
   /**
    * <p>Make other entries include reversing if it's need when save.</p>
-   * @param pAddParam additional param
+   * @param pReqVars additional param
    * @param pEntity entity
    * @param pRequestData Request Data
    * @param pIsNew if entity was new
    * @throws Exception - an exception
    **/
   @Override
-  public final void makeOtherEntries(final Map<String, Object> pAddParam,
+  public final void makeOtherEntries(final Map<String, Object> pReqVars,
     final SalesInvoice pEntity, final IRequestData pRequestData,
       final boolean pIsNew) throws Exception {
     String actionAdd = pRequestData.getParameter("actionAdd");
@@ -104,8 +107,8 @@ public class PrcSalesInvoiceSave<RS>
         reversed.setItsId(pEntity.getReversedId());
         sil.setItsOwner(reversed);
         List<SalesInvoiceLine> reversedLines = getSrvOrm().
-          retrieveListForField(pAddParam, sil, "itsOwner");
-        String langDef = (String) pAddParam.get("langDef");
+          retrieveListForField(pReqVars, sil, "itsOwner");
+        String langDef = (String) pReqVars.get("langDef");
         for (SalesInvoiceLine reversedLine : reversedLines) {
           if (reversedLine.getReversedId() == null) {
             SalesInvoiceLine reversingLine = new SalesInvoiceLine();
@@ -133,10 +136,10 @@ public class PrcSalesInvoiceSave<RS>
             reversingLine.setDescription(getSrvI18n()
               .getMsg("reversed_n", langDef) + reversedLine.getIdDatabaseBirth()
                 + "-" + reversedLine.getItsId()); //local
-            getSrvOrm().insertEntity(pAddParam, reversingLine);
+            getSrvOrm().insertEntity(pReqVars, reversingLine);
             reversingLine.setIsNew(false);
-            getSrvWarehouseEntry().reverseDraw(pAddParam, reversingLine);
-            getSrvCogsEntry().reverseDraw(pAddParam, reversingLine,
+            getSrvWarehouseEntry().reverseDraw(pReqVars, reversingLine);
+            getSrvCogsEntry().reverseDraw(pReqVars, reversingLine,
               pEntity.getItsDate(), pEntity.getItsId());
             String descr;
             if (reversedLine.getDescription() == null) {
@@ -149,20 +152,20 @@ public class PrcSalesInvoiceSave<RS>
                 + reversingLine.getIdDatabaseBirth() + "-"
                   + reversingLine.getItsId());
             reversedLine.setReversedId(reversingLine.getItsId());
-            getSrvOrm().updateEntity(pAddParam, reversedLine);
+            getSrvOrm().updateEntity(pReqVars, reversedLine);
             SalesInvoiceGoodsTaxLine pigtlt = new SalesInvoiceGoodsTaxLine();
             pigtlt.setItsOwner(reversedLine);
             List<SalesInvoiceGoodsTaxLine> tls = getSrvOrm()
-              .retrieveListForField(pAddParam, pigtlt, "itsOwner");
+              .retrieveListForField(pReqVars, pigtlt, "itsOwner");
             for (SalesInvoiceGoodsTaxLine pigtl : tls) {
-              getSrvOrm().deleteEntity(pAddParam, pigtl);
+              getSrvOrm().deleteEntity(pReqVars, pigtl);
             }
           }
         }
         SalesInvoiceServiceLine sisl = new SalesInvoiceServiceLine();
         sisl.setItsOwner(reversed);
         List<SalesInvoiceServiceLine> revServLines = getSrvOrm().
-          retrieveListForField(pAddParam, sisl, "itsOwner");
+          retrieveListForField(pReqVars, sisl, "itsOwner");
         for (SalesInvoiceServiceLine reversedLine : revServLines) {
           if (reversedLine.getReversedId() == null) {
             SalesInvoiceServiceLine reversingLine =
@@ -188,24 +191,24 @@ public class PrcSalesInvoiceSave<RS>
               .negate());
             reversingLine.setIsNew(true);
             reversingLine.setItsOwner(pEntity);
-            getSrvOrm().insertEntity(pAddParam, reversingLine);
+            getSrvOrm().insertEntity(pReqVars, reversingLine);
             reversingLine.setIsNew(false);
             reversedLine.setReversedId(reversingLine.getItsId());
-            getSrvOrm().updateEntity(pAddParam, reversedLine);
+            getSrvOrm().updateEntity(pReqVars, reversedLine);
             SalesInvoiceServiceTaxLine pigtlt =
               new SalesInvoiceServiceTaxLine();
             pigtlt.setItsOwner(reversedLine);
             List<SalesInvoiceServiceTaxLine> tls = getSrvOrm()
-              .retrieveListForField(pAddParam, pigtlt, "itsOwner");
+              .retrieveListForField(pReqVars, pigtlt, "itsOwner");
             for (SalesInvoiceServiceTaxLine pigtl : tls) {
-              getSrvOrm().deleteEntity(pAddParam, pigtl);
+              getSrvOrm().deleteEntity(pReqVars, pigtl);
             }
           }
         }
         SalesInvoiceTaxLine sitl = new SalesInvoiceTaxLine();
         sitl.setItsOwner(reversed);
         List<SalesInvoiceTaxLine> reversedTaxLines = getSrvOrm().
-          retrieveListForField(pAddParam, sitl, "itsOwner");
+          retrieveListForField(pReqVars, sitl, "itsOwner");
         for (SalesInvoiceTaxLine reversedLine : reversedTaxLines) {
           if (reversedLine.getReversedId() == null) {
             SalesInvoiceTaxLine reversingLine = new SalesInvoiceTaxLine();
@@ -217,10 +220,10 @@ public class PrcSalesInvoiceSave<RS>
             reversingLine.setTax(reversedLine.getTax());
             reversingLine.setIsNew(true);
             reversingLine.setItsOwner(pEntity);
-            getSrvOrm().insertEntity(pAddParam, reversingLine);
+            getSrvOrm().insertEntity(pReqVars, reversingLine);
             reversingLine.setIsNew(false);
             reversedLine.setReversedId(reversingLine.getItsId());
-            getSrvOrm().updateEntity(pAddParam, reversedLine);
+            getSrvOrm().updateEntity(pReqVars, reversedLine);
           }
         }
       }
@@ -230,7 +233,7 @@ public class PrcSalesInvoiceSave<RS>
         } else {
           pEntity.getPrepaymentFrom().setSalesInvoiceId(pEntity.getItsId());
         }
-        getSrvOrm().updateEntity(pAddParam, pEntity.getPrepaymentFrom());
+        getSrvOrm().updateEntity(pReqVars, pEntity.getPrepaymentFrom());
       }
     }
   }
@@ -238,34 +241,41 @@ public class PrcSalesInvoiceSave<RS>
   /**
    * <p>Check other fraud update e.g. prevent change completed unaccounted
    * manufacturing process.</p>
-   * @param pAddParam additional param
+   * @param pReqVars additional param
    * @param pEntity entity
    * @param pRequestData Request Data
    * @param pOldEntity old saved entity
    * @throws Exception - an exception
    **/
   @Override
-  public final void checkOtherFraudUpdate(final Map<String, Object> pAddParam,
+  public final void checkOtherFraudUpdate(final Map<String, Object> pReqVars,
     final SalesInvoice pEntity, final IRequestData pRequestData,
       final SalesInvoice pOldEntity) throws Exception {
-    if (pOldEntity.getCustomer().getTaxDestination() != null && pEntity
-      .getItsTotal().compareTo(BigDecimal.ZERO) == 1 && !pOldEntity
+    if (pEntity.getItsTotal().compareTo(BigDecimal.ZERO) == 1) {
+      if (pOldEntity.getCustomer().getTaxDestination() != null && !pOldEntity
         .getCustomer().getItsId().equals(pEntity.getCustomer().getItsId())) {
-      throw new ExceptionWithCode(ExceptionWithCode.WRONG_PARAMETER,
-        "can_not_cange_customer_with_another_tax_destination");
+        throw new ExceptionWithCode(ExceptionWithCode.WRONG_PARAMETER,
+          "can_not_cange_customer_with_another_tax_destination");
+      }
+      if (!pOldEntity.getOmitTaxes().equals(pEntity.getOmitTaxes())
+        || !pOldEntity.getPriceIncTax().equals(pEntity.getPriceIncTax())) {
+        throw new ExceptionWithCode(ExceptionWithCode.WRONG_PARAMETER,
+          "can_not_change_tax_method");
+      }
     }
+    pReqVars.remove("DebtorCreditortaxDestinationdeepLevel");
   }
 
   /**
    * <p>Additional check document for ready to account (make acc.entries).</p>
-   * @param pAddParam additional param
+   * @param pReqVars additional param
    * @param pEntity entity
    * @param pRequestData Request Data
    * @throws Exception - an exception if don't
    **/
   @Override
   public final void addCheckIsReadyToAccount(
-    final Map<String, Object> pAddParam,
+    final Map<String, Object> pReqVars,
       final SalesInvoice pEntity,
         final IRequestData pRequestData) throws Exception {
     // nothing
@@ -274,14 +284,14 @@ public class PrcSalesInvoiceSave<RS>
   //Utils:
   /**
    * <p>Calculate Total Payment.</p>
-   * @param pAddParam additional param
+   * @param pReqVars additional param
    * @param pEntity SalesInvoice
    * @throws Exception - an exception
    **/
   public final void calculateTotalPayment(
-    final Map<String, Object> pAddParam,
+    final Map<String, Object> pReqVars,
       final SalesInvoice pEntity) throws Exception {
-    String langDef = (String) pAddParam.get("langDef");
+    String langDef = (String) pReqVars.get("langDef");
     DateFormat dateFormat = DateFormat.getDateTimeInstance(
       DateFormat.MEDIUM, DateFormat.SHORT, new Locale(langDef));
     if (pEntity.getPrepaymentFrom() != null) {
@@ -301,7 +311,7 @@ public class PrcSalesInvoiceSave<RS>
     }
     if (!pEntity.getIsNew()) {
       List<PaymentFrom> payments = getSrvOrm()
-        .retrieveListWithConditions(pAddParam, PaymentFrom.class,
+        .retrieveListWithConditions(pReqVars, PaymentFrom.class,
           "where PAYMENTFROM.HASMADEACCENTRIES=1 and PAYMENTFROM.REVERSEDID"
             + " is null and SALESINVOICE=" + pEntity.getItsId());
       for (PaymentFrom payment : payments) {

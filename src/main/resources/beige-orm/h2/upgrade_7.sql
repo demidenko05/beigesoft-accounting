@@ -74,4 +74,6 @@ alter table SERVICETOSALE add column DEFUNITOFMEASURE bigint default null;
 alter table SERVICETOSALE add constraint fksertoselduom FOREIGN KEY (DEFUNITOFMEASURE) REFERENCES UNITOFMEASURE(ITSID);
 alter table SERVICEPURCHASED add column DEFUNITOFMEASURE bigint default null;
 alter table SERVICEPURCHASED add constraint fkserpurchduom FOREIGN KEY (DEFUNITOFMEASURE) REFERENCES UNITOFMEASURE(ITSID);
+alter table PURCHASEINVOICE add column OMITTAXES tinyint not null default 0;
+alter table SALESINVOICE add column OMITTAXES tinyint not null default 0;
 update DATABASEINFO set DATABASEVERSION=7, DESCRIPTION='Beige Accounting OIO DB version 7';

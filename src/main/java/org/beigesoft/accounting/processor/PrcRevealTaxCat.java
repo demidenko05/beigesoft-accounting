@@ -79,17 +79,17 @@ public class PrcRevealTaxCat<RS> implements IProcessor {
     String destTaxItemLnNm;
     String itemNm;
     if (SalesInvoiceServiceLine.class.getSimpleName().equals(nmEnt)) {
-      destTaxItemLnNm = DestTaxServSelLn.class.getSimpleName();
-      itemNm = ServiceToSale.class.getSimpleName();
+      destTaxItemLnNm = DestTaxServSelLn.class.getSimpleName().toUpperCase();
+      itemNm = ServiceToSale.class.getSimpleName().toUpperCase();
     } else if (PurchaseInvoiceServiceLine.class.getSimpleName().equals(nmEnt)) {
-      destTaxItemLnNm = DestTaxServPurchLn.class.getSimpleName();
-      itemNm = ServicePurchased.class.getSimpleName();
+      destTaxItemLnNm = DestTaxServPurchLn.class.getSimpleName().toUpperCase();
+      itemNm = ServicePurchased.class.getSimpleName().toUpperCase();
     } else if (PurchaseInvoiceLine.class.getSimpleName().equals(nmEnt)
       || SalesInvoiceLine.class.getSimpleName().equals(nmEnt)
         || SalesReturnLine.class.getSimpleName().equals(nmEnt)
           || PurchaseReturnLine.class.getSimpleName().equals(nmEnt)) {
-      destTaxItemLnNm = DestTaxGoodsLn.class.getSimpleName();
-      itemNm = InvItem.class.getSimpleName();
+      destTaxItemLnNm = DestTaxGoodsLn.class.getSimpleName().toUpperCase();
+      itemNm = InvItem.class.getSimpleName().toUpperCase();
     } else {
       throw new ExceptionWithCode(ExceptionWithCode.WRONG_PARAMETER,
         "Wrong line type " + nmEnt);

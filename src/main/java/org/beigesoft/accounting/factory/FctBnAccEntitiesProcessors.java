@@ -85,6 +85,7 @@ import org.beigesoft.accounting.processor.PrcGoodsLossSave;
 import org.beigesoft.accounting.processor.PrcGoodsLossLineSave;
 import org.beigesoft.accounting.processor.PrcGoodsLossLineCopy;
 import org.beigesoft.accounting.processor.PrcGoodsLossLineGfr;
+import org.beigesoft.accounting.processor.PrcInvoiceGfe;
 import org.beigesoft.accounting.processor.PrcSalesInvoiceSave;
 import org.beigesoft.accounting.processor.PrcSalesInvoiceLineSave;
 import org.beigesoft.accounting.processor.PrcSalesInvoiceLineCopy;
@@ -140,6 +141,7 @@ import org.beigesoft.replicator.persistable.
   base.AReplExcludeAccountsDebitCredit;
 import org.beigesoft.accounting.persistable.base.ADocWithTaxes;
 import org.beigesoft.accounting.persistable.base.ADocWithTaxesPayments;
+import org.beigesoft.accounting.persistable.IInvoice;
 import org.beigesoft.accounting.persistable.IDocWarehouse;
 import org.beigesoft.accounting.persistable.IDoc;
 import org.beigesoft.accounting.persistable.MoveItems;
@@ -518,6 +520,9 @@ public class FctBnAccEntitiesProcessors<RS>
           } else if (pBeanName
             .equals(PrcBankStatementLineSave.class.getSimpleName())) {
             proc = lazyGetPrcBankStatementLineSave(pAddParam);
+          } else if (pBeanName
+            .equals(PrcInvoiceGfe.class.getSimpleName())) {
+            proc = lazyGetPrcInvoiceGfe(pAddParam);
           } else if (pBeanName
             .equals(PrcBankStatementLineGfe.class.getSimpleName())) {
             proc = lazyGetPrcBankStatementLineGfe(pAddParam);
@@ -2181,6 +2186,31 @@ public class FctBnAccEntitiesProcessors<RS>
       //assigning fully initialized object:
       this.processorsMap
         .put(PrcBankStatementLineSave.class.getSimpleName(), proc);
+    }
+    return proc;
+  }
+
+  /**
+   * <p>Get PrcInvoiceGfe (create and put into map).</p>
+   * @param pAddParam additional param
+   * @return requested PrcInvoiceGfe
+   * @throws Exception - an exception
+   */
+  protected final PrcInvoiceGfe<RS, IInvoice> lazyGetPrcInvoiceGfe(
+    final Map<String, Object> pAddParam) throws Exception {
+    @SuppressWarnings("unchecked")
+    PrcInvoiceGfe<RS, IInvoice> proc = (PrcInvoiceGfe<RS, IInvoice>)
+      this.processorsMap.get(PrcInvoiceGfe.class.getSimpleName());
+    if (proc == null) {
+      proc = new PrcInvoiceGfe<RS, IInvoice>();
+      @SuppressWarnings("unchecked")
+      PrcEntityPbEditDelete<RS, IInvoice> procDlg =
+    (PrcEntityPbEditDelete<RS, IInvoice>) this.fctBnEntitiesProcessors
+  .lazyGet(pAddParam, PrcEntityPbEditDelete.class.getSimpleName());
+      proc.setPrcEntityPbEditDelete(procDlg);
+      //assigning fully initialized object:
+      this.processorsMap
+        .put(PrcInvoiceGfe.class.getSimpleName(), proc);
     }
     return proc;
   }

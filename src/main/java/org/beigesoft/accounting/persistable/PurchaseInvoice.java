@@ -25,8 +25,7 @@ import org.beigesoft.accounting.model.EWarehouseMovementType;
  *
  * @author Yury Demidenko
  */
-public class PurchaseInvoice extends ADocWithTaxesPayments
-  implements IDocWarehouse {
+public class PurchaseInvoice extends ADocWithTaxesPayments implements IInvoice {
 
   /**
    * <p>There is no goods in stock.</p>
@@ -96,6 +95,11 @@ public class PurchaseInvoice extends ADocWithTaxesPayments
   private Boolean priceIncTax = Boolean.FALSE;
 
   /**
+   * <p>Is omitting taxes, false default.</p>
+   **/
+  private Boolean omitTaxes = Boolean.FALSE;
+
+  /**
    * <p>OOP friendly Constant of code type 1.</p>
    **/
   @Override
@@ -111,6 +115,132 @@ public class PurchaseInvoice extends ADocWithTaxesPayments
   @Override
   public final EWarehouseMovementType getLinesWarehouseType() {
     return EWarehouseMovementType.LOAD;
+  }
+
+  /**
+   * <p>Getter for foreignCurrency.</p>
+   * @return Currency
+   **/
+  @Override
+  public final Currency getForeignCurrency() {
+    return this.foreignCurrency;
+  }
+
+  /**
+   * <p>Setter for foreignCurrency.</p>
+   * @param pForeignCurrency reference
+   **/
+  @Override
+  public final void setForeignCurrency(final Currency pForeignCurrency) {
+    this.foreignCurrency = pForeignCurrency;
+  }
+
+  /**
+   * <p>Getter for exchangeRate.</p>
+   * @return BigDecimal
+   **/
+  @Override
+  public final BigDecimal getExchangeRate() {
+    return this.exchangeRate;
+  }
+
+  /**
+   * <p>Setter for exchangeRate.</p>
+   * @param pExchangeRate reference
+   **/
+  @Override
+  public final void setExchangeRate(final BigDecimal pExchangeRate) {
+    this.exchangeRate = pExchangeRate;
+  }
+
+  /**
+   * <p>Getter for foreignSubtotal.</p>
+   * @return BigDecimal
+   **/
+  @Override
+  public final BigDecimal getForeignSubtotal() {
+    return this.foreignSubtotal;
+  }
+
+  /**
+   * <p>Setter for foreignSubtotal.</p>
+   * @param pForeignSubtotal reference
+   **/
+  @Override
+  public final void setForeignSubtotal(final BigDecimal pForeignSubtotal) {
+    this.foreignSubtotal = pForeignSubtotal;
+  }
+
+  /**
+   * <p>Getter for foreignTotalTaxes.</p>
+   * @return BigDecimal
+   **/
+  @Override
+  public final BigDecimal getForeignTotalTaxes() {
+    return this.foreignTotalTaxes;
+  }
+
+  /**
+   * <p>Setter for foreignTotalTaxes.</p>
+   * @param pForeignTotalTaxes reference
+   **/
+  @Override
+  public final void setForeignTotalTaxes(final BigDecimal pForeignTotalTaxes) {
+    this.foreignTotalTaxes = pForeignTotalTaxes;
+  }
+
+  /**
+   * <p>Getter for foreignTotal.</p>
+   * @return BigDecimal
+   **/
+  @Override
+  public final BigDecimal getForeignTotal() {
+    return this.foreignTotal;
+  }
+
+  /**
+   * <p>Setter for foreignTotal.</p>
+   * @param pForeignTotal reference
+   **/
+  @Override
+  public final void setForeignTotal(final BigDecimal pForeignTotal) {
+    this.foreignTotal = pForeignTotal;
+  }
+
+  /**
+   * <p>Getter for priceIncTax.</p>
+   * @return Boolean
+   **/
+  @Override
+  public final Boolean getPriceIncTax() {
+    return this.priceIncTax;
+  }
+
+  /**
+   * <p>Setter for priceIncTax.</p>
+   * @param pPriceIncTax reference
+   **/
+  @Override
+  public final void setPriceIncTax(final Boolean pPriceIncTax) {
+    this.priceIncTax = pPriceIncTax;
+  }
+
+  /**
+   * <p>Getter for omitTaxes.</p>
+   * @return Boolean
+   **/
+  @Override
+  public final Boolean getOmitTaxes() {
+    return this.omitTaxes;
+  }
+
+  /**
+   * <p>Setter for omitTaxes.</p>
+   * @param pOmitTaxes reference
+   **/
+  @Override
+  public final void setOmitTaxes(final Boolean pOmitTaxes) {
+    this.omitTaxes = pOmitTaxes;
   }
 
   //Simple getters and setters:
@@ -194,101 +324,5 @@ public class PurchaseInvoice extends ADocWithTaxesPayments
   public final void setTaxesLines(
     final List<PurchaseInvoiceTaxLine> pTaxesLines) {
     this.taxesLines = pTaxesLines;
-  }
-
-  /**
-   * <p>Getter for foreignCurrency.</p>
-   * @return Currency
-   **/
-  public final Currency getForeignCurrency() {
-    return this.foreignCurrency;
-  }
-
-  /**
-   * <p>Setter for foreignCurrency.</p>
-   * @param pForeignCurrency reference
-   **/
-  public final void setForeignCurrency(final Currency pForeignCurrency) {
-    this.foreignCurrency = pForeignCurrency;
-  }
-
-  /**
-   * <p>Getter for exchangeRate.</p>
-   * @return BigDecimal
-   **/
-  public final BigDecimal getExchangeRate() {
-    return this.exchangeRate;
-  }
-
-  /**
-   * <p>Setter for exchangeRate.</p>
-   * @param pExchangeRate reference
-   **/
-  public final void setExchangeRate(final BigDecimal pExchangeRate) {
-    this.exchangeRate = pExchangeRate;
-  }
-
-  /**
-   * <p>Getter for foreignSubtotal.</p>
-   * @return BigDecimal
-   **/
-  public final BigDecimal getForeignSubtotal() {
-    return this.foreignSubtotal;
-  }
-
-  /**
-   * <p>Setter for foreignSubtotal.</p>
-   * @param pForeignSubtotal reference
-   **/
-  public final void setForeignSubtotal(final BigDecimal pForeignSubtotal) {
-    this.foreignSubtotal = pForeignSubtotal;
-  }
-
-  /**
-   * <p>Getter for foreignTotalTaxes.</p>
-   * @return BigDecimal
-   **/
-  public final BigDecimal getForeignTotalTaxes() {
-    return this.foreignTotalTaxes;
-  }
-
-  /**
-   * <p>Setter for foreignTotalTaxes.</p>
-   * @param pForeignTotalTaxes reference
-   **/
-  public final void setForeignTotalTaxes(final BigDecimal pForeignTotalTaxes) {
-    this.foreignTotalTaxes = pForeignTotalTaxes;
-  }
-
-  /**
-   * <p>Getter for foreignTotal.</p>
-   * @return BigDecimal
-   **/
-  public final BigDecimal getForeignTotal() {
-    return this.foreignTotal;
-  }
-
-  /**
-   * <p>Setter for foreignTotal.</p>
-   * @param pForeignTotal reference
-   **/
-  public final void setForeignTotal(final BigDecimal pForeignTotal) {
-    this.foreignTotal = pForeignTotal;
-  }
-
-  /**
-   * <p>Getter for priceIncTax.</p>
-   * @return Boolean
-   **/
-  public final Boolean getPriceIncTax() {
-    return this.priceIncTax;
-  }
-
-  /**
-   * <p>Setter for priceIncTax.</p>
-   * @param pPriceIncTax reference
-   **/
-  public final void setPriceIncTax(final Boolean pPriceIncTax) {
-    this.priceIncTax = pPriceIncTax;
   }
 }

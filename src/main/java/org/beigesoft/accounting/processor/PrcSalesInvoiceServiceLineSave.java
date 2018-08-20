@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 import org.beigesoft.model.IRequestData;
 import org.beigesoft.exception.ExceptionWithCode;
@@ -102,10 +103,13 @@ public class PrcSalesInvoiceServiceLineSave<RS>
     //rounding:
     pEntity.setItsQuantity(pEntity.getItsQuantity().setScale(
       as.getQuantityPrecision(), as.getRoundingMode()));
+    boolean isTaxable = as.getIsExtractSalesTaxFromSales() && !pEntity
+      .getItsOwner().getOmitTaxes() && !pEntity.getItsOwner().getCustomer()
+        .getIsForeigner();
     if (pEntity.getItsOwner().getForeignCurrency() != null) {
       pEntity.setForeignPrice(pEntity.getForeignPrice().setScale(as
         .getPricePrecision(), as.getRoundingMode()));
-      if (pEntity.getItsOwner().getPriceIncTax()) {
+      if (!isTaxable || pEntity.getItsOwner().getPriceIncTax()) {
         pEntity.setForeignTotal(pEntity.getItsQuantity().multiply(pEntity
     .getForeignPrice()).setScale(as.getPricePrecision(), as.getRoundingMode()));
       } else {
@@ -119,7 +123,7 @@ public class PrcSalesInvoiceServiceLineSave<RS>
       pEntity.setItsPrice(pEntity.getItsPrice().setScale(as
         .getPricePrecision(), as.getRoundingMode()));
     }
-    if (pEntity.getItsOwner().getPriceIncTax()) {
+    if (!isTaxable || pEntity.getItsOwner().getPriceIncTax()) {
       pEntity.setItsTotal(pEntity.getItsQuantity().multiply(pEntity
     .getItsPrice()).setScale(as.getPricePrecision(), as.getRoundingMode()));
     } else {
@@ -130,107 +134,108 @@ public class PrcSalesInvoiceServiceLineSave<RS>
     BigDecimal totalTaxesFc = BigDecimal.ZERO;
     BigDecimal bd100 = new BigDecimal("100.00");
     List<SalesInvoiceServiceTaxLine> tls = null;
-    Boolean salTaxIsInvoiceBase = as.getSalTaxIsInvoiceBase();
-    Boolean salTaxUseAggregItBas = as.getSalTaxUseAggregItBas();
-    pEntity.setTaxCategory(pEntity.getService().getTaxCategory());
-    if (pEntity.getItsOwner().getCustomer().getTaxDestination() != null) {
-      salTaxIsInvoiceBase = pEntity.getItsOwner().getCustomer()
-        .getTaxDestination().getSalTaxIsInvoiceBase();
-      salTaxUseAggregItBas = pEntity.getItsOwner().getCustomer()
-        .getTaxDestination().getSalTaxUseAggregItBas();
-      pReqVars.put("DestTaxServSelLnitsOwnerdeepLevel", 1);
-      List<DestTaxServSelLn> dtls = getSrvOrm()
-        .retrieveListWithConditions(pReqVars, DestTaxServSelLn.class,
-          "where ITSOWNER=" + pEntity.getService().getItsId());
-      pReqVars.remove("DestTaxServSelLnitsOwnerdeepLevel");
-      for (DestTaxServSelLn dtl : dtls) {
-        if (dtl.getTaxDestination().getItsId().equals(pEntity.getItsOwner()
-          .getCustomer().getTaxDestination().getItsId())) {
-          pEntity.setTaxCategory(dtl.getTaxCategory()); //it may be null
-          break;
-        }
-      }
-    }
-    if (!pEntity.getItsOwner().getCustomer().getIsForeigner()
-      && as.getIsExtractSalesTaxFromSales()
-        && pEntity.getTaxCategory() != null && !salTaxIsInvoiceBase) {
-      if (!salTaxUseAggregItBas) {
-        if (pEntity.getItsOwner().getPriceIncTax()) {
-          throw new ExceptionWithCode(ExceptionWithCode.WRONG_PARAMETER,
-            "price_inc_tax_multi_not_imp");
-        }
-        tls = new ArrayList<SalesInvoiceServiceTaxLine>();
-        pReqVars.put("InvItemTaxCategoryLineitsOwnerdeepLevel", 1);
-        List<InvItemTaxCategoryLine> itcls = getSrvOrm()
-          .retrieveListWithConditions(pReqVars,
-            InvItemTaxCategoryLine.class, "where ITSOWNER="
-              + pEntity.getTaxCategory().getItsId());
-        pReqVars.remove("InvItemTaxCategoryLineitsOwnerdeepLevel");
-        StringBuffer sb = new StringBuffer();
-        int i = 0;
-        for (InvItemTaxCategoryLine itcl : itcls) {
-          if (ETaxType.SALES_TAX_OUTITEM.equals(itcl.getTax().getItsType())
-          || ETaxType.SALES_TAX_INITEM.equals(itcl.getTax().getItsType())) {
-            if (i++ > 0) {
-              sb.append(", ");
-            }
-            BigDecimal addTx = pEntity.getSubtotal().multiply(itcl
-              .getItsPercentage()).divide(bd100, as
-                .getPricePrecision(), as.getSalTaxRoundMode());
-            totalTaxes = totalTaxes.add(addTx);
-            SalesInvoiceServiceTaxLine iitl =
-              new SalesInvoiceServiceTaxLine();
-            iitl.setIsNew(true);
-            iitl.setIdDatabaseBirth(this.srvOrm.getIdDatabase());
-            iitl.setItsTotal(addTx);
-            iitl.setTax(itcl.getTax());
-            if (pEntity.getItsOwner().getForeignCurrency() != null) {
-              BigDecimal addTxFc = pEntity.getForeignSubtotal().multiply(itcl
-                .getItsPercentage()).divide(bd100, as
-                  .getPricePrecision(), as.getSalTaxRoundMode());
-              totalTaxesFc = totalTaxesFc.add(addTxFc);
-              iitl.setForeignTotalTaxes(addTxFc);
-            }
-            tls.add(iitl);
-            sb.append(itcl.getTax().getItsName() + " "
-              + prn(pReqVars, addTx));
+    if (isTaxable) {
+      boolean isItemBasis = !as.getSalTaxIsInvoiceBase();
+      boolean isAggrOnlyRate = as.getSalTaxUseAggregItBas();
+      pEntity.setTaxCategory(pEntity.getService().getTaxCategory());
+      RoundingMode rm = as.getSalTaxRoundMode();
+      if (pEntity.getItsOwner().getCustomer().getTaxDestination() != null) {
+        //override tax method:
+        isItemBasis = !pEntity.getItsOwner().getCustomer()
+          .getTaxDestination().getSalTaxIsInvoiceBase();
+        isAggrOnlyRate = pEntity.getItsOwner().getCustomer()
+          .getTaxDestination().getSalTaxUseAggregItBas();
+        rm = pEntity.getItsOwner().getCustomer()
+          .getTaxDestination().getSalTaxRoundMode();
+        pReqVars.put("DestTaxServSelLnitsOwnerdeepLevel", 1);
+        List<DestTaxServSelLn> dtls = getSrvOrm()
+          .retrieveListWithConditions(pReqVars, DestTaxServSelLn.class,
+            "where ITSOWNER=" + pEntity.getService().getItsId());
+        pReqVars.remove("DestTaxServSelLnitsOwnerdeepLevel");
+        for (DestTaxServSelLn dtl : dtls) {
+          if (dtl.getTaxDestination().getItsId().equals(pEntity.getItsOwner()
+            .getCustomer().getTaxDestination().getItsId())) {
+            pEntity.setTaxCategory(dtl.getTaxCategory()); //it may be null
+            break;
           }
         }
-        pEntity.setTaxesDescription(sb.toString());
-      } else {
-        if (pEntity.getItsOwner().getPriceIncTax()) {
-          totalTaxes = pEntity.getItsTotal().subtract(pEntity.getItsTotal()
-        .divide(BigDecimal.ONE.add(pEntity.getTaxCategory().getAggrOnlyPercent()
-      .divide(bd100)), as.getPricePrecision(), as.getSalTaxRoundMode()));
-        } else {
-          totalTaxes = pEntity.getSubtotal().multiply(pEntity.getTaxCategory()
-            .getAggrOnlyPercent())
-              .divide(bd100, as.getPricePrecision(), as.getSalTaxRoundMode());
-        }
-        pEntity.setTaxesDescription(pEntity.getTaxCategory()
-          .getTaxesDescription());
-        if (pEntity.getItsOwner().getForeignCurrency() != null) {
+      }
+      if (isItemBasis) {
+        if (!isAggrOnlyRate) {
           if (pEntity.getItsOwner().getPriceIncTax()) {
-    totalTaxesFc = pEntity.getForeignTotal().subtract(pEntity.getForeignTotal()
+            throw new ExceptionWithCode(ExceptionWithCode.WRONG_PARAMETER,
+              "price_inc_tax_multi_not_imp");
+          }
+          tls = new ArrayList<SalesInvoiceServiceTaxLine>();
+          pReqVars.put("InvItemTaxCategoryLineitsOwnerdeepLevel", 1);
+          List<InvItemTaxCategoryLine> itcls = getSrvOrm()
+            .retrieveListWithConditions(pReqVars,
+              InvItemTaxCategoryLine.class, "where ITSOWNER="
+                + pEntity.getTaxCategory().getItsId());
+          pReqVars.remove("InvItemTaxCategoryLineitsOwnerdeepLevel");
+          StringBuffer sb = new StringBuffer();
+          int i = 0;
+          for (InvItemTaxCategoryLine itcl : itcls) {
+            if (ETaxType.SALES_TAX_OUTITEM.equals(itcl.getTax().getItsType())
+            || ETaxType.SALES_TAX_INITEM.equals(itcl.getTax().getItsType())) {
+              if (i++ > 0) {
+                sb.append(", ");
+              }
+              BigDecimal addTx = pEntity.getSubtotal().multiply(itcl
+                .getItsPercentage()).divide(bd100, as.getPricePrecision(), rm);
+              totalTaxes = totalTaxes.add(addTx);
+              SalesInvoiceServiceTaxLine iitl =
+                new SalesInvoiceServiceTaxLine();
+              iitl.setIsNew(true);
+              iitl.setIdDatabaseBirth(this.srvOrm.getIdDatabase());
+              iitl.setItsTotal(addTx);
+              iitl.setTax(itcl.getTax());
+              if (pEntity.getItsOwner().getForeignCurrency() != null) {
+                BigDecimal addTxFc = pEntity.getForeignSubtotal().multiply(itcl
+              .getItsPercentage()).divide(bd100, as.getPricePrecision(), rm);
+                totalTaxesFc = totalTaxesFc.add(addTxFc);
+                iitl.setForeignTotalTaxes(addTxFc);
+              }
+              tls.add(iitl);
+              sb.append(itcl.getTax().getItsName() + " "
+                + prn(pReqVars, addTx));
+            }
+          }
+          pEntity.setTaxesDescription(sb.toString());
+        } else {
+          if (pEntity.getItsOwner().getPriceIncTax()) {
+            totalTaxes = pEntity.getItsTotal().subtract(pEntity.getItsTotal()
         .divide(BigDecimal.ONE.add(pEntity.getTaxCategory().getAggrOnlyPercent()
-            .divide(bd100)), as.getPricePrecision(), as.getSalTaxRoundMode()));
+      .divide(bd100)), as.getPricePrecision(), rm));
           } else {
-            totalTaxesFc = pEntity.getForeignSubtotal().multiply(pEntity
-              .getTaxCategory().getAggrOnlyPercent())
-                .divide(bd100, as.getPricePrecision(), as.getSalTaxRoundMode());
+            totalTaxes = pEntity.getSubtotal().multiply(pEntity.getTaxCategory()
+              .getAggrOnlyPercent())
+                .divide(bd100, as.getPricePrecision(), rm);
+          }
+          pEntity.setTaxesDescription(pEntity.getTaxCategory().getItsName());
+          if (pEntity.getItsOwner().getForeignCurrency() != null) {
+            if (pEntity.getItsOwner().getPriceIncTax()) {
+    totalTaxesFc = pEntity.getForeignTotal().subtract(pEntity.getForeignTotal()
+      .divide(BigDecimal.ONE.add(pEntity.getTaxCategory().getAggrOnlyPercent()
+         .divide(bd100)), as.getPricePrecision(), rm));
+            } else {
+              totalTaxesFc = pEntity.getForeignSubtotal().multiply(pEntity
+                .getTaxCategory().getAggrOnlyPercent())
+                  .divide(bd100, as.getPricePrecision(), rm);
+            }
           }
         }
       }
     }
     pEntity.setTotalTaxes(totalTaxes);
-    if (pEntity.getItsOwner().getPriceIncTax()) {
+    if (!isTaxable || pEntity.getItsOwner().getPriceIncTax()) {
       pEntity.setSubtotal(pEntity.getItsTotal().subtract(totalTaxes));
     } else {
       pEntity.setItsTotal(pEntity.getSubtotal().add(totalTaxes));
     }
     if (pEntity.getItsOwner().getForeignCurrency() != null) {
       pEntity.setForeignTotalTaxes(totalTaxesFc);
-      if (pEntity.getItsOwner().getPriceIncTax()) {
+      if (!isTaxable || pEntity.getItsOwner().getPriceIncTax()) {
         pEntity.setForeignSubtotal(pEntity.getForeignTotal()
           .subtract(totalTaxesFc));
       } else {

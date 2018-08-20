@@ -53,8 +53,8 @@ alter table ACCSETTINGS add column MARGINTOP decimal(19,4) default 20;
 alter table ACCSETTINGS add column MARGINBOTTOM decimal(19,4) default 20;
 alter table ACCSETTINGS add column FONTSIZE decimal(19,4) default 3.5;
 alter table ACCSETTINGS add column TAXPRECISION integer not null default 3;
-alter table PURCHASEINVOICE add column PRICEINCTAX integer not null default 0;
-alter table SALESINVOICE add column PRICEINCTAX integer not null default 0;
+alter table PURCHASEINVOICE add column PRICEINCTAX tinyint not null default 0;
+alter table SALESINVOICE add column PRICEINCTAX tinyint not null default 0;
 alter table DEBTORCREDITOR add column TAXDESTINATION bigint unsigned default null;
 alter table DEBTORCREDITOR add FOREIGN KEY (TAXDESTINATION) references TAXDESTINATION(ITSID);
 alter table INVITEMTAXCATEGORY add column AGGRONLYPERCENT decimal(19,4) default 0;
@@ -74,4 +74,6 @@ alter table SERVICETOSALE add column DEFUNITOFMEASURE bigint unsigned default nu
 alter table SERVICETOSALE add FOREIGN KEY (DEFUNITOFMEASURE) REFERENCES UNITOFMEASURE(ITSID);
 alter table SERVICEPURCHASED add column DEFUNITOFMEASURE bigint unsigned default null;
 alter table SERVICEPURCHASED add FOREIGN KEY (DEFUNITOFMEASURE) REFERENCES UNITOFMEASURE(ITSID);
+alter table PURCHASEINVOICE add column OMITTAXES tinyint not null default 0;
+alter table SALESINVOICE add column OMITTAXES tinyint not null default 0;
 update DATABASEINFO set DATABASEVERSION=7, DESCRIPTION='Beige Accounting OIO DB version 7';

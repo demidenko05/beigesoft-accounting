@@ -37,6 +37,7 @@
           <li>sales with delivering to a destination where other taxes apply for the merchandise and you have not to charge, collect and remit any sales taxes (foreign post office or tax authority do it).</li>
           <li>sales with delivering to a destination where other taxes apply for the merchandise and you have to charge, collect and remit them.</li>
           <li>sales with delivering to a destination where "foreign sales taxes" not apply to the merchandise and you have to charge, collect and remit origin sales taxes.</li>
+          <li>sales taxes is omitted because of purchase purpose, e.g. buying merchandise for resale. In this case two invoices to the same customer may be taxable-different, i.e. one for resale, another for other business purposes.</li>
         </ul>
         Local authority (even though in a small town) may introduce their own sales taxes, e.g. sales tax 2.235% when you sold merchandise in "town Hill".
         In this way, sales taxes may be different in the same region (state).
@@ -46,7 +47,7 @@
         The same invoice may consist of merchandises with different tax methods, e.g. you sold car and chair to overstate buyer, and origin taxes will applied for car,
         for chair - foreign state taxes (this is example for USA).
       </p>
-      <p>Use "Customer.isForeigner" method for completely omitting sales taxes.</p>
+      <p>Use "AccountingSettings.isExtractSalesTaxesFromPurchases/Sales=false" or "Customer.isForeigner=true" or "Purchase/SalesInvoice.omitTaxes=true" for completely omitting sales taxes.</p>
       <p>To implements "sales taxes depends of buyer's destination", persistable models product/service - InvItem,
         ServiceToSale, ServicePurchased have destinationTaxes lines of type DestTax[Goods/ServSel/ServPurch]Ln:
         <ul>
