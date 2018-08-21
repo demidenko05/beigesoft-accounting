@@ -114,11 +114,24 @@ public class InvoiceReportPdf<RS, WI>
       .getDateInstance(DateFormat.MEDIUM, new Locale(lang));
     SalesInvoice inv = retrieveEntity(pReqVars, pInvoice, lang,
       !lang.equals(langDef));
+    boolean isInvoiceBasis = false;
+    for (SalesInvoiceTaxLine itl : inv.getTaxesLines()) {
+      if (itl.getTaxableInvBas().compareTo(BigDecimal.ZERO) == 1) {
+        isInvoiceBasis = true;
+        break;
+      }
+    }
     Currency currency;
     if (inv.getForeignCurrency() != null) {
       currency = inv.getForeignCurrency();
     } else {
       currency = accSet.getCurrency();
+    }
+    String priceName;
+    if (inv.getPriceIncTax()) {
+      priceName = "priceIncTax";
+    } else {
+      priceName = "itsPrice";
     }
     I18nCurrency i18nCurrency = null;
     String curSign;
@@ -353,8 +366,10 @@ public class InvoiceReportPdf<RS, WI>
       doc.setContentPadding(mmToDocUom(1.0, doc.getUnitOfMeasure()));
       doc.setContentPaddingBottom(mmToDocUom(1.5, doc.getUnitOfMeasure()));
       int rowc;
-      if (accSet.getSalTaxIsInvoiceBase()) {
+      if (isInvoiceBasis) {
         rowc = 6;
+      } else if (inv.getPriceIncTax()) {
+        rowc = 7;
       } else {
         rowc = 8;
       }
@@ -370,23 +385,30 @@ public class InvoiceReportPdf<RS, WI>
         .getMsg("unitOfMeasure", lang).replace(" ", "\n"));
       tblGoods.getItsColumns().get(1).setWraping(EWraping.WRAP_CONTENT);
       tblGoods.getItsCells().get(2).setItsContent(this.srvI18n
-        .getMsg("itsPrice", lang).replace(" ", "\n"));
+        .getMsg(priceName, lang));
       tblGoods.getItsColumns().get(2).setWraping(EWraping.WRAP_CONTENT);
       tblGoods.getItsCells().get(3).setItsContent(this.srvI18n
         .getMsg("itsQuantity", lang).replace(" ", "\n"));
       tblGoods.getItsColumns().get(3).setWraping(EWraping.WRAP_CONTENT);
-      tblGoods.getItsCells().get(4).setItsContent(this.srvI18n
+      int pos = 3;
+      if (!inv.getPriceIncTax()) {
+        pos++;
+        tblGoods.getItsCells().get(pos).setItsContent(this.srvI18n
         .getMsg("subtotal", lang).replace(" ", "\n"));
-      tblGoods.getItsColumns().get(4).setWraping(EWraping.WRAP_CONTENT);
-      tblGoods.getItsCells().get(5)
+        tblGoods.getItsColumns().get(pos).setWraping(EWraping.WRAP_CONTENT);
+      }
+      pos++;
+      tblGoods.getItsCells().get(pos)
         .setItsContent(this.srvI18n.getMsg("taxesDescription", lang));
-      if (!accSet.getSalTaxIsInvoiceBase()) {
-        tblGoods.getItsCells().get(6).setItsContent(this.srvI18n
+      if (!isInvoiceBasis) {
+        pos++;
+        tblGoods.getItsCells().get(pos).setItsContent(this.srvI18n
           .getMsg("totalTaxes", lang).replace(" ", "\n"));
-        tblGoods.getItsColumns().get(6).setWraping(EWraping.WRAP_CONTENT);
-        tblGoods.getItsCells().get(7).setItsContent(this.srvI18n
+        tblGoods.getItsColumns().get(pos).setWraping(EWraping.WRAP_CONTENT);
+        pos++;
+        tblGoods.getItsCells().get(pos).setItsContent(this.srvI18n
           .getMsg("itsTotal", lang).replace(" ", "\n"));
-        tblGoods.getItsColumns().get(7).setWraping(EWraping.WRAP_CONTENT);
+        tblGoods.getItsColumns().get(pos).setWraping(EWraping.WRAP_CONTENT);
       }
       for (int i = 0; i < rowc; i++) {
         tblGoods.getItsCells().get(i).setFontNumber(1);
@@ -425,17 +447,19 @@ public class InvoiceReportPdf<RS, WI>
           .setAlignHorizontal(EAlignHorizontal.RIGHT);
         tblGoods.getItsCells().get(k)
           .setItsContent(prn(pReqVars, ln.getItsQuantity()));
-        k = j * rowc + i++;
-        tblGoods.getItsCells().get(k)
-          .setAlignHorizontal(EAlignHorizontal.RIGHT);
-        tblGoods.getItsCells().get(k)
-          .setItsContent(prn(pReqVars, subtotal));
+        if (!inv.getPriceIncTax()) {
+          k = j * rowc + i++;
+          tblGoods.getItsCells().get(k)
+            .setAlignHorizontal(EAlignHorizontal.RIGHT);
+          tblGoods.getItsCells().get(k)
+            .setItsContent(prn(pReqVars, subtotal));
+        }
         k = j * rowc + i++;
         tblGoods.getItsCells().get(k)
           .setAlignHorizontal(EAlignHorizontal.CENTER);
         tblGoods.getItsCells().get(k)
           .setItsContent(ln.getTaxesDescription());
-        if (!accSet.getSalTaxIsInvoiceBase()) {
+        if (!isInvoiceBasis) {
           k = j * rowc + i++;
           tblGoods.getItsCells().get(k)
             .setAlignHorizontal(EAlignHorizontal.RIGHT);
@@ -462,9 +486,12 @@ public class InvoiceReportPdf<RS, WI>
       doc.setContentPaddingBottom(mmToDocUom(1.5, doc.getUnitOfMeasure()));
       int rowc;
       double wd15;
-      if (accSet.getSalTaxIsInvoiceBase()) {
+      if (isInvoiceBasis) {
         rowc = 6;
         wd15 = 30.0d;
+      } else if (inv.getPriceIncTax()) {
+        rowc = 7;
+        wd15 = 15.0d;
       } else {
         rowc = 8;
         wd15 = 15.0d;
@@ -481,28 +508,35 @@ public class InvoiceReportPdf<RS, WI>
         .getMsg("unitOfMeasure", lang).replace(" ", "\n"));
       tblServices.getItsColumns().get(1).setWraping(EWraping.WRAP_CONTENT);
       tblServices.getItsCells().get(2)
-        .setItsContent(this.srvI18n.getMsg("itsPrice", lang));
+        .setItsContent(this.srvI18n.getMsg(priceName, lang));
       tblServices.getItsColumns().get(2).setIsWidthFixed(true);
       tblServices.getItsColumns().get(2).setWidthInPercentage(wd15);
       tblServices.getItsCells().get(3).setItsContent(this.srvI18n
         .getMsg("itsQuantity", lang).replace(" ", "\n"));
       tblServices.getItsColumns().get(3).setWraping(EWraping.WRAP_CONTENT);
-      tblServices.getItsCells().get(4).setItsContent(this.srvI18n
-        .getMsg("subtotal", lang).replace(" ", "\n"));
-      tblServices.getItsColumns().get(4).setWraping(EWraping.WRAP_CONTENT);
-      tblServices.getItsCells().get(5)
+      int pos = 3;
+      if (!inv.getPriceIncTax()) {
+        pos++;
+        tblServices.getItsCells().get(pos).setItsContent(this.srvI18n
+          .getMsg("subtotal", lang).replace(" ", "\n"));
+        tblServices.getItsColumns().get(pos).setWraping(EWraping.WRAP_CONTENT);
+      }
+      pos++;
+      tblServices.getItsCells().get(pos)
         .setItsContent(this.srvI18n.getMsg("taxesDescription", lang));
-      if (!accSet.getSalTaxIsInvoiceBase()) {
-        tblServices.getItsColumns().get(5).setIsWidthFixed(true);
-        tblServices.getItsColumns().get(5).setWidthInPercentage(20.0);
-        tblServices.getItsCells().get(6)
+      if (!isInvoiceBasis) {
+        tblServices.getItsColumns().get(pos).setIsWidthFixed(true);
+        tblServices.getItsColumns().get(pos).setWidthInPercentage(20.0);
+        pos++;
+        tblServices.getItsCells().get(pos)
           .setItsContent(this.srvI18n.getMsg("totalTaxes", lang));
-        tblServices.getItsColumns().get(6).setIsWidthFixed(true);
-        tblServices.getItsColumns().get(6).setWidthInPercentage(wd15);
-        tblServices.getItsCells().get(7)
+        tblServices.getItsColumns().get(pos).setIsWidthFixed(true);
+        tblServices.getItsColumns().get(pos).setWidthInPercentage(wd15);
+        pos++;
+        tblServices.getItsCells().get(pos)
           .setItsContent(this.srvI18n.getMsg("itsTotal", lang));
-        tblServices.getItsColumns().get(7).setIsWidthFixed(true);
-        tblServices.getItsColumns().get(7).setWidthInPercentage(wd15);
+        tblServices.getItsColumns().get(pos).setIsWidthFixed(true);
+        tblServices.getItsColumns().get(pos).setWidthInPercentage(wd15);
       }
       for (int i = 0; i < rowc; i++) {
         tblServices.getItsCells().get(i).setFontNumber(1);
@@ -541,17 +575,19 @@ public class InvoiceReportPdf<RS, WI>
           .setAlignHorizontal(EAlignHorizontal.RIGHT);
         tblServices.getItsCells().get(k)
           .setItsContent(prn(pReqVars, ln.getItsQuantity()));
-        k = j * rowc + i++;
-        tblServices.getItsCells().get(k)
-          .setAlignHorizontal(EAlignHorizontal.RIGHT);
-        tblServices.getItsCells().get(k)
-          .setItsContent(prn(pReqVars, subtotal));
+        if (!inv.getPriceIncTax()) {
+          k = j * rowc + i++;
+          tblServices.getItsCells().get(k)
+            .setAlignHorizontal(EAlignHorizontal.RIGHT);
+          tblServices.getItsCells().get(k)
+            .setItsContent(prn(pReqVars, subtotal));
+        }
         k = j * rowc + i++;
         tblServices.getItsCells().get(k)
           .setAlignHorizontal(EAlignHorizontal.CENTER);
         tblServices.getItsCells().get(k)
           .setItsContent(ln.getTaxesDescription());
-        if (!accSet.getSalTaxIsInvoiceBase()) {
+        if (!isInvoiceBasis) {
           k = j * rowc + i++;
           tblServices.getItsCells().get(k)
             .setAlignHorizontal(EAlignHorizontal.RIGHT);
@@ -580,7 +616,7 @@ public class InvoiceReportPdf<RS, WI>
       doc.setContentPaddingBottom(mmToDocUom(1.5, doc.getUnitOfMeasure()));
       int rowc;
       double rowtw;
-      if (accSet.getSalTaxIsInvoiceBase()) {
+      if (isInvoiceBasis) {
         rowc = 3;
         rowtw = 40.0d;
       } else {
@@ -593,7 +629,7 @@ public class InvoiceReportPdf<RS, WI>
         .setItsContent(this.srvI18n.getMsg("tax", lang));
       tblTaxes.getItsColumns().get(0).setIsWidthFixed(true);
       tblTaxes.getItsColumns().get(0).setWidthInPercentage(rowtw);
-      if (accSet.getSalTaxIsInvoiceBase()) {
+      if (isInvoiceBasis) {
         tblTaxes.getItsCells().get(1)
           .setItsContent(this.srvI18n.getMsg("taxable", lang));
       }
@@ -618,7 +654,7 @@ public class InvoiceReportPdf<RS, WI>
         tblTaxes.getItsCells().get(j * rowc + i++)
           .setItsContent(ln.getTax().getItsName());
         int k = j * rowc + i++;
-        if (accSet.getSalTaxIsInvoiceBase()) {
+        if (isInvoiceBasis) {
           tblTaxes.getItsCells().get(k)
             .setAlignHorizontal(EAlignHorizontal.RIGHT);
           tblTaxes.getItsCells().get(k)

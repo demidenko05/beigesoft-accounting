@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -23,12 +24,11 @@ import java.net.URL;
 import org.beigesoft.model.IRecordSet;
 import org.beigesoft.service.ISrvOrm;
 import org.beigesoft.service.ISrvDatabase;
-import org.beigesoft.accounting.model.ETaxType;
 import org.beigesoft.accounting.persistable.AccSettings;
 import org.beigesoft.accounting.persistable.PurchaseInvoice;
 import org.beigesoft.accounting.persistable.PurchaseInvoiceTaxLine;
 import org.beigesoft.accounting.persistable.Tax;
-import org.beigesoft.accounting.persistable.InvItemTaxCategoryLine;
+import org.beigesoft.accounting.persistable.InvItemTaxCategory;
 import org.beigesoft.accounting.service.ISrvAccSettings;
 
 /**
@@ -234,12 +234,25 @@ public class UtlPurchaseGoodsServiceLine<RS> {
       .retrieveListForField(pReqVars, itl, "itsOwner");
     pReqVars.remove("PurchaseInvoiceTaxLineitsOwnerdeepLevel");
     AccSettings as = getSrvAccSettings().lazyGetAccSettings(pReqVars);
-    if (!pItsOwner.getVendor().getIsForeigner()
-      && as.getIsExtractSalesTaxFromPurchase()) {
+    boolean isTaxable = as.getIsExtractSalesTaxFromSales() && !pItsOwner
+      .getOmitTaxes() && !pItsOwner.getVendor().getIsForeigner();
+    if (isTaxable) {
+      boolean isItemBasis = !as.getSalTaxIsInvoiceBase();
+      boolean isAggrOnlyRate = as.getSalTaxUseAggregItBas();
+      RoundingMode rm = as.getSalTaxRoundMode();
+      if (pItsOwner.getVendor().getTaxDestination() != null) {
+        //override tax method:
+        isItemBasis = !pItsOwner.getVendor()
+          .getTaxDestination().getSalTaxIsInvoiceBase();
+        isAggrOnlyRate = pItsOwner.getVendor()
+          .getTaxDestination().getSalTaxUseAggregItBas();
+        rm = pItsOwner.getVendor()
+          .getTaxDestination().getSalTaxRoundMode();
+      }
       String query;
-      if (as.getSalTaxIsInvoiceBase()) {
+      if (!isItemBasis) {
         query = lazyGetQuPurchInvSalTaxInvBas();
-      } else if (as.getSalTaxUseAggregItBas()) {
+      } else if (isAggrOnlyRate) {
         query = lazyGetQuPurchInvSalTaxItBasAggr();
       } else {
         query = lazyGetQuPurchInvSalTaxItBas();
@@ -287,7 +300,7 @@ public class UtlPurchaseGoodsServiceLine<RS> {
         Double taxable = null;
         Double taxableFc = null;
         BigDecimal aggrTaxRate = BigDecimal.ZERO;
-        if (as.getSalTaxIsInvoiceBase()) {
+        if (!isItemBasis) {
           Tax tax = new Tax();
           tax.setItsId(taxesOrCats.get(i));
           taxes.add(tax);
@@ -298,20 +311,10 @@ public class UtlPurchaseGoodsServiceLine<RS> {
         } else {
           totalTax = dbResults.get(i * 2);
           totalTaxFc = dbResults.get(i * 2 + 1);
-          if (as.getSalTaxUseAggregItBas()) {
-            pReqVars.put("InvItemTaxCategoryLineitsOwnerdeepLevel", 1);
-            List<InvItemTaxCategoryLine> ittcls = getSrvOrm()
-              .retrieveListWithConditions(pReqVars, InvItemTaxCategoryLine
-                .class, "where ITSOWNER=" + taxesOrCats.get(i));
-            pReqVars.remove("InvItemTaxCategoryLineitsOwnerdeepLevel");
-            for (InvItemTaxCategoryLine ittcl : ittcls) {
-              if (ETaxType.SALES_TAX_OUTITEM.equals(ittcl.getTax().getItsType())
-            || ETaxType.SALES_TAX_INITEM.equals(ittcl.getTax().getItsType())) {
-                taxes.add(ittcl.getTax());
-                ittcl.getTax().setItsPercentage(ittcl.getItsPercentage());
-                aggrTaxRate = aggrTaxRate.add(ittcl.getItsPercentage());
-              }
-            }
+          if (isAggrOnlyRate) {
+            InvItemTaxCategory ittc = getSrvOrm().retrieveEntityById(pReqVars,
+              InvItemTaxCategory.class, taxesOrCats.get(i));
+            aggrTaxRate = ittc.getAggrOnlyPercent();
           } else {
             Tax tax = new Tax();
             tax.setItsId(taxesOrCats.get(i));
@@ -324,7 +327,7 @@ public class UtlPurchaseGoodsServiceLine<RS> {
         Double aggrTaxRestFc = null;
         for (int j = 0; j < taxes.size();  j++) {
           itl = null;
-          if (!as.getSalTaxIsInvoiceBase() && as.getSalTaxUseAggregItBas()) {
+          if (isItemBasis && isAggrOnlyRate) {
             if (aggrTaxRest == null) {
               aggrTax = totalTax;
               aggrTaxRest = totalTax;
@@ -376,7 +379,7 @@ public class UtlPurchaseGoodsServiceLine<RS> {
           }
           itl.setItsOwner(pItsOwner);
           makeItl(pReqVars, itl, taxes.get(j), totalTax, totalTaxFc,
-            taxable, taxableFc, as);
+            taxable, taxableFc, as, rm, isItemBasis, isAggrOnlyRate);
         }
         taxes.clear();
       }
@@ -402,26 +405,30 @@ public class UtlPurchaseGoodsServiceLine<RS> {
    * @param pTaxable Taxable
    * @param pTaxableFc Taxable in foreign currency
    * @param pAs ACC Settings
+   * @param pRm rounding mode
+   * @param pIsItemBasis Is Item Basis
+   * @param pIsUseAggrOnlyRate Use Aggr. or Only Rate
    * @throws Exception an Exception
    **/
   public final void makeItl(final Map<String, Object> pReqVars,
     final PurchaseInvoiceTaxLine pItl, final Tax pTax, final Double pTotalTax,
       final Double pTotalTaxFc, final Double pTaxable, final Double pTaxableFc,
-          final AccSettings pAs) throws Exception {
+        final AccSettings pAs, final RoundingMode pRm,
+          final boolean pIsItemBasis,
+            final boolean pIsUseAggrOnlyRate) throws Exception {
     pItl.setTax(pTax);
-    if (!pAs.getSalTaxIsInvoiceBase() && pAs.getSalTaxUseAggregItBas()) {
+    if (pIsItemBasis && pIsUseAggrOnlyRate) {
       pItl.setItsTotal(pItl.getItsTotal().add(BigDecimal.valueOf(pTotalTax)
-        .setScale(pAs.getPricePrecision(), pAs.getSalTaxRoundMode())));
+        .setScale(pAs.getPricePrecision(), pRm)));
       pItl.setForeignTotalTaxes(pItl.getForeignTotalTaxes().add(BigDecimal
-        .valueOf(pTotalTaxFc).setScale(pAs
-          .getPricePrecision(), pAs.getSalTaxRoundMode())));
+        .valueOf(pTotalTaxFc).setScale(pAs.getPricePrecision(), pRm)));
     } else {
-      pItl.setItsTotal(BigDecimal.valueOf(pTotalTax).setScale(
-        pAs.getPricePrecision(), pAs.getSalTaxRoundMode()));
+      pItl.setItsTotal(BigDecimal.valueOf(pTotalTax)
+        .setScale(pAs.getPricePrecision(), pRm));
       pItl.setForeignTotalTaxes(BigDecimal.valueOf(pTotalTaxFc)
-        .setScale(pAs.getPricePrecision(), pAs.getSalTaxRoundMode()));
+        .setScale(pAs.getPricePrecision(), pRm));
     }
-    if (pAs.getSalTaxIsInvoiceBase()) {
+    if (!pIsItemBasis) {
       pItl.setTaxableInvBas(BigDecimal.valueOf(pTaxable).setScale(
         pAs.getPricePrecision(), pAs.getRoundingMode()));
       pItl.setTaxableInvBasFc(BigDecimal.valueOf(pTaxableFc).setScale(

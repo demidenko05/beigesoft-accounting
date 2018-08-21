@@ -12,11 +12,11 @@ package org.beigesoft.accounting.processor;
  * http://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html
  */
 
-import java.util.Set;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.List;
+import java.util.ArrayList;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 import org.beigesoft.model.IRequestData;
 import org.beigesoft.exception.ExceptionWithCode;
@@ -29,13 +29,14 @@ import org.beigesoft.accounting.persistable.InvItemTaxCategoryLine;
 import org.beigesoft.accounting.persistable.SalesInvoiceLine;
 import org.beigesoft.accounting.persistable.SalesInvoiceGoodsTaxLine;
 import org.beigesoft.accounting.persistable.SalesInvoice;
+import org.beigesoft.accounting.persistable.DestTaxGoodsLn;
 import org.beigesoft.accounting.persistable.CogsEntry;
 import org.beigesoft.accounting.service.ISrvWarehouseEntry;
 import org.beigesoft.accounting.service.ISrvDrawItemEntry;
 import org.beigesoft.accounting.service.ISrvAccSettings;
 
 /**
- * <p>Service that save SalesInvoiceLine into DB.</p>
+ * <p>Service that saves Sales Invoice Line into DB.</p>
  *
  * @param <RS> platform dependent record set type
  * @author Yury Demidenko
@@ -89,12 +90,10 @@ public class PrcSalesInvoiceLineSave<RS>
         final IRequestData pRequestData) throws Exception {
     if (pEntity.getIsNew()) {
       // Beige-Orm refresh:
+      pReqVars.put("DebtorCreditortaxDestinationdeepLevel", 2);
       pEntity.setItsOwner(getSrvOrm()
         .retrieveEntity(pReqVars, pEntity.getItsOwner()));
-      // optimistic locking (dirty check):
-      Long ownerVersion = Long.valueOf(pRequestData
-        .getParameter(SalesInvoice.class.getSimpleName() + ".ownerVersion"));
-      pEntity.getItsOwner().setItsVersion(ownerVersion);
+      pReqVars.remove("DebtorCreditortaxDestinationdeepLevel");
       if (pEntity.getReversedId() != null) {
         SalesInvoiceLine reversed = getSrvOrm().retrieveEntityById(
           pReqVars, SalesInvoiceLine.class, pEntity.getReversedId());
@@ -142,111 +141,162 @@ public class PrcSalesInvoiceLineSave<RS>
         //rounding:
         pEntity.setItsQuantity(pEntity.getItsQuantity().setScale(as
          .getQuantityPrecision(), as.getRoundingMode()));
+        boolean isTaxable = as.getIsExtractSalesTaxFromSales() && !pEntity
+          .getItsOwner().getOmitTaxes() && !pEntity.getItsOwner().getCustomer()
+            .getIsForeigner();
         if (pEntity.getItsOwner().getForeignCurrency() != null) {
-          pEntity.setForeignPrice(pEntity.getForeignPrice().setScale(
-            as.getPricePrecision(), as.getRoundingMode()));
+          pEntity.setForeignPrice(pEntity.getForeignPrice().setScale(as
+            .getPricePrecision(), as.getRoundingMode()));
+          if (!isTaxable || pEntity.getItsOwner().getPriceIncTax()) {
+            pEntity.setForeignTotal(pEntity.getItsQuantity().multiply(pEntity
+    .getForeignPrice()).setScale(as.getPricePrecision(), as.getRoundingMode()));
+          } else {
+            pEntity.setForeignSubtotal(pEntity.getItsQuantity().multiply(pEntity
+    .getForeignPrice()).setScale(as.getPricePrecision(), as.getRoundingMode()));
+          }
           pEntity.setItsPrice(pEntity.getForeignPrice().multiply(pEntity
             .getItsOwner().getExchangeRate()).setScale(as
-              .getPricePrecision(), as.getRoundingMode()));
-          //without taxes:
-          pEntity.setForeignSubtotal(pEntity.getItsQuantity().multiply(pEntity
-            .getForeignPrice()).setScale(as
               .getPricePrecision(), as.getRoundingMode()));
         } else {
           pEntity.setItsPrice(pEntity.getItsPrice().setScale(as
             .getPricePrecision(), as.getRoundingMode()));
         }
-        //without taxes:
-        pEntity.setSubtotal(pEntity.getItsQuantity().multiply(pEntity
-      .getItsPrice()).setScale(as.getPricePrecision(), as.getRoundingMode()));
-        BigDecimal aggrTaxRate = BigDecimal.ZERO;
+        if (!isTaxable || pEntity.getItsOwner().getPriceIncTax()) {
+          pEntity.setItsTotal(pEntity.getItsQuantity().multiply(pEntity
+        .getItsPrice()).setScale(as.getPricePrecision(), as.getRoundingMode()));
+        } else {
+          pEntity.setSubtotal(pEntity.getItsQuantity().multiply(pEntity
+        .getItsPrice()).setScale(as.getPricePrecision(), as.getRoundingMode()));
+        }
         BigDecimal totalTaxes = BigDecimal.ZERO;
         BigDecimal totalTaxesFc = BigDecimal.ZERO;
         BigDecimal bd100 = new BigDecimal("100.00");
-        String taxesDescription = "";
-        Set<SalesInvoiceGoodsTaxLine> tls = null;
-        if (!pEntity.getItsOwner().getCustomer().getIsForeigner()
-          && as.getIsExtractSalesTaxFromSales()
-            && pEntity.getInvItem().getTaxCategory() != null) {
-          if (!as.getSalTaxIsInvoiceBase()) {
-            tls = new HashSet<SalesInvoiceGoodsTaxLine>();
-          }
-          pReqVars.put("InvItemTaxCategoryLineitsOwnerdeepLevel", 1);
-          List<InvItemTaxCategoryLine> pstl = getSrvOrm()
-            .retrieveListWithConditions(pReqVars,
-              InvItemTaxCategoryLine.class, "where ITSOWNER="
-                + pEntity.getInvItem().getTaxCategory().getItsId());
-          pReqVars.remove("InvItemTaxCategoryLineitsOwnerdeepLevel");
-          StringBuffer sb = new StringBuffer();
-          int i = 0;
-          for (InvItemTaxCategoryLine pst : pstl) {
-            if (ETaxType.SALES_TAX_OUTITEM.equals(pst.getTax().getItsType())
-            || ETaxType.SALES_TAX_INITEM.equals(pst.getTax().getItsType())) {
-              if (i++ > 0) {
-                sb.append(", ");
-              }
-              if (!as.getSalTaxIsInvoiceBase()) {
-                if (as.getSalTaxUseAggregItBas()) {
-                  aggrTaxRate = aggrTaxRate.add(pst.getItsPercentage());
-                } else {
-                  BigDecimal addTx = pEntity.getSubtotal().multiply(pst
-                    .getItsPercentage()).divide(bd100, as
-                      .getPricePrecision(), as.getSalTaxRoundMode());
-                  totalTaxes = totalTaxes.add(addTx);
-                  SalesInvoiceGoodsTaxLine pigtl =
-                    new SalesInvoiceGoodsTaxLine();
-                  pigtl.setIsNew(true);
-                  pigtl.setIdDatabaseBirth(this.srvOrm.getIdDatabase());
-                  pigtl.setItsTotal(addTx);
-                  pigtl.setTax(pst.getTax());
-                  tls.add(pigtl);
-                  if (pEntity.getItsOwner().getForeignCurrency() != null) {
-                    BigDecimal addTxFc = pEntity.getForeignSubtotal()
-                      .multiply(pst.getItsPercentage()).divide(bd100, as
-                        .getPricePrecision(), as.getSalTaxRoundMode());
-                    totalTaxesFc = totalTaxesFc.add(addTxFc);
-                    pigtl.setForeignTotalTaxes(addTxFc);
-                  }
-                  sb.append(pst.getTax().getItsName() + " "
-                    + prn(pReqVars, addTx));
-                }
-              }
-              if (as.getSalTaxIsInvoiceBase() || as.getSalTaxUseAggregItBas()) {
-                sb.append(pst.getTax().getItsName());
+        List<SalesInvoiceGoodsTaxLine> tls = null;
+        if (isTaxable) {
+          boolean isItemBasis = !as.getSalTaxIsInvoiceBase();
+          boolean isAggrOnlyRate = as.getSalTaxUseAggregItBas();
+          pEntity.setTaxCategory(pEntity.getInvItem().getTaxCategory());
+          RoundingMode rm = as.getSalTaxRoundMode();
+          if (pEntity.getItsOwner().getCustomer().getTaxDestination() != null) {
+            //override tax method:
+            isItemBasis = !pEntity.getItsOwner().getCustomer()
+              .getTaxDestination().getSalTaxIsInvoiceBase();
+            isAggrOnlyRate = pEntity.getItsOwner().getCustomer()
+              .getTaxDestination().getSalTaxUseAggregItBas();
+            rm = pEntity.getItsOwner().getCustomer()
+              .getTaxDestination().getSalTaxRoundMode();
+            pReqVars.put("DestTaxGoodsLnitsOwnerdeepLevel", 1);
+            List<DestTaxGoodsLn> dtls = getSrvOrm()
+              .retrieveListWithConditions(pReqVars, DestTaxGoodsLn.class,
+                "where ITSOWNER=" + pEntity.getInvItem().getItsId());
+            pReqVars.remove("DestTaxGoodsLnitsOwnerdeepLevel");
+            for (DestTaxGoodsLn dtl : dtls) {
+             if (dtl.getTaxDestination().getItsId().equals(pEntity.getItsOwner()
+                .getCustomer().getTaxDestination().getItsId())) {
+                pEntity.setTaxCategory(dtl.getTaxCategory()); //it may be null
+                break;
               }
             }
           }
-          taxesDescription = sb.toString();
-        }
-        if (!as.getSalTaxIsInvoiceBase() && as.getSalTaxUseAggregItBas()) {
-          totalTaxes = pEntity.getSubtotal().multiply(aggrTaxRate).divide(
-            bd100, as.getPricePrecision(), as.getSalTaxRoundMode());
-          if (pEntity.getItsOwner().getForeignCurrency() != null) {
-            totalTaxesFc = pEntity.getForeignSubtotal().multiply(aggrTaxRate)
-              .divide(bd100, as.getPricePrecision(), as.getSalTaxRoundMode());
+          if (pEntity.getTaxCategory() != null && isItemBasis) {
+            if (!isAggrOnlyRate) {
+              if (pEntity.getItsOwner().getPriceIncTax()) {
+                throw new ExceptionWithCode(ExceptionWithCode.WRONG_PARAMETER,
+                  "price_inc_tax_multi_not_imp");
+              }
+              tls = new ArrayList<SalesInvoiceGoodsTaxLine>();
+              pReqVars.put("InvItemTaxCategoryLineitsOwnerdeepLevel", 1);
+              List<InvItemTaxCategoryLine> itcls = getSrvOrm()
+                .retrieveListWithConditions(pReqVars,
+                  InvItemTaxCategoryLine.class, "where ITSOWNER="
+                    + pEntity.getTaxCategory().getItsId());
+              pReqVars.remove("InvItemTaxCategoryLineitsOwnerdeepLevel");
+              StringBuffer sb = new StringBuffer();
+              int i = 0;
+              for (InvItemTaxCategoryLine itcl : itcls) {
+               if (ETaxType.SALES_TAX_OUTITEM.equals(itcl.getTax().getItsType())
+              || ETaxType.SALES_TAX_INITEM.equals(itcl.getTax().getItsType())) {
+                  if (i++ > 0) {
+                    sb.append(", ");
+                  }
+                  BigDecimal addTx = pEntity.getSubtotal().multiply(itcl
+                .getItsPercentage()).divide(bd100, as.getPricePrecision(), rm);
+                  totalTaxes = totalTaxes.add(addTx);
+                  SalesInvoiceGoodsTaxLine iitl =
+                    new SalesInvoiceGoodsTaxLine();
+                  iitl.setIsNew(true);
+                  iitl.setIdDatabaseBirth(this.srvOrm.getIdDatabase());
+                  iitl.setItsTotal(addTx);
+                  iitl.setTax(itcl.getTax());
+                  if (pEntity.getItsOwner().getForeignCurrency() != null) {
+                    BigDecimal addTxFc = pEntity.getForeignSubtotal().multiply(
+            itcl.getItsPercentage()).divide(bd100, as.getPricePrecision(), rm);
+                    totalTaxesFc = totalTaxesFc.add(addTxFc);
+                    iitl.setForeignTotalTaxes(addTxFc);
+                  }
+                  tls.add(iitl);
+                  sb.append(itcl.getTax().getItsName() + " "
+                    + prn(pReqVars, addTx));
+                }
+              }
+              pEntity.setTaxesDescription(sb.toString());
+            } else {
+              if (pEntity.getItsOwner().getPriceIncTax()) {
+               totalTaxes = pEntity.getItsTotal().subtract(pEntity.getItsTotal()
+        .divide(BigDecimal.ONE.add(pEntity.getTaxCategory().getAggrOnlyPercent()
+      .divide(bd100)), as.getPricePrecision(), rm));
+              } else {
+            totalTaxes = pEntity.getSubtotal().multiply(pEntity.getTaxCategory()
+               .getAggrOnlyPercent()).divide(bd100, as.getPricePrecision(), rm);
+              }
+            pEntity.setTaxesDescription(pEntity.getTaxCategory().getItsName());
+              if (pEntity.getItsOwner().getForeignCurrency() != null) {
+                if (pEntity.getItsOwner().getPriceIncTax()) {
+    totalTaxesFc = pEntity.getForeignTotal().subtract(pEntity.getForeignTotal()
+      .divide(BigDecimal.ONE.add(pEntity.getTaxCategory().getAggrOnlyPercent()
+         .divide(bd100)), as.getPricePrecision(), rm));
+                } else {
+                  totalTaxesFc = pEntity.getForeignSubtotal().multiply(pEntity
+                    .getTaxCategory().getAggrOnlyPercent())
+                      .divide(bd100, as.getPricePrecision(), rm);
+                }
+              }
+            }
           }
         }
-        pEntity.setTaxesDescription(taxesDescription);
         pEntity.setTotalTaxes(totalTaxes);
-        pEntity.setItsTotal(pEntity.getSubtotal().add(totalTaxes));
-        pEntity.setForeignTotalTaxes(totalTaxesFc);
+        if (!isTaxable || pEntity.getItsOwner().getPriceIncTax()) {
+          pEntity.setSubtotal(pEntity.getItsTotal().subtract(totalTaxes));
+        } else {
+          pEntity.setItsTotal(pEntity.getSubtotal().add(totalTaxes));
+        }
+        if (pEntity.getItsOwner().getForeignCurrency() != null) {
+          pEntity.setForeignTotalTaxes(totalTaxesFc);
+          if (!isTaxable || pEntity.getItsOwner().getPriceIncTax()) {
+  pEntity.setForeignSubtotal(pEntity.getForeignTotal().subtract(totalTaxesFc));
+          } else {
         pEntity.setForeignTotal(pEntity.getForeignSubtotal().add(totalTaxesFc));
+          }
+        }
         getSrvOrm().insertEntity(pReqVars, pEntity);
         pEntity.setIsNew(false);
         if (tls != null) {
-          for (SalesInvoiceGoodsTaxLine pigtl : tls) {
-            pigtl.setItsOwner(pEntity);
-            pigtl.setInvoiceId(pEntity.getItsOwner().getItsId());
-            getSrvOrm().insertEntity(pReqVars, pigtl);
-            pigtl.setIsNew(false);
+          for (SalesInvoiceGoodsTaxLine iitl : tls) {
+            iitl.setItsOwner(pEntity);
+            iitl.setInvoiceId(pEntity.getItsOwner().getItsId());
+            getSrvOrm().insertEntity(pReqVars, iitl);
+            iitl.setIsNew(false);
           }
         }
         srvWarehouseEntry.withdrawal(pReqVars, pEntity,
           pEntity.getWarehouseSiteFo());
-        srvCogsEntry.withdrawal(pReqVars, pEntity,
-          pEntity.getItsOwner().getItsDate(),
-            pEntity.getItsOwner().getItsId());
+        srvCogsEntry.withdrawal(pReqVars, pEntity, pEntity.getItsOwner()
+          .getItsDate(), pEntity.getItsOwner().getItsId());
       }
+      // optimistic locking (dirty check):
+      Long ownerVersion = Long.valueOf(pRequestData
+        .getParameter(SalesInvoice.class.getSimpleName() + ".ownerVersion"));
+      pEntity.getItsOwner().setItsVersion(ownerVersion);
       this.utlSalesGoodsServiceLine
         .updateOwner(pReqVars, pEntity.getItsOwner());
       pReqVars.put("nextEntity", pEntity.getItsOwner());

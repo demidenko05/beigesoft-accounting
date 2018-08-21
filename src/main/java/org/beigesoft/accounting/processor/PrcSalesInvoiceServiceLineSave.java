@@ -33,7 +33,7 @@ import org.beigesoft.accounting.persistable.DestTaxServSelLn;
 import org.beigesoft.accounting.service.ISrvAccSettings;
 
 /**
- * <p>Service that save SalesInvoiceServiceLine into DB.</p>
+ * <p>Service that saves Sales Invoice Service Line into DB.</p>
  *
  * @param <RS> platform dependent record set type
  * @author Yury Demidenko
@@ -160,7 +160,7 @@ public class PrcSalesInvoiceServiceLineSave<RS>
           }
         }
       }
-      if (isItemBasis) {
+      if (pEntity.getTaxCategory() != null && isItemBasis) {
         if (!isAggrOnlyRate) {
           if (pEntity.getItsOwner().getPriceIncTax()) {
             throw new ExceptionWithCode(ExceptionWithCode.WRONG_PARAMETER,
@@ -182,7 +182,7 @@ public class PrcSalesInvoiceServiceLineSave<RS>
                 sb.append(", ");
               }
               BigDecimal addTx = pEntity.getSubtotal().multiply(itcl
-                .getItsPercentage()).divide(bd100, as.getPricePrecision(), rm);
+              .getItsPercentage()).divide(bd100, as.getPricePrecision(), rm);
               totalTaxes = totalTaxes.add(addTx);
               SalesInvoiceServiceTaxLine iitl =
                 new SalesInvoiceServiceTaxLine();
@@ -191,8 +191,8 @@ public class PrcSalesInvoiceServiceLineSave<RS>
               iitl.setItsTotal(addTx);
               iitl.setTax(itcl.getTax());
               if (pEntity.getItsOwner().getForeignCurrency() != null) {
-                BigDecimal addTxFc = pEntity.getForeignSubtotal().multiply(itcl
-              .getItsPercentage()).divide(bd100, as.getPricePrecision(), rm);
+                BigDecimal addTxFc = pEntity.getForeignSubtotal().multiply(
+          itcl.getItsPercentage()).divide(bd100, as.getPricePrecision(), rm);
                 totalTaxesFc = totalTaxesFc.add(addTxFc);
                 iitl.setForeignTotalTaxes(addTxFc);
               }
@@ -205,19 +205,18 @@ public class PrcSalesInvoiceServiceLineSave<RS>
         } else {
           if (pEntity.getItsOwner().getPriceIncTax()) {
             totalTaxes = pEntity.getItsTotal().subtract(pEntity.getItsTotal()
-        .divide(BigDecimal.ONE.add(pEntity.getTaxCategory().getAggrOnlyPercent()
-      .divide(bd100)), as.getPricePrecision(), rm));
+      .divide(BigDecimal.ONE.add(pEntity.getTaxCategory().getAggrOnlyPercent()
+    .divide(bd100)), as.getPricePrecision(), rm));
           } else {
-            totalTaxes = pEntity.getSubtotal().multiply(pEntity.getTaxCategory()
-              .getAggrOnlyPercent())
-                .divide(bd100, as.getPricePrecision(), rm);
+          totalTaxes = pEntity.getSubtotal().multiply(pEntity.getTaxCategory()
+            .getAggrOnlyPercent()).divide(bd100, as.getPricePrecision(), rm);
           }
           pEntity.setTaxesDescription(pEntity.getTaxCategory().getItsName());
           if (pEntity.getItsOwner().getForeignCurrency() != null) {
             if (pEntity.getItsOwner().getPriceIncTax()) {
-    totalTaxesFc = pEntity.getForeignTotal().subtract(pEntity.getForeignTotal()
-      .divide(BigDecimal.ONE.add(pEntity.getTaxCategory().getAggrOnlyPercent()
-         .divide(bd100)), as.getPricePrecision(), rm));
+  totalTaxesFc = pEntity.getForeignTotal().subtract(pEntity.getForeignTotal()
+    .divide(BigDecimal.ONE.add(pEntity.getTaxCategory().getAggrOnlyPercent()
+       .divide(bd100)), as.getPricePrecision(), rm));
             } else {
               totalTaxesFc = pEntity.getForeignSubtotal().multiply(pEntity
                 .getTaxCategory().getAggrOnlyPercent())

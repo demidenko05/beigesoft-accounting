@@ -99,7 +99,7 @@ public class PrcRevealTaxCat<RS> implements IProcessor {
     query = query.replace(":DESTTAXITEMLNNM", destTaxItemLnNm);
     query = query.replace(":ITEMID", itemId.toString());
     query = query.replace(":TAXDESTID", taxDestId.toString());
-    InvItemTaxCategory taxCategory = null;
+    InvItemTaxCategory taxCategory = new InvItemTaxCategory();
     IRecordSet<RS> recordSet = null;
     try {
       this.srvDatabase.setIsAutocommit(false);
@@ -122,11 +122,12 @@ public class PrcRevealTaxCat<RS> implements IProcessor {
           tcId = recordSet.getLong("DTCID");
           tcRate = recordSet.getDouble("DTCRATE");
         }
-        taxCategory = new InvItemTaxCategory();
         taxCategory.setItsId(tcId);
         taxCategory.setItsName(tcn);
         taxCategory.setTaxesDescription(tcd);
-        taxCategory.setAggrOnlyPercent(BigDecimal.valueOf(tcRate));
+        if (tcRate != null) {
+          taxCategory.setAggrOnlyPercent(BigDecimal.valueOf(tcRate));
+        }
         if (recordSet.moveToNext()) {
           throw new ExceptionWithCode(ExceptionWithCode.SOMETHING_WRONG,
     "There are multiply tax category results for item id/tax dest.id/entity: "

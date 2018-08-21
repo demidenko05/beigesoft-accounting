@@ -24,12 +24,11 @@ import java.net.URL;
 import org.beigesoft.service.ISrvOrm;
 import org.beigesoft.service.ISrvDatabase;
 import org.beigesoft.model.IRecordSet;
-import org.beigesoft.accounting.model.ETaxType;
 import org.beigesoft.accounting.persistable.AccSettings;
 import org.beigesoft.accounting.persistable.SalesInvoice;
 import org.beigesoft.accounting.persistable.SalesInvoiceTaxLine;
 import org.beigesoft.accounting.persistable.Tax;
-import org.beigesoft.accounting.persistable.InvItemTaxCategoryLine;
+import org.beigesoft.accounting.persistable.InvItemTaxCategory;
 import org.beigesoft.accounting.service.ISrvAccSettings;
 
 /**
@@ -311,19 +310,9 @@ public class UtlSalesGoodsServiceLine<RS> {
           totalTax = dbResults.get(i * 2);
           totalTaxFc = dbResults.get(i * 2 + 1);
           if (isAggrOnlyRate) {
-            pReqVars.put("InvItemTaxCategoryLineitsOwnerdeepLevel", 1);
-            List<InvItemTaxCategoryLine> ittcls = getSrvOrm()
-              .retrieveListWithConditions(pReqVars, InvItemTaxCategoryLine
-                .class, "where ITSOWNER=" + taxesOrCats.get(i));
-            pReqVars.remove("InvItemTaxCategoryLineitsOwnerdeepLevel");
-            for (InvItemTaxCategoryLine ittcl : ittcls) {
-              if (ETaxType.SALES_TAX_OUTITEM.equals(ittcl.getTax().getItsType())
-            || ETaxType.SALES_TAX_INITEM.equals(ittcl.getTax().getItsType())) {
-                taxes.add(ittcl.getTax());
-                ittcl.getTax().setItsPercentage(ittcl.getItsPercentage());
-                aggrTaxRate = aggrTaxRate.add(ittcl.getItsPercentage());
-              }
-            }
+            InvItemTaxCategory ittc = getSrvOrm().retrieveEntityById(pReqVars,
+              InvItemTaxCategory.class, taxesOrCats.get(i));
+            aggrTaxRate = ittc.getAggrOnlyPercent();
           } else {
             Tax tax = new Tax();
             tax.setItsId(taxesOrCats.get(i));
@@ -422,9 +411,9 @@ public class UtlSalesGoodsServiceLine<RS> {
   public final void makeItl(final Map<String, Object> pReqVars,
     final SalesInvoiceTaxLine pItl, final Tax pTax, final Double pTotalTax,
       final Double pTotalTaxFc, final Double pTaxable, final Double pTaxableFc,
-          final AccSettings pAs, final RoundingMode pRm,
-            final boolean pIsItemBasis,
-              final boolean pIsUseAggrOnlyRate) throws Exception {
+        final AccSettings pAs, final RoundingMode pRm,
+          final boolean pIsItemBasis,
+            final boolean pIsUseAggrOnlyRate) throws Exception {
     pItl.setTax(pTax);
     if (pIsItemBasis && pIsUseAggrOnlyRate) {
       pItl.setItsTotal(pItl.getItsTotal().add(BigDecimal.valueOf(pTotalTax)
