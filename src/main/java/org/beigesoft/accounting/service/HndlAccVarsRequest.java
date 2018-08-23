@@ -119,6 +119,25 @@ public class HndlAccVarsRequest<RS> implements IHandlerRequestDch {
     } else {
       curSign = " " + as.getCurrency().getItsName() + " ";
     }
+    String taxRounding = null;
+    if (as.getSalTaxRoundMode().equals(RoundingMode.HALF_UP)) {
+      taxRounding = "S";
+    } else if (as.getSalTaxRoundMode().equals(RoundingMode.HALF_DOWN)) {
+      taxRounding = "s";
+    } else if (as.getSalTaxRoundMode().equals(RoundingMode.UP)) {
+      taxRounding = "U";
+    } else if (as.getSalTaxRoundMode().equals(RoundingMode.DOWN)) {
+      taxRounding = "D";
+    } else if (as.getSalTaxRoundMode().equals(RoundingMode.HALF_EVEN)) {
+      taxRounding = "B";
+    } else if (as.getSalTaxRoundMode().equals(RoundingMode.CEILING)) {
+      taxRounding = "C";
+    } else if (as.getSalTaxRoundMode().equals(RoundingMode.FLOOR)) {
+      taxRounding = "F";
+    } else {
+      taxRounding = "S";
+    }
+    pReqVars.put("taxRounding", taxRounding);
     pReqVars.put("RSisUsePrecision0", rSisUsePrecision0);
     pReqVars.put("RSisUsePrecision1", rSisUsePrecision1);
     pReqVars.put("RSisUsePrecision2", rSisUsePrecision2);
@@ -127,6 +146,7 @@ public class HndlAccVarsRequest<RS> implements IHandlerRequestDch {
     pReqVars.put("quantityPrecision", as.getQuantityPrecision());
     pReqVars.put("pricePrecision", as.getPricePrecision());
     pReqVars.put("costPrecision", as.getCostPrecision());
+    pReqVars.put("taxPrecision", as.getTaxPrecision());
     pReqVars.put("balancePrecision", as.getBalancePrecision());
     pReqVars.put("curSign", curSign);
     pReqVars.put("RSmRound", rSmRound);

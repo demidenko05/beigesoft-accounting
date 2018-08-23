@@ -98,8 +98,7 @@ import org.beigesoft.accounting.processor.PrcGoodsLossLineSave;
 import org.beigesoft.accounting.processor.PrcSalesInvoiceSave;
 import org.beigesoft.accounting.processor.PrcSalesInvoiceLineCopy;
 import org.beigesoft.accounting.processor.PrcSalesInvoiceLineGfr;
-import org.beigesoft.accounting.processor.PrcSalesInvoiceServiceLineCreate;
-import org.beigesoft.accounting.processor.PrcSalesInvoiceLineCreate;
+import org.beigesoft.accounting.processor.PrcInvoiceLnCreate;
 import org.beigesoft.accounting.processor.PrcSalesInvoiceLineSave;
 import org.beigesoft.accounting.processor.PrcSalesInvoiceServiceLineSave;
 import org.beigesoft.accounting.processor.PrcSalesInvoiceServiceLineDelete;
@@ -108,8 +107,6 @@ import org.beigesoft.accounting.processor.PrcPurchaseInvoiceServiceLineDelete;
 import org.beigesoft.accounting.processor.PrcPurchaseInvoiceLineSave;
 import org.beigesoft.accounting.processor.PrcPurchaseInvoiceLineCopy;
 import org.beigesoft.accounting.processor.PrcPurchaseInvoiceLineGfr;
-import org.beigesoft.accounting.processor.PrcPurchaseInvoiceServiceLineCreate;
-import org.beigesoft.accounting.processor.PrcPurchaseInvoiceLineCreate;
 import org.beigesoft.accounting.processor.PrcAccDocGetForReverse;
 import org.beigesoft.accounting.processor.PrcAccDocWithTaxesCopy;
 import org.beigesoft.accounting.processor.PrcAccDocWithTaxesPaymentsCopy;
@@ -165,6 +162,7 @@ import org.beigesoft.accounting.persistable.SalesReturn;
 import org.beigesoft.accounting.persistable.WageTaxLine;
 import org.beigesoft.accounting.persistable.WageLine;
 import org.beigesoft.accounting.persistable.SalesReturnLine;
+import org.beigesoft.accounting.persistable.IInvoiceLine;
 import org.beigesoft.replicator.processor.PrcReplExcludeAccountsDebitCreditSave;
 import org.beigesoft.replicator.processor.PrcReplicationAccMethodSave;
 import org.beigesoft.replicator.persistable.ReplicationAccMethod;
@@ -611,14 +609,8 @@ public class HldAccEntitiesProcessorNames
         || pClass == PrepaymentFrom.class || pClass == PrepaymentTo.class
           || pClass == AdditionCostLine.class) {
       return PrcAccEntityWithSubaccCreate.class.getSimpleName();
-    } else if (pClass == PurchaseInvoiceServiceLine.class) {
-      return PrcPurchaseInvoiceServiceLineCreate.class.getSimpleName();
-    } else if (pClass == PurchaseInvoiceLine.class) {
-      return PrcPurchaseInvoiceLineCreate.class.getSimpleName();
-    } else if (pClass == SalesInvoiceServiceLine.class) {
-      return PrcSalesInvoiceServiceLineCreate.class.getSimpleName();
-    } else if (pClass == SalesInvoiceLine.class) {
-      return PrcSalesInvoiceLineCreate.class.getSimpleName();
+    } else if (IInvoiceLine.class.isAssignableFrom(pClass)) {
+      return PrcInvoiceLnCreate.class.getSimpleName();
     } else if (pClass == PurchaseReturnLine.class) {
       return PrcPurchaseReturnLineCreate.class.getSimpleName();
     } else if (pClass == SubaccountLine.class) {

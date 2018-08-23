@@ -28,7 +28,7 @@ import org.beigesoft.accounting.persistable.AccSettings;
 import org.beigesoft.accounting.persistable.PurchaseInvoice;
 import org.beigesoft.accounting.persistable.PurchaseInvoiceTaxLine;
 import org.beigesoft.accounting.persistable.Tax;
-import org.beigesoft.accounting.persistable.InvItemTaxCategory;
+import org.beigesoft.accounting.persistable.InvItemTaxCategoryLine;
 import org.beigesoft.accounting.service.ISrvAccSettings;
 
 /**
@@ -234,7 +234,7 @@ public class UtlPurchaseGoodsServiceLine<RS> {
       .retrieveListForField(pReqVars, itl, "itsOwner");
     pReqVars.remove("PurchaseInvoiceTaxLineitsOwnerdeepLevel");
     AccSettings as = getSrvAccSettings().lazyGetAccSettings(pReqVars);
-    boolean isTaxable = as.getIsExtractSalesTaxFromSales() && !pItsOwner
+    boolean isTaxable = as.getIsExtractSalesTaxFromPurchase() && !pItsOwner
       .getOmitTaxes() && !pItsOwner.getVendor().getIsForeigner();
     if (isTaxable) {
       boolean isItemBasis = !as.getSalTaxIsInvoiceBase();
@@ -270,12 +270,19 @@ public class UtlPurchaseGoodsServiceLine<RS> {
               Double percent = recordSet.getDouble("ITSPERCENTAGE");
               Double taxable = recordSet.getDouble("TAXABLE");
               Double forTaxable = recordSet.getDouble("FOREIGNTAXABLE");
-              dbResults.add(taxable * percent / 100.0d);
-              dbResults.add(forTaxable * percent / 100.0d);
-              dbResults.add(taxable);
-              dbResults.add(forTaxable);
+              if (pItsOwner.getPriceIncTax()) {
+                dbResults.add(taxable - (1.0 - (taxable * percent / 100.0d)));
+            dbResults.add(forTaxable - (1.0 - (forTaxable * percent / 100.0d)));
+                dbResults.add(taxable);
+                dbResults.add(forTaxable);
+              } else {
+                dbResults.add(taxable * percent / 100.0d);
+                dbResults.add(forTaxable * percent / 100.0d);
+                dbResults.add(taxable);
+                dbResults.add(forTaxable);
+              }
             } else {
-              if (as.getSalTaxUseAggregItBas()) {
+              if (isAggrOnlyRate) {
                 taxesOrCats.add(recordSet.getLong("TAXCATEGORY"));
                 dbResults.add(recordSet.getDouble("TOTALTAXES"));
                 dbResults.add(recordSet.getDouble("FOREIGNTOTALTAXES"));
@@ -312,9 +319,18 @@ public class UtlPurchaseGoodsServiceLine<RS> {
           totalTax = dbResults.get(i * 2);
           totalTaxFc = dbResults.get(i * 2 + 1);
           if (isAggrOnlyRate) {
-            InvItemTaxCategory ittc = getSrvOrm().retrieveEntityById(pReqVars,
-              InvItemTaxCategory.class, taxesOrCats.get(i));
-            aggrTaxRate = ittc.getAggrOnlyPercent();
+            pReqVars.put("InvItemTaxCategoryLineitsOwnerdeepLevel", 1);
+            List<InvItemTaxCategoryLine> itcls = getSrvOrm()
+              .retrieveListWithConditions(pReqVars,
+                InvItemTaxCategoryLine.class, "where ITSOWNER="
+                  + taxesOrCats.get(i));
+            pReqVars.remove("InvItemTaxCategoryLineitsOwnerdeepLevel");
+            for (InvItemTaxCategoryLine itcl : itcls) {
+              Tax tax = new Tax();
+              tax.setItsId(itcl.getTax().getItsId());
+              taxes.add(tax);
+              aggrTaxRate = aggrTaxRate.add(itcl.getItsPercentage());
+            }
           } else {
             Tax tax = new Tax();
             tax.setItsId(taxesOrCats.get(i));

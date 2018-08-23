@@ -14,6 +14,7 @@ package org.beigesoft.accounting.processor;
 
 import java.util.Map;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.io.InputStream;
 import java.io.IOException;
 import java.net.URL;
@@ -101,6 +102,7 @@ public class PrcRevealTaxCat<RS> implements IProcessor {
     query = query.replace(":TAXDESTID", taxDestId.toString());
     InvItemTaxCategory taxCategory = new InvItemTaxCategory();
     IRecordSet<RS> recordSet = null;
+    RoundingMode rounding = null;
     try {
       this.srvDatabase.setIsAutocommit(false);
       this.srvDatabase.setTransactionIsolation(ISrvDatabase
@@ -108,23 +110,29 @@ public class PrcRevealTaxCat<RS> implements IProcessor {
       this.srvDatabase.beginTransaction();
       recordSet = getSrvDatabase().retrieveRecords(query);
       if (recordSet.moveToFirst()) {
-        String tcn = recordSet.getString("DTCNAME");
-        String tcd;
-        Long tcId;
-        Double tcRate;
-        if (tcn == null) {
+        Long dtlId = recordSet.getLong("DTLID");
+        Integer tdrm = null;
+        Long tcId = recordSet.getLong("DTCID");
+        String tcd = null;
+        String tcn = null;
+        Double tcRate = null;
+        if (dtlId == null) {
           tcn = recordSet.getString("OTCNAME");
           tcd = recordSet.getString("OTCDESCR");
           tcId = recordSet.getLong("OTCID");
           tcRate = recordSet.getDouble("OTCRATE");
-        } else {
+        } else if (tcId != null) {
+          tdrm = recordSet.getInteger("DTRM");
           tcd = recordSet.getString("DTCDESCR");
-          tcId = recordSet.getLong("DTCID");
+          tcn = recordSet.getString("DTCNAME");
           tcRate = recordSet.getDouble("DTCRATE");
         }
         taxCategory.setItsId(tcId);
         taxCategory.setItsName(tcn);
         taxCategory.setTaxesDescription(tcd);
+        if (tdrm != null) {
+          rounding = RoundingMode.class.getEnumConstants()[tdrm];
+        }
         if (tcRate != null) {
           taxCategory.setAggrOnlyPercent(BigDecimal.valueOf(tcRate));
         }
@@ -144,6 +152,27 @@ public class PrcRevealTaxCat<RS> implements IProcessor {
       }
       this.srvDatabase.releaseResources();
     }
+    String taxRounding = null;
+    if (rounding != null) {
+      if (rounding.equals(RoundingMode.HALF_UP)) {
+        taxRounding = "S";
+      } else if (rounding.equals(RoundingMode.HALF_DOWN)) {
+        taxRounding = "s";
+      } else if (rounding.equals(RoundingMode.UP)) {
+        taxRounding = "U";
+      } else if (rounding.equals(RoundingMode.DOWN)) {
+        taxRounding = "D";
+      } else if (rounding.equals(RoundingMode.HALF_EVEN)) {
+        taxRounding = "B";
+      } else if (rounding.equals(RoundingMode.CEILING)) {
+        taxRounding = "C";
+      } else if (rounding.equals(RoundingMode.FLOOR)) {
+        taxRounding = "F";
+      } else {
+        taxRounding = "S";
+      }
+    }
+    pRequestData.setAttribute("taxRounding", taxRounding);
     pRequestData.setAttribute("taxCategory", taxCategory);
   }
 

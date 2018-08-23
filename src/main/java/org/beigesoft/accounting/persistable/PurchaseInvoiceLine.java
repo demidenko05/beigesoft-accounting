@@ -15,19 +15,18 @@ package org.beigesoft.accounting.persistable;
 import java.util.Date;
 import java.math.BigDecimal;
 
-import org.beigesoft.model.IOwned;
 import org.beigesoft.accounting.persistable.base.AInvItemMovementCostTax;
 
 /**
  * <p>
- * Model of Vendor Invoice Line.
+ * Model of Vendor Invoice Goods Line.
  * It is immutable.
  * </p>
  *
  * @author Yury Demidenko
  */
 public class PurchaseInvoiceLine extends AInvItemMovementCostTax
-  implements IDrawItemSource, IOwned<PurchaseInvoice> {
+  implements IDrawItemSource, IInvoiceLine<PurchaseInvoice> {
 
   /**
    * <p>Vendor Invoice.</p>
@@ -185,6 +184,78 @@ public class PurchaseInvoiceLine extends AInvItemMovementCostTax
     this.itsOwner = pItsOwner;
   }
 
+  /**
+   * <p>Getter for foreignPrice.</p>
+   * @return BigDecimal
+   **/
+  @Override
+  public final BigDecimal getForeignPrice() {
+    return this.foreignPrice;
+  }
+
+  /**
+   * <p>Setter for foreignPrice.</p>
+   * @param pForeignPrice reference
+   **/
+  @Override
+  public final void setForeignPrice(final BigDecimal pForeignPrice) {
+    this.foreignPrice = pForeignPrice;
+  }
+
+  /**
+   * <p>Getter for foreignSubtotal.</p>
+   * @return BigDecimal
+   **/
+  @Override
+  public final BigDecimal getForeignSubtotal() {
+    return this.foreignSubtotal;
+  }
+
+  /**
+   * <p>Setter for foreignSubtotal.</p>
+   * @param pForeignSubtotal reference
+   **/
+  @Override
+  public final void setForeignSubtotal(final BigDecimal pForeignSubtotal) {
+    this.foreignSubtotal = pForeignSubtotal;
+  }
+
+  /**
+   * <p>Getter for foreignTotalTaxes.</p>
+   * @return BigDecimal
+   **/
+  @Override
+  public final BigDecimal getForeignTotalTaxes() {
+    return this.foreignTotalTaxes;
+  }
+
+  /**
+   * <p>Setter for foreignTotalTaxes.</p>
+   * @param pForeignTotalTaxes reference
+   **/
+  @Override
+  public final void setForeignTotalTaxes(final BigDecimal pForeignTotalTaxes) {
+    this.foreignTotalTaxes = pForeignTotalTaxes;
+  }
+
+  /**
+   * <p>Getter for foreignTotal.</p>
+   * @return BigDecimal
+   **/
+  @Override
+  public final BigDecimal getForeignTotal() {
+    return this.foreignTotal;
+  }
+
+  /**
+   * <p>Setter for foreignTotal.</p>
+   * @param pForeignTotal reference
+   **/
+  @Override
+  public final void setForeignTotal(final BigDecimal pForeignTotal) {
+    this.foreignTotal = pForeignTotal;
+  }
+
   //Simple getters and setters:
   /**
    * <p>Geter for warehouseSite.</p>
@@ -200,69 +271,5 @@ public class PurchaseInvoiceLine extends AInvItemMovementCostTax
    **/
   public final void setWarehouseSite(final WarehouseSite pWarehouseSite) {
     this.warehouseSite = pWarehouseSite;
-  }
-
-  /**
-   * <p>Getter for foreignPrice.</p>
-   * @return BigDecimal
-   **/
-  public final BigDecimal getForeignPrice() {
-    return this.foreignPrice;
-  }
-
-  /**
-   * <p>Setter for foreignPrice.</p>
-   * @param pForeignPrice reference
-   **/
-  public final void setForeignPrice(final BigDecimal pForeignPrice) {
-    this.foreignPrice = pForeignPrice;
-  }
-
-  /**
-   * <p>Getter for foreignSubtotal.</p>
-   * @return BigDecimal
-   **/
-  public final BigDecimal getForeignSubtotal() {
-    return this.foreignSubtotal;
-  }
-
-  /**
-   * <p>Setter for foreignSubtotal.</p>
-   * @param pForeignSubtotal reference
-   **/
-  public final void setForeignSubtotal(final BigDecimal pForeignSubtotal) {
-    this.foreignSubtotal = pForeignSubtotal;
-  }
-
-  /**
-   * <p>Getter for foreignTotalTaxes.</p>
-   * @return BigDecimal
-   **/
-  public final BigDecimal getForeignTotalTaxes() {
-    return this.foreignTotalTaxes;
-  }
-
-  /**
-   * <p>Setter for foreignTotalTaxes.</p>
-   * @param pForeignTotalTaxes reference
-   **/
-  public final void setForeignTotalTaxes(final BigDecimal pForeignTotalTaxes) {
-    this.foreignTotalTaxes = pForeignTotalTaxes;
-  }
-
-  /**
-   * <p>Getter for foreignTotal.</p>
-   * @return BigDecimal
-   **/
-  public final BigDecimal getForeignTotal() {
-    return this.foreignTotal;
-  }
-
-  /**
-   * <p>Setter for foreignTotal.</p>
-   * @param pForeignTotal reference
-   **/
-  public final void setForeignTotal(final BigDecimal pForeignTotal) {
-    this.foreignTotal = pForeignTotal;
   }
 }

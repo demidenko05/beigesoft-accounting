@@ -251,11 +251,17 @@ public class PrcSalesInvoiceSave<RS>
   public final void checkOtherFraudUpdate(final Map<String, Object> pReqVars,
     final SalesInvoice pEntity, final IRequestData pRequestData,
       final SalesInvoice pOldEntity) throws Exception {
+    pReqVars.remove("DebtorCreditortaxDestinationdeepLevel");
     if (pEntity.getItsTotal().compareTo(BigDecimal.ZERO) == 1) {
-      if (pOldEntity.getCustomer().getTaxDestination() != null && !pOldEntity
-        .getCustomer().getItsId().equals(pEntity.getCustomer().getItsId())) {
-        throw new ExceptionWithCode(ExceptionWithCode.WRONG_PARAMETER,
-          "can_not_cange_customer_with_another_tax_destination");
+      if (!pOldEntity.getCustomer().getItsId()
+        .equals(pEntity.getCustomer().getItsId())) {
+        pEntity.setCustomer(getSrvOrm()
+          .retrieveEntity(pReqVars, pEntity.getCustomer()));
+        if (pOldEntity.getCustomer().getTaxDestination() != null
+            || pEntity.getCustomer().getTaxDestination() != null) {
+          throw new ExceptionWithCode(ExceptionWithCode.WRONG_PARAMETER,
+            "can_not_cange_customer_with_another_tax_destination");
+        }
       }
       if (!pOldEntity.getOmitTaxes().equals(pEntity.getOmitTaxes())
         || !pOldEntity.getPriceIncTax().equals(pEntity.getPriceIncTax())) {
@@ -263,7 +269,6 @@ public class PrcSalesInvoiceSave<RS>
           "can_not_change_tax_method");
       }
     }
-    pReqVars.remove("DebtorCreditortaxDestinationdeepLevel");
   }
 
   /**
