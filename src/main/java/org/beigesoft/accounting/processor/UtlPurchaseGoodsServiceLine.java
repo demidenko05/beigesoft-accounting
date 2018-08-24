@@ -227,11 +227,10 @@ public class UtlPurchaseGoodsServiceLine<RS> {
    **/
   public final void updateTaxLines(final Map<String, Object> pReqVars,
     final PurchaseInvoice pItsOwner) throws Exception {
-    PurchaseInvoiceTaxLine itl = new PurchaseInvoiceTaxLine();
-    itl.setItsOwner(pItsOwner);
     pReqVars.put("PurchaseInvoiceTaxLineitsOwnerdeepLevel", 1);
-    List<PurchaseInvoiceTaxLine> itls = getSrvOrm()
-      .retrieveListForField(pReqVars, itl, "itsOwner");
+    List<PurchaseInvoiceTaxLine> itls = getSrvOrm().retrieveListWithConditions(
+        pReqVars, PurchaseInvoiceTaxLine.class, "where ITSOWNER="
+          + pItsOwner.getItsId());
     pReqVars.remove("PurchaseInvoiceTaxLineitsOwnerdeepLevel");
     AccSettings as = getSrvAccSettings().lazyGetAccSettings(pReqVars);
     boolean isTaxable = as.getIsExtractSalesTaxFromPurchase() && !pItsOwner
@@ -265,7 +264,7 @@ public class UtlPurchaseGoodsServiceLine<RS> {
         recordSet = getSrvDatabase().retrieveRecords(query);
         if (recordSet.moveToFirst()) {
           do {
-            if (as.getSalTaxIsInvoiceBase()) {
+            if (!isItemBasis) {
               taxesOrCats.add(recordSet.getLong("TAXID"));
               Double percent = recordSet.getDouble("ITSPERCENTAGE");
               Double taxable = recordSet.getDouble("TAXABLE");
@@ -328,6 +327,7 @@ public class UtlPurchaseGoodsServiceLine<RS> {
             for (InvItemTaxCategoryLine itcl : itcls) {
               Tax tax = new Tax();
               tax.setItsId(itcl.getTax().getItsId());
+              tax.setItsPercentage(itcl.getItsPercentage());
               taxes.add(tax);
               aggrTaxRate = aggrTaxRate.add(itcl.getItsPercentage());
             }
@@ -341,8 +341,21 @@ public class UtlPurchaseGoodsServiceLine<RS> {
         Double aggrTaxFc = null;
         Double aggrTaxRest = null;
         Double aggrTaxRestFc = null;
+        if (itls.size() > 0) {
+          for (PurchaseInvoiceTaxLine itl : itls) {
+            itl.setTax(null);
+            itl.setTaxableInvBas(BigDecimal.ZERO);
+            itl.setTaxableInvBasFc(BigDecimal.ZERO);
+            itl.setItsTotal(BigDecimal.ZERO);
+            itl.setForeignTotalTaxes(BigDecimal.ZERO);
+          }
+        }
+        List<PurchaseInvoiceTaxLine> itlsnew = null;
+        if (isItemBasis && isAggrOnlyRate) {
+          itlsnew = new ArrayList<PurchaseInvoiceTaxLine>();
+        }
         for (int j = 0; j < taxes.size();  j++) {
-          itl = null;
+          PurchaseInvoiceTaxLine itl = null;
           if (isItemBasis && isAggrOnlyRate) {
             if (aggrTaxRest == null) {
               aggrTax = totalTax;
@@ -361,21 +374,21 @@ public class UtlPurchaseGoodsServiceLine<RS> {
               aggrTaxRest -= totalTax;
               aggrTaxRestFc -= totalTaxFc;
             }
-            if (i > 1) {
+            if (itls.size() > 0) {
               for (int k = 0; k < itls.size(); k++) {
-                if (itls.get(k).getTax().getItsId()
-                  .equals(taxes.get(j).getItsId())) {
+                if (itls.get(k).getTax() != null
+                  && itls.get(k).getTax().getItsId()
+                    .equals(taxes.get(j).getItsId())) {
                   itl = itls.get(k);
-                  if (k > countUpdatedItl) {
-                    itl.setItsTotal(BigDecimal.ZERO);
-                    itl.setForeignTotalTaxes(BigDecimal.ZERO);
-                    if (k - countUpdatedItl > 1) {
-                  PurchaseInvoiceTaxLine itlex = itls.get(countUpdatedItl + 1);
-                      itls.set(countUpdatedItl + 1, itl);
-                      itls.set(k, itlex);
-                    }
-                    countUpdatedItl++;
-                  }
+                  break;
+                }
+              }
+            }
+            if (itl == null && itlsnew.size() > 0) {
+              for (int k = 0; k < itlsnew.size(); k++) {
+                if (itlsnew.get(k).getTax().getItsId()
+                    .equals(taxes.get(j).getItsId())) {
+                  itl = itlsnew.get(k);
                   break;
                 }
               }
@@ -384,13 +397,14 @@ public class UtlPurchaseGoodsServiceLine<RS> {
           if (itl == null) {
             if (itls.size() > countUpdatedItl) {
               itl = itls.get(countUpdatedItl);
-              itl.setItsTotal(BigDecimal.ZERO);
-              itl.setForeignTotalTaxes(BigDecimal.ZERO);
               countUpdatedItl++;
             } else {
               itl = new PurchaseInvoiceTaxLine();
               itl.setIsNew(true);
               itl.setIdDatabaseBirth(this.srvOrm.getIdDatabase());
+              if (itlsnew != null) {
+                itlsnew.add(itl);
+              }
             }
           }
           itl.setItsOwner(pItsOwner);

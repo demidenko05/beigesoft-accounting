@@ -48,7 +48,7 @@ public class PrcSalesInvoiceServiceLineDelete<RS>
 
   /**
    * <p>Process entity request.</p>
-   * @param pAddParam additional param, e.g. return this line's
+   * @param pReqVars additional param, e.g. return this line's
    * document in "nextEntity" for farther process
    * @param pRequestData Request Data
    * @param pEntity Entity to process
@@ -57,23 +57,25 @@ public class PrcSalesInvoiceServiceLineDelete<RS>
    **/
   @Override
   public final SalesInvoiceServiceLine process(
-    final Map<String, Object> pAddParam,
+    final Map<String, Object> pReqVars,
       final SalesInvoiceServiceLine pEntity,
         final IRequestData pRequestData) throws Exception {
-    getSrvOrm().deleteEntityWhere(pAddParam,
+    getSrvOrm().deleteEntityWhere(pReqVars,
       SalesInvoiceServiceTaxLine.class, "ITSOWNER=" + pEntity.getItsId());
-    this.prcAccEntityPbDelete.process(pAddParam, pEntity, pRequestData);
+    this.prcAccEntityPbDelete.process(pReqVars, pEntity, pRequestData);
     // Beige-Orm refresh:
+    pReqVars.put("DebtorCreditortaxDestinationdeepLevel", 2);
     pEntity.setItsOwner(getSrvOrm()
-      .retrieveEntity(pAddParam, pEntity.getItsOwner()));
+      .retrieveEntity(pReqVars, pEntity.getItsOwner()));
+    pReqVars.remove("DebtorCreditortaxDestinationdeepLevel");
     // optimistic locking (dirty check):
     Long ownerVersion = Long.valueOf(pRequestData
       .getParameter(SalesInvoice.class.getSimpleName() + ".ownerVersion"));
     pEntity.getItsOwner().setItsVersion(ownerVersion);
     this.utlSalesGoodsServiceLine
-      .updateOwner(pAddParam, pEntity.getItsOwner());
-    pAddParam.put("nextEntity", pEntity.getItsOwner());
-    pAddParam.put("nameOwnerEntity", SalesInvoice.class.getSimpleName());
+      .updateOwner(pReqVars, pEntity.getItsOwner());
+    pReqVars.put("nextEntity", pEntity.getItsOwner());
+    pReqVars.put("nameOwnerEntity", SalesInvoice.class.getSimpleName());
     return null;
   }
 
