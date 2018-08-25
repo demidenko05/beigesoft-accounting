@@ -76,6 +76,7 @@ import org.beigesoft.accounting.processor.PrcPaymentToGfr;
 import org.beigesoft.accounting.processor.PrcPurchaseInvoiceServiceLineSave;
 import org.beigesoft.accounting.processor.PrcPurchaseInvoiceServiceLineDelete;
 import org.beigesoft.accounting.processor.PrcPurchaseInvoiceLineSave;
+import org.beigesoft.accounting.processor.PrcPurchInvTaxLnSave;
 import org.beigesoft.accounting.processor.PrcPurchaseInvoiceLineCopy;
 import org.beigesoft.accounting.processor.PrcPurchaseInvoiceLineGfr;
 import org.beigesoft.accounting.processor.UtlPurchaseGoodsServiceLine;
@@ -425,6 +426,9 @@ public class FctBnAccEntitiesProcessors<RS>
           } else if (pBeanName
             .equals(PrcPurchaseInvoiceLineCopy.class.getSimpleName())) {
             proc = lazyGetPrcPurchaseInvoiceLineCopy(pAddParam);
+          } else if (pBeanName
+            .equals(PrcPurchInvTaxLnSave.class.getSimpleName())) {
+            proc = lazyGetPrcPurchInvTaxLnSave(pAddParam);
           } else if (pBeanName
             .equals(PrcPurchaseInvoiceLineSave.class.getSimpleName())) {
             proc = lazyGetPrcPurchaseInvoiceLineSave(pAddParam);
@@ -1382,6 +1386,31 @@ public class FctBnAccEntitiesProcessors<RS>
       //assigning fully initialized object:
       this.processorsMap
         .put(PrcPurchaseInvoiceLineCopy.class.getSimpleName(), proc);
+    }
+    return proc;
+  }
+
+  /**
+   * <p>Get PrcPurchInvTaxLnSave (create and put into map).</p>
+   * @param pAddParam additional param
+   * @return requested PrcPurchInvTaxLnSave
+   * @throws Exception - an exception
+   */
+  protected final PrcPurchInvTaxLnSave<RS>
+    lazyGetPrcPurchInvTaxLnSave(
+      final Map<String, Object> pAddParam) throws Exception {
+    @SuppressWarnings("unchecked")
+    PrcPurchInvTaxLnSave<RS> proc = (PrcPurchInvTaxLnSave<RS>)
+      this.processorsMap.get(PrcPurchInvTaxLnSave.class.getSimpleName());
+    if (proc == null) {
+      proc = new PrcPurchInvTaxLnSave<RS>();
+      proc.setSrvAccSettings(getSrvAccSettings());
+      proc.setSrvOrm(getSrvOrm());
+      proc.setUtlPurchaseGoodsServiceLine(
+        lazyGetUtlPurchaseGoodsServiceLine(pAddParam));
+      //assigning fully initialized object:
+      this.processorsMap
+        .put(PrcPurchInvTaxLnSave.class.getSimpleName(), proc);
     }
     return proc;
   }

@@ -105,6 +105,7 @@ import org.beigesoft.accounting.processor.PrcSalesInvoiceServiceLineDelete;
 import org.beigesoft.accounting.processor.PrcPurchaseInvoiceServiceLineSave;
 import org.beigesoft.accounting.processor.PrcPurchaseInvoiceServiceLineDelete;
 import org.beigesoft.accounting.processor.PrcPurchaseInvoiceLineSave;
+import org.beigesoft.accounting.processor.PrcPurchInvTaxLnSave;
 import org.beigesoft.accounting.processor.PrcPurchaseInvoiceLineCopy;
 import org.beigesoft.accounting.processor.PrcPurchaseInvoiceLineGfr;
 import org.beigesoft.accounting.processor.PrcAccDocGetForReverse;
@@ -142,6 +143,7 @@ import org.beigesoft.accounting.persistable.MoveItemsLine;
 import org.beigesoft.accounting.persistable.PaymentFrom;
 import org.beigesoft.accounting.persistable.Wage;
 import org.beigesoft.accounting.persistable.PurchaseInvoiceServiceLine;
+import org.beigesoft.accounting.persistable.PurchaseInvoiceTaxLine;
 import org.beigesoft.accounting.persistable.SalesInvoiceServiceLine;
 import org.beigesoft.accounting.persistable.SalesInvoiceLine;
 import org.beigesoft.accounting.persistable.PurchaseInvoiceLine;
@@ -560,6 +562,8 @@ public class HldAccEntitiesProcessorNames
       return PrcBeginningInventoryLineSave.class.getSimpleName();
     } else if (PurchaseInvoiceLine.class == pClass) {
       return PrcPurchaseInvoiceLineSave.class.getSimpleName();
+    } else if (PurchaseInvoiceTaxLine.class == pClass) {
+      return PrcPurchInvTaxLnSave.class.getSimpleName();
     } else if (AReplExcludeAccountsDebitCredit.class
       .isAssignableFrom(pClass)) {
       return PrcReplExcludeAccountsDebitCreditSave.class.getSimpleName();

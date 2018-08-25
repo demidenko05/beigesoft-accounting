@@ -98,7 +98,7 @@ public class UtlPurchaseGoodsServiceLine<RS> {
   private ISrvAccSettings srvAccSettings;
 
   /**
-   * <p>Insert immutable line into DB.</p>
+   * <p>Updates owner taxes and totals.</p>
    * @param pReqVars additional param
    * @param pItsOwner PurchaseInvoice
    * @throws Exception - an exception
@@ -106,6 +106,17 @@ public class UtlPurchaseGoodsServiceLine<RS> {
   public final void updateOwner(final Map<String, Object> pReqVars,
     final PurchaseInvoice pItsOwner) throws Exception {
     updateTaxLines(pReqVars, pItsOwner);
+    updateOwnerTotals(pReqVars, pItsOwner);
+  }
+
+  /**
+   * <p>Updates owners totals.</p>
+   * @param pReqVars additional param
+   * @param pItsOwner PurchaseInvoice
+   * @throws Exception - an exception
+   **/
+  public final void updateOwnerTotals(final Map<String, Object> pReqVars,
+    final PurchaseInvoice pItsOwner) throws Exception {
     String query = lazyGetQueryPurchaseInvoiceTotals();
     query = query.replace(":ITSOWNER", pItsOwner.getItsId().toString());
     String[] columns = new String[]
@@ -267,18 +278,20 @@ public class UtlPurchaseGoodsServiceLine<RS> {
             if (!isItemBasis) {
               taxesOrCats.add(recordSet.getLong("TAXID"));
               Double percent = recordSet.getDouble("ITSPERCENTAGE");
-              Double taxable = recordSet.getDouble("TAXABLE");
-              Double forTaxable = recordSet.getDouble("FOREIGNTAXABLE");
+              Double itsTotal = recordSet.getDouble("ITSTOTAL");
+              Double subtotal = recordSet.getDouble("SUBTOTAL");
+              Double foreignSubtotal = recordSet.getDouble("FOREIGNSUBTOTAL");
+              Double foreignTotal = recordSet.getDouble("FOREIGNTOTAL");
               if (pItsOwner.getPriceIncTax()) {
-                dbResults.add(taxable - (1.0 - (taxable * percent / 100.0d)));
-            dbResults.add(forTaxable - (1.0 - (forTaxable * percent / 100.0d)));
-                dbResults.add(taxable);
-                dbResults.add(forTaxable);
+                dbResults.add(itsTotal - (itsTotal / (1.0 + percent / 100.0d)));
+        dbResults.add(foreignTotal - (foreignTotal / (1.0 + percent / 100.0d)));
+                dbResults.add(itsTotal);
+                dbResults.add(foreignTotal);
               } else {
-                dbResults.add(taxable * percent / 100.0d);
-                dbResults.add(forTaxable * percent / 100.0d);
-                dbResults.add(taxable);
-                dbResults.add(forTaxable);
+                dbResults.add(subtotal * percent / 100.0d);
+                dbResults.add(foreignSubtotal * percent / 100.0d);
+                dbResults.add(subtotal);
+                dbResults.add(foreignSubtotal);
               }
             } else {
               if (isAggrOnlyRate) {

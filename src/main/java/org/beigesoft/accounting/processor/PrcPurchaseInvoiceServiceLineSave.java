@@ -96,7 +96,7 @@ public class PrcPurchaseInvoiceServiceLineSave<RS>
     pEntity.setItsQuantity(pEntity.getItsQuantity().setScale(as
       .getQuantityPrecision(), getSrvAccSettings()
         .lazyGetAccSettings(pReqVars).getRoundingMode()));
-    boolean isTaxable = as.getIsExtractSalesTaxFromSales() && !pEntity
+    boolean isTaxable = as.getIsExtractSalesTaxFromPurchase() && !pEntity
       .getItsOwner().getOmitTaxes() && !pEntity.getItsOwner().getVendor()
         .getIsForeigner();
     if (pEntity.getItsOwner().getForeignCurrency() != null) {
