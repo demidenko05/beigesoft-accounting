@@ -12,18 +12,23 @@ package org.beigesoft.accounting.processor;
  * http://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html
  */
 
+import java.util.Set;
+import java.util.HashSet;
 import java.util.Map;
 import java.math.RoundingMode;
 
 import org.beigesoft.model.IRequestData;
 import org.beigesoft.service.IEntityProcessor;
 import org.beigesoft.accounting.persistable.PurchaseInvoice;
+import org.beigesoft.accounting.persistable.PurchaseInvoiceServiceLine;
 import org.beigesoft.accounting.persistable.SalesInvoice;
+import org.beigesoft.accounting.persistable.SalesInvoiceServiceLine;
 import org.beigesoft.accounting.persistable.IInvoice;
 import org.beigesoft.accounting.persistable.IInvoiceLine;
 
 /**
- * <p>Process that retrieves purchase/sales invoice line for editing.</p>
+ * <p>Process that retrieves purchase/sales invoice service line
+ * for editing.</p>
  *
  * @param <RS> platform dependent record set type
  * @param <T> line type
@@ -52,18 +57,32 @@ public class PrcInvoiceLnGfe<RS, T extends IInvoiceLine<I>, I extends IInvoice>
   public final T process(final Map<String, Object> pReqVars,
     final T pEntity,
       final IRequestData pRequestData) throws Exception {
-    pReqVars.put("DebtorCreditortaxDestinationdeepLevel", 2);
+    if (pEntity.getClass() == PurchaseInvoiceServiceLine.class) {
+      pReqVars.put("PurchaseInvoicevendordeepLevel", 3);
+    } else if (pEntity.getClass() == SalesInvoiceServiceLine.class) {
+      pReqVars.put("SalesInvoicecustomerdeepLevel", 3);
+    }
+    Set<String> ndFlDc = new HashSet<String>();
+    ndFlDc.add("itsId");
+    ndFlDc.add("isForeigner");
+    ndFlDc.add("taxDestination");
+    pReqVars.put("DebtorCreditorneededFields", ndFlDc);
     T invLn = this.prcEntityPbEditDelete
       .process(pReqVars, pEntity, pRequestData);
-    pReqVars.remove("DebtorCreditortaxDestinationdeepLevel");
+    pReqVars.remove("DebtorCreditorneededFields", ndFlDc);
+    if (invLn.getClass() == PurchaseInvoiceServiceLine.class) {
+      pReqVars.remove("PurchaseInvoicevendordeepLevel");
+    } else if (invLn.getClass() == SalesInvoiceServiceLine.class) {
+      pReqVars.remove("SalesInvoicecustomerdeepLevel");
+    }
     RoundingMode rounding = null;
     String taxRounding = null;
-    if (invLn.getItsOwner().getClass() == PurchaseInvoice.class) {
+    if (invLn.getClass() == PurchaseInvoiceServiceLine.class) {
       PurchaseInvoice inv = (PurchaseInvoice) invLn.getItsOwner();
       if (inv.getVendor().getTaxDestination() != null) {
         rounding = inv.getVendor().getTaxDestination().getSalTaxRoundMode();
       }
-    } else if (invLn.getItsOwner().getClass() == SalesInvoice.class) {
+    } else if (invLn.getClass() == SalesInvoiceServiceLine.class) {
       SalesInvoice inv = (SalesInvoice) invLn.getItsOwner();
       if (inv.getCustomer().getTaxDestination() != null) {
         rounding = inv.getCustomer().getTaxDestination().getSalTaxRoundMode();

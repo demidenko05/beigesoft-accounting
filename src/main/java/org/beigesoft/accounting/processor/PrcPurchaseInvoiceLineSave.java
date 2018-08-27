@@ -12,6 +12,8 @@ package org.beigesoft.accounting.processor;
  * http://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html
  */
 
+import java.util.Set;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
@@ -87,8 +89,14 @@ public class PrcPurchaseInvoiceLineSave<RS>
       pEntity.setItsOwner(getSrvOrm()
         .retrieveEntity(pReqVars, pEntity.getItsOwner()));
       pReqVars.put("DebtorCreditortaxDestinationdeepLevel", 2);
+      Set<String> ndFlDc = new HashSet<String>();
+      ndFlDc.add("itsId");
+      ndFlDc.add("isForeigner");
+      ndFlDc.add("taxDestination");
+      pReqVars.put("DebtorCreditorneededFields", ndFlDc);
       pEntity.setItsOwner(getSrvOrm()
         .retrieveEntity(pReqVars, pEntity.getItsOwner()));
+      pReqVars.remove("DebtorCreditorneededFields");
       pReqVars.remove("DebtorCreditortaxDestinationdeepLevel");
       if (pEntity.getReversedId() != null) {
         PurchaseInvoiceLine reversed = getSrvOrm().retrieveEntityById(
@@ -143,36 +151,49 @@ public class PrcPurchaseInvoiceLineSave<RS>
             "type_must_be_material_or_merchandise::" + pReqVars.get("user"));
         }
         AccSettings as = getSrvAccSettings().lazyGetAccSettings(pReqVars);
-        //rounding:
-        pEntity.setItsQuantity(pEntity.getItsQuantity().setScale(as
-          .getQuantityPrecision(), as.getRoundingMode()));
         pEntity.setTheRest(pEntity.getItsQuantity());
         boolean isTaxable = as.getIsExtractSalesTaxFromPurchase() && !pEntity
           .getItsOwner().getOmitTaxes() && !pEntity.getItsOwner().getVendor()
             .getIsForeigner();
-        if (pEntity.getItsOwner().getForeignCurrency() != null) {
-          pEntity.setForeignPrice(pEntity.getForeignPrice().setScale(as
-            .getPricePrecision(), as.getRoundingMode()));
-          if (!isTaxable || pEntity.getItsOwner().getPriceIncTax()) {
+        if (pEntity.getInvItem().getKnownCost() != null) {
+          if (pEntity.getItsOwner().getForeignCurrency() != null) {
+            pEntity.setForeignPrice(pEntity.getInvItem().getKnownCost());
+            if (!isTaxable || pEntity.getItsOwner().getPriceIncTax()) {
             pEntity.setForeignTotal(pEntity.getItsQuantity().multiply(pEntity
     .getForeignPrice()).setScale(as.getPricePrecision(), as.getRoundingMode()));
-          } else {
+            } else {
             pEntity.setForeignSubtotal(pEntity.getItsQuantity().multiply(pEntity
     .getForeignPrice()).setScale(as.getPricePrecision(), as.getRoundingMode()));
+            }
+            pEntity.setItsCost(pEntity.getForeignPrice().multiply(pEntity
+              .getItsOwner().getExchangeRate()).setScale(as
+                .getPricePrecision(), as.getRoundingMode()));
+          } else {
+            pEntity.setItsCost(pEntity.getInvItem().getKnownCost());
           }
-          pEntity.setItsCost(pEntity.getForeignPrice().multiply(pEntity
-            .getItsOwner().getExchangeRate()).setScale(as
-              .getPricePrecision(), as.getRoundingMode()));
-        } else {
-          pEntity.setItsCost(pEntity.getItsCost().setScale(as
-            .getPricePrecision(), as.getRoundingMode()));
-        }
-        if (!isTaxable || pEntity.getItsOwner().getPriceIncTax()) {
+          if (!isTaxable || pEntity.getItsOwner().getPriceIncTax()) {
           pEntity.setItsTotal(pEntity.getItsQuantity().multiply(pEntity
         .getItsCost()).setScale(as.getPricePrecision(), as.getRoundingMode()));
-        } else {
-          pEntity.setSubtotal(pEntity.getItsQuantity().multiply(pEntity
+          } else {
+            pEntity.setSubtotal(pEntity.getItsQuantity().multiply(pEntity
         .getItsCost()).setScale(as.getPricePrecision(), as.getRoundingMode()));
+          }
+        } else {
+          //using user passed values:
+          if (pEntity.getItsOwner().getForeignCurrency() != null) {
+            pEntity.setItsCost(pEntity.getForeignPrice().multiply(pEntity
+              .getItsOwner().getExchangeRate()).setScale(as
+                .getPricePrecision(), as.getRoundingMode()));
+            if (!isTaxable || pEntity.getItsOwner().getPriceIncTax()) {
+              pEntity.setItsTotal(pEntity.getForeignTotal().multiply(pEntity
+              .getItsOwner().getExchangeRate()).setScale(as
+                .getPricePrecision(), as.getRoundingMode()));
+            } else {
+              pEntity.setSubtotal(pEntity.getForeignSubtotal().multiply(pEntity
+              .getItsOwner().getExchangeRate()).setScale(as
+                .getPricePrecision(), as.getRoundingMode()));
+            }
+          }
         }
         BigDecimal totalTaxes = BigDecimal.ZERO;
         BigDecimal totalTaxesFc = BigDecimal.ZERO;

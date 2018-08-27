@@ -12,6 +12,8 @@ package org.beigesoft.accounting.processor;
  * http://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html
  */
 
+import java.util.Set;
+import java.util.HashSet;
 import java.util.Map;
 
 import org.beigesoft.model.IRequestData;
@@ -48,8 +50,15 @@ public class PrcInvoiceGfe<RS, T extends IInvoice>
     final T pEntity,
       final IRequestData pRequestData) throws Exception {
     pReqVars.put("DebtorCreditortaxDestinationdeepLevel", 2);
+    Set<String> ndFlDc = new HashSet<String>();
+    ndFlDc.add("itsId");
+    ndFlDc.add("itsName");
+    ndFlDc.add("isForeigner");
+    ndFlDc.add("taxDestination");
+    pReqVars.put("DebtorCreditorneededFields", ndFlDc);
     T invoice = this.prcEntityPbEditDelete
       .process(pReqVars, pEntity, pRequestData);
+    pReqVars.remove("DebtorCreditorneededFields");
     pReqVars.remove("DebtorCreditortaxDestinationdeepLevel");
     return invoice;
   }

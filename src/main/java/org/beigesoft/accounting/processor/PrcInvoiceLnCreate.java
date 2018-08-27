@@ -12,6 +12,8 @@ package org.beigesoft.accounting.processor;
  * http://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html
  */
 
+import java.util.Set;
+import java.util.HashSet;
 import java.util.Map;
 import java.math.RoundingMode;
 
@@ -57,8 +59,14 @@ public class
     L entity = this.prcEntityCreate
       .process(pReqVars, pEntityPb, pRequestData);
     pReqVars.put("DebtorCreditortaxDestinationdeepLevel", 2);
+    Set<String> ndFlDc = new HashSet<String>();
+    ndFlDc.add("itsId");
+    ndFlDc.add("isForeigner");
+    ndFlDc.add("taxDestination");
+    pReqVars.put("DebtorCreditorneededFields", ndFlDc);
     entity.setItsOwner(this.prcEntityCreate.getSrvOrm()
       .retrieveEntity(pReqVars, entity.getItsOwner()));
+    pReqVars.remove("DebtorCreditorneededFields");
     pReqVars.remove("DebtorCreditortaxDestinationdeepLevel");
     RoundingMode rounding = null;
     String taxRounding = null;

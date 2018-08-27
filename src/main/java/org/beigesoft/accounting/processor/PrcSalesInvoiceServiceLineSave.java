@@ -12,6 +12,8 @@ package org.beigesoft.accounting.processor;
  * http://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html
  */
 
+import java.util.Set;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
@@ -95,40 +97,34 @@ public class PrcSalesInvoiceServiceLineSave<RS>
     AccSettings as = getSrvAccSettings().lazyGetAccSettings(pReqVars);
     // Beige-Orm refresh:
     pReqVars.put("DebtorCreditortaxDestinationdeepLevel", 2);
+    Set<String> ndFlDc = new HashSet<String>();
+    ndFlDc.add("itsId");
+    ndFlDc.add("isForeigner");
+    ndFlDc.add("taxDestination");
+    pReqVars.put("DebtorCreditorneededFields", ndFlDc);
     pEntity.setItsOwner(getSrvOrm()
       .retrieveEntity(pReqVars, pEntity.getItsOwner()));
+    pReqVars.remove("DebtorCreditorneededFields");
     pReqVars.remove("DebtorCreditortaxDestinationdeepLevel");
     pEntity.setService(getSrvOrm()
       .retrieveEntity(pReqVars, pEntity.getService()));
-    //rounding:
-    pEntity.setItsQuantity(pEntity.getItsQuantity().setScale(
-      as.getQuantityPrecision(), as.getRoundingMode()));
     boolean isTaxable = as.getIsExtractSalesTaxFromSales() && !pEntity
       .getItsOwner().getOmitTaxes() && !pEntity.getItsOwner().getCustomer()
         .getIsForeigner();
+    //using user passed values:
     if (pEntity.getItsOwner().getForeignCurrency() != null) {
-      pEntity.setForeignPrice(pEntity.getForeignPrice().setScale(as
-        .getPricePrecision(), as.getRoundingMode()));
-      if (!isTaxable || pEntity.getItsOwner().getPriceIncTax()) {
-        pEntity.setForeignTotal(pEntity.getItsQuantity().multiply(pEntity
-    .getForeignPrice()).setScale(as.getPricePrecision(), as.getRoundingMode()));
-      } else {
-        pEntity.setForeignSubtotal(pEntity.getItsQuantity().multiply(pEntity
-    .getForeignPrice()).setScale(as.getPricePrecision(), as.getRoundingMode()));
-      }
       pEntity.setItsPrice(pEntity.getForeignPrice().multiply(pEntity
         .getItsOwner().getExchangeRate()).setScale(as
           .getPricePrecision(), as.getRoundingMode()));
-    } else {
-      pEntity.setItsPrice(pEntity.getItsPrice().setScale(as
-        .getPricePrecision(), as.getRoundingMode()));
-    }
-    if (!isTaxable || pEntity.getItsOwner().getPriceIncTax()) {
-      pEntity.setItsTotal(pEntity.getItsQuantity().multiply(pEntity
-    .getItsPrice()).setScale(as.getPricePrecision(), as.getRoundingMode()));
-    } else {
-      pEntity.setSubtotal(pEntity.getItsQuantity().multiply(pEntity
-    .getItsPrice()).setScale(as.getPricePrecision(), as.getRoundingMode()));
+      if (!isTaxable || pEntity.getItsOwner().getPriceIncTax()) {
+        pEntity.setItsTotal(pEntity.getForeignTotal().multiply(pEntity
+        .getItsOwner().getExchangeRate()).setScale(as
+          .getPricePrecision(), as.getRoundingMode()));
+      } else {
+        pEntity.setSubtotal(pEntity.getForeignSubtotal().multiply(pEntity
+        .getItsOwner().getExchangeRate()).setScale(as
+          .getPricePrecision(), as.getRoundingMode()));
+      }
     }
     BigDecimal totalTaxes = BigDecimal.ZERO;
     BigDecimal totalTaxesFc = BigDecimal.ZERO;

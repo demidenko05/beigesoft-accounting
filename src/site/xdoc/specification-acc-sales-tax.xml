@@ -62,7 +62,7 @@
       <ul>
         <li>APersistableBaseHasNameVersion fields</li>
         <li>salTaxRoundMode - RoundingMode, HALF_UP default</li>
-        <li>salTaxUseAggregItBas - Boolean, use aggregate tax rate or only tax for item basis method, false default, but this method is mostly used</li>
+        <li>salTaxUseAggregItBas - Boolean, use aggregate tax rate or only tax, false default, but this method is mostly used</li>
         <li>salTaxIsInvoiceBase - Boolean, use invoice basis method, false default</li>
       </ul>
       For many countries there is only sales tax method inside whole country.
@@ -124,8 +124,8 @@ round(2.244 + 2.244) != round(2.244) + round(2.244);
       </p>
 
       <h4>Price inclusive of taxes</h4>
-      <p>In case of only tax or aggregate tax rate, price inclusive of taxes may be used.
-        The equation of tax amount extraction is:
+      <p>In case of only tax or aggregate tax rate, price inclusive of taxes may be used for both item and invoice basis methods.
+        The equation of tax amount (aggregate or only) extraction is:
 <pre style="white-space: pre-wrap;">
   price without taxes = price with taxes / (1 + tax percent/100)
   taxes = price with taxes - price without taxes
@@ -502,7 +502,7 @@ tax3 = 9.18 - (9.35 + 0.92) = 1.91
 To prevent difference between total aggregate from lines and total taxes cause grouping rounding error,
 the last tax total line is the rest of aggregate tax.
       </p>
-      <p>Property AccSettings.salTaxUseAggregItBas (use aggregate tax rate or only tax for item basis method) is used to switch this method, default is false.
+      <p>Property AccSettings.salTaxUseAggregItBas (use aggregate tax rate or only tax) is used to switch this method, default is false.
       </p>
       <p><b>Implementation of aggregate tax rate method (item basis)</b></p>
       <p>Service that saves invoice line calculates total line's tax by using aggregate tax rate</p>

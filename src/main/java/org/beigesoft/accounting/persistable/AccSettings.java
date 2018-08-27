@@ -200,7 +200,7 @@ public class AccSettings extends AHasIdLongVersion {
   private Boolean salTaxIsInvoiceBase = Boolean.FALSE;
 
   /**
-   * <p>Use aggregate tax rate or only for item basis method.</p>
+   * <p>Use aggregate tax rate or only tax.</p>
    **/
   private Boolean salTaxUseAggregItBas = Boolean.FALSE;
 

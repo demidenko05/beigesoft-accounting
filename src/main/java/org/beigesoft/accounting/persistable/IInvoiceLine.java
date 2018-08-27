@@ -15,7 +15,8 @@ package org.beigesoft.accounting.persistable;
 import java.math.BigDecimal;
 
 import org.beigesoft.model.IOwned;
-import org.beigesoft.model.IHasIdLongVersion;
+import org.beigesoft.model.IHasVersion;
+import org.beigesoft.persistable.IPersistableBase;
 
 /**
  * <p>
@@ -26,7 +27,7 @@ import org.beigesoft.model.IHasIdLongVersion;
  * @author Yury Demidenko
  */
 public interface IInvoiceLine<T extends IInvoice>
-  extends IHasIdLongVersion, IOwned<T> {
+  extends IHasVersion, IPersistableBase, IOwned<T> {
 
   /**
    * <p>Getter for reversedId.</p>

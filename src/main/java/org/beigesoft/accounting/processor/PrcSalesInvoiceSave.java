@@ -12,6 +12,8 @@ package org.beigesoft.accounting.processor;
  * http://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html
  */
 
+import java.util.Set;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.List;
 import java.util.Locale;
@@ -79,6 +81,11 @@ public class PrcSalesInvoiceSave<RS>
     }
     if (!pEntity.getIsNew()) {
       pReqVars.put("DebtorCreditortaxDestinationdeepLevel", 2);
+      Set<String> ndFlDc = new HashSet<String>();
+      ndFlDc.add("itsId");
+      ndFlDc.add("isForeigner");
+      ndFlDc.add("taxDestination");
+      pReqVars.put("DebtorCreditorneededFields", ndFlDc);
     }
   }
 
@@ -252,6 +259,7 @@ public class PrcSalesInvoiceSave<RS>
     final SalesInvoice pEntity, final IRequestData pRequestData,
       final SalesInvoice pOldEntity) throws Exception {
     pReqVars.remove("DebtorCreditortaxDestinationdeepLevel");
+    pReqVars.remove("DebtorCreditorneededFields");
     if (pEntity.getItsTotal().compareTo(BigDecimal.ZERO) == 1) {
       if (!pOldEntity.getCustomer().getItsId()
         .equals(pEntity.getCustomer().getItsId())) {

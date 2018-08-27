@@ -12,6 +12,8 @@ package org.beigesoft.accounting.processor;
  * http://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html
  */
 
+import java.util.Set;
+import java.util.HashSet;
 import java.util.Map;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -71,8 +73,14 @@ public class PrcPurchInvTaxLnSave<RS>
     AccSettings as = getSrvAccSettings().lazyGetAccSettings(pReqVars);
     // Beige-Orm refresh:
     pReqVars.put("DebtorCreditortaxDestinationdeepLevel", 2);
+    Set<String> ndFlDc = new HashSet<String>();
+    ndFlDc.add("itsId");
+    ndFlDc.add("isForeigner");
+    ndFlDc.add("taxDestination");
+    pReqVars.put("DebtorCreditorneededFields", ndFlDc);
     pEntity.setItsOwner(getSrvOrm()
       .retrieveEntity(pReqVars, pEntity.getItsOwner()));
+    pReqVars.remove("DebtorCreditorneededFields");
     pReqVars.remove("DebtorCreditortaxDestinationdeepLevel");
     boolean isTaxable = as.getIsExtractSalesTaxFromPurchase() && !pEntity
       .getItsOwner().getOmitTaxes() && !pEntity.getItsOwner().getVendor()

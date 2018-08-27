@@ -126,6 +126,7 @@ import org.beigesoft.accounting.processor.PrcBankStatementSave;
 import org.beigesoft.accounting.processor.PrcBankStatementLineGfe;
 import org.beigesoft.accounting.processor.PrcBankStatementLineSave;
 import org.beigesoft.accounting.processor.PrcInvoiceGfe;
+import org.beigesoft.accounting.processor.PrcInvoiceLnGfe;
 import org.beigesoft.accounting.persistable.BankStatement;
 import org.beigesoft.accounting.persistable.BankStatementLine;
 import org.beigesoft.accounting.persistable.AccSettings;
@@ -165,6 +166,7 @@ import org.beigesoft.accounting.persistable.WageTaxLine;
 import org.beigesoft.accounting.persistable.WageLine;
 import org.beigesoft.accounting.persistable.SalesReturnLine;
 import org.beigesoft.accounting.persistable.IInvoiceLine;
+import org.beigesoft.accounting.persistable.base.ADocTaxLine;
 import org.beigesoft.replicator.processor.PrcReplExcludeAccountsDebitCreditSave;
 import org.beigesoft.replicator.processor.PrcReplicationAccMethodSave;
 import org.beigesoft.replicator.persistable.ReplicationAccMethod;
@@ -411,6 +413,10 @@ public class HldAccEntitiesProcessorNames
       return PrcAccEntrySaveDescr.class.getSimpleName();
     } else if (IPersistableBase.class.isAssignableFrom(pClass)) {
       return PrcEntityPbSave.class.getSimpleName();
+    } else if (ADocTaxLine.class.isAssignableFrom(pClass)) {
+      return null;
+    } else if (IInvoiceLine.class.isAssignableFrom(pClass)) {
+      return null;
     } else {
       if (this.hldAddEntitiesProcessorNames != null) {
         String name = this.hldAddEntitiesProcessorNames
@@ -504,6 +510,8 @@ public class HldAccEntitiesProcessorNames
       return PrcPurchaseInvoiceServiceLineDelete.class.getSimpleName();
     } else if (SalesInvoiceServiceLine.class == pClass) {
       return PrcSalesInvoiceServiceLineDelete.class.getSimpleName();
+    } else if (IInvoiceLine.class.isAssignableFrom(pClass)) {
+      return null;
     } else if (WageTaxLine.class == pClass) {
       return PrcWageTaxLineDelete.class.getSimpleName();
     } else if (InvItemTaxCategoryLine.class == pClass) {
@@ -512,6 +520,8 @@ public class HldAccEntitiesProcessorNames
       return PrcAdditionCostLineDelete.class.getSimpleName();
     } else if (WageLine.class == pClass) {
       return PrcWageLineDelete.class.getSimpleName();
+    } else if (ADocTaxLine.class.isAssignableFrom(pClass)) {
+      return null;
     } else {
       if (this.hldAddEntitiesProcessorNames != null) {
         String name = this.hldAddEntitiesProcessorNames
@@ -562,8 +572,12 @@ public class HldAccEntitiesProcessorNames
       return PrcBeginningInventoryLineSave.class.getSimpleName();
     } else if (PurchaseInvoiceLine.class == pClass) {
       return PrcPurchaseInvoiceLineSave.class.getSimpleName();
-    } else if (PurchaseInvoiceTaxLine.class == pClass) {
-      return PrcPurchInvTaxLnSave.class.getSimpleName();
+    } else if (ADocTaxLine.class.isAssignableFrom(pClass)) {
+      if (PurchaseInvoiceTaxLine.class == pClass) {
+        return PrcPurchInvTaxLnSave.class.getSimpleName();
+      } else {
+        return null;
+      }
     } else if (AReplExcludeAccountsDebitCredit.class
       .isAssignableFrom(pClass)) {
       return PrcReplExcludeAccountsDebitCreditSave.class.getSimpleName();
@@ -595,7 +609,11 @@ public class HldAccEntitiesProcessorNames
         return name;
       }
     }
-    if (IPersistableBase.class.isAssignableFrom(pClass)) {
+    if (ADocTaxLine.class.isAssignableFrom(pClass)) {
+      return null;
+    } else if (IInvoiceLine.class.isAssignableFrom(pClass)) {
+      return null;
+    } else if (IPersistableBase.class.isAssignableFrom(pClass)) {
       return PrcEntityPbDelete.class.getSimpleName();
     } else {
       return PrcEntityDelete.class.getSimpleName();
@@ -653,6 +671,10 @@ public class HldAccEntitiesProcessorNames
     } else if (pAction.equals("entityEdit") && (pClass == SalesInvoice.class
       || pClass == PurchaseInvoice.class)) {
       return PrcInvoiceGfe.class.getSimpleName();
+    } else if (pAction.equals("entityEdit")
+      && (pClass == SalesInvoiceServiceLine.class
+        || pClass == PurchaseInvoiceServiceLine.class)) {
+      return PrcInvoiceLnGfe.class.getSimpleName();
     } else if (pClass == PaymentFrom.class || pClass == PaymentTo.class
       || pClass == PrepaymentFrom.class || pClass == PrepaymentTo.class
         || pClass == AdditionCostLine.class) {

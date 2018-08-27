@@ -86,6 +86,7 @@ import org.beigesoft.accounting.processor.PrcGoodsLossLineCopy;
 import org.beigesoft.accounting.processor.PrcGoodsLossLineGfr;
 import org.beigesoft.accounting.processor.PrcInvoiceLnCreate;
 import org.beigesoft.accounting.processor.PrcInvoiceGfe;
+import org.beigesoft.accounting.processor.PrcInvoiceLnGfe;
 import org.beigesoft.accounting.processor.PrcSalesInvoiceSave;
 import org.beigesoft.accounting.processor.PrcSalesInvoiceLineSave;
 import org.beigesoft.accounting.processor.PrcSalesInvoiceLineCopy;
@@ -516,6 +517,9 @@ public class FctBnAccEntitiesProcessors<RS>
           } else if (pBeanName
             .equals(PrcInvoiceGfe.class.getSimpleName())) {
             proc = lazyGetPrcInvoiceGfe(pAddParam);
+          } else if (pBeanName
+            .equals(PrcInvoiceLnGfe.class.getSimpleName())) {
+            proc = lazyGetPrcInvoiceLnGfe(pAddParam);
           } else if (pBeanName
             .equals(PrcBankStatementLineGfe.class.getSimpleName())) {
             proc = lazyGetPrcBankStatementLineGfe(pAddParam);
@@ -2122,6 +2126,34 @@ public class FctBnAccEntitiesProcessors<RS>
       //assigning fully initialized object:
       this.processorsMap
         .put(PrcBankStatementLineSave.class.getSimpleName(), proc);
+    }
+    return proc;
+  }
+
+  /**
+   * <p>Get PrcInvoiceLnGfe (create and put into map).</p>
+   * @param pAddParam additional param
+   * @return requested PrcInvoiceLnGfe
+   * @throws Exception - an exception
+   */
+  protected final PrcInvoiceLnGfe<RS, IInvoiceLine<IInvoice>, IInvoice>
+    lazyGetPrcInvoiceLnGfe(
+      final Map<String, Object> pAddParam) throws Exception {
+    @SuppressWarnings("unchecked")
+    PrcInvoiceLnGfe<RS, IInvoiceLine<IInvoice>, IInvoice> proc =
+      (PrcInvoiceLnGfe<RS, IInvoiceLine<IInvoice>, IInvoice>)
+        this.processorsMap.get(PrcInvoiceLnGfe.class.getSimpleName());
+    if (proc == null) {
+      proc = new PrcInvoiceLnGfe<RS, IInvoiceLine<IInvoice>, IInvoice>();
+      @SuppressWarnings("unchecked")
+      PrcEntityPbEditDelete<RS, IInvoiceLine<IInvoice>> procDlg =
+    (PrcEntityPbEditDelete<RS, IInvoiceLine<IInvoice>>) this
+  .fctBnEntitiesProcessors
+.lazyGet(pAddParam, PrcEntityPbEditDelete.class.getSimpleName());
+      proc.setPrcEntityPbEditDelete(procDlg);
+      //assigning fully initialized object:
+      this.processorsMap
+        .put(PrcInvoiceLnGfe.class.getSimpleName(), proc);
     }
     return proc;
   }
