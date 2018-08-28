@@ -130,9 +130,9 @@ public class PrcSalesInvoiceServiceLineSave<RS>
     BigDecimal totalTaxesFc = BigDecimal.ZERO;
     BigDecimal bd100 = new BigDecimal("100.00");
     List<SalesInvoiceServiceTaxLine> tls = null;
+    boolean isItemBasis = !as.getSalTaxIsInvoiceBase();
+    boolean isAggrOnlyRate = as.getSalTaxUseAggregItBas();
     if (isTaxable) {
-      boolean isItemBasis = !as.getSalTaxIsInvoiceBase();
-      boolean isAggrOnlyRate = as.getSalTaxUseAggregItBas();
       pEntity.setTaxCategory(pEntity.getService().getTaxCategory());
       RoundingMode rm = as.getSalTaxRoundMode();
       if (pEntity.getItsOwner().getCustomer().getTaxDestination() != null) {
@@ -222,7 +222,20 @@ public class PrcSalesInvoiceServiceLineSave<RS>
         }
       }
     }
-    pEntity.setTotalTaxes(totalTaxes);
+    if (isTaxable && pEntity.getTaxCategory() != null && isItemBasis
+      && isAggrOnlyRate) {
+      if (pEntity.getTotalTaxes().compareTo(totalTaxes) != 0) {
+        if (pEntity.getDescription() == null) {
+          pEntity.setDescription(pEntity.getTotalTaxes().toString() + "!="
+            + totalTaxes + "!");
+        } else {
+          pEntity.setDescription(pEntity.getDescription() + " " + pEntity
+            .getTotalTaxes().toString() + "!=" + totalTaxes + "!");
+        }
+      }
+    } else { //multi-sales non-aggregate or non-taxable:
+      pEntity.setTotalTaxes(totalTaxes);
+    }
     if (!isTaxable || pEntity.getItsOwner().getPriceIncTax()) {
       pEntity.setSubtotal(pEntity.getItsTotal().subtract(totalTaxes));
     } else {

@@ -15,6 +15,7 @@ package org.beigesoft.accounting.factory;
 import java.util.Map;
 import java.util.HashMap;
 
+import org.beigesoft.log.ILogger;
 import org.beigesoft.model.IHasId;
 import org.beigesoft.persistable.IPersistableBase;
 import org.beigesoft.factory.IFactoryAppBeans;
@@ -180,6 +181,11 @@ import org.beigesoft.accounting.service.ISrvBalance;
  */
 public class FctBnAccEntitiesProcessors<RS>
   implements IFactoryAppBeansByName<IEntityProcessor> {
+
+  /**
+   * <p>Logger.</p>
+   **/
+  private ILogger logger;
 
   /**
    * <p>App beans factort.</p>
@@ -1846,6 +1852,7 @@ public class FctBnAccEntitiesProcessors<RS>
       proc = new UtlSalesGoodsServiceLine<RS>();
       proc.setSrvAccSettings(getSrvAccSettings());
       proc.setSrvOrm(getSrvOrm());
+      proc.setLogger(getLogger());
       proc.setSrvDatabase(getSrvDatabase());
       //assigning fully initialized object:
       this.utlSalesGoodsServiceLine = proc;
@@ -1866,6 +1873,7 @@ public class FctBnAccEntitiesProcessors<RS>
     if (proc == null) {
       proc = new UtlPurchaseGoodsServiceLine<RS>();
       proc.setSrvAccSettings(getSrvAccSettings());
+      proc.setLogger(getLogger());
       proc.setSrvOrm(getSrvOrm());
       proc.setSrvDatabase(getSrvDatabase());
       //assigning fully initialized object:
@@ -3289,5 +3297,21 @@ public class FctBnAccEntitiesProcessors<RS>
    **/
   public final void setCsvReader(final ICsvReader pCsvReader) {
     this.csvReader = pCsvReader;
+  }
+
+  /**
+   * <p>Geter for logger.</p>
+   * @return ILogger
+   **/
+  public final ILogger getLogger() {
+    return this.logger;
+  }
+
+  /**
+   * <p>Setter for logger.</p>
+   * @param pLogger reference
+   **/
+  public final void setLogger(final ILogger pLogger) {
+    this.logger = pLogger;
   }
 }
