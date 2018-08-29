@@ -258,22 +258,12 @@ public class PrcSalesInvoiceLineSave<RS>
                 }
               }
             }
+          } else if (pEntity.getTaxCategory() != null) {
+            pEntity.setTaxesDescription(pEntity.getTaxCategory().getItsName());
           }
         }
-        if (isTaxable && pEntity.getTaxCategory() != null && isItemBasis
-          && isAggrOnlyRate) {
-          if (pEntity.getTotalTaxes().compareTo(totalTaxes) != 0) {
-            if (pEntity.getDescription() == null) {
-              pEntity.setDescription(pEntity.getTotalTaxes().toString() + "!="
-                + totalTaxes + "!");
-            } else {
-              pEntity.setDescription(pEntity.getDescription() + " " + pEntity
-                .getTotalTaxes().toString() + "!=" + totalTaxes + "!");
-            }
-          }
-        } else { //multi-sales non-aggregate or non-taxable:
-          pEntity.setTotalTaxes(totalTaxes);
-        }
+        pEntity.setTotalTaxes(totalTaxes);
+        pEntity.setForeignTotalTaxes(totalTaxesFc);
         if (!isTaxable || pEntity.getItsOwner().getPriceIncTax()) {
           pEntity.setSubtotal(pEntity.getItsTotal().subtract(totalTaxes));
         } else {

@@ -289,6 +289,8 @@ public class PrcPurchaseInvoiceLineSave<RS>
                 }
               }
             }
+          } else if (pEntity.getTaxCategory() != null) {
+            pEntity.setTaxesDescription(pEntity.getTaxCategory().getItsName());
           }
         }
         if (isTaxable && pEntity.getTaxCategory() != null && isItemBasis

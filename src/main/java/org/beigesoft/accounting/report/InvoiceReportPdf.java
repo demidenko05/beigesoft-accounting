@@ -385,7 +385,7 @@ public class InvoiceReportPdf<RS, WI>
         .getMsg("unitOfMeasure", lang).replace(" ", "\n"));
       tblGoods.getItsColumns().get(1).setWraping(EWraping.WRAP_CONTENT);
       tblGoods.getItsCells().get(2).setItsContent(this.srvI18n
-        .getMsg(priceName, lang));
+        .getMsg(priceName, lang).replace(" ", "\n"));
       tblGoods.getItsColumns().get(2).setWraping(EWraping.WRAP_CONTENT);
       tblGoods.getItsCells().get(3).setItsContent(this.srvI18n
         .getMsg("itsQuantity", lang).replace(" ", "\n"));
@@ -395,6 +395,11 @@ public class InvoiceReportPdf<RS, WI>
         pos++;
         tblGoods.getItsCells().get(pos).setItsContent(this.srvI18n
         .getMsg("subtotal", lang).replace(" ", "\n"));
+        tblGoods.getItsColumns().get(pos).setWraping(EWraping.WRAP_CONTENT);
+      } else if (isInvoiceBasis && inv.getPriceIncTax()) {
+        pos++;
+        tblGoods.getItsCells().get(pos).setItsContent(this.srvI18n
+        .getMsg("itsTotal", lang).replace(" ", "\n"));
         tblGoods.getItsColumns().get(pos).setWraping(EWraping.WRAP_CONTENT);
       }
       pos++;
@@ -453,6 +458,12 @@ public class InvoiceReportPdf<RS, WI>
             .setAlignHorizontal(EAlignHorizontal.RIGHT);
           tblGoods.getItsCells().get(k)
             .setItsContent(prn(pReqVars, subtotal));
+        } else if (isInvoiceBasis && inv.getPriceIncTax()) {
+          k = j * rowc + i++;
+          tblGoods.getItsCells().get(k)
+            .setAlignHorizontal(EAlignHorizontal.RIGHT);
+          tblGoods.getItsCells().get(k)
+            .setItsContent(prn(pReqVars, total));
         }
         k = j * rowc + i++;
         tblGoods.getItsCells().get(k)
@@ -508,7 +519,7 @@ public class InvoiceReportPdf<RS, WI>
         .getMsg("unitOfMeasure", lang).replace(" ", "\n"));
       tblServices.getItsColumns().get(1).setWraping(EWraping.WRAP_CONTENT);
       tblServices.getItsCells().get(2)
-        .setItsContent(this.srvI18n.getMsg(priceName, lang));
+        .setItsContent(this.srvI18n.getMsg(priceName, lang).replace(" ", "\n"));
       tblServices.getItsColumns().get(2).setIsWidthFixed(true);
       tblServices.getItsColumns().get(2).setWidthInPercentage(wd15);
       tblServices.getItsCells().get(3).setItsContent(this.srvI18n
@@ -519,6 +530,11 @@ public class InvoiceReportPdf<RS, WI>
         pos++;
         tblServices.getItsCells().get(pos).setItsContent(this.srvI18n
           .getMsg("subtotal", lang).replace(" ", "\n"));
+        tblServices.getItsColumns().get(pos).setWraping(EWraping.WRAP_CONTENT);
+      } else if (isInvoiceBasis && inv.getPriceIncTax()) {
+        pos++;
+        tblServices.getItsCells().get(pos).setItsContent(this.srvI18n
+          .getMsg("itsTotal", lang).replace(" ", "\n"));
         tblServices.getItsColumns().get(pos).setWraping(EWraping.WRAP_CONTENT);
       }
       pos++;
@@ -581,6 +597,12 @@ public class InvoiceReportPdf<RS, WI>
             .setAlignHorizontal(EAlignHorizontal.RIGHT);
           tblServices.getItsCells().get(k)
             .setItsContent(prn(pReqVars, subtotal));
+        } else if (isInvoiceBasis && inv.getPriceIncTax()) {
+          k = j * rowc + i++;
+          tblServices.getItsCells().get(k)
+            .setAlignHorizontal(EAlignHorizontal.RIGHT);
+          tblServices.getItsCells().get(k)
+            .setItsContent(prn(pReqVars, total));
         }
         k = j * rowc + i++;
         tblServices.getItsCells().get(k)
@@ -759,11 +781,10 @@ public class InvoiceReportPdf<RS, WI>
       pReqVars.remove("InvItemneededFields");
       pReqVars.remove("UnitOfMeasureneededFields");
     } else {
-      SalesInvoiceLine sil = new SalesInvoiceLine();
-      sil.setItsOwner(inv);
       pReqVars.put("SalesInvoiceLineitsOwnerdeepLevel", 1); //only ID
       inv.setItsLines(getSrvOrm().
-        retrieveListForField(pReqVars, sil, "itsOwner"));
+        retrieveListWithConditions(pReqVars, SalesInvoiceLine.class,
+          "where REVERSEDID is null and ITSOWNER=" + inv.getItsId()));
       pReqVars.remove("SalesInvoiceLineitsOwnerdeepLevel");
     }
     //overseas sales usually free from sales taxes

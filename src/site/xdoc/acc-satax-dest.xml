@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document xmlns="http://maven.apache.org/XDOC/2.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
+
+  <properties>
+    <title>Beigesoft™ Accounting</title>
+   </properties>
+
+  <body>
+
+    <section name="Destination-based sales tax. Overriding vendor's tax calculation method.">
+      
+      <p>Keywords: destination-based vs origin-based sales tax.</p>
+
+      <p>* New features described in this article available since version 1.1.7 (it's in source code right now).</p>
+      
+      <h4>Destination-based sales tax. Overriding vendor's tax calculation method.</h4>
+      <p>If law of your country allows to use different sales tax calculation methods, then you can set <b>Tax destination</b> method for vendors with different methods.
+        For example you use HALF-UP rounding and item basis method, but a vendor uses HALF-DOWN and invoice basis one,
+        then just create <b>Tax destination</b> with different methods and set it in this vendor.
+        You are also able to change sales tax amount in invoice line (item basis) or in invoice total (invoice basis).
+      </p>
+      <p>If sales taxes in your country depend of region (state, province, county, etc., e.g. this is applied in USA), then
+      you should add <b>Tax destination</b> for that region and set it in customers (from that region),
+      then add <b>Item tax category</b> with destination sales taxes,
+      then add <b>Tax destination line</b> (tax destination-destination tax category) for selling items.
+      When you sell such items to "other destination customers", then "destination taxes" will be used instead of <b>tax category of item (origin taxes)</b>.</p>
+      
+      <h4>Example of destination-based sales tax.</h4>
+      <p>Assume, Bob has sold same items to two customers - <b>NSC</b> from New York, <b>FSC</b> from other state.
+        Taxable items in NY (aggregate rate, item basis, half-up):
+        <ul>
+          <li>Pizza cheese frozen, STG4.7%, STG6.4%</li>
+          <li>Armchair, STG4.7%, STG6.4%</li>
+          <li>Sofa, STG4.7%, STG6.4%</li>
+          <li>Delivering, STS11%</li>
+        </ul>
+        Taxable items in other state (aggregate rate, invoice basis, half-down):
+        <ul>
+          <li>Pizza cheese frozen, STF2.7%, STF3.17%, STF1.234%</li>
+          <li>Armchair, non taxable</li>
+          <li>Sofa, origin taxable</li>
+          <li>Delivering, STF11%</li>
+        </ul>
+        Price inclusive of taxes for both cases.
+      </p>
+      <p>
+        After adding foreign state sales taxes and category, add foreign state tax destination:
+        <p align="center"><img style="max-width: 100%" src="images/saltaxdest1.png" /></p>
+      </p>
+      <p>
+        Then set foreign state tax destination in the customer FSC:
+        <p align="center"><img style="max-width: 100%" src="images/saltaxdest2.png" /></p>
+      </p>
+      <p>
+        Then set foreign state tax destination and taxes "STF2.7%, STF3.17%, STF1.234%" in the product "Pizza cheese frozen":
+        <p align="center"><img style="max-width: 100%" src="images/saltaxdest3.png" /></p>
+        * Delivering is made in the same way.
+      </p>
+      <p>
+        Then set foreign state tax destination and empty tax category in the product "Armchair" to make it non-taxable in "other state":
+        <p align="center"><img style="max-width: 100%" src="images/saltaxdest4.png" /></p>
+      </p>
+      <p>To make item "origin-bases" taxable in other state do nothing (this is about "Sofa").</p>
+      <p>
+        Finally, make two invoices to local (NSC) and foreign (FSC) state customers with the same items and prices:
+        <p align="center"><img style="max-width: 100%" src="images/saltaxdest5.png" /></p>
+        <p align="center"><img style="max-width: 100%" src="images/saltaxdest6.png" /></p>
+        <p align="center"><img style="max-width: 100%" src="images/saltaxdest7.png" /></p>
+        <p align="center"><img style="max-width: 100%" src="images/saltaxdest8.png" /></p>
+      </p>
+      
+    </section>
+
+  </body>
+
+</document>

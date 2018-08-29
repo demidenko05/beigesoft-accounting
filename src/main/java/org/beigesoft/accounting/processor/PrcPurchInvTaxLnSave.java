@@ -89,8 +89,8 @@ public class PrcPurchInvTaxLnSave<RS>
       throw new ExceptionWithCode(ExceptionWithCode.WRONG_PARAMETER,
         "non_taxable");
     }
-    PurchaseInvoiceTaxLine oldEntity = getSrvOrm().retrieveEntityById(
-      pReqVars, PurchaseInvoiceTaxLine.class, pEntity.getItsId());
+    PurchaseInvoiceTaxLine oldEntity = getSrvOrm()
+      .retrieveEntity(pReqVars, pEntity);
     pEntity.setTax(oldEntity.getTax());
     pEntity.setTaxableInvBas(oldEntity.getTaxableInvBas());
     pEntity.setTaxableInvBasFc(oldEntity.getTaxableInvBasFc());
