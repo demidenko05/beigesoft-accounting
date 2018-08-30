@@ -4,6 +4,21 @@ Beigesoft ™ Accounting library.
 
 It implements accounting models and services, e.g. AccountingEntry, SalesInvoice, service that fill payroll taxes according tax percentage table, etc.
 
+Version 1.1.7:
+*added multi-currency (including payments tracking).
+*sales taxes:
+  1. added invoice level switcher "omit taxes"
+  2. added invoice basis method.
+  3. added aggregate rate method.
+  4. added "price inclusive of tax" method (it should be used along with aggregate rate method or only tax).
+  5. purchases - user is allowed to change tax amount in line (item basis) or in total tax (invoice basis)
+  6. purchases - vendor can has "tax destination" method that is actually overrides tax calculation method (rounding mode, invoice/item basis, aggregate/not rate)
+  7. sales - added destination-based method for "other-region" customers, that "other region" has different sales taxes.
+*added importing  bank statement from CSV file, semi-automatically bank reconciliation.
+*added exporting price list into CSV file.
+*PDF reports (sales invoice, balance sheet): User can change paper size, orientation, margins and font size in "Accounting Settings".
+*it use entered by user invoice line's price, amount, total, prior to 1.1.7 total was always calculated from price and quantity.
+
 Version 1.1.6:
 *Added "omit sales tax for overseas sales/purchase" - if customer/vendor is marked as "foreigner" then sales taxes will be omitted in the invoice.
 *Fixed internationalization - decimal separators...

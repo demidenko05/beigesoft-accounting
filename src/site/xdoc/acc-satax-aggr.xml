@@ -9,16 +9,16 @@
 
   <body>
 
-    <section name="Multi sales taxes. Aggregate tax rate for due on item basis method.">
+    <section name="Multi sales taxes. Aggregate tax rate method.">
       
       <p>Keywords: Multi sales taxes, aggregate tax rate.</p>
 
       <p>* New features described in this article available in version 1.1.7 (in source code right now).
       </p>
       
-      <h4>Multi sales taxes. Aggregate tax rate for item basis method.</h4>
+      <h4>Multi sales taxes. Aggregate tax rate method.</h4>
       <p>In case of multi sales taxes per item you can (or must according the law) use this method.</p>
-      <p>This method is useful only for "due on item basis" method. 
+      <p>This method is useful for "due on item basis" method for both "tax included or not" methods, and for invoice basis - tax included in price. 
         Aggregate tax rate for multi-taxes gives different tax result (against "non-aggregate").
         For example tax1=11%, tax2=1.6%, tax3=3.3% for two lines (4.56USD and 51.13USD):
 <pre style="white-space: pre-wrap;">
@@ -37,9 +37,9 @@ aggregate tax total 9.18
 The difference is 1 cent for each line. Difference is 2 cents for totals.
       </p>
       <p>
-This is performance friendly method, cause no need to keep multiply tax entries for each invoice line.
+In case of item basis, this is performance friendly method, cause no need to keep multiply tax entries for each invoice line.
       </p>
-      <p>This method allows to implement "taxes are included in price" with "no problems".</p>
+      <p>This method allows to implement "taxes are included in price" with "no problems" for both item and invoice basis methods.</p>
       <p>Total taxes are calculated from total of aggregated tax, for example above:
 <pre style="white-space: pre-wrap;">
 tax1 = 9.18 * 0.11 / 0.159 = 6.35
@@ -49,7 +49,7 @@ tax3 = 9.18 - (9.35 + 0.92) = 1.91
 To prevent difference between total aggregate from lines and total taxes cause grouping rounding error,
 the last tax total line is the rest of aggregate tax.
       </p>
-      <p>Accounting Settings property "Use aggregate tax rate or only tax (item basis)" is used to switch this method, default is false.
+      <p>Accounting Settings property "Use aggregate tax rate or only tax" is used to switch this method, default is false.
       </p>
       
       <h4>Example of sales invoices for both methods (aggregate and not).</h4>

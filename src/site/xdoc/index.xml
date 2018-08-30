@@ -33,7 +33,8 @@
         <ul>
           <li>Double entry accounting system including ledger and balance reports.</li>
           <li>COGS FIFO/LIFO perpetual automatically for sales, sales returns, inventory losses.</li>
-          <li>Automatically sales taxes accounting entries (a merchandise or a service may has several sales taxes) for sales, purchases and their returns.</li>
+          <li>Automatically sales taxes accounting entries for sales, purchases and their returns.</li>
+          <li>Sales tax methods: item/invoice basis, destination-based, aggregate rate, price inclusive of tax.</li>
           <li>Prepayments/payments tracking for sales/purchases.</li>
           <li>Payroll - automatically taxes calculation (by percentage tax table method) and accounting entries.</li>
           <li>Manufacturing - automatically cost calculation from used materials and direct labor (and other) costs.</li>
@@ -41,7 +42,7 @@
           <li>and more.</li>
         </ul>
       </p>
-      <p><a href="privacypolicy.html">See Beigesoft™ Accounting Privacy Policy.</a></p>
+      <p><a href="privacypolicy-en.html">See Beigesoft™ Accounting Privacy Policy.</a></p>
       <p><a href="beigekeys.html">See Beigesoft™ digital signatures.</a></p>
       <p>
         <a href="bobs-pizza.html">See Beige Accounting Bob's Pizza example.</a>

@@ -21,7 +21,7 @@
         then just create <b>Tax destination</b> with different methods and set it in this vendor.
         You are also able to change sales tax amount in invoice line (item basis) or in invoice total (invoice basis).
       </p>
-      <p>If sales taxes in your country depend of region (state, province, county, etc., e.g. this is applied in USA), then
+      <p>If sales taxes in your country depend of a region (state, province, county, etc., e.g. this applies in USA), then
       you should add <b>Tax destination</b> for that region and set it in customers (from that region),
       then add <b>Item tax category</b> with destination sales taxes,
       then add <b>Tax destination line</b> (tax destination-destination tax category) for selling items.
