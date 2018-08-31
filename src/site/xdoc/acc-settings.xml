@@ -11,24 +11,24 @@
 
     <section name="Software installation, accounting settings, chart of accounts, started capital.">
 
-<p>Keywords: Accounting software free.</p>
+<p>Keywords: double-entry accounting software free.</p>
 
 
 <p>Bob Brown from NY decided to start his own pizza business as sole proprietor.
 Bob's Pizza makes frozen pizza, so according <a href="https://www.tax.ny.gov/pubs_and_bulls/tg_bulletins/st/food_sold_by_food_stores.htm">NYS. sales taxable food</a>
 he isn't a Sales Tax Vendor.
-Bob has read <a href="https://www.irs.gov/pub/irs-pdf/p583.pdf">IRS 583 Starting a business</a> and decide to elect:
+Bob has read <a href="https://www.irs.gov/pub/irs-pdf/p583.pdf">IRS 583 Starting a business</a> and elected:
 <ul>
   <li>calendar tax year</li>
-  <li>account Inventory to calculate costs that decrease his income tax, so he has to uses accrual accounting method.</li>
+  <li>account Inventory to calculate costs that decrease his income tax, so he has to use accrual accounting method.</li>
   <li>FIFO method for pizza ingredients which cost can't be recognized (e.g. eggs) according <a href="https://www.irs.gov/pub/irs-pdf/p538.pdf">IRS Accounting Periods and Methods</a></li>
 </ul>
 </p>
 <p>
   Bob chose Beige-Accounting because it's free, it does everything that he needs, it's easy to install and use.
-  In addition it works as standalone WEB application on notebook and on Android tablet with same SQLite database.
+  In addition it works as standalone WEB application on notebook and on Android tablet with the same SQLite database.
   Bob can send database from notebook to tablet and vise versa.
-  In the future (when it's needs) Bob may publish his software on cloud, Beige-Accounting is ready for high load job.
+  In the future (when it's needs) Bob can publish his software on cloud, Beige-Accounting is ready for high load job.
   You are able to make full database copy from SQlite database into high load (enterprise ready) MySql
   by using WEB-service (see <a href="import-db-web.html">Import database with WEB-service</a>).
 </p>
@@ -113,6 +113,9 @@ security.provider.11=org.bouncycastle.jce.provider.BouncyCastleProvider
   <p align="center"><img alt="Beige-Accounting adding first user" style="max-width: 100%" src="images/accadduser.png" /></p>
   At first Bob changed organization name in accounting settings, he selected Menu -> Appearance - > Standard -> Accounting -> Accounting settings:
   <p align="center"><img alt="Beige-Accounting settings" style="max-width: 100%" src="images/acc-settings.png" /></p>
+  <p align="center"><img alt="Beige-Accounting settings" style="max-width: 100%" src="images/acc-settings2.png" /></p>
+  Bob changed report page settings: page size to "Letter", in this case unit of measurement is INCH, font size 3.5mm=0.1378inch.
+  For page size A2-5 use millimeters.
   Bob agreed all other settings include cost precision 4 digit places to reduce rounding error.
   Setting <b>Current accounting year</b> used for restricting year in new document or accounting entry.
 </p>
@@ -126,14 +129,13 @@ security.provider.11=org.bouncycastle.jce.provider.BouncyCastleProvider
   <p align="center"><img alt="Beige-Accounting accounting subaccounts for Employment Taxes Payable" style="max-width: 100%" src="images/subaccounts-employment-taxes.png" /></p>
 </p>
 <p>
-  Result chart of accounts will be:
+  Finally, chart of accounts is:
 <div style="text-align: center;">
     <h4>
       Chart Of Accounts <br></br>
       Bob's Pizza
     </h4>
-  </div>
-  <table>
+<table>
     <tr>
       <th>ID</th>
       <th>Number</th>
@@ -407,7 +409,7 @@ security.provider.11=org.bouncycastle.jce.provider.BouncyCastleProvider
           
         </td>
       </tr>
-
+    
       <tr>
         <td>
           InventoryDirectCostTmp
@@ -435,7 +437,7 @@ security.provider.11=org.bouncycastle.jce.provider.BouncyCastleProvider
           For manufacturing it temporary hold direct labor cost that will be included into inventory item cost (goods)
         </td>
       </tr>
-
+    
       <tr>
         <td>
           SalesTaxFromSalReturns
@@ -1078,6 +1080,30 @@ security.provider.11=org.bouncycastle.jce.provider.BouncyCastleProvider
     
       <tr>
         <td>
+          
+        </td>
+        <td>
+          
+        </td>
+        <td>
+          
+        </td>
+        <td>
+          Pizza Ingredients
+        </td>
+        <td>
+          
+        </td>
+        <td>
+          
+        </td>
+        <td>
+          
+        </td>
+      </tr>
+    
+      <tr>
+        <td>
           SalesServices
         </td>
         <td>
@@ -1238,29 +1264,25 @@ security.provider.11=org.bouncycastle.jce.provider.BouncyCastleProvider
     
       <tr>
         <td>
-          COGSAdditional
-        </td>
-        <td>
-          5105
-        </td>
-        <td>
-          Cost Of Goods Sold capitalized
+          
         </td>
         <td>
           
         </td>
         <td>
           
-            Debit
+        </td>
+        <td>
+          Pizza Ingredients
+        </td>
+        <td>
           
         </td>
         <td>
           
-            Income Expense
-          
         </td>
         <td>
-          COGS from capitalized expenses e.g. rent, indirect labor for producing business
+          
         </td>
       </tr>
     
@@ -1291,6 +1313,7 @@ security.provider.11=org.bouncycastle.jce.provider.BouncyCastleProvider
           
         </td>
       </tr>
+    
       <tr>
         <td>
           Expenses
@@ -1485,8 +1508,35 @@ security.provider.11=org.bouncycastle.jce.provider.BouncyCastleProvider
         <td>
           
         </td>
-      </tr>    
+      </tr>
+    
+      <tr>
+        <td>
+          
+        </td>
+        <td>
+          
+        </td>
+        <td>
+          
+        </td>
+        <td>
+          Bank fees
+        </td>
+        <td>
+          
+        </td>
+        <td>
+          
+        </td>
+        <td>
+          
+        </td>
+      </tr>
+    
   </table>
+</div>
+
 </p>
 
 <h4>Started capital.</h4>
@@ -1495,17 +1545,17 @@ security.provider.11=org.bouncycastle.jce.provider.BouncyCastleProvider
 </p>
 <h4>Book's style entries vs Computer's style ones</h4>
 <p>
-  Accounting entries above is made with computer's style - two classic symmetric entries are made as a single entry:
+  Accounting entries above is made with computer's style - two classic symmetric entries are made as a single one:
   <pre style="white-space: pre-wrap;">
-Debit "Cash In Bank.#1236786b17 in Bank" Credit "Bob's Started Capital" for 40 000,00 USD
+Debit "Cash In Bank.#1236786b17 in Bank" Credit "Bob's Started Capital" for 40,000.00 USD
   </pre>
 </p>
 <p>
-  Classic accounting book entries that is equivalent above one:
+  Classic accounting book entries are equivalent to above one:
   <pre style="white-space: pre-wrap;">
                                           Debit     Credit 
-"Cash In Bank.#1236786b17 in Bank"   40 000,00 USD
-"Bob's Started Capital"                            40 000,00 USD
+"Cash In Bank.#1236786b17 in Bank"   40,000.00 USD
+"Bob's Started Capital"                            40,000.00 USD
   </pre>
 </p>
 
@@ -1515,9 +1565,9 @@ Debit "Cash In Bank.#1236786b17 in Bank" Credit "Bob's Started Capital" for 40 0
     <li>If you are editing a form but forget to create a dependent entity, e.g. Employee for document Wage,
       then you can open Beige-Accounting in another browser tab and create Employee, then go back and in picker
       press page (1 for example) to refresh it.</li>
-    <li>You can edit accounting entry description(only) in menu Accounting - Accounting Records</li>
+    <li>You can edit accounting entry' description(only) in menu Accounting - Accounting Records</li>
     <li>Several entities require entering ID manually for their creating. For customer/vendor/employee ID you can use its phone number (only numbers) or tax identification number.
-      If you got error when you are creating such entity then probably ID is not unique.
+      If you got error when you are creating such entity, then probably ID is not unique.
     </li>
   </ul>
 </p>
@@ -1527,7 +1577,7 @@ Debit "Cash In Bank.#1236786b17 in Bank" Credit "Bob's Started Capital" for 40 0
   This word songs similar to European one "skam" (means shame) and English "scar".
 </p>
 <p>
-  Light scamware is software that can poison a standard application or it is any harmful-script, e.g script on HTML page.
+  Light scamware is software that can poison an application or it is any harmful-script, e.g script on HTML page.
   Light scamware is running under your regular account and can read file system that you can read.
   On *nix OS (Linux...) you can run Beige Accounting under another account in terminal. To do this:
   <ol>
@@ -1560,7 +1610,7 @@ $ sudo chmod o+w /file-exch
   <p align="center"><img style="max-width: 100%" src="images/commandline4.png" /></p>
 </p>
 <p>
-  Light scamware can try to attempt to match your password and stole your data by making HTTP requests. But you are protected with strong password and maximum 5 fail login attempts per session:
+  Light scamware can try to match your password and steal your data by making HTTP requests. But you are protected with strong password and maximum 5 fail login attempts per session:
   <p align="center"><img style="max-width: 100%" src="images/loginprotect1.png" /></p>
   <p>you should check <b>secure.log</b> periodically:</p>
   <p align="center"><img style="max-width: 100%" src="images/loginprotect2.png" /></p>
