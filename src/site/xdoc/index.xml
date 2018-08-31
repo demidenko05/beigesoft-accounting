@@ -35,7 +35,7 @@
           <li>COGS FIFO/LIFO perpetual automatically for sales, sales returns, inventory losses.</li>
           <li>Automatically sales taxes accounting entries for sales, purchases and their returns.</li>
           <li>Sales tax methods: item/invoice basis, destination-based, aggregate rate, price inclusive of tax.</li>
-          <li>Prepayments/payments tracking for sales/purchases.</li>
+          <li>Prepayments/payments tracking for sales/purchases (including invoices with foreign currency).</li>
           <li>Payroll - automatically taxes calculation (by percentage tax table method) and accounting entries.</li>
           <li>Manufacturing - automatically cost calculation from used materials and direct labor (and other) costs.</li>
           <li>Multi-databases (organizations) for standalone versions which use SQlite database.</li>

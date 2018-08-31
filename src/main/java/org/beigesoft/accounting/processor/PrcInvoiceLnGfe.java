@@ -69,7 +69,7 @@ public class PrcInvoiceLnGfe<RS, T extends IInvoiceLine<I>, I extends IInvoice>
     pReqVars.put("DebtorCreditorneededFields", ndFlDc);
     T invLn = this.prcEntityPbEditDelete
       .process(pReqVars, pEntity, pRequestData);
-    pReqVars.remove("DebtorCreditorneededFields", ndFlDc);
+    pReqVars.remove("DebtorCreditorneededFields");
     if (invLn.getClass() == PurchaseInvoiceServiceLine.class) {
       pReqVars.remove("PurchaseInvoicevendordeepLevel");
     } else if (invLn.getClass() == SalesInvoiceServiceLine.class) {

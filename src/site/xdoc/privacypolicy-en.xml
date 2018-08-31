@@ -54,9 +54,7 @@
   This requires Beige-Accounting standalone version on another computer (or Android device),
   cause application encrypts files with public key that belong to another Beige-Accounting.
   Only another Beige-Accounting (whose public key used for encryption) can decrypts these encrypted files.
-  Avoid to download PDF file into shared storage (shared download folder, not private Chrome download one), cause any other application
-  that has permissions to this storage can read your PDF file.
-  This version can loads bank statement CSV file only from shared storage,
+  PDF reports will be downloaded into shared storage,
   so avoid to install any unnecessary application that requires permission to this storage.
 </p>
 
