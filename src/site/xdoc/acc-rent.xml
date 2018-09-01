@@ -13,36 +13,36 @@
   <p>Keywords: Accounting of rent, electricity.</p>
 <p>
 
-  These expenses usually don't requires tracking payments to its vendor(supplier), and usually they don't include taxes.
+  These expenses usually don't require tracking payments to its vendor(supplier), and usually they don't include taxes.
   So accounting of such expenses is very simple.
-  Bob rented kitchen on Jan 13 with equipment for 1000USD per month. The document lease is the prove that says that rent expense is occurred
+  Bob rented kitchen on Jan 13 with equipment for 1000USD per month. The document lease is the proof that says that rent expense will be occurred
   on the last day of every month for 1000USD even unpaid (accrual method).
   <h4>Accounting of prepaid rent.</h4>
-  He prepaid 3000USD for 3 months and made accounting entries:
+  Bob prepaid 3000USD for 3 months and made accounting entries:
   <p align="center"><img alt="Beige-Accounting prepaid rent" style="max-width: 100%" src="images/prepaid-rent.png" /></p>
   <p>
-    One month rent occurred on Jan 31 and Bob will makes adjusting entries (transfer 1000USD from prepayments into gross income (business) expense account <b>5150 Expenses.Rent</b>):
+    One month rent occurred on Jan 31 and Bob will makes adjusting entries (transfers 1000USD from prepayments into income (business) expense account <b>5150 Expenses.Rent</b>):
   </p>
   <p align="center"><img alt="Beige-Accounting rent occurred prepaid" style="max-width: 100%" src="images/rent-occurred.png" /></p>
   <p>
-    Bob will makes same entries in February and March.
+    Bob will make same entries in February and March.
   </p>
   <h4>Accounting of unpaid rent.</h4>
   <p>
-    In April Bob will not paid rent on time, so he will makes entries for occurred rent expense:
+    In April Bob will not paid rent on time, so he will make entries for occurred rent expense:
   </p>
   <p align="center"><img alt="Beige-Accounting rent occurred unpaid" style="max-width: 100%" src="images/rent-occurred-unpaid.png" /></p>
   <p>
-    When Bob will paid rent for April, he will makes accounting entries:<br></br>
+    When Bob will paid rent for April, he will make accounting entries:<br></br>
     <pre style="white-space: pre-wrap;">Debit "Accrued Payable.Rent" Credit "Cash In Bank" for 1000 USD</pre>
   </p>
   <h4>Accounting of paid rent on time.</h4>
   <p>
-    When Bob will paid rent on time, he will makes accounting entries:<br></br>
+    When Bob will paid rent on time, he will make accounting entries:<br></br>
     <pre style="white-space: pre-wrap;">Debit "Expenses.Rent" Credit "Cash In Bank" for 1000 USD</pre>
   </p>
   <p>
-    If according the law of your country rent expense is required to be capitalized then it's used asset account <b>1210 Inventory Capitalized Cost.Rent</b> instead of <b>Expenses.Rent</b>.
+    If according the law of your country rent expense is required to be capitalized, then it's used asset account <b>1210 Inventory Capitalized Cost.Rent</b> instead of <b>Expenses.Rent</b>.
   </p>
 </p>
 

@@ -13,6 +13,7 @@ package org.beigesoft.accounting;
  */
 
 import java.util.Set;
+import java.math.RoundingMode;
 import java.math.BigDecimal;
 import java.util.Locale;
 import java.util.Random;
@@ -162,5 +163,28 @@ tax rate/tax by lines/tax by grouping: 11.13/2794.24/2794.25
     totalDebit = totalDebit.setScale(accSettings.getBalancePrecision(), accSettings.getRoundingMode());
     assertEquals(1001, totalDebit.doubleValue(), 0);
     System.out.println(totalDebit);
+  }
+
+  @Test
+  public void test3() throws Exception {
+    //Truly rounding is revealing THE nearest half up/down number
+    //all online calculators give wrong result, and so does autoNumeric
+    BigDecimal taxEt = new BigDecimal("11.215");
+    assertEquals(11.22, taxEt.setScale(2, RoundingMode.HALF_UP).doubleValue(), 0);
+    assertEquals(11.21, taxEt.setScale(2, RoundingMode.HALF_DOWN).doubleValue(), 0);
+    BigDecimal taxEt1 = new BigDecimal("11.21505");
+    assertEquals(11.22, taxEt1.setScale(2, RoundingMode.HALF_UP).doubleValue(), 0);
+    //(11.210505-11.21)=0.00505>(11.22-11.210505)=0.00495495
+    assertEquals(11.22, taxEt1.setScale(2, RoundingMode.HALF_DOWN).doubleValue(), 0);
+    taxEt = new BigDecimal("11.2149999");
+    //(11.22-11.2149999)=0.0050001>(11.214999-11.21)=0.0049999
+    assertEquals(11.21, taxEt.setScale(2, RoundingMode.HALF_UP).doubleValue(), 0);
+    BigDecimal total = new BigDecimal("113.17");
+    BigDecimal rate = new BigDecimal("11");
+    BigDecimal bd100 = new BigDecimal("100.00");
+    BigDecimal taxHu =  total.subtract(total.divide(BigDecimal.ONE.add(rate.divide(bd100)), 2, RoundingMode.HALF_UP));
+    BigDecimal taxHd =  total.subtract(total.divide(BigDecimal.ONE.add(rate.divide(bd100)), 2, RoundingMode.HALF_DOWN));
+    assertEquals(11.22, taxHu.doubleValue(), 0);
+    assertEquals(11.22, taxHd.doubleValue(), 0);
   }
 }

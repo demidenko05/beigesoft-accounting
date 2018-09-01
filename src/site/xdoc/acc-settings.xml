@@ -30,7 +30,7 @@ Bob has read <a href="https://www.irs.gov/pub/irs-pdf/p583.pdf">IRS 583 Starting
   Bob can send database from notebook to tablet and vise versa.
   In the future (when it's needs) Bob can publish his software on cloud, Beige-Accounting is ready for high load job.
   You are able to make full database copy from SQlite database into high load (enterprise ready) MySql
-  by using WEB-service (see <a href="import-db-web.html">Import database with WEB-service</a>).
+  by using WEB-service (see <a href="import-db-web.html">Import database by using WEB-service</a>).
 </p>
 <p>* for Android see <a href="acc-android.html">Beige-Accounting on Android.</a></p>
 <p>
@@ -116,7 +116,7 @@ security.provider.11=org.bouncycastle.jce.provider.BouncyCastleProvider
   <p align="center"><img alt="Beige-Accounting settings" style="max-width: 100%" src="images/acc-settings2.png" /></p>
   Bob changed report page settings: page size to "Letter", in this case unit of measurement is INCH, font size 3.5mm=0.1378inch.
   For page size A2-5 use millimeters.
-  Bob agreed all other settings include cost precision 4 digit places to reduce rounding error.
+  Bob agreed all other settings include cost precision 4 decimal places to reduce rounding error.
   Setting <b>Current accounting year</b> used for restricting year in new document or accounting entry.
 </p>
 
@@ -1234,7 +1234,7 @@ security.provider.11=org.bouncycastle.jce.provider.BouncyCastleProvider
           
         </td>
         <td>
-          It is made automatically from goods uncapitilized cost by FIFO/LIFO/Everage
+          It is made automatically from goods uncapitalized cost by FIFO/LIFO/Average
         </td>
       </tr>
     
@@ -1542,6 +1542,7 @@ security.provider.11=org.bouncycastle.jce.provider.BouncyCastleProvider
 <h4>Started capital.</h4>
 <p>Bob opened checking account #1236786b17 in Bank on Jan 10 2016 and deposited 40000USD. He made the first accounting entries from Menu Accounting -> Input accounting Entries:
   <p align="center"><img alt="Beige-Accounting started capital" style="max-width: 100%" src="images/started-capital.png" /></p>
+  * amount in accounting entries always has maximum decimal places - 4 for costing precision. 
 </p>
 <h4>Book's style entries vs Computer's style ones</h4>
 <p>
@@ -1614,7 +1615,6 @@ $ sudo chmod o+w /file-exch
   <p align="center"><img style="max-width: 100%" src="images/loginprotect1.png" /></p>
   <p>you should check <b>secure.log</b> periodically:</p>
   <p align="center"><img style="max-width: 100%" src="images/loginprotect2.png" /></p>
-  
 </p>
     </section>
 
