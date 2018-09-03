@@ -86,8 +86,6 @@ public class PrcPurchaseInvoiceLineSave<RS>
         final IRequestData pRequestData) throws Exception {
     if (pEntity.getIsNew()) {
       // Beige-Orm refresh:
-      pEntity.setItsOwner(getSrvOrm()
-        .retrieveEntity(pReqVars, pEntity.getItsOwner()));
       pReqVars.put("DebtorCreditortaxDestinationdeepLevel", 2);
       Set<String> ndFlDc = new HashSet<String>();
       ndFlDc.add("itsId");
@@ -114,6 +112,7 @@ public class PrcPurchaseInvoiceLineSave<RS>
         pEntity.setInvItem(reversed.getInvItem());
         pEntity.setUnitOfMeasure(reversed.getUnitOfMeasure());
         pEntity.setWarehouseSite(reversed.getWarehouseSite());
+        pEntity.setTaxCategory(reversed.getTaxCategory());
         pEntity.setTaxesDescription(reversed.getTaxesDescription());
         pEntity.setTotalTaxes(reversed.getTotalTaxes().negate());
         pEntity.setItsQuantity(reversed.getItsQuantity().negate());

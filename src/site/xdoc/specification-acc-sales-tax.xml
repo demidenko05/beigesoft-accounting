@@ -546,6 +546,10 @@ from
 group by TAXCATEGORY;
       </pre>
 </p>
+
+    <h4>Purchase/sales returns</h4>
+    <p>In these cases user can change tax amount. Taxes is always excluded from price/cost.</p>
+
     </section>
 
   </body>

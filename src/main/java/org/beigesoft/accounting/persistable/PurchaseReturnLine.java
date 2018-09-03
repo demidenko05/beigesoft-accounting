@@ -90,12 +90,6 @@ public class PurchaseReturnLine extends APersistableBaseVersion
   private String description;
 
   /**
-   * <p>Origin or destination tax category.</p>
-   **/
-  private InvItemTaxCategory taxCategory;
-
-
-  /**
    * <p>Setter for unitOfMeasure.</p>
    * @param pUnitOfMeasure reference
    **/
@@ -352,21 +346,5 @@ public class PurchaseReturnLine extends APersistableBaseVersion
    **/
   public final void setWarehouseSiteFo(final WarehouseSite pWarehouseSiteFo) {
     this.warehouseSiteFo = pWarehouseSiteFo;
-  }
-
-  /**
-   * <p>Getter for taxCategory.</p>
-   * @return InvItemTaxCategory
-   **/
-  public final InvItemTaxCategory getTaxCategory() {
-    return this.taxCategory;
-  }
-
-  /**
-   * <p>Setter for taxCategory.</p>
-   * @param pTaxCategory reference
-   **/
-  public final void setTaxCategory(final InvItemTaxCategory pTaxCategory) {
-    this.taxCategory = pTaxCategory;
   }
 }

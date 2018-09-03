@@ -36,6 +36,7 @@ alter table PURCHASEINVOICESERVICETAXLINE add column FOREIGNTOTALTAXES real defa
 alter table PURCHASEINVOICETAXLINE add column FOREIGNTOTALTAXES real default 0;
 alter table PURCHASEINVOICETAXLINE add column TAXABLEINVBAS real default 0;
 alter table PURCHASEINVOICETAXLINE add column TAXABLEINVBASFC real default 0;
+alter table PURCHASERETURNTAXLINE add column TAXABLEINVBAS real default 0;
 alter table PAYMENTTO add column FOREIGNTOTAL real default 0;
 alter table PREPAYMENTTO add column FOREIGNTOTAL real default 0;
 alter table ACCSETTINGS add column SALTAXISINVOICEBASE integer not null default 0;

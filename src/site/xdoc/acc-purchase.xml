@@ -24,11 +24,11 @@ If the service or the cost or use of the property is a deductible business expen
 you can deduct the tax as part of that service or cost.
 If the property is merchandise bought for resale, the sales tax is part of the cost of the merchandise.
 ...
-  * I think here term "property" also means materials and supplies (as well as merchandise), any way for any seller these all means "goods/merchandise".
-  * term "deduct an expense" means that you can deduct its cost (part or whole) from gross income, so as a result the tax is decreased.
+  * I think here term "property" also means materials and supplies (as well as merchandise), any way for any seller these all are "goods/merchandise".
+  * phrase "deduct an expense" means that you can deduct its cost (part or whole) from gross income, so as a result the tax is decreased.
   deducting in double entry system usually makes with:
   Credit [An Asset Account] Debit [An Temporary Gross Income Expense Account] for deducting amount
-  at the end of accounting period all temporary gross income expenses/revenues accounts are closed on gross income account (or directly on retaining earnings/loses)
+  at the end of accounting period all temporary gross income expenses/revenues accounts will be closed, i.e. transfered into retaining earnings/losses account.
 </pre>  
         That is sales taxes from purchase is included into inventory and they become expenses automatically as part of Cost Of Goods Sold (method FIFO in this case).
         So Bob should set accounting settings "Extract sales taxes from purchase" to No,
@@ -41,14 +41,16 @@ If the property is merchandise bought for resale, the sales tax is part of the c
         then set accounting settings "Extract sales taxes from purchase" to Yes,
         and set "is used" to Yes for method #26 "PurchaseInvoice, Debit SalesTaxFromPurchase.Tax Credit AccPayable.DebtorCreditor for Tax amount. Accrual Symmetric."
         Then you should set "is used" to true asset account <b>Sales Tax From Purchase</b>. Also you should add sales taxes, item tax categories and set tax category for goods/service (see <a href="acc-selling.html">Accounting of sales, prepayments, payments tracking.</a>)
-        This is required in case of using "inventory capitalized costs" method (for USA example <a href="https://www.irs.gov/pub/irs-pdf/p538.pdf">IRS 538, Page 18 Uniform Capitalization Rules</a>).
-        Capitalized cost became expense partially depends of ending inventory (product).
+        You are able to change tax amount in a purchase invoice line (item basis and aggregate/only rate) or total invoice (invoice basis).
+        In USA extracting taxes from purchase is required in case of using "inventory capitalized costs" method (see <a href="https://www.irs.gov/pub/irs-pdf/p538.pdf">IRS 538, Page 18 Uniform Capitalization Rules</a>).
+        Capitalized cost becomes expense partially depends of ending inventory (product).
       </p>
       <p>For many other countries sales taxes (e.g. VAT) from purchases is always extracted from goods/service cost and they are deducting themselves (taxes from sales, not deducting income tax).</p>
       
       <h4>Prepayments</h4>
       <p>Bob has prepaid goods to Carlo's grocery on 14 Jan:
           <p align="center"><img alt="Beige-Accounting prepayment for purchase" style="max-width: 100%" src="images/prepayment-for-purchase.png" /></p>
+          * field <b>Total FC</b> is used in case of purchases made in foreign currency.
       </p>
       <p>"Prepayment for purchase" has made simple accounting entries:
           <p align="center"><img alt="Beige-Accounting prepayment for purchase report" style="max-width: 100%" src="images/prepayment-for-purchase-report.png" /></p>
@@ -56,17 +58,19 @@ If the property is merchandise bought for resale, the sales tax is part of the c
 
       <p>
         After a document is accounted you can't change it, you can only reverse it
-        and can change description of its accounting entries. Beige-Accounting is designed for high load job,
+        or change description (only) of its accounting entries. Beige-Accounting is designed for high load job,
         this kind of software requires accuracy, otherwise you will get mess-up quickly. Just make database backup more frequently.
       </p>
       
       <h4>Purchase</h4>
       <p>
-        Bob has bought pizza ingredients on Jan 15 then has filled purchase invoice then has accounted it:
+        Bob has bought pizza ingredients on Jan 15, then filled purchase invoice, then accounted it:
         <p align="center"><img alt="Beige-Accounting purchase invoice" style="max-width: 100%" src="images/purchase1.png" /></p>
-        <p>Field <b>pay by date</b> is optional.</p>
+        <p>Field <b>pay by date</b> is optional, fields <b>Foreign currency</b> and <b>exchange rate</b> are used for purchases made in foreign currency, after you added invoice line in native currency they will disappeared.</p>
+        <p align="center"><img alt="Beige-Accounting purchase invoice report" style="max-width: 100%" src="images/purchase1-1.png" /></p>
         <p align="center">full report  is:</p>
         <p align="center"><img alt="Beige-Accounting purchase invoice report" style="max-width: 100%" src="images/purchase2.png" /></p>
+        <p align="center"><img alt="Beige-Accounting purchase invoice report" style="max-width: 100%" src="images/purchase2-1.png" /></p>
         <p>* As you can see purchase invoice automatically makes accounting record prepayments to account payable. Only prepayment per invoice is allowed (has implemented),
         otherwise you should make prepayments and payments tracking "by hand".</p>
         <p>* You also can see that sales tax for cheese is included into its cost, i.e. it is not extracted.</p>

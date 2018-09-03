@@ -13,6 +13,8 @@ package org.beigesoft.accounting.processor;
  */
 
 import java.util.Map;
+import java.util.Set;
+import java.util.HashSet;
 
 import org.beigesoft.model.IRequestData;
 import org.beigesoft.orm.processor.PrcEntityCreate;
@@ -35,7 +37,7 @@ public class PrcPurchaseReturnLineCreate<RS>
 
   /**
    * <p>Process entity request.</p>
-   * @param pAddParam additional param, e.g. return this line's
+   * @param pReqVars additional param, e.g. return this line's
    * document in "nextEntity" for farther process
    * @param pRequestData Request Data
    * @param pEntity Entity to process
@@ -43,14 +45,28 @@ public class PrcPurchaseReturnLineCreate<RS>
    * @throws Exception - an exception
    **/
   @Override
-  public final PurchaseReturnLine process(
-    final Map<String, Object> pAddParam,
-      final PurchaseReturnLine pEntityPb,
-        final IRequestData pRequestData) throws Exception {
+  public final PurchaseReturnLine process(final Map<String, Object> pReqVars,
+    final PurchaseReturnLine pEntityPb,
+      final IRequestData pRequestData) throws Exception {
     PurchaseReturnLine entity = this.prcEntityCreate
-      .process(pAddParam, pEntityPb, pRequestData);
+      .process(pReqVars, pEntityPb, pRequestData);
+    pReqVars.put("PurchaseInvoicevendordeepLevel", 3);
+    Set<String> ndFlDc = new HashSet<String>();
+    ndFlDc.add("itsId");
+    ndFlDc.add("isForeigner");
+    ndFlDc.add("taxDestination");
+    pReqVars.put("DebtorCreditorneededFields", ndFlDc);
+    Set<String> ndFlInv = new HashSet<String>();
+    ndFlInv.add("itsId");
+    ndFlInv.add("vendor");
+    ndFlInv.add("omitTaxes");
+    ndFlInv.add("hasMadeAccEntries");
+    pReqVars.put("PurchaseInvoiceneededFields", ndFlInv);
     entity.setItsOwner(this.prcEntityCreate.getSrvOrm()
-      .retrieveEntity(pAddParam, entity.getItsOwner()));
+      .retrieveEntity(pReqVars, entity.getItsOwner()));
+    pReqVars.remove("DebtorCreditorneededFields");
+    pReqVars.remove("PurchaseInvoiceneededFields");
+    pReqVars.remove("PurchaseInvoicevendordeepLevel");
     return entity;
   }
 

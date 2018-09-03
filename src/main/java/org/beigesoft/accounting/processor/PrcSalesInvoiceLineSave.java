@@ -112,6 +112,7 @@ public class PrcSalesInvoiceLineSave<RS>
         pEntity.setInvItem(reversed.getInvItem());
         pEntity.setUnitOfMeasure(reversed.getUnitOfMeasure());
         pEntity.setWarehouseSiteFo(reversed.getWarehouseSiteFo());
+        pEntity.setTaxCategory(reversed.getTaxCategory());
         pEntity.setTaxesDescription(reversed.getTaxesDescription());
         pEntity.setTotalTaxes(reversed.getTotalTaxes().negate());
         pEntity.setItsQuantity(reversed.getItsQuantity().negate());
