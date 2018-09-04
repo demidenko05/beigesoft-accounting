@@ -106,6 +106,8 @@ import org.beigesoft.accounting.processor.PrcPurchaseInvoiceServiceLineSave;
 import org.beigesoft.accounting.processor.PrcPurchaseInvoiceServiceLineDelete;
 import org.beigesoft.accounting.processor.PrcPurchaseInvoiceLineSave;
 import org.beigesoft.accounting.processor.PrcPurchInvTaxLnSave;
+import org.beigesoft.accounting.processor.PrcPurchRetTaxLnSave;
+import org.beigesoft.accounting.processor.PrcSalRetTaxLnSave;
 import org.beigesoft.accounting.processor.PrcPurchaseInvoiceLineCopy;
 import org.beigesoft.accounting.processor.PrcPurchaseInvoiceLineGfr;
 import org.beigesoft.accounting.processor.PrcAccDocGetForReverse;
@@ -127,6 +129,7 @@ import org.beigesoft.accounting.processor.PrcBankStatementLineGfe;
 import org.beigesoft.accounting.processor.PrcBankStatementLineSave;
 import org.beigesoft.accounting.processor.PrcInvoiceGfe;
 import org.beigesoft.accounting.processor.PrcInvoiceLnGfe;
+import org.beigesoft.accounting.processor.PrcPurchRetGfe;
 import org.beigesoft.accounting.persistable.BankStatement;
 import org.beigesoft.accounting.persistable.BankStatementLine;
 import org.beigesoft.accounting.persistable.AccSettings;
@@ -158,6 +161,8 @@ import org.beigesoft.accounting.persistable.InvItemTaxCategoryLine;
 import org.beigesoft.accounting.persistable.AdditionCostLine;
 import org.beigesoft.accounting.persistable.PurchaseReturn;
 import org.beigesoft.accounting.persistable.PurchaseReturnLine;
+import org.beigesoft.accounting.persistable.PurchaseReturnTaxLine;
+import org.beigesoft.accounting.persistable.SalesReturnTaxLine;
 import org.beigesoft.accounting.persistable.GoodsLoss;
 import org.beigesoft.accounting.persistable.GoodsLossLine;
 import org.beigesoft.accounting.persistable.SalesInvoice;
@@ -575,6 +580,10 @@ public class HldAccEntitiesProcessorNames
     } else if (ADocTaxLine.class.isAssignableFrom(pClass)) {
       if (PurchaseInvoiceTaxLine.class == pClass) {
         return PrcPurchInvTaxLnSave.class.getSimpleName();
+      } else if (SalesReturnTaxLine.class == pClass) {
+        return PrcSalRetTaxLnSave.class.getSimpleName();
+      } else if (PurchaseReturnTaxLine.class == pClass) {
+        return PrcPurchRetTaxLnSave.class.getSimpleName();
       } else {
         return null;
       }
@@ -675,6 +684,9 @@ public class HldAccEntitiesProcessorNames
       && (pClass == SalesInvoiceServiceLine.class
         || pClass == PurchaseInvoiceServiceLine.class)) {
       return PrcInvoiceLnGfe.class.getSimpleName();
+    } else if (pAction.equals("entityEdit")
+      && pClass == PurchaseReturn.class) {
+      return PrcPurchRetGfe.class.getSimpleName();
     } else if (pClass == PaymentFrom.class || pClass == PaymentTo.class
       || pClass == PrepaymentFrom.class || pClass == PrepaymentTo.class
         || pClass == AdditionCostLine.class) {

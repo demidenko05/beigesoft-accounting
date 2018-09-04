@@ -122,6 +122,7 @@ public class PrcPurchaseReturnSave<RS>
           reversingLine.setIdDatabaseBirth(getSrvOrm().getIdDatabase());
           reversingLine.setReversedId(reversedLine.getItsId());
           reversingLine.setItsTotal(reversedLine.getItsTotal().negate());
+          reversingLine.setTaxableInvBas(reversedLine.getTaxableInvBas());
           reversingLine.setTax(reversedLine.getTax());
           reversingLine.setIsNew(true);
           reversingLine.setItsOwner(pEntity);

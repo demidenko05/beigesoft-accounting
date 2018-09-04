@@ -82,6 +82,11 @@ public class PrcPurchaseReturnLineSave<RS>
   private String queryPurchRetSalTaxInvBas;
 
   /**
+   * <p>Query invoice totals.</p>
+   **/
+  private String queryInvTot;
+
+  /**
    * <p>ORM service.</p>
    **/
   private ISrvOrm<RS> srvOrm;
@@ -132,6 +137,7 @@ public class PrcPurchaseReturnLineSave<RS>
       ndFlInv.add("itsId");
       ndFlInv.add("vendor");
       ndFlInv.add("omitTaxes");
+      ndFlInv.add("priceIncTax");
       ndFlInv.add("hasMadeAccEntries");
       pReqVars.put("PurchaseInvoiceneededFields", ndFlInv);
       pEntity.setItsOwner(getSrvOrm()
@@ -211,9 +217,9 @@ public class PrcPurchaseReturnLineSave<RS>
         //using user passed values:
         BigDecimal totalTaxes = BigDecimal.ZERO;
         List<PurchaseReturnGoodsTaxLine> tls = null;
+        BigDecimal bd100 = new BigDecimal("100.00");
         if (pEntity.getPurchaseInvoiceLine().getTaxCategory() != null
           && isItemBasis) {
-          BigDecimal bd100 = new BigDecimal("100.00");
           if (!isAggrOnlyRate) {
             tls = new ArrayList<PurchaseReturnGoodsTaxLine>();
             pReqVars.put("InvItemTaxCategoryLineitsOwnerdeepLevel", 1);
@@ -270,6 +276,26 @@ public class PrcPurchaseReturnLineSave<RS>
         } else { //multi-sales non-aggregate or non-taxable:
           pEntity.setTotalTaxes(totalTaxes);
         }
+        BigDecimal sourceCostNt;
+        if (pEntity.getItsOwner().getPurchaseInvoice().getPriceIncTax()) {
+          sourceCostNt = pEntity.getPurchaseInvoiceLine().getItsCost()
+        .divide(BigDecimal.ONE.add(pEntity.getPurchaseInvoiceLine()
+      .getTaxCategory().getAggrOnlyPercent().divide(bd100)), as
+    .getCostPrecision(), as.getRoundingMode());
+        } else {
+          sourceCostNt = pEntity.getPurchaseInvoiceLine().getItsCost();
+        }
+        BigDecimal curCostNt = pEntity.getSubtotal().divide(pEntity
+          .getItsQuantity(), as.getCostPrecision(), as.getRoundingMode());
+        if (sourceCostNt.compareTo(curCostNt) != 0) {
+          if (pEntity.getDescription() == null) {
+            pEntity.setDescription(curCostNt.toString() + "!="
+              + sourceCostNt + "!");
+          } else {
+            pEntity.setDescription(pEntity.getDescription() + " " + curCostNt
+              + "!=" + sourceCostNt + "!");
+          }
+        }
         pEntity.setItsTotal(pEntity.getSubtotal().add(totalTaxes));
         getSrvOrm().insertEntity(pReqVars, pEntity);
         pEntity.setIsNew(false);
@@ -294,10 +320,9 @@ public class PrcPurchaseReturnLineSave<RS>
       Long ownerVersion = Long.valueOf(pRequestData
         .getParameter(PurchaseReturn.class.getSimpleName() + ".ownerVersion"));
       pEntity.getItsOwner().setItsVersion(ownerVersion);
-      String query =
-      "select sum(SUBTOTAL) as SUBTOTAL, sum(TOTALTAXES) as TOTALTAXES from"
-        + " PURCHASERETURNLINE where ITSOWNER="
-          + pEntity.getItsOwner().getItsId();
+      String query = lazyGetQueryInvTot();
+      query = query.replace(":ITSOWNER", pEntity.getItsOwner().getItsId()
+        .toString());
       String[] columns = new String[]{"SUBTOTAL", "TOTALTAXES"};
       Double[] totals = getSrvDatabase().evalDoubleResults(query, columns);
       pEntity.getItsOwner().setSubtotal(BigDecimal.valueOf(totals[0]).setScale(
@@ -450,7 +475,7 @@ public class PrcPurchaseReturnLineSave<RS>
             tax.setItsId(taxesLst.get(i));
             taxes.add(tax);
             totalTax = dbResults.get(i * 2);
-            taxable = dbResults.get(i * 2 + 2);
+            taxable = dbResults.get(i * 2 + 1);
           } else {
             //item basis, non-aggregate rate, taxes excluded
             totalTax = dbResults.get(i);
@@ -695,10 +720,23 @@ public class PrcPurchaseReturnLineSave<RS>
    **/
   public final String lazyGetQuPurchRetSalTaxInvBas() throws Exception {
     if (this.queryPurchRetSalTaxInvBas == null) {
-      String flName = "/accounting/trade/purchRetSalTaxInvBas.sql";
+      String flName = "/accounting/trade/purchRetSalTaxInvBasis.sql";
       this.queryPurchRetSalTaxInvBas = loadString(flName);
     }
     return this.queryPurchRetSalTaxInvBas;
+  }
+
+  /**
+   * <p>Lazy Get query invoice totals.</p>
+   * @return String
+   * @throws Exception - an exception
+   **/
+  public final String lazyGetQueryInvTot() throws Exception {
+    if (this.queryInvTot == null) {
+      String flName = "/accounting/trade/purchRetTot.sql";
+      this.queryInvTot = loadString(flName);
+    }
+    return this.queryInvTot;
   }
 
   /**
@@ -914,5 +952,13 @@ public class PrcPurchaseReturnLineSave<RS>
   public final void setQueryPurchRetSalTaxInvBas(
     final String pQueryPurchRetSalTaxInvBas) {
     this.queryPurchRetSalTaxInvBas = pQueryPurchRetSalTaxInvBas;
+  }
+
+  /**
+   * <p>Setter for queryInvTot.</p>
+   * @param pQueryInvTot reference
+   **/
+  public final void setQueryInvTot(final String pQueryInvTot) {
+    this.queryInvTot = pQueryInvTot;
   }
 }

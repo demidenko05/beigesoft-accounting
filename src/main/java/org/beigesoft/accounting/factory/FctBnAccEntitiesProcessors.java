@@ -1,7 +1,7 @@
 package org.beigesoft.accounting.factory;
 
 /*
- * Copyright (c) 2017 Beigesoft ™
+ * Copyright (c) 2017 Beigesoft™
  *
  * Licensed under the GNU General Public License (GPL), Version 2.0
  * (the "License");
@@ -78,6 +78,8 @@ import org.beigesoft.accounting.processor.PrcPurchaseInvoiceServiceLineSave;
 import org.beigesoft.accounting.processor.PrcPurchaseInvoiceServiceLineDelete;
 import org.beigesoft.accounting.processor.PrcPurchaseInvoiceLineSave;
 import org.beigesoft.accounting.processor.PrcPurchInvTaxLnSave;
+import org.beigesoft.accounting.processor.PrcPurchRetTaxLnSave;
+import org.beigesoft.accounting.processor.PrcSalRetTaxLnSave;
 import org.beigesoft.accounting.processor.PrcPurchaseInvoiceLineCopy;
 import org.beigesoft.accounting.processor.PrcPurchaseInvoiceLineGfr;
 import org.beigesoft.accounting.processor.UtlPurchaseGoodsServiceLine;
@@ -87,6 +89,7 @@ import org.beigesoft.accounting.processor.PrcGoodsLossLineCopy;
 import org.beigesoft.accounting.processor.PrcGoodsLossLineGfr;
 import org.beigesoft.accounting.processor.PrcInvoiceLnCreate;
 import org.beigesoft.accounting.processor.PrcInvoiceGfe;
+import org.beigesoft.accounting.processor.PrcPurchRetGfe;
 import org.beigesoft.accounting.processor.PrcInvoiceLnGfe;
 import org.beigesoft.accounting.processor.PrcSalesInvoiceSave;
 import org.beigesoft.accounting.processor.PrcSalesInvoiceLineSave;
@@ -157,6 +160,7 @@ import org.beigesoft.accounting.persistable.Manufacture;
 import org.beigesoft.accounting.persistable.ManufacturingProcess;
 import org.beigesoft.accounting.persistable.UsedMaterialLine;
 import org.beigesoft.accounting.persistable.PrepaymentTo;
+import org.beigesoft.accounting.persistable.PurchaseReturn;
 import org.beigesoft.accounting.persistable.PurchaseReturnLine;
 import org.beigesoft.accounting.persistable.SalesReturnLine;
 import org.beigesoft.accounting.persistable.GoodsLossLine;
@@ -434,6 +438,12 @@ public class FctBnAccEntitiesProcessors<RS>
             .equals(PrcPurchaseInvoiceLineCopy.class.getSimpleName())) {
             proc = lazyGetPrcPurchaseInvoiceLineCopy(pAddParam);
           } else if (pBeanName
+            .equals(PrcSalRetTaxLnSave.class.getSimpleName())) {
+            proc = lazyGetPrcSalRetTaxLnSave(pAddParam);
+          } else if (pBeanName
+            .equals(PrcPurchRetTaxLnSave.class.getSimpleName())) {
+            proc = lazyGetPrcPurchRetTaxLnSave(pAddParam);
+          } else if (pBeanName
             .equals(PrcPurchInvTaxLnSave.class.getSimpleName())) {
             proc = lazyGetPrcPurchInvTaxLnSave(pAddParam);
           } else if (pBeanName
@@ -520,6 +530,9 @@ public class FctBnAccEntitiesProcessors<RS>
           } else if (pBeanName
             .equals(PrcBankStatementLineSave.class.getSimpleName())) {
             proc = lazyGetPrcBankStatementLineSave(pAddParam);
+          } else if (pBeanName
+            .equals(PrcPurchRetGfe.class.getSimpleName())) {
+            proc = lazyGetPrcPurchRetGfe(pAddParam);
           } else if (pBeanName
             .equals(PrcInvoiceGfe.class.getSimpleName())) {
             proc = lazyGetPrcInvoiceGfe(pAddParam);
@@ -1401,6 +1414,54 @@ public class FctBnAccEntitiesProcessors<RS>
   }
 
   /**
+   * <p>Get PrcSalRetTaxLnSave (create and put into map).</p>
+   * @param pAddParam additional param
+   * @return requested PrcSalRetTaxLnSave
+   * @throws Exception - an exception
+   */
+  protected final PrcSalRetTaxLnSave<RS>
+    lazyGetPrcSalRetTaxLnSave(
+      final Map<String, Object> pAddParam) throws Exception {
+    @SuppressWarnings("unchecked")
+    PrcSalRetTaxLnSave<RS> proc = (PrcSalRetTaxLnSave<RS>)
+      this.processorsMap.get(PrcSalRetTaxLnSave.class.getSimpleName());
+    if (proc == null) {
+      proc = new PrcSalRetTaxLnSave<RS>();
+      proc.setSrvAccSettings(getSrvAccSettings());
+      proc.setSrvOrm(getSrvOrm());
+      proc.setSrvDatabase(getSrvDatabase());
+      //assigning fully initialized object:
+      this.processorsMap
+        .put(PrcSalRetTaxLnSave.class.getSimpleName(), proc);
+    }
+    return proc;
+  }
+
+  /**
+   * <p>Get PrcPurchRetTaxLnSave (create and put into map).</p>
+   * @param pAddParam additional param
+   * @return requested PrcPurchRetTaxLnSave
+   * @throws Exception - an exception
+   */
+  protected final PrcPurchRetTaxLnSave<RS>
+    lazyGetPrcPurchRetTaxLnSave(
+      final Map<String, Object> pAddParam) throws Exception {
+    @SuppressWarnings("unchecked")
+    PrcPurchRetTaxLnSave<RS> proc = (PrcPurchRetTaxLnSave<RS>)
+      this.processorsMap.get(PrcPurchRetTaxLnSave.class.getSimpleName());
+    if (proc == null) {
+      proc = new PrcPurchRetTaxLnSave<RS>();
+      proc.setSrvAccSettings(getSrvAccSettings());
+      proc.setSrvOrm(getSrvOrm());
+      proc.setSrvDatabase(getSrvDatabase());
+      //assigning fully initialized object:
+      this.processorsMap
+        .put(PrcPurchRetTaxLnSave.class.getSimpleName(), proc);
+    }
+    return proc;
+  }
+
+  /**
    * <p>Get PrcPurchInvTaxLnSave (create and put into map).</p>
    * @param pAddParam additional param
    * @return requested PrcPurchInvTaxLnSave
@@ -2167,18 +2228,42 @@ public class FctBnAccEntitiesProcessors<RS>
   }
 
   /**
+   * <p>Get PrcPurchRetGfe (create and put into map).</p>
+   * @param pAddParam additional param
+   * @return requested PrcPurchRetGfe
+   * @throws Exception - an exception
+   */
+  protected final PrcPurchRetGfe lazyGetPrcPurchRetGfe(
+    final Map<String, Object> pAddParam) throws Exception {
+    PrcPurchRetGfe proc = (PrcPurchRetGfe)
+      this.processorsMap.get(PrcPurchRetGfe.class.getSimpleName());
+    if (proc == null) {
+      proc = new PrcPurchRetGfe();
+      @SuppressWarnings("unchecked")
+      PrcEntityPbEditDelete<RS, PurchaseReturn> procDlg =
+    (PrcEntityPbEditDelete<RS, PurchaseReturn>) this.fctBnEntitiesProcessors
+  .lazyGet(pAddParam, PrcEntityPbEditDelete.class.getSimpleName());
+      proc.setPrcEntityPbEditDelete(procDlg);
+      //assigning fully initialized object:
+      this.processorsMap
+        .put(PrcPurchRetGfe.class.getSimpleName(), proc);
+    }
+    return proc;
+  }
+
+  /**
    * <p>Get PrcInvoiceGfe (create and put into map).</p>
    * @param pAddParam additional param
    * @return requested PrcInvoiceGfe
    * @throws Exception - an exception
    */
-  protected final PrcInvoiceGfe<RS, IInvoice> lazyGetPrcInvoiceGfe(
+  protected final PrcInvoiceGfe<IInvoice> lazyGetPrcInvoiceGfe(
     final Map<String, Object> pAddParam) throws Exception {
     @SuppressWarnings("unchecked")
-    PrcInvoiceGfe<RS, IInvoice> proc = (PrcInvoiceGfe<RS, IInvoice>)
+    PrcInvoiceGfe<IInvoice> proc = (PrcInvoiceGfe<IInvoice>)
       this.processorsMap.get(PrcInvoiceGfe.class.getSimpleName());
     if (proc == null) {
-      proc = new PrcInvoiceGfe<RS, IInvoice>();
+      proc = new PrcInvoiceGfe<IInvoice>();
       @SuppressWarnings("unchecked")
       PrcEntityPbEditDelete<RS, IInvoice> procDlg =
     (PrcEntityPbEditDelete<RS, IInvoice>) this.fctBnEntitiesProcessors

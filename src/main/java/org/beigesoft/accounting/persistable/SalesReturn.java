@@ -43,6 +43,11 @@ public class SalesReturn extends ADocWithTaxes
   private List<SalesReturnTaxLine> taxesLines;
 
   /**
+   * <p>Is omitting taxes, false default.</p>
+   **/
+  private Boolean omitTaxes = Boolean.FALSE;
+
+  /**
    * <p>OOP friendly Constant of code type.</p>
    * @return 12
    **/
@@ -108,5 +113,21 @@ public class SalesReturn extends ADocWithTaxes
    **/
   public final void setTaxesLines(final List<SalesReturnTaxLine> pTaxesLines) {
     this.taxesLines = pTaxesLines;
+  }
+
+  /**
+   * <p>Getter for omitTaxes.</p>
+   * @return Boolean
+   **/
+  public final Boolean getOmitTaxes() {
+    return this.omitTaxes;
+  }
+
+  /**
+   * <p>Setter for omitTaxes.</p>
+   * @param pOmitTaxes reference
+   **/
+  public final void setOmitTaxes(final Boolean pOmitTaxes) {
+    this.omitTaxes = pOmitTaxes;
   }
 }

@@ -18,21 +18,19 @@ import java.util.Map;
 
 import org.beigesoft.model.IRequestData;
 import org.beigesoft.service.IEntityProcessor;
-import org.beigesoft.accounting.persistable.IInvoice;
+import org.beigesoft.accounting.persistable.PurchaseReturn;
 
 /**
- * <p>Process that retrieves purchase/sales invoice for editing.</p>
+ * <p>Process that retrieves purchase return for editing.</p>
  *
- * @param <T> invoice type
  * @author Yury Demidenko
  */
-public class PrcInvoiceGfe<T extends IInvoice>
-  implements IEntityProcessor<T, Long> {
+public class PrcPurchRetGfe implements IEntityProcessor<PurchaseReturn, Long> {
 
   /**
    * <p>Acc-EntityPb Edit/Confirm delete delegator.</p>
    **/
-  private IEntityProcessor<T, Long> prcEntityPbEditDelete;
+  private IEntityProcessor<PurchaseReturn, Long> prcEntityPbEditDelete;
 
 
   /**
@@ -45,20 +43,26 @@ public class PrcInvoiceGfe<T extends IInvoice>
    * @throws Exception - an exception
    **/
   @Override
-  public final T process(final Map<String, Object> pReqVars,
-    final T pEntity,
+  public final PurchaseReturn process(final Map<String, Object> pReqVars,
+    final PurchaseReturn pEntity,
       final IRequestData pRequestData) throws Exception {
-    pReqVars.put("DebtorCreditortaxDestinationdeepLevel", 2);
+    pReqVars.put("PurchaseInvoicevendordeepLevel", 3);
     Set<String> ndFlDc = new HashSet<String>();
     ndFlDc.add("itsId");
-    ndFlDc.add("itsName");
     ndFlDc.add("isForeigner");
     ndFlDc.add("taxDestination");
     pReqVars.put("DebtorCreditorneededFields", ndFlDc);
-    T invoice = this.prcEntityPbEditDelete
+    Set<String> ndFlInv = new HashSet<String>();
+    ndFlInv.add("itsId");
+    ndFlInv.add("vendor");
+    ndFlInv.add("omitTaxes");
+    ndFlInv.add("hasMadeAccEntries");
+    pReqVars.put("PurchaseInvoiceneededFields", ndFlInv);
+    PurchaseReturn invoice = this.prcEntityPbEditDelete
       .process(pReqVars, pEntity, pRequestData);
     pReqVars.remove("DebtorCreditorneededFields");
-    pReqVars.remove("DebtorCreditortaxDestinationdeepLevel");
+    pReqVars.remove("PurchaseInvoiceneededFields");
+    pReqVars.remove("PurchaseInvoicevendordeepLevel");
     return invoice;
   }
   //Simple getters and setters:
@@ -66,7 +70,7 @@ public class PrcInvoiceGfe<T extends IInvoice>
    * <p>Getter for prcEntityPbEditDelete.</p>
    * @return IEntityProcessor<IInvoice, Long>
    **/
-  public final IEntityProcessor<T, Long>
+  public final IEntityProcessor<PurchaseReturn, Long>
     getPrcEntityPbEditDelete() {
     return this.prcEntityPbEditDelete;
   }
@@ -76,7 +80,7 @@ public class PrcInvoiceGfe<T extends IInvoice>
    * @param pPrcEntityPbEditDelete reference
    **/
   public final void setPrcEntityPbEditDelete(
-    final IEntityProcessor<T, Long> pPrcEntityPbEditDelete) {
+    final IEntityProcessor<PurchaseReturn, Long> pPrcEntityPbEditDelete) {
     this.prcEntityPbEditDelete = pPrcEntityPbEditDelete;
   }
 }

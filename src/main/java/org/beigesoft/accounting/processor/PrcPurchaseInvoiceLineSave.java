@@ -292,7 +292,7 @@ public class PrcPurchaseInvoiceLineSave<RS>
             pEntity.setTaxesDescription(pEntity.getTaxCategory().getItsName());
           }
         }
-        if (isTaxable && pEntity.getTaxCategory() != null && isItemBasis
+        if (pEntity.getTaxCategory() != null && isItemBasis
           && isAggrOnlyRate) {
           if (pEntity.getTotalTaxes().compareTo(totalTaxes) != 0) {
             if (pEntity.getDescription() == null) {

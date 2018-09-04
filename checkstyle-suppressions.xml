@@ -25,5 +25,5 @@
   <suppress checks="MagicNumberCheck"
     files="BalanceAtAllDirtyCheck|SrvBalanceStd|GoodsLoss|GoodsLossLine|SalesReturn|SalesReturnLine|PurchaseReturn|PurchaseReturnLine|HndlAccVarsRequest|PrcInvoiceLnGfe"/>
   <suppress checks="MagicNumberCheck"
-    files="MoveItems|MoveItemsLine|BeginningInventory|BeginningInventoryLine|InvoiceReportPdf|BalanceSheetPdf|SrvBalanceSheet|ServiceToSaleCategory|UtlSalesGoodsServiceLine|UtlPurchaseGoodsServiceLine"/>
+    files="MoveItems|MoveItemsLine|BeginningInventory|BeginningInventoryLine|InvoiceReportPdf|BalanceSheetPdf|SrvBalanceSheet|ServiceToSaleCategory|UtlSalesGoodsServiceLine|UtlPurchaseGoodsServiceLine|PrcPurchRetGfe"/>
 </suppressions>
