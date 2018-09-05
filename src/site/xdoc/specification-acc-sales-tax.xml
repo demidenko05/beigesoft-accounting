@@ -550,6 +550,39 @@ group by TAXCATEGORY;
     <h4>Purchase/sales returns</h4>
     <p>In these cases user can change tax amount. Taxes is always excluded from price/cost.</p>
 
+    <h4>Price inclusive of taxes, purchases.</h4>
+    <p>Purchase line has properties <b>itsCost</b> and <b>Rest</b> that are used only for COGS FIFO/LIFO.
+      Consequently <b>itsCost</b> must excludes taxes.</p>
+    <p>In case of "taxes included in price" <b>itsCost</b> calculated by equation:<b>itsCost=Round(subtotal/itsQuantity, costPrecision)</b>.</p>
+
+    <h4>Price inclusive of taxes, sales.</h4>
+    <p>There is no need to make <b>price without taxes</b>.</p>
+    
+    <h4>Price inclusive of taxes or not, purchases and sales.</h4>
+    <p>Common problem - revealing line's subtotal (total-taxes) or total (subtotal+taxes) for <b>invoice basis method</b>.</p>
+    <p>"Subtotal" is used to make accounting entries - "sales revenue" grouped by "Item Category".</p>
+    <p>Algorithm: after calculation invoice total taxes, they are used to recalculate <b>subtotal</b> for all taxable invoice lines (goods and services).
+    In case of PURCHASE invoice - <b>itsCost</b> will be also recalculated</p>
+    <p>Example two lines taxes excluded: 
+<pre style="white-space: pre-wrap;">
+sofa=400, armchair=200, delivering 100
+sofa=400 and armchair taxable STG4.7%, STG6.4%; delivering STS11%.
+Total taxes (aggregate or not rate) 77.60:
+STG4.7% * 600 / 100 = 28.20
+STG6.4% * 600 / 100 = 38.40
+STS11% * 100 / 100 = 11.00
+STG4.7%, STG6.4% taxable 600, total tax = 66.60
+STS11% taxable 100, total tax = 11.00
+line's total taxes is calculated from its subtotal and invoice total tax and taxable for line's tax category:
+sofa tax total = 66.60 * 400 / 600 = 44.40
+armchair tax total = 66.60 - 44.40 = 22.20
+delivering = 11.00
+</pre>
+To prevent rounding error, lines must be filtered by tax category and ordered by subtotal ascending, and the last line must be the tax rest (for current tax category).
+Invoice with "Taxes included" is made by the same way: <b>Total taxes line = Total taxes invoice for tax category * Total line / Taxable invoice for tax category</b>.
+If there is a tax that tied in different tax categories e.g. "Tax11%,Tax2%" and "Tax11%", then exception will occurred cause unsupported case.
+    </p>
+
     </section>
 
   </body>

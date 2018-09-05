@@ -401,9 +401,10 @@ public class PrcPurchaseReturnLineSave<RS>
                 Long taxId = recordSet.getLong("TAXID");
                 Double percent = recordSet.getDouble("ITSPERCENTAGE");
                 PurchaseInvoiceServiceLine invLn = makeLine(invLns, ilId, ilId,
-                  taxId, percent);
+                  taxId, percent, pAs);
                 invLn.setTotalTaxes(BigDecimal.valueOf(recordSet
-                  .getDouble("TOTALTAXES")));
+                  .getDouble("TOTALTAXES"))
+                    .setScale(pAs.getPricePrecision(), RoundingMode.HALF_UP));
               } else { //tax excluded
                 taxesLst.add(recordSet.getLong("TAXID"));
                 dbResults.add(recordSet.getDouble("TOTALTAX"));
@@ -604,11 +605,13 @@ public class PrcPurchaseReturnLineSave<RS>
    * @param pCatId tax category ID
    * @param pTaxId tax ID
    * @param pPercent tax rate
+   * @param pAs AS
    * @return line
    **/
   public final PurchaseInvoiceServiceLine makeLine(
     final List<PurchaseInvoiceServiceLine> pInvLns, final Long pIlId,
-      final Long pCatId,  final Long pTaxId, final Double pPercent) {
+      final Long pCatId,  final Long pTaxId, final Double pPercent,
+        final AccSettings pAs) {
     PurchaseInvoiceServiceLine invLn = null;
     for (PurchaseInvoiceServiceLine il : pInvLns) {
       if (il.getItsId().equals(pIlId)) {
@@ -628,7 +631,8 @@ public class PrcPurchaseReturnLineSave<RS>
     Tax tax = new Tax();
     tax.setItsId(pTaxId);
     itcl.setTax(tax);
-    itcl.setItsPercentage(BigDecimal.valueOf(pPercent));
+    itcl.setItsPercentage(BigDecimal.valueOf(pPercent)
+      .setScale(pAs.getTaxPrecision(), RoundingMode.HALF_UP));
     invLn.getTaxCategory().getTaxes().add(itcl);
     invLn.getTaxCategory().setAggrOnlyPercent(invLn.getTaxCategory()
       .getAggrOnlyPercent().add(itcl.getItsPercentage()));

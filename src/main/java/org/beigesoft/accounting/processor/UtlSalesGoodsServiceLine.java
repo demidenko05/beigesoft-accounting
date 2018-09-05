@@ -317,11 +317,13 @@ public class UtlSalesGoodsServiceLine<RS> {
               if (pItsOwner.getPriceIncTax()) { //&& aggregate/only rate
                 Long ilId = recordSet.getLong("TAXCATID");
                 SalesInvoiceServiceLine invLn = makeLine(invLns, ilId,
-                  ilId, taxId, percent);
+                  ilId, taxId, percent, as);
                 invLn.setItsTotal(BigDecimal.valueOf(recordSet
-                  .getDouble("ITSTOTAL")));
+                  .getDouble("ITSTOTAL"))
+                    .setScale(as.getPricePrecision(), RoundingMode.HALF_UP));
                 invLn.setForeignTotal(BigDecimal.valueOf(recordSet
-                  .getDouble("FOREIGNTOTAL")));
+                  .getDouble("FOREIGNTOTAL"))
+                    .setScale(as.getPricePrecision(), RoundingMode.HALF_UP));
               } else { //any rate
                 taxesLst.add(taxId);
                 Double subtotal = recordSet.getDouble("SUBTOTAL");
@@ -337,11 +339,13 @@ public class UtlSalesGoodsServiceLine<RS> {
                 Long taxId = recordSet.getLong("TAXID");
                 Double percent = recordSet.getDouble("ITSPERCENTAGE");
                 SalesInvoiceServiceLine invLn = makeLine(invLns, ilId, ilId,
-                  taxId, percent);
+                  taxId, percent, as);
                 invLn.setTotalTaxes(BigDecimal.valueOf(recordSet
-                  .getDouble("TOTALTAXES")));
+                  .getDouble("TOTALTAXES"))
+                    .setScale(as.getPricePrecision(), RoundingMode.HALF_UP));
                 invLn.setForeignTotalTaxes(BigDecimal.valueOf(recordSet
-                  .getDouble("FOREIGNTOTALTAXES")));
+                  .getDouble("FOREIGNTOTALTAXES"))
+                    .setScale(as.getPricePrecision(), RoundingMode.HALF_UP));
               } else { //tax excluded
                 taxesLst.add(recordSet.getLong("TAXID"));
                 dbResults.add(recordSet.getDouble("TOTALTAX"));
@@ -594,11 +598,13 @@ public class UtlSalesGoodsServiceLine<RS> {
    * @param pCatId tax category ID
    * @param pTaxId tax ID
    * @param pPercent tax rate
+   * @param pAs AS
    * @return line
    **/
   public final SalesInvoiceServiceLine makeLine(
     final List<SalesInvoiceServiceLine> pInvLns, final Long pIlId,
-      final Long pCatId,  final Long pTaxId, final Double pPercent) {
+      final Long pCatId,  final Long pTaxId, final Double pPercent,
+        final AccSettings pAs) {
     SalesInvoiceServiceLine invLn = null;
     for (SalesInvoiceServiceLine il : pInvLns) {
       if (il.getItsId().equals(pIlId)) {
@@ -618,7 +624,8 @@ public class UtlSalesGoodsServiceLine<RS> {
     Tax tax = new Tax();
     tax.setItsId(pTaxId);
     itcl.setTax(tax);
-    itcl.setItsPercentage(BigDecimal.valueOf(pPercent));
+    itcl.setItsPercentage(BigDecimal.valueOf(pPercent)
+      .setScale(pAs.getTaxPrecision(), RoundingMode.HALF_UP));
     invLn.getTaxCategory().getTaxes().add(itcl);
     invLn.getTaxCategory().setAggrOnlyPercent(invLn.getTaxCategory()
       .getAggrOnlyPercent().add(itcl.getItsPercentage()));

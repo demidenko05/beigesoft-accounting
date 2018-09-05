@@ -308,6 +308,10 @@ public class PrcPurchaseInvoiceLineSave<RS>
         }
         if (!isTaxable || pEntity.getItsOwner().getPriceIncTax()) {
           pEntity.setSubtotal(pEntity.getItsTotal().subtract(totalTaxes));
+          if (pEntity.getItsOwner().getPriceIncTax()) {
+            pEntity.setItsCost(pEntity.getSubtotal().divide(pEntity
+              .getItsQuantity(), as.getCostPrecision(), as.getRoundingMode()));
+          }
         } else {
           pEntity.setItsTotal(pEntity.getSubtotal().add(totalTaxes));
         }
