@@ -150,6 +150,12 @@ public class PrcPurchRetTaxLnSave<RS>
       .toString());
     String[] columns = new String[]{"SUBTOTAL", "TOTALTAXES"};
     Double[] totals = getSrvDatabase().evalDoubleResults(query, columns);
+    if (totals[0] == null) {
+      totals[0] = 0d;
+    }
+    if (totals[1] == null) {
+      totals[1] = 0d;
+    }
     pEntity.getItsOwner().setSubtotal(BigDecimal.valueOf(totals[0]).setScale(
       getSrvAccSettings().lazyGetAccSettings(pReqVars).getPricePrecision(),
         getSrvAccSettings().lazyGetAccSettings(pReqVars).getRoundingMode()));

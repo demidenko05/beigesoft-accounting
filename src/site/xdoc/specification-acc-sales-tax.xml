@@ -500,7 +500,7 @@ tax2 = 9.18 * 0.016 / 0.159 = 0.92
 tax3 = 9.18 - (9.35 + 0.92) = 1.91
 </pre>
 To prevent difference between total aggregate from lines and total taxes cause grouping rounding error,
-the last tax total line is the rest of aggregate tax.
+the last tax total line is the rest of aggregate tax, and taxes must by ordered by rate descending (the last is minimum rate).
       </p>
       <p>Property AccSettings.salTaxUseAggregItBas (use aggregate tax rate or only tax) is used to switch this method, default is false.
       </p>
@@ -562,7 +562,7 @@ group by TAXCATEGORY;
     <p>Common problem - revealing line's subtotal (total-taxes) or total (subtotal+taxes) for <b>invoice basis method</b>.</p>
     <p>"Subtotal" is used to make accounting entries - "sales revenue" grouped by "Item Category".</p>
     <p>Algorithm: after calculation invoice total taxes, they are used to recalculate <b>subtotal</b> for all taxable invoice lines (goods and services).
-    In case of PURCHASE invoice - <b>itsCost</b> will be also recalculated</p>
+    In case of PURCHASE invoice and taxes included - <b>itsCost</b> will be also recalculated</p>
     <p>Example two lines taxes excluded: 
 <pre style="white-space: pre-wrap;">
 sofa=400, armchair=200, delivering 100
@@ -578,7 +578,7 @@ sofa tax total = 66.60 * 400 / 600 = 44.40
 armchair tax total = 66.60 - 44.40 = 22.20
 delivering = 11.00
 </pre>
-To prevent rounding error, lines must be filtered by tax category and ordered by subtotal ascending, and the last line must be the tax rest (for current tax category).
+To prevent rounding error, lines must be filtered by tax category and ordered by total descending (the last is minimum), and the last line must be the tax rest (for current tax category).
 Invoice with "Taxes included" is made by the same way: <b>Total taxes line = Total taxes invoice for tax category * Total line / Taxable invoice for tax category</b>.
 If there is a tax that tied in different tax categories e.g. "Tax11%,Tax2%" and "Tax11%", then exception will occurred cause unsupported case.
     </p>

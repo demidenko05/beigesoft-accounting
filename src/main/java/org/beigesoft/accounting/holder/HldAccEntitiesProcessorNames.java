@@ -91,6 +91,7 @@ import org.beigesoft.accounting.processor.PrcPurchaseReturnLineSave;
 import org.beigesoft.accounting.processor.PrcPurchaseReturnLineCopy;
 import org.beigesoft.accounting.processor.PrcPurchaseReturnLineGfr;
 import org.beigesoft.accounting.processor.PrcPurchaseReturnLineCreate;
+import org.beigesoft.accounting.processor.PrcSalRetLnCreate;
 import org.beigesoft.accounting.processor.PrcGoodsLossSave;
 import org.beigesoft.accounting.processor.PrcGoodsLossLineCopy;
 import org.beigesoft.accounting.processor.PrcGoodsLossLineGfr;
@@ -127,6 +128,7 @@ import org.beigesoft.accounting.processor.PrcAccSettingsLineSave;
 import org.beigesoft.accounting.processor.PrcBankStatementSave;
 import org.beigesoft.accounting.processor.PrcBankStatementLineGfe;
 import org.beigesoft.accounting.processor.PrcBankStatementLineSave;
+import org.beigesoft.accounting.processor.PrcSalesRetGfe;
 import org.beigesoft.accounting.processor.PrcInvoiceGfe;
 import org.beigesoft.accounting.processor.PrcInvoiceLnGfe;
 import org.beigesoft.accounting.processor.PrcPurchRetGfe;
@@ -644,6 +646,8 @@ public class HldAccEntitiesProcessorNames
       return PrcInvoiceLnCreate.class.getSimpleName();
     } else if (pClass == PurchaseReturnLine.class) {
       return PrcPurchaseReturnLineCreate.class.getSimpleName();
+    } else if (pClass == SalesReturnLine.class) {
+      return PrcSalRetLnCreate.class.getSimpleName();
     } else if (pClass == SubaccountLine.class) {
       return PrcSubaccountLineCreate.class.getSimpleName();
     } else if (pClass == AccountingEntry.class) {
@@ -687,6 +691,9 @@ public class HldAccEntitiesProcessorNames
     } else if (pAction.equals("entityEdit")
       && pClass == PurchaseReturn.class) {
       return PrcPurchRetGfe.class.getSimpleName();
+    } else if (pAction.equals("entityEdit")
+      && pClass == SalesReturn.class) {
+      return PrcSalesRetGfe.class.getSimpleName();
     } else if (pClass == PaymentFrom.class || pClass == PaymentTo.class
       || pClass == PrepaymentFrom.class || pClass == PrepaymentTo.class
         || pClass == AdditionCostLine.class) {

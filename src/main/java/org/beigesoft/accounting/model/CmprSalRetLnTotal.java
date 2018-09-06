@@ -15,24 +15,24 @@ package org.beigesoft.accounting.model;
 import java.util.Comparator;
 import java.io.Serializable;
 
-import org.beigesoft.accounting.persistable.IInvoiceLine;
+import org.beigesoft.accounting.persistable.SalesReturnLine;
 
 /**
- * <p>Comparator for invoice line subtotal.</p>
+ * <p>Comparator for sales return line total.</p>
  *
  * @author Yury Demidenko
  */
-public class CmprInvLnSubtotal
-  implements Comparator<IInvoiceLine<?>>, Serializable {
+public class CmprSalRetLnTotal
+  implements Comparator<SalesReturnLine>, Serializable {
 
   /**
    * <p>serialVersionUID.</p>
    **/
-  static final long serialVersionUID = 49731218734712L;
+  static final long serialVersionUID = 49568718734712L;
 
   @Override
-  public final int compare(final IInvoiceLine<?> o1,
-          final IInvoiceLine<?> o2) {
-    return o1.getSubtotal().compareTo(o2.getSubtotal());
+  public final int compare(final SalesReturnLine o1,
+          final SalesReturnLine o2) {
+    return o1.getItsTotal().compareTo(o2.getItsTotal());
   }
 }
