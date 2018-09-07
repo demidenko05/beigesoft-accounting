@@ -90,6 +90,7 @@ import org.beigesoft.accounting.processor.PrcGoodsLossLineGfr;
 import org.beigesoft.accounting.processor.PrcInvoiceLnCreate;
 import org.beigesoft.accounting.processor.PrcInvoiceGfe;
 import org.beigesoft.accounting.processor.PrcPurchRetGfe;
+import org.beigesoft.accounting.processor.PrcSalesRetGfe;
 import org.beigesoft.accounting.processor.PrcInvoiceLnGfe;
 import org.beigesoft.accounting.processor.PrcSalesInvoiceSave;
 import org.beigesoft.accounting.processor.PrcSalesInvoiceLineSave;
@@ -113,6 +114,7 @@ import org.beigesoft.accounting.processor.PrcPurchaseReturnLineSave;
 import org.beigesoft.accounting.processor.PrcPurchaseReturnLineCopy;
 import org.beigesoft.accounting.processor.PrcPurchaseReturnLineGfr;
 import org.beigesoft.accounting.processor.PrcPurchaseReturnLineCreate;
+import org.beigesoft.accounting.processor.PrcSalRetLnCreate;
 import org.beigesoft.accounting.processor.PrcBeginningInventorySave;
 import org.beigesoft.accounting.processor.PrcBeginningInventoryLineSave;
 import org.beigesoft.accounting.processor.PrcBeginningInventoryLineCopy;
@@ -162,6 +164,7 @@ import org.beigesoft.accounting.persistable.UsedMaterialLine;
 import org.beigesoft.accounting.persistable.PrepaymentTo;
 import org.beigesoft.accounting.persistable.PurchaseReturn;
 import org.beigesoft.accounting.persistable.PurchaseReturnLine;
+import org.beigesoft.accounting.persistable.SalesReturn;
 import org.beigesoft.accounting.persistable.SalesReturnLine;
 import org.beigesoft.accounting.persistable.GoodsLossLine;
 import org.beigesoft.accounting.persistable.SalesInvoiceLine;
@@ -375,6 +378,9 @@ public class FctBnAccEntitiesProcessors<RS>
             .equals(PrcInvoiceLnCreate.class.getSimpleName())) {
             proc = lazyGetPrcInvoiceLnCreate(pAddParam);
           } else if (pBeanName
+            .equals(PrcSalRetLnCreate.class.getSimpleName())) {
+            proc = lazyGetPrcSalRetLnCreate(pAddParam);
+          } else if (pBeanName
             .equals(PrcPurchaseReturnLineCreate.class.getSimpleName())) {
             proc = lazyGetPrcPurchaseReturnLineCreate(pAddParam);
           } else if (pBeanName
@@ -530,6 +536,9 @@ public class FctBnAccEntitiesProcessors<RS>
           } else if (pBeanName
             .equals(PrcBankStatementLineSave.class.getSimpleName())) {
             proc = lazyGetPrcBankStatementLineSave(pAddParam);
+          } else if (pBeanName
+            .equals(PrcSalesRetGfe.class.getSimpleName())) {
+            proc = lazyGetPrcSalesRetGfe(pAddParam);
           } else if (pBeanName
             .equals(PrcPurchRetGfe.class.getSimpleName())) {
             proc = lazyGetPrcPurchRetGfe(pAddParam);
@@ -902,12 +911,38 @@ public class FctBnAccEntitiesProcessors<RS>
   }
 
   /**
+   * <p>Get PrcSalRetLnCreate (create and put into map).</p>
+   * @param pAddParam additional param
+   * @return requested PrcSalRetLnCreate
+   * @throws Exception - an exception
+   */
+  protected final PrcSalRetLnCreate<RS>
+    lazyGetPrcSalRetLnCreate(
+      final Map<String, Object> pAddParam) throws Exception {
+    @SuppressWarnings("unchecked")
+    PrcSalRetLnCreate<RS> proc = (PrcSalRetLnCreate<RS>)
+      this.processorsMap.get(PrcSalRetLnCreate.class.getSimpleName());
+    if (proc == null) {
+      proc = new PrcSalRetLnCreate<RS>();
+      @SuppressWarnings("unchecked")
+      PrcEntityCreate<RS, SalesReturnLine, Long> procDlg =
+        (PrcEntityCreate<RS, SalesReturnLine, Long>)
+          this.fctBnEntitiesProcessors
+            .lazyGet(pAddParam, PrcEntityCreate.class.getSimpleName());
+      proc.setPrcEntityCreate(procDlg);
+      //assigning fully initialized object:
+      this.processorsMap.put(PrcSalRetLnCreate.class.getSimpleName(), proc);
+    }
+    return proc;
+  }
+
+  /**
    * <p>Get PrcPurchaseReturnLineCreate (create and put into map).</p>
    * @param pAddParam additional param
    * @return requested PrcPurchaseReturnLineCreate
    * @throws Exception - an exception
    */
-  protected final PrcPurchaseReturnLineCreate
+  protected final PrcPurchaseReturnLineCreate<RS>
     lazyGetPrcPurchaseReturnLineCreate(
       final Map<String, Object> pAddParam) throws Exception {
     @SuppressWarnings("unchecked")
@@ -2223,6 +2258,30 @@ public class FctBnAccEntitiesProcessors<RS>
       //assigning fully initialized object:
       this.processorsMap
         .put(PrcInvoiceLnGfe.class.getSimpleName(), proc);
+    }
+    return proc;
+  }
+
+  /**
+   * <p>Get PrcSalesRetGfe (create and put into map).</p>
+   * @param pAddParam additional param
+   * @return requested PrcSalesRetGfe
+   * @throws Exception - an exception
+   */
+  protected final PrcSalesRetGfe lazyGetPrcSalesRetGfe(
+    final Map<String, Object> pAddParam) throws Exception {
+    PrcSalesRetGfe proc = (PrcSalesRetGfe)
+      this.processorsMap.get(PrcSalesRetGfe.class.getSimpleName());
+    if (proc == null) {
+      proc = new PrcSalesRetGfe();
+      @SuppressWarnings("unchecked")
+      PrcEntityPbEditDelete<RS, SalesReturn> procDlg =
+    (PrcEntityPbEditDelete<RS, SalesReturn>) this.fctBnEntitiesProcessors
+  .lazyGet(pAddParam, PrcEntityPbEditDelete.class.getSimpleName());
+      proc.setPrcEntityPbEditDelete(procDlg);
+      //assigning fully initialized object:
+      this.processorsMap
+        .put(PrcSalesRetGfe.class.getSimpleName(), proc);
     }
     return proc;
   }
