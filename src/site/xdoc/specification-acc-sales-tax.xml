@@ -558,11 +558,12 @@ group by TAXCATEGORY;
     <h4>Price inclusive of taxes, sales.</h4>
     <p>There is no need to make <b>price without taxes</b>.</p>
     
-    <h4>Price inclusive of taxes or not, purchases and sales.</h4>
+    <h4>Price inclusive of taxes or not, purchases and sales, invoice basis method.</h4>
     <p>Common problem - revealing line's subtotal (total-taxes) or total (subtotal+taxes) for <b>invoice basis method</b>.</p>
-    <p>"Subtotal" is used to make accounting entries - "sales revenue" grouped by "Item Category".</p>
-    <p>Algorithm: after calculation invoice total taxes, they are used to recalculate <b>subtotal</b> for all taxable invoice lines (goods and services).
-    In case of PURCHASE invoice and taxes included - <b>itsCost</b> will be also recalculated</p>
+    <p>"Subtotal" is used to make accounting entries - "sales revenue" grouped by "Item Category", e.g. "revenue - product line1, product line2". This is never reflect to tax accounting, there it is need only "total revenue".</p>
+    <p>Algorithm: after calculation invoice total taxes, they are used to recalculate <b>subtotal</b> for all taxable invoice lines (goods and services).</p>
+    <p>In case of PURCHASE invoice and taxes included - <b>itsCost</b> will be also recalculated.
+      Rounding error in this case (grouping tax VS line tax) is very low cause cost precision (4) is doubled than price (2), besides income tax precision is usually 0 (whole USD/RUB/EURO, etc).</p>
     <p>Example two lines taxes excluded: 
 <pre style="white-space: pre-wrap;">
 sofa=400, armchair=200, delivering 100

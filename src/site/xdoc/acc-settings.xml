@@ -1616,6 +1616,11 @@ $ sudo chmod o+w /file-exch
   <p>you should check <b>secure.log</b> periodically:</p>
   <p align="center"><img style="max-width: 100%" src="images/loginprotect2.png" /></p>
 </p>
+<p>
+  Heavy scamware poisons your operation system, so it can does everything. OS updates might remove it, but complex scamware can fakes "OS updates",
+  so you have only way to heal your computer - completely reinstall OS by using clean, write-protected installation source (DVD).
+  Non-write protected installation sources may be poisoned by scamware, that may breaks "installation self-protection", i.e. you will see fake "verifying successful".
+</p>
     </section>
 
   </body>
