@@ -93,10 +93,16 @@ public class PrcManufactureSave<RS>
       pEntity.setTheRest(pEntity.getItsQuantity());
     }
     pEntity.setItsCost(pEntity.getManufacturingProcess().getItsCost());
-    pEntity.setItsTotal(pEntity.getItsCost()
-      .multiply(pEntity.getItsQuantity()).setScale(
-        getSrvAccSettings().lazyGetAccSettings(pAddParam).getCostPrecision(),
-          getSrvAccSettings().lazyGetAccSettings(pAddParam).getRoundingMode()));
+    if (pEntity.getItsQuantity()
+      .compareTo(pEntity.getManufacturingProcess().getItsQuantity()) == 0) {
+      //to reduce rounding error:
+      pEntity.setItsTotal(pEntity.getManufacturingProcess().getItsTotal());
+    } else {
+      pEntity.setItsTotal(pEntity.getItsCost()
+        .multiply(pEntity.getItsQuantity()).setScale(getSrvAccSettings()
+          .lazyGetAccSettings(pAddParam).getCostPrecision(), getSrvAccSettings()
+            .lazyGetAccSettings(pAddParam).getRoundingMode()));
+    }
   }
 
   /**
@@ -211,11 +217,10 @@ public class PrcManufactureSave<RS>
     die.setSourceOwnerId(null);
     die.setSourceOwnerType(null);
     die.setItsQuantity(pEntity.getItsQuantity());
-    die.setItsCost(pEntity.getManufacturingProcess().getItsCost());
+    die.setItsCost(pEntity.getItsCost());
     die.setInvItem(pEntity.getManufacturingProcess().getInvItem());
     die.setUnitOfMeasure(pEntity.getManufacturingProcess().getUnitOfMeasure());
-    die.setItsTotal(die.getItsCost().
-      multiply(die.getItsQuantity()));
+    die.setItsTotal(pEntity.getItsTotal());
     String langDef = (String) pAddParam.get("langDef");
     DateFormat dateFormat = DateFormat.getDateTimeInstance(
       DateFormat.MEDIUM, DateFormat.SHORT, new Locale(langDef));

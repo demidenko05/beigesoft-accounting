@@ -13,9 +13,9 @@
       
       <p>Keywords: Accounting of employment, payroll.</p>
       
-<b>Beige-Accounting has implemented widely used in many countries tax table percentage method for automatically calculation wage taxes.</b>
-<p>It implements automatically calculation <b>wage tax = tax percent (according tables) * (gross wage - all allowances per payment)</b>. This is simple method used in USA.
-In other countries it's used little more complex method <b>allowances per year</b> which it hasn't implemented automatically yet.
+<p>Beige-Accounting has implemented widely used in many countries <b>tax table percentage method</b> for automatically calculation wage taxes.</p>
+<p>It has implemented automatically calculation <b>wage tax = tax percent (according tables) * (gross wage - all allowances per payment)</b>. This is simple method used in USA.
+In others countries it's used little more complex method <b>allowances per year</b> which it hasn't implemented automatically yet.
 </p>
 <p>
   Bob has hired Rob Swallow as a cook.
@@ -58,14 +58,15 @@ In other countries it's used little more complex method <b>allowances per year</
     Rob has made on Jan 17 12 Pizza with bacon Frozen and 12 Pizza with cheese Frozen then has delivered them to customers.
     Bob has filled Wage document for 60 USD gross for cooking
     and 20 USD for delivering. He set tax account expense to <b>5105 Expenses</b>,
-    then press <b>save</b>, then added wage line for cooking (account <b>Inventory direct cost temporary</b> for direct labor cost):
+    then pressed <b>save</b>, then added wage line for cooking (account <b>Inventory direct cost temporary</b> for direct labor cost),
+    and line for delivering (<b>5105 Expenses</b> for indirect labor cost):
     <p align="center"><img alt="Beige-Accounting payroll" style="max-width: 100%" src="images/wage-line-direct.png" /></p>
-    <p>and delivery (<b>5105 Expenses</b> for indirect labor cost), then press fill button to fill taxes, then account document:</p>
+    <p>then pressed button <b>fill taxes</b>, then has accounted document:</p>
     <p align="center"><img alt="Beige-Accounting payroll" style="max-width: 100%" src="images/wage1.png" /></p>
     <p align="center"><img alt="Beige-Accounting payroll report" style="max-width: 100%" src="images/wage2.png" /></p>
     <p>
-      As you can see cooking(direct labor) wage is accounted separately of delivery(indirect labor) one.
-      For manufacturing direct labor cost (as well as cost of materials) are usually included into cost of the final product.
+      As you can see cooking(direct labor) wage is accounted separately from delivery(indirect labor) one.
+      For manufacturing, direct labor cost (as well as cost of materials) are usually included into cost of the final product.
       Make sure: "is it true" for your tax rules.
     </p>
   </p>
@@ -73,7 +74,7 @@ In other countries it's used little more complex method <b>allowances per year</
   I guess that you noticed that Bob made mistake, he forget about NY unemployment tax (<a href="https://labor.ny.gov/ui/employerinfo/quarterly-reporting.shtm">NY SUTA requirements and limit</a>
   <a href="https://labor.ny.gov/ui/bpta/contribution-rates.shtm">NY SUTA rate</a>
   <a href="https://www.tax.ny.gov/pdf/publications/withholding/nys50.pdf">NY SUTA instructions.</a>).
-  So you should make sure that you made all properly according the law of your country. Just call to your Tax Bureau (Service) and ask them.
+  So you should make sure that you made all properly according the law of your country. Just call to your tax authority and ask them.
   Otherwise if you made mistake then you will get penalty, e.g. if you deduct your income tax with wrong cost of goods sold (deducting expense is greater than you can prove).
   You have to make (and keep) records that shows these properly calculations according <a href="https://www.irs.gov/pub/irs-pdf/p583.pdf">IRS 583 Starting a business, page 12</a>.
   Beige-Accounting respect this, in addition it makes many records automatically (COGS, employment taxes, sales taxes, etc)
@@ -84,6 +85,7 @@ In other countries it's used little more complex method <b>allowances per year</
   Trial balance after that is:
     <p align="center"><img alt="Beige-Accounting payroll balance" style="max-width: 100%" src="images/balance-payroll.png" /></p>
 </p>
+<h4>Allowance per year</h4>
 <p>
   To use more complex method <b>allowances per year</b> don't fill allowances in tax tables. Fill allowance in wage tax line by hand.
   For example Jim Gold got 2000 EUR allowances per year for Income tax 12%. He is paid for 1500EUR monthly, so tax lines will be:

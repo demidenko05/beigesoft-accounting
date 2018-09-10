@@ -13,13 +13,13 @@
 
 <p>Keywords: Accounting of manufacturing, direct and indirect labor, cost of product.</p>
 
-      <b>Beige-Accounting automatically calculates <b>cost of product = cost of materials
-       plus additional costs (direct labor, packaging etc)</b>, this method is widely used in many countries.</b>
+      <p>Beige-Accounting automatically calculates <b>cost of product = cost of materials
+       plus additional costs (direct labor, packaging etc)</b>, this method is widely used in many countries.</p>
       <p>
-        Rob has made on Jan 17 12 Pizza with bacon frozen and 12 Pizza with cheese frozen. Where are two documents for manufacturing:
+        Rob has made on Jan 17 12 Pizza with bacon frozen and 12 Pizza with cheese frozen. There are two documents for manufacturing:
         <ul>
-          <li>Manufacturing process that makes a <b>product in progress</b> by using materials and usually direct labor cost, and makes accounting, draw material and warehouse entries</li>
-          <li>Manufacture. It just transfer completed <b>product in progress</b> into <b>finished product</b>, and makes accounting, draw material and warehouse entries</li>
+          <li>Manufacturing process that makes a <b>product in progress</b> by using materials and usually direct labor cost, and makes accounting, draw material and warehouse entries (warehouse receipt/issue)</li>
+          <li>Manufacture. It just transfers completed <b>product in progress</b> into <b>finished product</b>, and makes accounting, draw material and warehouse entries</li>
         </ul>
         Bob has filled manufacturing process for 12 Pizza with cheese frozen:
         <p align="center"><img alt="Beige-Accounting manufacturing" style="max-width: 100%" src="images/manufacture-process1.png" /></p>
@@ -28,6 +28,7 @@
         <p>Bob has added one half of direct labor cost 45.91 (22.955) from Inventory capitalized cost temporary according Wage full report.
         After completing and accounting full report is:</p>
         <p align="center"><img alt="Beige-Accounting manufacturing report" style="max-width: 100%" src="images/manufacture-process2.png" /></p>
+        <p align="center"><img alt="Beige-Accounting manufacturing report" style="max-width: 100%" src="images/manufacture-process2-1.png" /></p>
         <p>
           Then Bob has filled and accounted Manufacture based on Manufacturing process above:
           <p align="center"><img style="max-width: 100%" src="images/manufacture1.png" /></p>

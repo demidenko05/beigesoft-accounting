@@ -84,7 +84,8 @@
               
         <p>Benefits:</p>
         <ul>
-          <li>Ready for high load job. Speed test (thread per invoice) results shows that making 100 invoices (3pages each) takes less than 4 seconds on ordinal notebook. Invoice file size is 26KB cause embed TTF font has only used characters.</li>
+          <li>It packs TTF font with only used characters. Even DeJaVue.TTF is 800KB, so without packing resulting PDF file is big. Asian languages (with hieroglyphs) TTF files are extremely huge.</li>
+          <li>Ready for high load job. Performance test's (thread per invoice) results shows that making 100 invoices (3pages each) takes less than 4 seconds on ordinal notebook. Invoice file size is 26KB cause embed TTF font has only used characters.</li>
           <li>There are not 3-d party libraries. Beigesoft™ Document Writer, Swing/Android graphics libraries, Logger are licensed under free GPLv2. Every day English language is polluted with new words that duplicate old ones, and old words are polluted with new meanings, so there are "free open source software" that are actually non-free.
             In other hand there are free software that have not noticed that "it has dependencies with non-three licenses" (truly free license always means "forever").</li>
         </ul>
@@ -103,11 +104,11 @@
       <p>
         JSP(plus JSTL) is the same WEB-view technology as ASPX, PHP and deprecated ASP. JSP and ASPX are faster than PHP and ASP cause
         they are compiled into byte-code which is performed (actually it's compiled on fly into CPU code) by Java VM or DOT.NET. PHP, ASP are text that is interpreted during runtime and they are never compiled.
-        All these technology used to build complex WEB-interface quickly.
+        All these technologies are used to build complex WEB-interface quickly.
       </p>
       <p>
-        Using JSP(JSTL) allow you to create exactly multiplatform WEB-applications cause A-Jetty can run them.
-        The best way of using A-Jetty is use it as embedded server in standalone WEB-application.
+        Using JSP(JSTL) allows you to create truly multi-platform WEB-applications cause A-Jetty can run them anywhere (on any operation system).
+        The best way of using A-Jetty is using it as embedded server in a standalone WEB-application.
       </p>
       
       <h4>Beigesoft™ ORM</h4>
@@ -125,9 +126,9 @@
       </p>
       <p>
         Since version 1.1.6 you can set fields that are needed to retrieve, and deep level to retrieve owned entities.
-        This is very performance friendly feature that other ORMs have no.
+        This is very performance friendly feature that others ORMs haven't.
       </p>
-      <p>It hasn't implemented refresh owned entity by invoke getter. So you have to invoke explicitly ORM refresh e.g.:
+      <p>It hasn't implemented refresh owned entity by invoke getter (there is no lazy retrieving). So you have to invoke explicitly ORM refresh e.g.:
         <pre style="white-space: pre-wrap;">
 customerInvoice.getCustomer().setCustomerCategory(getSrvOrm()
   .retrieveEntity(pAddParam, customerInvoice.getCustomer().getCustomerCategory()));
@@ -143,7 +144,7 @@ salesInvoice.setItsLines(getSrvOrm().retrieveListForField(pAddParam, sil, "itsOw
         These lines are retrieved also through 2 level by big SQL query.
       </p>
       <p>Standard ORM use lazy-initialization of model by default. So they retrieve model by several SQL queries
-        and JDBC connection used during whole HTTP request-response. This is no good for performance. Beigesoft™ ORM retrieve 
+        and JDBC connection is used during whole HTTP request-response. This is no good for performance. Beigesoft™ ORM retrieve 
         a customer invoice with 15 lines by 2 SQL queries (one for body, another for lines) then close connection and pass model to viewer (renderer).
         Standard ORM make 1 SQL request for body, 1 for customer, 1 for lines, 15 for every line goods, 15 for every line unit of measure.
         Two big SQL queries (exactly with joins) is faster than several (33 in this case) small ones. Any RDMBS is optimized (must be) to perform
@@ -156,10 +157,10 @@ where SALESINVOICE.ITSID=1 and DEBTORCREDITOR.ITSID=SALESINVOICE.CUSTOMER
         </pre>
       </p>
       <p>
-        Beigesoft™ ORM never alter tables, only create new ones, but it has reliable mean - invoke upgrade_[new_version].sql script
-        when Beigesoft™ ORM is starting. Beigesoft™ ORM requires that database must has ID and VERSION table, this is holds in model org.beigesoft.persistable.DatabaseInfo.
+        Beigesoft™ ORM never alter tables, only create new ones, but it has reliable means - invoke upgrade_[new_version].sql script
+        when Beigesoft™ ORM is starting. Beigesoft™ ORM requires that database must has ID and VERSION table, this is held in model org.beigesoft.persistable.DatabaseInfo.
         Upgrade script can upgrade tables (alters, insert, updates...) and must set new database version. So task "add DebtorCreditor.spetialCategory, not null"
-        is trivial for Beigesoft™ ORM, but it's not for other ORMs:
+        is trivial for Beigesoft™ ORM, but it's not for others ORMs:
         <pre style="white-space: pre-wrap;">
 alter table DebtorCreditor add column specialCategory integer;
 insert into CPECIALCATEGORY  values (1, 'cat A');
@@ -196,23 +197,30 @@ update DATABASEINFO set DATABASEVERSION=[new_version], DESCRIPTION='database upg
 &lt;/properties&gt;
         </pre>
       </p>
-      <p>It use cheap JSON multi-target responses created by JSP, for example after document was accounted:
+      <p>It uses cheap JSON multi-target response created by JSP, for example after a document has been accounted listAfterAccountJon.jsp is:
         <pre style="white-space: pre-wrap;">
 &lt;%@ page language="java" contentType="application/json; charset=UTF-8" pageEncoding="UTF-8"%&gt;
 &lt;%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %&gt;
+&lt;%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %&gt;
+&lt;fmt:setLocale value="${reqVars.localeCurrent}" scope="request"/&gt;
 &lt;c:set var="namePlaceForm" value="frmMainPlace" scope="request"/&gt;
 {"multiTargetResponse":
   [{"nameTarget": "${namePlaceForm}", "content": "",
     "nameTargetParent": null, "javascript": null},
 &lt;c:set var="fltOrdPrefix" value="fltordM" scope="request"/&gt;
 &lt;c:set var="namePlace" value="lstMainPlace" scope="request"/&gt;
-&lt;c:set var="showSuccess" value="showSuccess(MSGS['account_successful']);"/&gt;
-&lt;c:set var="nameRendererList" value="listJson" scope="request"/&gt;
+&lt;c:set var="nmRndList" value="listJson" scope="request"/&gt;
+&lt;c:if test="${param.javascript == null}"&gt;
+  &lt;c:set var="jscrt" value="setRsAuNum('${reqVars.digitsInGroup}','${reqVars.RSmRound}',${reqVars.RSisUsePrecision0},${reqVars.RSisUsePrecision1},${reqVars.RSisUsePrecision2},${reqVars.RSisUsePrecision3},${reqVars.RSisUsePrecision4});setAutoNum('${namePlace}list');showSuccess('${srvI18n.getMsg(param.msgSuccess, reqVars.lang)}');"/&gt;
+&lt;/c:if&gt;
+&lt;c:if test="${param.javascript != null}"&gt;
+  &lt;c:set var="jscrt" value="setRsAuNum('${reqVars.digitsInGroup}','${reqVars.RSmRound}',${reqVars.RSisUsePrecision0},${reqVars.RSisUsePrecision1},${reqVars.RSisUsePrecision2},${reqVars.RSisUsePrecision3},${reqVars.RSisUsePrecision4});setAutoNum('${namePlace}list');showSuccess('${srvI18n.getMsg(param.msgSuccess, reqVars.lang)}');${param.javascript}"/&gt;
+&lt;/c:if&gt;
 &lt;c:import url="/WEB-INF/jsp/list.jsp" varReader="rdEntities" charEncoding="UTF-8"&gt;
    {"nameTarget": "${namePlace}list", "content": "${utlJsp.toJsonStringAndClose(rdEntities)}",
-    "nameTargetParent": null, "javascript": "${utlJsp.toJsonString(showSuccess)}"}]
+    "nameTargetParent": null, "javascript": "${utlJsp.toJsonString(jscrt)}"}]
 }
-&lt;/c:import&gt;  
+&lt;/c:import&gt;    
         </pre>
         This response clear entity form, refresh entity list and show successful message.
       </p>
@@ -229,8 +237,8 @@ update DATABASEINFO set DATABASEVERSION=[new_version], DESCRIPTION='database upg
             
     <p>
       * Address http://www.beigesoft.org was switched off for security (safety) reasons.
-      HTML page come to your browser by passing through several intermediate Internet servers.
-      If any intermediate server is affected by harmful software then it can change content and inject harmful script into HTML page
+      HTML page comes to your browser by passing through several intermediate Internet servers.
+      If any intermediate server is affected by harmful software then it can changes content and injects harmful script into HTML page
       because HTTP is an unencrypted transport.
     </p>
     </section>

@@ -27,6 +27,7 @@
           <p align="center"><img alt="Beige-Accounting set merchandise sales tax" style="max-width: 100%" src="images/set-merchandise-sales-tax.png" /></p>
         </p>
         <p>4. In "Accounting settings" set "extract sales taxes from sales" to "ON" and switch to "ON" method #35 "SalesInvoice, Debit AccReceivable.DebtorCreditor Credit SalesTaxPay.Tax for Tax amount. Accrual Symmetric."
+          Set <b>Aggregate tax rate or only tax</b> to "Yes", this means that an item can has only tax, or in case "multi-taxes" it's used aggregate rate, this is the mostly used method.
         </p>
       </p>
 
@@ -47,7 +48,7 @@
         <p align="center"><img alt="Beige-Accounting sales invoice report" style="max-width: 100%" src="images/sales2-1.png" /></p>
       </p>
       <p>
-        After that Bob has changed in accounting settings precision for balance to 4 then printed trial balance:
+        After that Bob has changed in accounting settings precision for reports to 4 then printed trial balance:
         <p align="center"><img style="max-width: 100%" src="images/trial-balance2.png" /></p>
         <p align="center"><img style="max-width: 100%" src="images/trial-balance2-1.png" /></p>
       </p>
@@ -58,7 +59,7 @@
       </p>
       <p>
         As you can see Bob made another mistake. He set Sales date less than Manufacture date for that pizza, so
-        balance of Inventory.Pizza Cheese Frozen is -19.5462 at 4:45 PM because it(pizza) was made at 6:40 PM.
+        balance of Inventory.Pizza Cheese Frozen is -19.5000 at 4:45 PM because it(pizza) was made at 6:40 PM.
         So it's reasonable to make database copy more frequently, he needs to copy beigeaccounting.sqlite
         by file explorer without exiting from accounting (on Android he should do it in the Database manager).
         Otherwise he should reverse whole document. For warehouse document date means nothing cause warehouse
@@ -79,6 +80,40 @@
           <p align="center"><img alt="Beige-Accounting report payments for sales" style="max-width: 100%" src="images/sales-payment-tracking2.png" /></p>
       </p>
 
+      <h4>Sales tax rounding mode.</h4>
+      <p>Truly "Rounding" is "revealing the nearest number with reduced decimal places to the given (source) one".
+        Both "Half-up" and "Half-down" give the nearest result, but "Half-up" is the standard.
+      </p>
+      <p>Example for numbers: "20.215", "20.21501" and "20.21499", rounding to cents - 2 decimal places.</p>
+      <p><b>Half-up</b>:
+<pre style="white-space: pre-wrap;">
+  round(20.215) = 20.22, not 20.21
+  checking: (20.22-20.215)=0.005 equals to (20.215-20.21)=0.005
+  round(20.21501) = 20.22, not 20.21
+  checking: (20.22-20.21501)=0.00499 less than (20.21501-20.21)=0.00501
+  round(20.21499) = 20.21, not 20.22
+  checking: (20.21499-20.21)=0.00499 less than (20.22-20.21499)=0.00501
+</pre>
+      </p>
+      <p><b>Half-down</b>:
+<pre style="white-space: pre-wrap;">
+  round(20.215) = 20.21, not 20.22
+  checking: (20.215-20.21)=0.005 equals to (20.22-20.215)=0.005
+  round(20.21501) = 20.22, not 20.21
+  checking: (20.22-20.21501)=0.00499 less than (20.21501-20.21)=0.00501
+  round(20.21499) = 20.21, not 20.22
+  checking: (20.21499-20.21)=0.00499 less than (20.22-20.21499)=0.00501
+</pre>
+      </p>
+      <p>Many software give wrong result for rounding "Half-down" e.g. for "20.21501" result is "20.21", not "20.22". It do on-line calculators and "autoNumeric.js".
+        Beige-Accounting uses "properly half-down" rounding. For sales you can't change tax amount. For purchase you can, but if you enter "wrong amount", then service will report it to invoice comment (e.g. 20.21!=20.22).
+      </p>
+      <p>They like to introduce new methods in financial sphere, including rounding.
+        Method "CELL" is useful to make "cent discount".
+        Make sure about sales tax calculation rules in your country.
+        If before rounding you have to rip decimal places to 3, then "half-down" of "20.21501" gives "20.215"->"20.21", so you save cent.
+        If you have to always round up all fractions after 2 decimal place, then "half-up" of "20.21499" gives "20.215"->"20.22", so you lost cent.
+      </p>
     </section>
 
   </body>
