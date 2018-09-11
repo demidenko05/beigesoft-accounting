@@ -112,7 +112,7 @@
         Method "CELL" is useful to make "cent discount".
         Make sure about sales tax calculation rules in your country.
         If before rounding you have to rip decimal places to 3, then "half-down" of "20.21501" gives "20.215"->"20.21", so you save cent.
-        If you have to always round up all fractions after 2 decimal place, then "half-up" of "20.21499" gives "20.215"->"20.22", so you lost cent.
+        If you have to always round up all fractions after 2 decimal place, then "half-up" of "20.21499" gives "20.215"->"20.22", so you lose cent.
       </p>
     </section>
 

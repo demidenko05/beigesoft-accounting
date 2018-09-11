@@ -12,7 +12,7 @@
     <section name="Beigesoft™ Accounting start not from scratch.">
 
       <p>
-        In real life a user usually starts to use an accounting software when he/she already has been doing his/her business.
+        In real life a user usually begins to use an accounting software when he/she already has been doing his/her business.
         Assume that Bob started using Beige Accounting on 21 Jan 2016 with the same (as describing in previous articles) accounting results.
         He has been using single entry accounting software, he just writes records in spreadsheet. So results are:
       </p>
@@ -33,7 +33,7 @@
       </p>
       <p align="center"><img style="max-width: 100%" src="images/acc-beginning2.png" /></p>
       
-      <p>Then Bob made asymmetric accounting entries "Beginning Sales, Sales returns, COGS, Goods loses":
+      <p>Then Bob made asymmetric accounting entries "Beginning Sales, Sales returns, COGS, Goods losses":
       </p>
       <p align="center"><img style="max-width: 100%" src="images/acc-beginning3.png" /></p>
       
@@ -41,7 +41,7 @@
       </p>
       <p align="center"><img style="max-width: 100%" src="images/acc-beginning4.png" /></p>
       
-      <p>Then Bob made "Beginning Inventory" document for source " Purchase #1-1 Jan 15 2016 11:26 AM":
+      <p>Then Bob made "Beginning Inventory" document for source "Purchase #1-1 Jan 15 2016 12:29 PM":
       </p>
       <p align="center"><img style="max-width: 100%" src="images/acc-beginning5.png" /></p>
       
@@ -57,7 +57,7 @@
       </p>
       <p align="center"><img style="max-width: 100%" src="images/acc-beginning7.png" /></p>
 
-      <p>Trial balances in database "from scratch" and database "not from scratch" are same (except little rounding errors in both databases):
+      <p>Trial balances in database "from scratch" and database  are same (except rounding error in "not from scratch" databases):
       </p>
       <p align="center"><img style="max-width: 100%" src="images/nfs-balance.png" /></p>
       <p align="center"><img style="max-width: 100%" src="images/nfs-balance-1.png" /></p>

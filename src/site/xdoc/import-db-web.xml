@@ -44,14 +44,10 @@ keytool -import -trustcacerts -alias ajettyca -file "ajetty-ca.pem" -keystore /u
         </pre>        
         The default password to this keystore is <b>changeit</b>. Adding CA certificate to this keystore requires ROOT permission,
         so do not worry about keystore password. Never use this keystore to store private keys!
-      </p>
+      </p>     
       <p>
-        He launched SQlite version Beige Accounting on 8444 port. Source local database:</p>
-      <p align="center"><img style="max-width: 100%" src="images/import-db1.png" /></p>
-     
-      <p>
-        Then he started Tomcat and opened address <a href="https://localhost:8443/beigesoft-accounting-weboio/">https://localhost:8443/beigesoft-accounting-weboio/</a>
-        He selected Menu -> Admin -> Import database, then  entered "URL of WEB-service of another database:" as "localhost:8444/bsa8444/secure/sendEntities" and filled user/password fields empty then pressed "submit":</p>
+        He launched SQlite version Beige Accounting on 8444 port (source local database). Then he started Tomcat and opened address <a href="https://localhost:8443/beigesoft-accounting-weboio/">https://localhost:8443/beigesoft-accounting-weboio/</a>
+        He selected Menu -> Admin -> Import database, then  entered "URL of WEB-service of source database:" as "localhost:8444/bsa8444/secure/sendEntities" and filled user/password fields then pressed "submit":</p>
       <p align="center"><img style="max-width: 100%" src="images/import-db3.png" /></p>
       
       <p>The import report is:</p>
@@ -61,13 +57,8 @@ keytool -import -trustcacerts -alias ajettyca -file "ajetty-ca.pem" -keystore /u
       <p align="center"><img style="max-width: 100%" src="images/import-db5.png" /></p>
       <p align="center"><img style="max-width: 100%" src="images/import-db6.png" /></p>
       
-      <p>Local WEB-server <b>https://127.0.0.1:8443/bsa8443</b> is not available for cloud (Internet) WEB-application, so you have two options:
-      <ul>
-        <li>Make MySql database backup in local computer, then restore backup on remote cloud database by using MySql backup software</li>
-        <li>Make SQlite version Internet accessible - e.g. public it on cloud (it MUST be only HTTPS(encrypted) accessible),
-         see <a href="https://github.com/demidenko05/beigesoft-webcrud">https://github.com/demidenko05/beigesoft-webcrud</a> that uses SQlite and JDBC authentication for Apache Tomcat standard.</li>
-      </ul>
-      *You can make A-Jetty Internet accessible by changing IP address from "127.0.0.1" in source code.
+      <p>Local WEB-server A-Jetty <b>https://127.0.0.1:8443/bsa8443</b> is not available for cloud (Internet) WEB-application.
+      Apache Tomcat uses Internet-available address, so you data will be Internet-accessible, and you can import data from your Tomcat (on your computer) to Beige-Accounting deployed on any other cloud JEE server.
       </p>
     </section>
 

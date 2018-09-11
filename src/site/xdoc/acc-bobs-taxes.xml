@@ -19,7 +19,7 @@
     <li>income tax = fixed amount (e.g. 500USD per month.)</li>
   </ul> 
   Accrued means that business revenue/expense is occurred when you bought or sold something (goods, services, rent etc) even unpaid.
-  Cash - when you earn money or paid ones, but not prepayments, i.e. for already sold/purchase goods/service.
+  Cash - when you earn money or paid ones, but not prepayments, i.e. for already sold/purchased goods/service.
   According <a href="https://www.irs.gov/pub/irs-pdf/p583.pdf">IRS 583 Starting a business, page 6</a>
   Bob as sole proprietor should pays Income Tax, Self-employment tax. He should pays estimated income tax
   by April 18 (see Form 1040-ES).
@@ -30,7 +30,7 @@
     For USA see <a href="https://www.irs.gov/pub/irs-pdf/p538.pdf">IRS 538, Page 18 Uniform Capitalization Rules</a>.
     According this method the most business expenses are required to be capitalized (i.e. placed into assets).
     For USA these expenses are - rent, electricity, indirect labor, property deprecation, sales tax from purchases etc.
-    Part of those costs (or whole total) are deducting the tax at the end of period, and that "part" depends of starting and ending inventory (product direct cost).
+    Part of those costs (or whole total) are deducting the tax at the end of period, and that "part" depends on starting and ending inventory (product direct cost).
     The law provides the equation (formula) to calculate this "part" and in USA it's called "Simplified Production Absorption Ratio".
     For example a factory has 0 notebooks at start and it has produced 1000 notebooks.
     They costs (product) is 100000 (100 each).
@@ -43,14 +43,14 @@
   <h4>Bob's earnings.</h4>
   <p>After Bob has made all business revenues and expenses his gross income is:
     <pre style="white-space:pre-wrap">
-      gross income = sum(gross income revenue accounts) - sum(gross income expense accounts)
+      gross income = sum(income revenue accounts) - sum(income expense accounts)
     </pre>
     His Self-employment tax is also gross income expense.
     <p>
       The final closing accounting entries are:
       <ul>
-        <li>for each gross income revenue account for its final total: Debit [gross income revenue account] Credit Bob's earnings.</li>
-        <li>for each gross income expense account for its final total: Debit Bob's earnings Credit [gross income expense account].</li>
+        <li>for each gross income revenue account for its final total: Debit [income revenue account] Credit Bob's earnings.</li>
+        <li>for each gross income expense account for its final total: Debit Bob's earnings Credit [income expense account].</li>
         <li>Extract income tax from gross income: Debit Bob's earnings Credit Taxes Payable Federal Income Tax for tax amount.</li>
       </ul>
     </p>

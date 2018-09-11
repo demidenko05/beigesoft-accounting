@@ -18,8 +18,8 @@
         Bob has filled sales invoice (see <a href="acc-selling.html">Accounting of Sales.</a>)
       </p>
       <p>
-        Bob was confirmed on Jan 19 what "Funny coffee shop" is bankrupt and he was received sales return 2 Pizza with bacon frozen and 2 Pizza with cheese frozen.
-        Bob has printed full sales invoice report to figure price and cost which must be same for return:
+        Bob was confirmed on Jan 19 what "Funny coffee shop" is bankrupt, and he was received sales return 2 Pizza with bacon frozen and 2 Pizza with cheese frozen.
+        Bob has printed full sales invoice report to figure price and cost which must be the same for return:
         <p align="center"><img style="max-width: 100%" src="images/sales-invoice-for-return.png" /></p>
         <p align="center"><img style="max-width: 100%" src="images/sales-invoice-for-return-1.png" /></p>
       </p>
@@ -29,16 +29,16 @@
       </p>
       <p>It makes complex accounting/warehouse entries:
           <p align="center"><img alt="Beige-Accounting sales return report" style="max-width: 100%" src="images/sales-return-report.png" /></p>
-          <p align="center"><img alt="Beige-Accounting sales return report" style="max-width: 100%" src="images/sales-return-report-1.png" /></p>
       </p>
-      <p>*Here is error - accounting entry #1-46 is asymmetric cause using deprecated method #17 "SalesReturn, Debit SalesReturns.InvItemCategory Credit ReturnsPayable.DebtorCreditor"
+      <p>*Here is error - accounting entry #1-44 is asymmetric cause using deprecated method #17 "SalesReturn, Debit SalesReturns.InvItemCategory Credit ReturnsPayable.DebtorCreditor"
         instead of new #37 "SalesReturn, Debit SalesReturns.InvItemCategory Credit ReturnsPayable.DebtorCreditor for Subtotal amount. Accrual Symmetric."
+        You will face "non-balancing" in trial balance.
         In that case (using wrong accounting settings) you should reverse whole document, fix the settings and create document again, or just make adjusting entries, in this case (subtract 1.77 from "Sales returns payable.Funny coffee shop"):
         <p align="center"><img alt="Beige-Accounting sales return report" style="max-width: 100%" src="images/sales-return-adjusting.png" /></p>
       </p>
       <p>
         * Sales returns are business expenses (deducting income tax).
-        If according the law of your country accrual method means that business expense occurs when you have received document (prove)
+        If according the law of your country accrual method means that business expense occurs when you have received document (proof)
         even though you haven't received goods yet (in the same day), then (in this case) switch off method "SalesReturn, Debit SalesReturns.InvItemCategory Credit ReturnsPayable.DebtorCreditor" in accounting settings and make
         these deducting income accounting entries by hand.
       </p>
