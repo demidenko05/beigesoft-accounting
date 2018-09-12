@@ -16,14 +16,14 @@
       <h4>Overseas sales.</h4>
       <p>Nowadays international trading is still growing sphere of business.
         Even small business entities make overseas sales (export) or import.</p>
-      <p>Overseas buyer usually have not to pay foreign sales taxes. For example, foreigners travelers can refund sales taxes when they leaves the country.
+      <p>Overseas buyer usually have not to pay foreign sales taxes. For example, foreigners travelers can refund sales taxes when they leave the country.
         To implements this logic Debtor/Creditor has "Is foreigner" property.
-        If Debtor/Creditor is foreigner then sales taxes will be omitted for both sales (foreigner buyers) and purchase (foreigner vendors).
+        If Debtor/Creditor is foreigner, then sales taxes will be omitted for both sales (foreigner buyers) and purchase (foreigner vendors).
       </p>
-      <p>Foreign buyers that buy goods for business purpose (e.g. for resale) usually must have translated invoice. This is required by their tax bureau.
+      <p>Foreign buyers that buy goods for business purpose (e.g. for resale) usually must have translated invoice. This is required by their tax authority.
         Beige-Accounting has advanced dynamic internationalization to do it. This helps foreigner buyers and may attract more of them.
       </p>
-      <h4>Making sales invoice translated in native buyer language.</h4>
+      <h4>Making sales invoice translated in buyer's native language.</h4>
       <p>
         At first add foreign buyer, e.g. "OOO Berezka" from Russia:
         <p align="center"><img style="max-width: 100%" src="images/foreigninvbuyeren.png" /></p>
@@ -69,15 +69,16 @@
       <p>Java executable files placed in JAR file, that actually is ZIP archive. JAR, WAR and APK are ZIP archives. All you should do is:
         <ul>
           <li>extract files with folders (tree structure) into folder e.g. "foo"</li>
-          <li>add basic static internationalization - file e.g. /resources/Messages_fr_FR.properties for France language</li>
+          <li>add basic static internationalization - file e.g. /resources/Messages_fr_FR.properties for France language, just copy file Messages_en_US.properties to Messages_fr_FR-UTF8.properties, edit it in UTF-8 editor, encode it to ASCII by command <b>native2ascii -encoding UTF-8 Messages_fr_FR-UTF8.properties Messages_fr_FR.properties</b>.</li>
           <li>add language and country codes into <b>langCountries</b> in <b>web.xml</b>, e.g. <b>en,US,ru,RU,fr,FR</b></li>
           <li>remove digital signatures - foo/META-INF/BEIGESOF.RSA and BEIGESOF.SF</li>
           <li>if need, add new TTF fonts into <b>fonts</b> folder</li>
           <li>make JAR/WAR file by <b>jar</b> utility, e.g. run outside of "foo" folder: "jar cvfm beige-acc.jar foo/META-INF/MANIFEST.MF -C foo/ ."</li>
         </ul>
       </p>
+      <p>At first, add new language, country and language preferences, then push "refresh languages settings", then refresh page. Then add goods, service, etc. names in new language.</p>
       <p>To use another TTF file, set it name without extension in "Accounting settings"-"TTF file name",
-        for example "VL-Gothic-Regular". <a href="files/invoice-jp.pdf">Example of invoice with "VL-Gothic-Regular.ttf"</a>
+        for example "VL-Gothic-Regular". <a href="files/invoice-jp.pdf">Example of partially internationalized invoice with "VL-Gothic-Regular.ttf"</a>
       </p>
       <p>If you set "Accounting settings"-"page size" to "Letter", then you have to set page margins and font size in inches, otherwise (default A4) is millimeters. Default font size 3.5 millimeters equals to 0.1378 inch.</p>
     </section>

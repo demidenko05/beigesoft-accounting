@@ -31,16 +31,17 @@
       </p>
       <h4>Selling goods that paid with foreign currency example</h4>
       <p>
-        Create new invoice and set foreign currency to EURO and exchange rate is 1.12 (on 16 Jul 2016), add 4 "Pizza with bacon frozen" for 11.11 EURO:
+        Create new invoice and set foreign currency to EURO and exchange rate is 1.12 (on 16 Jul 2016), add 2 "Pizza with cheese frozen" for 14.11 EURO:
         <p align="center"><img alt="multi currency invoice example" style="max-width: 100%" src="images/salesmc1.png" /></p>
       </p>
       <p>
-        Add 200 pounds of "bacon" for 9.15 EURO:
+        Add 100 pounds of "bacon" for 10.15 EURO:
         <p align="center"><img style="max-width: 100%" src="images/salesmc2.png" /></p>
       </p>
       <p>
-        After adding 28.5 miles of "delivering to the seaport" for 4.40 EURO and accounting full report is:
+        After adding 28.5 miles of "delivering to the seaport" for 4.93 EURO and accounting full report is:
         <p align="center"><img style="max-width: 100%" src="images/salesmc3.png" /></p>
+        <p align="center"><img style="max-width: 100%" src="images/salesmc3-1.png" /></p>
         <p>* as you can see, accounting entries are made in national currency.</p>
       </p>
       <p>See <a href="acc-overseas-sales.html">Overseas sales. Advanced internationalization.</a> to make invoice translated in foreign language (if it's need).</p>
@@ -48,16 +49,16 @@
         Final invoice report for foreign customer is:
         <p align="center"><img style="max-width: 100%" src="images/salesmc4.png" /></p>
       </p>
-      <p>Payment is made on 27 Jul 2016, and exchange rate is 1.14, so you have to report additional revenue "exchange gain" (2,279.82 - 2,240.27 = 39.55):
+      <p>Payment is made on 26 Jul 2016, and exchange rate is 1.14, so you have to report additional revenue "exchange gain" (1,349.45 - 1,325.78 = 23.67):
 <pre style="white-space: pre-wrap;">
-27 Jun 2016 10:26AM, Debit CashInBank."#1236786817 in Bank" Credit AccReceivable."OOO Berezka" for 2,279.82 USD
-* after that the balance AccReceivable."OOO Berezka" is -39.55 (negative)
+27 Jun 2016 10:26AM, Debit CashInBank."#1236786817 in Bank" Credit AccReceivable."OOO Berezka" for 1,349.45 USD
+* after that the balance AccReceivable."OOO Berezka" is -23.67 (negative)
 
-27 Jun 2016 11:15AM, Debit AccReceivable."OOO Berezka" Credit ExchangeGain for 39.55 USD
+27 Jun 2016 11:15AM, Debit AccReceivable."OOO Berezka" Credit ExchangeGain for 23.67 USD
 </pre>
         * of course, you have to report additional business expenses like "fee for wire transfer", "fee for currency exchange", etc.
       </p>
-      <p>You should add new account "ExchangeGain" of type "Income revenue":
+      <p>You should add new account "Exchange Gain" of type "Income revenue":
         <p align="center"><img style="max-width: 100%" src="images/salesmc5.png" /></p>
       </p>
       <p>

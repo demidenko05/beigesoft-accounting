@@ -9,9 +9,9 @@
 
   <body>
 
-    <section name="Import database with WEB-service.">
+    <section name="Import database by using WEB-service.">
 
-    <p>Keywords: Import database with WEB-service.</p>
+    <p>Keywords: Import database by using WEB-service.</p>
 
       <p>If you decided to move from lite standalone (single user) SQlite version of Beige-Accounting
       into high load enterprise-ready database MySql, then use WEB-service <b>Import database</b></p>
