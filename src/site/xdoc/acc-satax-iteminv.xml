@@ -12,9 +12,6 @@
     <section name="Sales taxes due on Item vs Invoice basis.">
       
       <p>Keywords: Sales taxes due on Item vs Invoice basis.</p>
-
-      <p>* New features described in this article available in version 1.1.7 (in source code right now).
-      </p>
       
       <h4>Sales taxes due on Item vs Invoice basis.</h4>
       <p>There are two "grouping" calculation methods:
@@ -29,24 +26,37 @@ round(2.244 + 2.244) != round(2.244) + round(2.244);
 </pre>
       </p>
       <p>
-        By default Beigesoft™ Accounting uses "item basis" method. You can switch it in "Accounting settings":
+        By default Beigesoft™ Accounting uses "item basis" method. You can switch it in "Accounting settings" and "Tax destination":
         <p align="center"><img style="max-width: 100%" src="images/stiteminbbasis1.png" /></p>
-        Use "ST due on invoice basis" for it. There are others sales tax settings:
+        Use "ST invoice basis" for it. There are others sales tax settings:
         <ul>
-          <li>Rounding mode for sales tax</li>
+          <li>Tax percent precision</li>
           <li>Extract sales taxes from purchase</li>
           <li>Extract sales taxes from sales</li>
+          <li>Aggregate tax rate or only tax</li>
+          <li>ST rounding mode - Rounding mode for sales tax</li>
         </ul>
-        Rounding precision is the same as for price.
       </p>
       <h4>Creating two identical invoices for both methods example.</h4>
       <p>
-        Set "item basis" method and add new invoice with two services for 55.67USD each, applicable tax is 11%:
+        System's "item basis" method is "On", so just add new invoice with two services for 55.67USD each, applicable tax is 11%:
         <p align="center"><img style="max-width: 100%" src="images/stiteminbbasis2.png" /></p>
         <p align="center"><img style="max-width: 100%" src="images/stiteminbbasis4.png" /></p>
       </p>
       <p>
-        Set "invoice basis" method and add new invoice with two services for 55.67USD each, applicable tax is 11%:
+        Add new fake tax destination "TD Invoice basis exm." with and set "ST Invoice basis" in it to "Yes":
+        <p align="center"><img style="max-width: 100%" src="images/stiteminbbasis6.png" /></p>
+      </p>
+      <p>
+        Then add new customer with that "Tax destination":
+        <p align="center"><img style="max-width: 100%" src="images/stiteminbbasis7.png" /></p>
+      </p>
+      <p>
+        Then add "tax destination" to items:
+        <p align="center"><img style="max-width: 100%" src="images/stiteminbbasis8.png" /></p>
+      </p>
+      <p>
+        Then add new invoice with same services (with same price and tax) to new customer:
         <p align="center"><img style="max-width: 100%" src="images/stiteminbbasis3.png" /></p>
         <p align="center"><img style="max-width: 100%" src="images/stiteminbbasis5.png" /></p>
       </p>

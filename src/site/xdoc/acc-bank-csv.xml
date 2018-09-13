@@ -13,8 +13,6 @@
       
       <p>Keywords: Import bank statement from CSV file, semi-automatically bank reconciliation.</p>
 
-      <p>* New features described in this article available since version 1.1.7 (it's in source code right now).</p>
-      
       <h4>Import bank statement from CSV file. Semi-automatically bank reconciliation.</h4>
       <p>Beigesoft™ Accounting allows:
         <ul>
@@ -24,16 +22,16 @@
         </ul>
       </p>
       <h4>Semi-automatically bank reconciliation example.</h4>
-      <p>Assume Bob received prepayment from MINIMART check#175762 for 23.15USD and payment check#175763 for 33.15USD on Jan 25, 2016.
+      <p>Assume Bob received prepayment from Mini-market check#175762 for 23.15USD and payment check#175763 for 33.15USD on Jan 25, 2016.
       Bob has entered these checks into Beigesoft™ Accounting.
       </p>
       <p>Bob received on Jan 26 bank statement, its CSV file is:
 <pre style="white-space: pre-wrap;">
-01/25/2016,MINIMART check #175762,VOIDED,23.15,wrong signature
+01/25/2016,Mini-market check #175762,VOIDED,23.15,wrong signature
 01/25/2016,wrong check fine,OK,-11.15,
-01/25/2016,MINIMART check #175763,OK,33.15,
-01/25/2016,MINIMART check #175764,OK,43.23,
-01/25/2016,MINIMART check #175765,OK,20.00,
+01/25/2016,Mini-market check #175763,OK,33.15,
+01/25/2016,Mini-market check #175764,OK,43.23,
+01/25/2016,Mini-market check #175765,OK,20.00,
 </pre>
 That is check#175762 wasn't accepted, there is additional fee 11.15, check#175763 is already entered, and there are two checks that Bob hasn't entered yet.
       </p>
@@ -52,12 +50,12 @@ That is check#175762 wasn't accepted, there is additional fee 11.15, check#17576
           <li>data format - here used only for Date column, string "MM/dd/yyyy" means USA standard, "dd/MM/yyyy" the most used standard, for more details see <a href="https://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html">https://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html</a></li>
           <li>type - "Date" for date columns, "Text" for most others columns, "Numeric" for amount column</li>
           <li>index - imported column index, not all columns might be imported (part of them might be omitted), e.g. if you want to omit column status, then columns "Date,Description,Amount" will have indexes: "1,2,3"</li>
-          <li>index - imported column index in source file, not all columns might be imported (part of them might be omitted), e.g. if you want to omit column status, then columns "Date,Description,Amount" will have indexes: "1,2,4"</li>
+          <li>index in source - imported column index in source file, not all columns might be imported (part of them might be omitted), e.g. if you want to omit column status, then columns "Date,Description,Amount" will have indexes: "1,2,4"</li>
           <li>Text delimiter - cell string value delimiter,  e.g. quote for strings that contains column separator</li>
         </ul>
     here example of CSV file there description column has quota text delimiter:
 <pre style="white-space: pre-wrap;">
-01/25/2016,"MINIMART check #175762, wrong signature",VOIDED,23.15,wrong signature
+01/25/2016,"Mini-market check #175762, wrong signature",VOIDED,23.15,wrong signature
 01/25/2016,"wrong check fine",OK,-11.15,
 </pre>
       </p>
@@ -82,7 +80,7 @@ COMMA,SPACE is European standard e.g. "112 523,24"
 
 COMMA,NONE e.g. "112523,24"
 </pre>
-*in cases that use COMMA decimal separator it should be either other than comma column separator or number should be braced with text separator e.g. quoted
+*in cases of using COMMA decimal separator, it should be either other than comma column separator or number should be braced with text separator e.g. quoted.
       </p>
       <p>
         Then Bob added Bank CSV method:
@@ -94,8 +92,8 @@ COMMA,NONE e.g. "112523,24"
           <li>Amount column from chosen method, required</li>
           <li>Description column from chosen method, optional</li>
           <li>Status column from chosen method, optional, if you want (and CSV has this information) to cancel already created records</li>
-          <li>Voided words - comma separated words from status column that mean that record was voided, optional, if you want (and CSV has this information) to cancel already created records, here word "VOIDED" in the file means canceling</li>
-          <li>Accepted words - comma separated words from status column that mean that record wasn't accepted, optional, here is empty</li>
+          <li>Voided words - comma separated words from status column that means that record was voided, optional, if you want (and CSV has this information) to cancel already created records, here word "VOIDED" in the file means canceling</li>
+          <li>Accepted words - comma separated words from status column that means that record wasn't accepted, optional, here is empty</li>
         </ul>
         *If you do not need to reverse (cancel) voided records, then column "Status" should be empty, and so does column "Voided words"
       </p>

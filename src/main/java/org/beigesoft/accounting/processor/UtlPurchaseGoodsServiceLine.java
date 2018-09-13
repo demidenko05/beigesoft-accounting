@@ -668,7 +668,9 @@ public class UtlPurchaseGoodsServiceLine<RS> {
         itl = new PurchaseInvoiceTaxLine();
         itl.setIsNew(true);
         itl.setIdDatabaseBirth(this.srvOrm.getIdDatabase());
-        pTaxLnsNew.add(itl);
+        if (pTaxLnsNew != null) {
+          pTaxLnsNew.add(itl);
+        }
       }
     }
     return itl;

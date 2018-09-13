@@ -12,9 +12,6 @@
     <section name="Multi sales taxes. Aggregate tax rate method.">
       
       <p>Keywords: Multi sales taxes, aggregate tax rate.</p>
-
-      <p>* New features described in this article available in version 1.1.7 (in source code right now).
-      </p>
       
       <h4>Multi sales taxes. Aggregate tax rate method.</h4>
       <p>In case of multi sales taxes per item you can (or must according the law) use this method.</p>
@@ -49,19 +46,21 @@ tax3 = 9.18 - (9.35 + 0.92) = 1.91
 To prevent difference between total aggregate from lines and total taxes cause grouping rounding error,
 the last tax total line is the rest of aggregate tax.
       </p>
-      <p>Accounting Settings property "Use aggregate tax rate or only tax" is used to switch this method, default is false.
+      <p>Property "Aggregate tax rate or only tax" of "Accounting Settings" and "Tax destination" is used to switch this method, default is false.
+      "Aggregate rate" is mostly used method for multi-taxes. If your items have only tax (e.g. item1 10%, item2 18%, etc), then set property "Aggregate tax rate or only tax" to "Yes".
       </p>
       
       <h4>Example of sales invoices for both methods (aggregate and not).</h4>
-      
+      <p>Add taxes that described below. Apply them to new fake services "Service A" and "Service B".</p>
       <p>
-        Set "invoice basis" method to false and add new invoice with two services with prices and taxes that described above:
+        System's "Aggregate tax rate or only tax" is "Yes",  so just add new invoice with aggregate rate and two services with prices and taxes that described above:
         <p align="center"><img style="max-width: 100%" src="images/staggr1.png" /></p>
         <p align="center"><img style="max-width: 100%" src="images/staggr2.png" /></p>
       </p>
       <p>
-        Set "Use aggregate tax rate (item basis)" method to true and add new invoice with two services with prices and taxes that described above:
-        <p align="center"><img style="max-width: 100%" src="images/staggr3.png" /></p>
+        Create new customer.
+        Add "tax destination" with "Aggregate tax rate or only tax"="No", and apply it to the services and new customer.
+        Then add new invoice with same services and prices and taxes for new customer:
         <p align="center"><img style="max-width: 100%" src="images/staggr4.png" /></p>
         <p align="center"><img style="max-width: 100%" src="images/staggr5.png" /></p>
       </p>

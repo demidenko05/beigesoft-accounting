@@ -603,7 +603,9 @@ public class PrcSalesReturnLineSave<RS>
         itl = new SalesReturnTaxLine();
         itl.setIsNew(true);
         itl.setIdDatabaseBirth(this.srvOrm.getIdDatabase());
-        pTaxLnsNew.add(itl);
+        if (pTaxLnsNew != null) {
+          pTaxLnsNew.add(itl);
+        }
       }
     }
     return itl;

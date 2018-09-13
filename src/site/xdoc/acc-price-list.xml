@@ -12,8 +12,6 @@
     <section name="Export price list into CSV file.">
       
       <p>Keywords: export price list into CSV file.</p>
-
-      <p>* New features described in this article are available since version 1.1.7 (only in source code right now).</p>
       
       <h4>Export price list into CSV file.</h4>
       <p>Right now Beigesoft™ Accounting has implemented only method "item price for price category", i.e. "product1[price for shop in downtown]=12.34".
@@ -124,9 +122,9 @@ product3,3,2.00,25.00,2.50,0,0,0.00,,room1,11,drink,regular,0,1
       </p>
       <p>The result CSV file is:
 <pre style="white-space: pre-wrap;">
-Product1,17,9.41,20,11.29,11.1,0,0,,Room A,20,Food,Regular,0,1
-Product2,18,11.76,20,14.11,4.7,0,0,,Room A,20,Food,Large,0,1
-Product3,19,5.28,20,6.33,0,0,0,,Room A,20,Drink,Large,0,1
+Product1,19,9.41,20,11.29,0,0,0,,Room A,20,Food,Regular,0,1
+Product2,20,11.76,20,14.11,0,0,0,,Room A,20,Food,Large,0,1
+Product3,21,5.28,20,6.33,0,0,0,,Room A,20,Drink,Large,0,1
 </pre>
       </p>
       

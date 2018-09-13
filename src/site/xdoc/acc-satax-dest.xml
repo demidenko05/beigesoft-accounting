@@ -12,8 +12,6 @@
     <section name="Destination-based sales tax. Overriding vendor's tax calculation method.">
       
       <p>Keywords: destination-based vs origin-based sales tax.</p>
-
-      <p>* New features described in this article available since version 1.1.7 (it's in source code right now).</p>
       
       <h4>Destination-based sales tax. Overriding vendor's tax calculation method.</h4>
       <p>If law of your country allows to use different sales tax calculation methods, then you can set <b>Tax destination</b> method for vendors with different methods.
@@ -31,14 +29,14 @@
       <p>Assume, Bob has sold same items to two customers - <b>NSC</b> from New York, <b>FSC</b> from other state.
         Taxable items in NY (aggregate rate, item basis, half-up):
         <ul>
-          <li>Pizza cheese frozen, STG4.7%, STG6.4%</li>
+          <li>Cheese, STG4.7%, STG6.4%</li>
           <li>Armchair, STG4.7%, STG6.4%</li>
           <li>Sofa, STG4.7%, STG6.4%</li>
           <li>Delivering, STS11%</li>
         </ul>
         Taxable items in other state (aggregate rate, invoice basis, half-down):
         <ul>
-          <li>Pizza cheese frozen, STF2.7%, STF3.17%, STF1.234%</li>
+          <li>Cheese, STF2.7%, STF3.17%, STF1.234%</li>
           <li>Armchair, non taxable</li>
           <li>Sofa, origin taxable</li>
           <li>Delivering, STF11%</li>
@@ -54,7 +52,7 @@
         <p align="center"><img style="max-width: 100%" src="images/saltaxdest2.png" /></p>
       </p>
       <p>
-        Then set foreign state tax destination and taxes "STF2.7%, STF3.17%, STF1.234%" in the product "Pizza cheese frozen":
+        Then set foreign state tax destination and taxes "STF2.7%, STF3.17%, STF1.234%" in the merchandise "Cheese":
         <p align="center"><img style="max-width: 100%" src="images/saltaxdest3.png" /></p>
         * Delivering is made in the same way.
       </p>
@@ -71,6 +69,8 @@
         <p align="center"><img style="max-width: 100%" src="images/saltaxdest8.png" /></p>
       </p>
       
+      <h4>Omit taxes in invoice</h4>
+      <p>In case if customer bought merchandise for resale, sales taxes may be omitted (this applies in USA for example), so just set "omit taxes" to "yes" in such invoice.</p>
     </section>
 
   </body>

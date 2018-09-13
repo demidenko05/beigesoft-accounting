@@ -12,9 +12,6 @@
     <section name="Multi-currency. Exchange gain or loss. Exchange difference.">
       
       <p>Keywords: multi-currency, exchange gain or loss, exchange difference, foreign currency transactions.</p>
-
-      <p>* New features described in this article available in version 1.1.7 (in source code right now). In current published version 1.1.6 you can only report exchange gain or loss, you can't print sales invoice in foreign currency and you can't track payments in foreign currency.
-      </p>
       
       <h4>Multi-currency, exchange gain or loss.</h4>
       <p>If you sell a merchandise that is paid in foreign currency, and you use the ACCRUAL method (you have to report revenue for unpaid sales),
