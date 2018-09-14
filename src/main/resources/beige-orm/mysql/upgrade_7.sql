@@ -77,4 +77,5 @@ alter table SERVICEPURCHASED add FOREIGN KEY (DEFUNITOFMEASURE) REFERENCES UNITO
 alter table PURCHASEINVOICE add column OMITTAXES tinyint not null default 0;
 alter table SALESINVOICE add column OMITTAXES tinyint not null default 0;
 alter table SALESRETURN add column OMITTAXES tinyint not null default 0;
+insert into ACCENTRIESSOURCESLINE (ITSID, ITSOWNER, FILENAME, ITSVERSION, SOURCETYPE, SETCODE, ISUSED, ENTRIESSOURCETYPE, ENTRIESACCOUNTINGTYPE, SOURCEIDNAME, DESCRIPTION) values (39, 1, 'PayFrTaxDbtAccPayCrCashMSm', 1462867931627, 10, 'DebtorCreditor,Tax', 0, 0, 1, 'PAYMENTFROM.ITSID', 'PaymentFrom, Debit AccReceivable.DebtorCreditor Credit SalesTaxPay.Tax for Tax amount. Cash Symmetric.');
 update DATABASEINFO set DATABASEVERSION=7, DESCRIPTION='Beige Accounting OIO DB version 7';

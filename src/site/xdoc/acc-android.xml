@@ -14,11 +14,11 @@
     <p>Keywords: Accounting software for Android.</p>
 <p>
   This is same WEB application based on embedded A-Jetty for Android.
-  New Beige-Accounting for Android comply rules <a href="https://play.google.com/about/privacy-security/personal-sensitive/">https://play.google.com/about/privacy-security/personal-sensitive/</a>,
-  i.e. private data (SQLite database, private log files, key-store with keys for encryption) are in private application storage,
-  all other applications can't read this files. Beige Accounting uses encryption to make HTTPS connection and to backup encrypted SQLite databases and logs.
-  These encrypted files are stored on shared storage (where photos, files...), all other application can't decrypt them.
-  But when you print PDF reports then Chrome will downloaded them into shared <b>Download</b> folder and any application that has permission to shared storage can read this file,
+  New Beige-Accounting for Android complies rules <a href="https://play.google.com/about/privacy-security/personal-sensitive/">https://play.google.com/about/privacy-security/personal-sensitive/</a>,
+  i.e. private data (SQLite database, private log files, key-store with keys for encryption) placed in private application storage,
+  all other applications can't read these files. Beige Accounting uses encryption to make HTTPS connection and to backup encrypted SQLite databases and log files.
+  These encrypted files stored on shared storage (where photos, files...), all other application can't decrypt them.
+  But when you print PDF reports then Chrome will download them into shared <b>Download</b> folder and any application that has permission to shared storage can read this file,
   i.e. not only PDF viewer.
 </p>
 <p>
@@ -58,7 +58,7 @@
   <p align="center"><img style="max-width: 100%" src="images/android-data1.png" /></p>
   <p align="center"><img style="max-width: 100%" src="images/android-data2.png" /></p>
   <p align="center"><img style="max-width: 100%" src="images/android-balance.png" /></p>
-  <p>He can create new purchase invoice:</p>
+  <p>He can create new sales invoice:</p>
   <p align="center"><img style="max-width: 100%" src="images/android-purchaseline.png" /></p>
   <br></br>
   <p>Screenshots from virtual Nexus 9 Android Oreo 8.0 (API-26):</p>
@@ -69,6 +69,7 @@
   <p align="center"><img style="max-width: 100%" src="images/avd26-5.png" /></p>
   <p align="center"><img style="max-width: 100%" src="images/avd26-6.png" /></p>
   <p align="center"><img style="max-width: 100%" src="images/avd26-7.png" /></p>
+  <p align="center"><img style="max-width: 100%" src="images/avd26-8.png" /></p>
   
 </p>
 

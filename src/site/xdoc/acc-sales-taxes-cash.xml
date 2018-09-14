@@ -44,7 +44,7 @@
     <p>*You should do accounting tax entries by hand in case if where is return from purchase/sales and that purchase/sales did not paid 100% yet.
       For sales returns you can manually switch to "ON" accrual method #38 if the sales invoice paid.
     </p>
-    <p>Lets do a purchase for example.At first, set in accounting settings using of "Accounting entries sources":
+    <p>Lets make a purchase for example. At first, set in accounting settings using of "Accounting entries sources":
       <ul>
         <li><b>All old methods must be always set to OFF:</b></li>
         <li>#1 "PurchaseInvoice, Debit Inventory per InvItemCategory, Credit AccPayable per DebtorCreditor" set off.</li>
@@ -72,50 +72,40 @@
         <li>#32 "PurchaseReturn, Debit ReturnsReceivable.DebtorCreditor Credit SalesTaxFromPurchReturns.Tax for Tax amount. Cash Symmetric." set on.</li>
         <li>#35 "SalesInvoice, Debit AccReceivable.DebtorCreditor Credit SalesTaxPay.Tax for Tax amount. Accrual Symmetric." set off.</li>
         <li>#36 "SalesInvoice, Debit AccReceivable.DebtorCreditor Credit SalesTaxPay.Tax for Tax amount. Cash Symmetric." set on.</li>
-        <li>#38 "SalesReturn, Debit SalesTaxFromSalReturns.Tax Credit ReturnsPayable.DebtorCreditor for Tax amount. Accrual Symmetric." set on (WHEN PAID).</li>
+        <li>#38 "SalesReturn, Debit SalesTaxFromSalReturns.Tax Credit ReturnsPayable.DebtorCreditor for Tax amount. Accrual Symmetric." set on (only WHEN PAID).</li>
+        <li>#39 "PaymentFrom, Debit AccReceivable.DebtorCreditor Credit SalesTaxPay.Tax for Tax amount. Cash Symmetric." set on.</li>
       </ul>
-      Also set "Extract sales taxes from purchase" to "ON".
-      Accounting settings switch source line:
+      Also set "Extract sales taxes from sales" to "ON".
+      Switch source lines in "Accounting settings", e.g.:
         <p align="center"><img style="max-width: 100%" src="images/accsetacsourcepurch25.png" /></p>
     </p>
     <p>Then add several sales taxes with "CASH" method:
       <p align="center"><img style="max-width: 100%" src="images/saltaxcash1.png" /></p>
     </p>
-    <p>Then add service and goods tax category, e.g.:
-      <p align="center"><img style="max-width: 100%" src="images/saltaxcategcash1.png" /></p>
-    </p>
-    <p>Then set tax category for services and goods, e.g.:
-      <p align="center"><img style="max-width: 100%" src="images/saltaxcategcashgoods1.png" /></p>
-    </p>
+    <p>Then add service and goods tax category, then set tax category for services and goods.</p>
     <h4>100% prepaid invoice.</h4>
-    <p>Add purchase invoice (07 Jul. 2016, 358.90$ total) non-accounted draft (non-purchased yet):
+    <p>Then add 100% prepayments to vendor (13 Jul. 2016, 668.54$ total) and account it.
+      Then add sales invoice (14 Jul. 2016, 668.54$ total) with that prepayments:
       <p align="center"><img style="max-width: 100%" src="images/saltaxcashinvf1.png" /></p>
     </p>
-    <p>Then add 100% prepayments to vendor (05 Jul. 2016, 358.90$ total) and account it:
-      <p align="center"><img style="max-width: 100%" src="images/saltaxcashprep100p.png" /></p>
-    </p>
-    <p>Then (on 07 Jul. 2016) set this prepayment in the invoice and account it:
+    <p>After invoice has been accounted, the report is:
       <p align="center"><img style="max-width: 100%" src="images/saltaxcashinvrep1.png" /></p>
-      As you can see it made all accounting entries: taxes, payable, inventory, adjusting prepayments to payable.
+      As you can see it made all accounting entries: taxes, receivable to revenue, inventory to COGS, adjusting prepayments to receivable.
     </p>
     <h4>50% prepaid invoice plus 25%*2 payments.</h4>
-    <p>Add purchase invoice (17 Jul. 2016, 204.61$ total) non-accounted draft (non-purchased yet):
-      <p align="center"><img style="max-width: 100%" src="images/saltaxcashinvf2.png" /></p>
-    </p>
-    <p>Then add 50% prepayments to vendor (15 Jul. 2016, 102.31$ total) and account it:
-      <p align="center"><img style="max-width: 100%" src="images/saltaxcashprep50p.png" /></p>
-    </p>
-    <p>Then (on 17 Jul. 2016) set this prepayment in the invoice and account it:
+    <p>Add 50% prepayments to vendor (15 Jul. 2016, 334.27$ total) and account it.
+      Then add sales invoice with the same goods and services as above one (17 Jul. 2016, 668.54$ total),
+        then account it, the report is:
       <p align="center"><img style="max-width: 100%" src="images/saltaxcashinvrep2.png" /></p>
-      As you can see it made not all accounting entries: payable, inventory, adjusting prepayments to payable.
+      As you can see it made not all accounting entries: receivable to revenue, inventory to COGS, adjusting prepayments to receivable.
     </p>
-    <p>Then add payment (18 Jul. 2016, 61.00$ total) and account it:
+    <p>Then add payment (18 Jul. 2016, 167.14$ total) and account it:
       <p align="center"><img style="max-width: 100%" src="images/saltaxcashpaym1.png" /></p>
-      As you can see it made only cash to payable accounting entries.
+      As you can see it made only cash to receivable accounting entries.
     </p>
-    <p>Then add the rest payment (19 Jul. 2016, 41.30$ total) and account it:
+    <p>Then add the rest payment (19 Jul. 2016, 167.13$ total) and account it:
       <p align="center"><img style="max-width: 100%" src="images/saltaxcashpaym2.png" /></p>
-      As you can see it made cash to payable and taxes to payable accounting entries.
+      As you can see it made cash to receivable and taxes to receivable accounting entries.
     </p>
     </section>
 
