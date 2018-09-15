@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>org.beigesoft</groupId>
-  <version>1.1.7</version>
+  <version>1.1.8-SNAPSHOT</version>
   <artifactId>beigesoft-accounting</artifactId>  
   <name>Beigesoft™ Accounting library.</name>
 
@@ -274,7 +274,7 @@
     <url>https://github.com/demidenko05/beigesoft-accounting.git</url>
     <connection>scm:git:git@github.com:demidenko05/beigesoft-accounting.git</connection>
     <developerConnection>scm:git:git@github.com:demidenko05/beigesoft-accounting.git</developerConnection>
-    <tag>beigesoft-accounting-1.1.7</tag>
+    <tag>HEAD</tag>
   </scm>
 
 </project>
