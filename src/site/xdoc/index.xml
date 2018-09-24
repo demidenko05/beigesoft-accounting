@@ -234,6 +234,23 @@ update DATABASEINFO set DATABASEVERSION=[new_version], DESCRIPTION='database upg
     Instead of create a lot of files to describe every class and its fields it use describing by type, by name,
     e.g. setting "java.lang.Integer"-"INTEGER NOT NULL" will be assigned for every field of this type. Beigesoft™ ORM,
     Beige-WEB, Beige-Replicator use it.</p>
+
+       <h4>Beige-UML</h4>
+<p>Beige-UML is an UML diagram editor. It has two user interfaces - ordinary desktop SWING and Android.</p>
+<p>Features:</p>
+  <ol>
+    <li>Supports UML 2.4.1 compliant class diagram, package diagram, object diagram, sequence diagram and use case diagram.</li>
+    <li>It generates UML class diagram from Java source.</li>
+    <li>It's a doclet that generates standard Javadoc with UML class diagram.</li>
+  </ol>
+<p>Using Beige-UML to generate Javadocs has disadvantage - the resulting UML diagrams are PNG files,
+  so they are increasing Javadoc files size too much. BeigeUML is planned to be ported into Beigesoft Document Writer,
+  and writing to javadocs will be in SVG format (external file or html5 SVG).</p>
+<p>This application you can download from <a href="https://repo1.maven.org/maven2/org/beigesoft/beige-uml-swing/">https://repo1.maven.org/maven2/org/beigesoft/beige-uml-swing/</a>
+  There <b>beige-uml-swing-[VERSION]-jar-with-dependencies.jar</b> is Swing application.
+  Android version you can find in Google Play Store. Its source code you can download from <a href="https://github.com/demidenko05/beige-uml">https://github.com/demidenko05/beige-uml</a></p>
+<p>Source of beige-android-demo (demo of Android tree/file-chooser, list-chooser etc.) you can find at <a href="http://sourceforge.net/projects/beigeuml/">http://sourceforge.net/projects/beigeuml/</a></p>
+<p> <a href="https://sites.google.com/site/beigesoftware/gettingstartedgui">Beige UML getting started.</a> </p>
             
     <p>
       * Address http://www.beigesoft.org was switched off for security (safety) reasons.

@@ -41,6 +41,16 @@ $ gpg --verify beigesoft-accountingoio-ajetty-bin.zip.asc
   This key is used ONLY for signing Beigesoft JAR/WAR/APK files ONLY in central MAVEN repository and Google Play.
 </p>
 <p>
+  Key to sign only Beige-UML JAR/APK:
+  <ul>
+    <li>Serial number: 2f9e4bac</li>
+    <li>fingerprint MD5:  4A:BD:94:42:16:30:30:33:CB:21:91:E7:35:30:40:C0</li>
+    <li>fingerprint SHA1: CE:46:A4:79:89:C2:66:34:E7:5D:CC:92:FC:F3:C0:90:4F:A1:81:63</li>
+    <li>fingerprint SHA256: 34:3C:B4:95:18:BA:3E:FF:F3:52:43:FA:61:D5:3B:2A:55:06:EF:C3:3A:A9:EC:EA:AE:89:E3:C0:60:F9:E7:5A</li>
+  </ul>
+  This key is used ONLY for signing only Beige-UML JAR/APK files only in central MAVEN repository and Google Play.
+</p>
+<p>
   To check JAR/APK signature use command <b>jarsigner -verify -verbose -certs [file-name].jar/apk</b>, e.g.:
 <pre style="white-space:pre-wrap">
 $ jarsigner -verify -verbose -certs beigesoft-accountingoio-ajetty-jar-with-dependencies.jar
