@@ -52,9 +52,8 @@ public class FctBnAccProcessors<RS>
   /**
    * <p>Converters map "converter name"-"object' s converter".</p>
    **/
-  private final Map<String, IProcessor>
-    processorsMap =
-      new HashMap<String, IProcessor>();
+  private final Map<String, IProcessor> processorsMap =
+    new HashMap<String, IProcessor>();
 
   /**
    * <p>Get bean in lazy mode (if bean is null then initialize it).</p>
@@ -99,9 +98,9 @@ public class FctBnAccProcessors<RS>
    * @throws Exception - an exception
    */
   @Override
-  public final synchronized void set(final String pBeanName,
+  public final void set(final String pBeanName,
     final IProcessor pBean) throws Exception {
-    this.processorsMap.put(pBeanName, pBean);
+    //nothing
   }
 
   /**
@@ -125,7 +124,6 @@ public class FctBnAccProcessors<RS>
   }
 
   //Simple getters and setters:
-
   /**
    * <p>Getter for fctBnProcessors.</p>
    * @return IFactoryAppBeansByName<IProcessor>
