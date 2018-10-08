@@ -1,7 +1,7 @@
 package org.beigesoft.accounting.holder;
 
 /*
- * Copyright (c) 2017 Beigesoft ™
+ * Copyright (c) 2017 Beigesoft™
  *
  * Licensed under the GNU General Public License (GPL), Version 2.0
  * (the "License");
@@ -11,9 +11,6 @@ package org.beigesoft.accounting.holder;
  *
  * http://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html
  */
-
-import java.util.Map;
-import java.util.HashMap;
 
 import org.beigesoft.persistable.IPersistableBase;
 import org.beigesoft.persistable.EmailMsg;
@@ -195,13 +192,6 @@ public class HldAccEntitiesProcessorNames
   private IHldAddEntitiesProcessorNames hldAddEntitiesProcessorNames;
 
   /**
-   * <p>EntitiesProcessors names map:
-   * "key = class simple name + action"-"processor name".</p>
-   **/
-  private final Map<String, String> processorsNamesMap =
-      new HashMap<String, String>();
-
-  /**
    * <p>Get thing for given class and thing name.
    * findbugs: UG_SYNC_SET_UNSYNC_GET - this code is designed
    * for high performance. Getting name is happened very frequency
@@ -238,8 +228,7 @@ public class HldAccEntitiesProcessorNames
     } else if ("entityCreate".equals(pThingName)) {
       return getForCreate(pClass);
     }
-    return this.processorsNamesMap
-      .get(pClass.getSimpleName() + pThingName);
+    return null;
   }
 
   /**
@@ -249,35 +238,9 @@ public class HldAccEntitiesProcessorNames
    * @param pThingName Thing Name
    **/
   @Override
-  public final synchronized void setFor(final String pThing,
+  public final void setFor(final String pThing,
     final Class<?> pClass, final String pThingName) {
-    if ("entityEdit".equals(pThingName)) {
-      throw new RuntimeException("Forbidden code!");
-    } else if ("entityPrint".equals(pThingName)) {
-      throw new RuntimeException("Forbidden code!");
-    } else if ("entityFfolDelete".equals(pThingName)) {
-      throw new RuntimeException("Forbidden code!");
-    } else if ("entityFfolSave".equals(pThingName)) {
-      throw new RuntimeException("Forbidden code!");
-    } else if ("entityFolDelete".equals(pThingName)) {
-      throw new RuntimeException("Forbidden code!");
-    } else if ("entityFolSave".equals(pThingName)) {
-      throw new RuntimeException("Forbidden code!");
-    } else if ("entityCopy".equals(pThingName)) {
-      throw new RuntimeException("Forbidden code!");
-    } else if ("entitySave".equals(pThingName)) {
-      throw new RuntimeException("Forbidden code!");
-    } else if ("entityDelete".equals(pThingName)) {
-      throw new RuntimeException("Forbidden code!");
-    } else if ("entityCreate".equals(pThingName)) {
-      throw new RuntimeException("Forbidden code!");
-    } else if ("entityReverse".equals(pThingName)) {
-      throw new RuntimeException("Forbidden code!");
-    } else if ("entityConfirmDelete".equals(pThingName)) {
-      throw new RuntimeException("Forbidden code!");
-    }
-    this.processorsNamesMap
-      .put(pClass.getSimpleName() + pThingName, pThing);
+    throw new RuntimeException("Setting is not allowed!");
   }
 
   /**

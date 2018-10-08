@@ -366,6 +366,12 @@ public class FctBnAccEntitiesProcessors<RS>
             .class.getSimpleName())) {
             proc = createPutPrcPurchaseInvoiceServiceLineDelete(pAddParam);
           } else if (pBeanName
+            .equals(PrcEntityFDelete.class.getSimpleName())) {
+            proc = createPutPrcEntityFDelete(pAddParam);
+          } else if (pBeanName
+            .equals(PrcEntityFSave.class.getSimpleName())) {
+            proc = createPutPrcEntityFSave(pAddParam);
+          } else if (pBeanName
             .equals(PrcEntityFfolDelete.class.getSimpleName())) {
             proc = createPutPrcEntityFfolDelete(pAddParam);
           } else if (pBeanName
@@ -654,9 +660,9 @@ public class FctBnAccEntitiesProcessors<RS>
    * @throws Exception - an exception
    */
   @Override
-  public final synchronized void set(final String pBeanName,
+  public final void set(final String pBeanName,
     final IEntityProcessor pBean) throws Exception {
-    this.processorsMap.put(pBeanName, pBean);
+    throw new Exception("Setting is not allowed!");
   }
 
   /**
@@ -814,6 +820,44 @@ public class FctBnAccEntitiesProcessors<RS>
     //assigning fully initialized object:
     this.processorsMap
       .put(PrcPurchaseInvoiceServiceLineDelete.class.getSimpleName(), proc);
+    return proc;
+  }
+
+  /**
+   * <p>Get PrcEntityFDelete (create and put into map).</p>
+   * @param pAddParam additional param
+   * @return requested PrcEntityFDelete
+   * @throws Exception - an exception
+   */
+  protected final PrcEntityFDelete<RS, IHasId<Object>, Object>
+    createPutPrcEntityFDelete(
+      final Map<String, Object> pAddParam) throws Exception {
+    @SuppressWarnings("unchecked")
+    PrcEntityFDelete<RS, IHasId<Object>, Object> proc =
+      (PrcEntityFDelete<RS, IHasId<Object>, Object>)
+        this.fctBnEntitiesProcessors
+          .lazyGet(pAddParam, PrcEntityFDelete.class.getSimpleName());
+    //assigning fully initialized object:
+    this.processorsMap.put(PrcEntityFDelete.class.getSimpleName(), proc);
+    return proc;
+  }
+
+  /**
+   * <p>Get PrcEntityFSave (create and put into map).</p>
+   * @param pAddParam additional param
+   * @return requested PrcEntityFSave
+   * @throws Exception - an exception
+   */
+  protected final PrcEntityFSave<RS, IHasId<Object>, Object>
+    createPutPrcEntityFSave(
+      final Map<String, Object> pAddParam) throws Exception {
+    @SuppressWarnings("unchecked")
+    PrcEntityFSave<RS, IHasId<Object>, Object> proc =
+      (PrcEntityFSave<RS, IHasId<Object>, Object>)
+        this.fctBnEntitiesProcessors
+          .lazyGet(pAddParam, PrcEntityFSave.class.getSimpleName());
+    //assigning fully initialized object:
+    this.processorsMap.put(PrcEntityFSave.class.getSimpleName(), proc);
     return proc;
   }
 

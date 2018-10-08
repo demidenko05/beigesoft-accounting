@@ -36,7 +36,7 @@
       <p>
         Bob added <b>ajetty-ca.pem</b> into Java trusted CA keystore:
         <pre style="white-space:pre-wrap">
-keytool -import -trustcacerts -alias ajettyca -file "ajetty-ca.pem" -keystore /usr/lib/jvm/java-1.8.0-openjdk/jre/lib/security/cacerts
+keytool -import -trustcacerts -alias ajettyca -file "ajetty-ca.pem" -keystore /usr/lib/jvm/java-8-openjdk-amd64/jre/lib/security/cacerts
         </pre>
   * on MS Windows open Power Shell as ADMIN in beige-accounting folder and run:
         <pre style="white-space:pre-wrap">
