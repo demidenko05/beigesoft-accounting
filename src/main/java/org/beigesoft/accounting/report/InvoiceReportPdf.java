@@ -737,7 +737,11 @@ public class InvoiceReportPdf<RS, WI>
     docMaker.addPagination(doc);
     docMaker.deriveElements(doc);
     pdfMaker.prepareBeforeWrite(docPdf);
-    this.pdfFactory.lazyGetPdfWriter().write(null, docPdf, pOus);
+    try {
+      this.pdfFactory.lazyGetPdfWriter().write(null, docPdf, pOus);
+    } finally {
+      pOus.close();
+    }
   }
 
   /**

@@ -16,6 +16,7 @@ import org.beigesoft.persistable.IPersistableBase;
 import org.beigesoft.persistable.EmailMsg;
 import org.beigesoft.persistable.CsvColumn;
 import org.beigesoft.persistable.MatchForeignLine;
+import org.beigesoft.persistable.Eattachment;
 import org.beigesoft.holder.IHolderForClassByName;
 import org.beigesoft.orm.processor.PrcEntityFfolDelete;
 import org.beigesoft.orm.processor.PrcEntityFfolSave;
@@ -215,10 +216,6 @@ public class HldAccEntitiesProcessorNames
       return getForSave(pClass);
     } else if ("entityReverse".equals(pThingName)) {
       return getForRetrieveForReverse(pClass);
-    } else if ("entityFfolDelete".equals(pThingName)) {
-      return getForFfolDelete(pClass);
-    } else if ("entityFfolSave".equals(pThingName)) {
-      return getForFfolSave(pClass);
     } else if ("entityFolDelete".equals(pThingName)) {
       return getForFolDelete(pClass);
     } else if ("entityFolSave".equals(pThingName)) {
@@ -446,31 +443,6 @@ public class HldAccEntitiesProcessorNames
   }
 
   /**
-   * <p>Get processor name for FFOL delete.</p>
-   * @param pClass a Class
-   * @return a thing
-   **/
-  protected final String getForFfolDelete(final Class<?> pClass) {
-    return PrcEntityFfolDelete.class.getSimpleName();
-  }
-
-  /**
-   * <p>Get processor name for FFOL save.</p>
-   * @param pClass a Class
-   * @return a thing
-   **/
-  protected final String getForFfolSave(final Class<?> pClass) {
-    if (this.hldAddEntitiesProcessorNames != null) {
-      String name = this.hldAddEntitiesProcessorNames
-        .getForFfolSave(pClass);
-      if (name != null) {
-        return name;
-      }
-    }
-    return PrcEntityFfolSave.class.getSimpleName();
-  }
-
-  /**
    * <p>Get processor name for FOL delete.</p>
    * @param pClass a Class
    * @return a thing
@@ -490,6 +462,8 @@ public class HldAccEntitiesProcessorNames
       return PrcAdditionCostLineDelete.class.getSimpleName();
     } else if (WageLine.class == pClass) {
       return PrcWageLineDelete.class.getSimpleName();
+    } else if (Eattachment.class == pClass) {
+        return PrcEntityFfolDelete.class.getSimpleName();
     } else if (ADocTaxLine.class.isAssignableFrom(pClass)) {
       return null;
     } else {
@@ -542,6 +516,8 @@ public class HldAccEntitiesProcessorNames
       return PrcBeginningInventoryLineSave.class.getSimpleName();
     } else if (PurchaseInvoiceLine.class == pClass) {
       return PrcPurchaseInvoiceLineSave.class.getSimpleName();
+    } else if (Eattachment.class == pClass) {
+      return PrcEntityFfolSave.class.getSimpleName();
     } else if (ADocTaxLine.class.isAssignableFrom(pClass)) {
       if (PurchaseInvoiceTaxLine.class == pClass) {
         return PrcPurchInvTaxLnSave.class.getSimpleName();

@@ -34,6 +34,8 @@ import org.beigesoft.service.ISrvDatabase;
 import org.beigesoft.orm.processor.PrcEntityPbDelete;
 import org.beigesoft.orm.processor.PrcEntityFfolDelete;
 import org.beigesoft.orm.processor.PrcEntityFfolSave;
+import org.beigesoft.orm.processor.PrcEntityFDelete;
+import org.beigesoft.orm.processor.PrcEntityFSave;
 import org.beigesoft.orm.processor.PrcEntityFolSave;
 import org.beigesoft.orm.processor.PrcEntityPbCopy;
 import org.beigesoft.orm.processor.PrcEntityCopy;

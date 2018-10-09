@@ -256,7 +256,11 @@ public class BalanceSheetPdf<RS, WI> implements IBalanceSheetPdf {
     tblBal.getItsCells().get(lastRowIdx * 4 + 3).setItsContent(cntc);
     docMaker.deriveElements(doc);
     pdfMaker.prepareBeforeWrite(docPdf);
-    this.pdfFactory.lazyGetPdfWriter().write(null, docPdf, pOus);
+    try {
+      this.pdfFactory.lazyGetPdfWriter().write(null, docPdf, pOus);
+    } finally {
+      pOus.close();
+    }
   }
 
   /**

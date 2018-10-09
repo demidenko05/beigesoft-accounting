@@ -42,20 +42,6 @@ public interface IHldAddEntitiesProcessorNames {
   String getForSave(Class<?> pClass);
 
   /**
-   * <p>Get processor name for FFOL delete.</p>
-   * @param pClass a Class
-   * @return a thing
-   **/
-  String getForFfolDelete(Class<?> pClass);
-
-  /**
-   * <p>Get processor name for FFOL save.</p>
-   * @param pClass a Class
-   * @return a thing
-   **/
-  String getForFfolSave(Class<?> pClass);
-
-  /**
    * <p>Get processor name for FOL delete.</p>
    * @param pClass a Class
    * @return a thing

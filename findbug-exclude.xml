@@ -1,15 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <FindBugsFilter>
-  <!--Getting name is happened very frequency (e.g. 10 per second by multi-threads).
-    Setting is seldom (e.g. hot change configuration to fix program bug) or may not be happen.-->
-  <Match>
-     <Class name="org.beigesoft.accounting.holder.HldAccProcessorNames" />
-     <Bug pattern="UG_SYNC_SET_UNSYNC_GET" />
-  </Match>
-  <Match>
-     <Class name="org.beigesoft.accounting.holder.HldAccEntitiesProcessorNames" />
-     <Bug pattern="UG_SYNC_SET_UNSYNC_GET" />
-  </Match>
   <!--queries are loaded from file only once, double checking is reliable method when assigning value is at the end of synchronized block.-->
   <Match>
      <Class name="org.beigesoft.accounting.report.InvoiceReportPdf" />
