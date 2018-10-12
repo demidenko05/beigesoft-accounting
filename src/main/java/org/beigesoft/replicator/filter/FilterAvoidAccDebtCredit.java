@@ -1,7 +1,7 @@
 package org.beigesoft.replicator.filter;
 
 /*
- * Copyright (c) 2016 Beigesoft ™
+ * Copyright (c) 2016 Beigesoft™
  *
  * Licensed under the GNU General Public License (GPL), Version 2.0
  * (the "License");
@@ -16,7 +16,7 @@ import java.util.Map;
 import java.util.Date;
 
 import org.beigesoft.delegate.IDelegator;
-import org.beigesoft.delegate.IDelegateEvalExt;
+import org.beigesoft.delegate.IDelegatorEval;
 import org.beigesoft.handler.IHandlerModelChanged;
 import org.beigesoft.accounting.persistable.AccountingEntry;
 import org.beigesoft.replicator.persistable.ReplicationAccMethod;
@@ -36,7 +36,7 @@ import org.beigesoft.service.ISrvOrm;
  * @author Yury Demidenko
  */
 public class FilterAvoidAccDebtCredit<RS> implements IFilterEntities,
-  IHandlerModelChanged<ReplicationAccMethod>, IDelegateEvalExt<Date>,
+  IHandlerModelChanged<ReplicationAccMethod>, IDelegatorEval<Date>,
     IDelegator {
 
   /**
