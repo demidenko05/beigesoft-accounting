@@ -15,4 +15,5 @@
 <entry key="org.beigesoft.persistable.AHasIdString">SrvEntityFieldHasIdStringRepl</entry>
 <entry key="org.beigesoft.persistable.APersistableBase">SrvEntityFieldPersistableBaseRepl</entry>
 <entry key="org.beigesoft.persistable.AHasIdLong">SrvEntityFieldHasIdLongRepl</entry>
+<entry key="org.beigesoft.persistable.UserTomcat">SeSellerUserTomcatRepl</entry>
 </properties>
