@@ -64,6 +64,7 @@
         <li>salTaxRoundMode - RoundingMode, HALF_UP default</li>
         <li>salTaxUseAggregItBas - Boolean, use aggregate tax rate or only tax, false default, but this method is mostly used</li>
         <li>salTaxIsInvoiceBase - Boolean, use invoice basis method, false default</li>
+        <li>regZip - String, Registered Zip, nullable. To assign automatically for online buyers.</li>
       </ul>
       For many countries there is only sales tax method inside whole country.
       DebtorCreditor has taxDestination field (TaxDestination) to find and apply destination taxes (tax category).

@@ -44,6 +44,11 @@ public class TaxDestination extends AHasNameIdLongVersion {
    **/
   private Boolean salTaxUseAggregItBas = Boolean.FALSE;
 
+  /**
+   * <p>Registered Zip, nullable. To assign automatically for online buyers.</p>
+   **/
+  private String regZip;
+
   //Simple getters and setters:
   /**
    * <p>Getter for salTaxRoundMode.</p>
@@ -92,5 +97,21 @@ public class TaxDestination extends AHasNameIdLongVersion {
   public final void setSalTaxUseAggregItBas(
     final Boolean pSalTaxUseAggregItBas) {
     this.salTaxUseAggregItBas = pSalTaxUseAggregItBas;
+  }
+
+  /**
+   * <p>Getter for regZip.</p>
+   * @return String
+   **/
+  public final String getRegZip() {
+    return this.regZip;
+  }
+
+  /**
+   * <p>Setter for regZip.</p>
+   * @param pRegZip reference
+   **/
+  public final void setRegZip(final String pRegZip) {
+    this.regZip = pRegZip;
   }
 }
