@@ -31,7 +31,7 @@ public class DestTaxGoodsLn extends APersistableBaseVersion
   private InvItem itsOwner;
 
   /**
-   * <p>Tax destination.</p>
+   * <p>Tax destination, not null.</p>
    **/
   private TaxDestination taxDestination;
 
