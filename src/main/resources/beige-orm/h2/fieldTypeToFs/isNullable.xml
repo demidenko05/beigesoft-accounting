@@ -11,5 +11,5 @@
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
 <comment>Correspondence of field types to is null-able. ORDER is essential, the LAST value will be used.</comment>
-<entry key="import org.beigesoft.accounting.persistable.InvItemTaxCategory">true</entry>
+<entry key="org.beigesoft.accounting.persistable.InvItemTaxCategory">true</entry>
 </properties>
