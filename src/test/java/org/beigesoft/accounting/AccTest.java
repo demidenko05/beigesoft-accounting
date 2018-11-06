@@ -186,5 +186,8 @@ tax rate/tax by lines/tax by grouping: 11.13/2794.24/2794.25
     BigDecimal taxHd =  total.subtract(total.divide(BigDecimal.ONE.add(rate.divide(bd100)), 2, RoundingMode.HALF_DOWN));
     assertEquals(11.22, taxHu.doubleValue(), 0);
     assertEquals(11.22, taxHd.doubleValue(), 0);
+    for (RoundingMode rm : RoundingMode.class.getEnumConstants()) {
+      System .out.println(rm.name() + " = " + rm.ordinal());
+    }
   }
 }

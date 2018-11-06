@@ -1,7 +1,7 @@
 package org.beigesoft.accounting.service;
 
 /*
- * Copyright (c) 2018 Beigesoft ™
+ * Copyright (c) 2018 Beigesoft™
  *
  * Licensed under the GNU General Public License (GPL), Version 2.0
  * (the "License");
@@ -14,7 +14,6 @@ package org.beigesoft.accounting.service;
 
 import java.util.Map;
 import java.util.List;
-import java.math.RoundingMode;
 
 import org.beigesoft.model.IRequestData;
 import org.beigesoft.handler.IHandlerRequestDch;
@@ -80,77 +79,19 @@ public class HndlAccVarsRequest<RS> implements IHandlerRequestDch {
   public final void handle(final Map<String, Object> pReqVars,
     final IRequestData pRequestData) throws Exception {
     AccSettings as = srvAccSettings.lazyGetAccSettings(pReqVars);
-    Boolean rSisUsePrecision0 = as.getPricePrecision() == 0
-      || as.getCostPrecision() == 0 || as.getBalancePrecision() == 0
-        || as.getQuantityPrecision() == 0 || as.getTaxPrecision() == 0;
-    Boolean rSisUsePrecision1 = as.getPricePrecision() == 1
-      || as.getCostPrecision() == 1 || as.getBalancePrecision() == 1
-        || as.getQuantityPrecision() == 1 || as.getTaxPrecision() == 1;
-    Boolean rSisUsePrecision2 = as.getPricePrecision() == 2
-      || as.getCostPrecision() == 2 || as.getBalancePrecision() == 2
-        || as.getQuantityPrecision() == 2 || as.getTaxPrecision() == 2;
-    Boolean rSisUsePrecision3 = as.getPricePrecision() == 3
-      || as.getCostPrecision() == 3 || as.getBalancePrecision() == 3
-        || as.getQuantityPrecision() == 3 || as.getTaxPrecision() == 3;
-    Boolean rSisUsePrecision4 = as.getPricePrecision() == 4
-      || as.getCostPrecision() == 4 || as.getBalancePrecision() == 4
-        || as.getQuantityPrecision() == 4 || as.getTaxPrecision() == 4;
-    String rSmRound;
-    if (as.getRoundingMode().equals(RoundingMode.HALF_UP)) {
-      rSmRound = "S";
-    } else if (as.getRoundingMode().equals(RoundingMode.HALF_DOWN)) {
-      rSmRound = "s";
-    } else if (as.getRoundingMode().equals(RoundingMode.UP)) {
-      rSmRound = "U";
-    } else if (as.getRoundingMode().equals(RoundingMode.DOWN)) {
-      rSmRound = "D";
-    } else if (as.getRoundingMode().equals(RoundingMode.HALF_EVEN)) {
-      rSmRound = "B";
-    } else if (as.getRoundingMode().equals(RoundingMode.CEILING)) {
-      rSmRound = "C";
-    } else if (as.getRoundingMode().equals(RoundingMode.FLOOR)) {
-      rSmRound = "F";
-    } else {
-      rSmRound = "S";
-    }
     String curSign;
     if (as.getUseCurrencySign()) {
       curSign = as.getCurrency().getItsSign();
     } else {
       curSign = " " + as.getCurrency().getItsName() + " ";
     }
-    String taxRounding = null;
-    if (as.getSalTaxRoundMode().equals(RoundingMode.HALF_UP)) {
-      taxRounding = "S";
-    } else if (as.getSalTaxRoundMode().equals(RoundingMode.HALF_DOWN)) {
-      taxRounding = "s";
-    } else if (as.getSalTaxRoundMode().equals(RoundingMode.UP)) {
-      taxRounding = "U";
-    } else if (as.getSalTaxRoundMode().equals(RoundingMode.DOWN)) {
-      taxRounding = "D";
-    } else if (as.getSalTaxRoundMode().equals(RoundingMode.HALF_EVEN)) {
-      taxRounding = "B";
-    } else if (as.getSalTaxRoundMode().equals(RoundingMode.CEILING)) {
-      taxRounding = "C";
-    } else if (as.getSalTaxRoundMode().equals(RoundingMode.FLOOR)) {
-      taxRounding = "F";
-    } else {
-      taxRounding = "S";
-    }
-    pReqVars.put("taxRounding", taxRounding);
-    pReqVars.put("RSisUsePrecision0", rSisUsePrecision0);
-    pReqVars.put("RSisUsePrecision1", rSisUsePrecision1);
-    pReqVars.put("RSisUsePrecision2", rSisUsePrecision2);
-    pReqVars.put("RSisUsePrecision3", rSisUsePrecision3);
-    pReqVars.put("RSisUsePrecision4", rSisUsePrecision4);
-    pReqVars.put("quantityPrecision", as.getQuantityPrecision());
-    pReqVars.put("pricePrecision", as.getPricePrecision());
-    pReqVars.put("costPrecision", as.getCostPrecision());
-    pReqVars.put("taxPrecision", as.getTaxPrecision());
-    pReqVars.put("balancePrecision", as.getBalancePrecision());
+    pReqVars.put("quantityDp", as.getQuantityPrecision());
+    pReqVars.put("priceDp", as.getPricePrecision());
+    pReqVars.put("costDp", as.getCostPrecision());
+    pReqVars.put("taxDp", as.getTaxPrecision());
+    pReqVars.put("reportDp", as.getBalancePrecision());
     pReqVars.put("curSign", curSign);
-    pReqVars.put("RSmRound", rSmRound);
-    pReqVars.put("accSettings", as);
+    pReqVars.put("accSet", as);
     String lang = (String) pReqVars.get("lang");
     String langDef = (String) pReqVars.get("langDef");
     if (lang != null && langDef != null && !lang.equals(langDef)) {
