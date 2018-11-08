@@ -11,5 +11,11 @@
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
 <comment>Correspondence of field types to is null-able. ORDER is essential, the LAST value will be used.</comment>
+<entry key="java.lang.Object">true</entry>
+<entry key="java.math.BigDecimal">false</entry>
+<entry key="java.util.Date">false</entry>
+<entry key="java.lang.Boolean">false</entry>
+<entry key="java.lang.Enum">false</entry>
+<entry key="org.beigesoft.model.IHasId">false</entry>
 <entry key="org.beigesoft.accounting.persistable.InvItemTaxCategory">true</entry>
 </properties>
