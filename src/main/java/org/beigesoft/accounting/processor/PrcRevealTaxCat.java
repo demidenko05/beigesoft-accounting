@@ -38,6 +38,7 @@ import org.beigesoft.accounting.persistable.ServicePurchased;
 import org.beigesoft.accounting.persistable.DestTaxGoodsLn;
 import org.beigesoft.accounting.persistable.DestTaxServPurchLn;
 import org.beigesoft.accounting.persistable.DestTaxServSelLn;
+import org.beigesoft.accounting.persistable.AccSettings;
 
 /**
  * <p>Transactional service that retrieves destination or origin tax category
@@ -102,7 +103,8 @@ public class PrcRevealTaxCat<RS> implements IProcessor {
     query = query.replace(":TAXDESTID", taxDestId.toString());
     InvItemTaxCategory taxCategory = new InvItemTaxCategory();
     IRecordSet<RS> recordSet = null;
-    RoundingMode rounding = null;
+    AccSettings as = (AccSettings) pAddParam.get("accSet");
+    RoundingMode rounding = as.getSalTaxRoundMode();
     try {
       this.srvDatabase.setIsAutocommit(false);
       this.srvDatabase.setTransactionIsolation(ISrvDatabase
@@ -152,27 +154,7 @@ public class PrcRevealTaxCat<RS> implements IProcessor {
       }
       this.srvDatabase.releaseResources();
     }
-    String taxRounding = null;
-    if (rounding != null) {
-      if (rounding.equals(RoundingMode.HALF_UP)) {
-        taxRounding = "S";
-      } else if (rounding.equals(RoundingMode.HALF_DOWN)) {
-        taxRounding = "s";
-      } else if (rounding.equals(RoundingMode.UP)) {
-        taxRounding = "U";
-      } else if (rounding.equals(RoundingMode.DOWN)) {
-        taxRounding = "D";
-      } else if (rounding.equals(RoundingMode.HALF_EVEN)) {
-        taxRounding = "B";
-      } else if (rounding.equals(RoundingMode.CEILING)) {
-        taxRounding = "C";
-      } else if (rounding.equals(RoundingMode.FLOOR)) {
-        taxRounding = "F";
-      } else {
-        taxRounding = "S";
-      }
-    }
-    pRequestData.setAttribute("taxRounding", taxRounding);
+    pRequestData.setAttribute("taxRounding", rounding);
     pRequestData.setAttribute("taxCategory", taxCategory);
   }
 

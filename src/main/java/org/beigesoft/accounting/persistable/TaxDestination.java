@@ -45,7 +45,8 @@ public class TaxDestination extends AHasNameIdLongVersion {
   private Boolean salTaxUseAggregItBas = Boolean.FALSE;
 
   /**
-   * <p>Registered Zip, nullable. To assign automatically for online buyers.</p>
+   * <p>Registered Zip, nullable. To assign automatically for online buyers.
+   * E.g. string "USA,99501,99524" means Alaska.</p>
    **/
   private String regZip;
 

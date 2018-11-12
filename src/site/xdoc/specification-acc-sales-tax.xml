@@ -89,7 +89,7 @@
 
       <h4>Tax calculation methods.</h4>
       <p>
-        Service that saves invoice line, will calculates tax according given tax category (independent on form amount).
+        Service that saves invoice line, will calculates tax according given tax category (independently of form amount).
         Server side calculation policy (for invoice line):
         <ul>
           <li>getting from user's form price and quantity</li>
@@ -97,6 +97,9 @@
           <li>getting from DB tax method</li>
           <li>calculates line/invoice totals, subtotals, taxes</li>
         </ul>
+        Because of law-customized calculation rules, e.g. "before rounding tax amount decimal places should be ripped, e.g. 123.12501 - > 123.125",
+        user can change tax amount in form. If tax amount calculated by server-side is different from one that sent by form, then difference will be reported in line comment.
+        Purchase invoice taxes must be same as in received invoice.
       </p>
       <p>
         Purchase invoice calculation taxes policy (for invoice line, item basis):
@@ -106,9 +109,7 @@
           <li>getting from user's form price, quantity, total taxes</li>
           <li>calculates for line totals, subtotals, for invoice totals, subtotals, taxes</li>
         </ul>
-        For purchase user can change tax amount in form, then saving service will use exactly that amount.
         For invoice basis method, user can edit total tax lines.
-        This is because tax amount must be the same as in received purchase invoice.
       </p>
       <p>There are two calculation methods - tax due on a transaction on an item or an invoice basis.
         These methods give different results:
