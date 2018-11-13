@@ -272,10 +272,10 @@ public class BalanceSheetPdf<RS, WI> implements IBalanceSheetPdf {
   public final String prn(final Map<String, Object> pAddParam,
     final BigDecimal pVal) {
     return this.srvNumberToString.print(pVal.toString(),
-      (String) pAddParam.get("dseparatorv"),
-        (String) pAddParam.get("dgseparatorv"),
-          (Integer) pAddParam.get("balancePrecision"),
-            (Integer) pAddParam.get("digitsInGroup"));
+      (String) pAddParam.get("decSepv"),
+        (String) pAddParam.get("decGrSepv"),
+          (Integer) pAddParam.get("reportDp"),
+            (Integer) pAddParam.get("digInGr"));
   }
 
   /**

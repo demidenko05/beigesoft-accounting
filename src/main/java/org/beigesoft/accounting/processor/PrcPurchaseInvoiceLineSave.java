@@ -361,10 +361,10 @@ public class PrcPurchaseInvoiceLineSave<RS>
   public final String prn(final Map<String, Object> pReqVars,
     final BigDecimal pVal) {
     return this.srvNumberToString.print(pVal.toString(),
-      (String) pReqVars.get("dseparatorv"),
-        (String) pReqVars.get("dgseparatorv"),
-          (Integer) pReqVars.get("pricePrecision"),
-            (Integer) pReqVars.get("digitsInGroup"));
+      (String) pReqVars.get("decSepv"),
+        (String) pReqVars.get("decGrSepv"),
+          (Integer) pReqVars.get("priceDp"),
+            (Integer) pReqVars.get("digInGr"));
   }
 
   //Simple getters and setters:

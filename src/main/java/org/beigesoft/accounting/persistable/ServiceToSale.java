@@ -14,7 +14,8 @@ package org.beigesoft.accounting.persistable;
 
 import java.util.List;
 
-import org.beigesoft.persistable.APersistableBaseNameVersion;
+import org.beigesoft.persistable.IPersistableBase;
+import org.beigesoft.accounting.persistable.base.AItem;
 
 /**
  * <p>
@@ -26,7 +27,8 @@ import org.beigesoft.persistable.APersistableBaseNameVersion;
  *
  * @author Yury Demidenko
  */
-public class ServiceToSale extends APersistableBaseNameVersion {
+public class ServiceToSale extends AItem<ServiceToSale, DestTaxServSelLn>
+  implements IPersistableBase {
 
   /**
    * <p>Its category.
@@ -35,19 +37,78 @@ public class ServiceToSale extends APersistableBaseNameVersion {
   private ServiceToSaleCategory itsCategory;
 
   /**
-   * <p>Origin tax category e.g. "NY: tax1 10%, tax2 5%".</p>
+   * <p>Implicit(there is no database constraints for it)
+   * ID database where Entity was born.
+   * For replication purpose. Not NULL.</p>
    **/
-  private InvItemTaxCategory taxCategory;
+  private Integer idDatabaseBirth;
 
   /**
-   * <p>Default unit of measure.</p>
+   * <p>Implicit(there is no database constraints for it)
+   * ID of this Entity from database where it was born.
+   * For replication purpose. NULL if it was born in current database.</p>
    **/
-  private UnitOfMeasure defUnitOfMeasure;
+  private Long idBirth;
 
   /**
    * <p>Destination taxes categories and rules.</p>
    **/
   private List<DestTaxServSelLn> destinationTaxes;
+
+  /**
+   * <p>Getter for destinationTaxes.</p>
+   * @return List<DestTaxGoodsLn>
+   **/
+  @Override
+  public final List<DestTaxServSelLn> getDestinationTaxes() {
+    return this.destinationTaxes;
+  }
+
+  /**
+   * <p>Setter for destinationTaxes.</p>
+   * @param pDestinationTaxes reference
+   **/
+  @Override
+  public final void setDestinationTaxes(
+    final List<DestTaxServSelLn> pDestinationTaxes) {
+    this.destinationTaxes = pDestinationTaxes;
+  }
+
+  /**
+   * <p>Geter for idDatabaseBirth.</p>
+   * @return Integer
+   **/
+  @Override
+  public final Integer getIdDatabaseBirth() {
+    return this.idDatabaseBirth;
+  }
+
+  /**
+   * <p>Setter for idDatabaseBirth.</p>
+   * @param pIdDatabaseBirth reference
+   **/
+  @Override
+  public final void setIdDatabaseBirth(final Integer pIdDatabaseBirth) {
+    this.idDatabaseBirth = pIdDatabaseBirth;
+  }
+
+  /**
+   * <p>Geter for idBirth.</p>
+   * @return Long
+   **/
+  @Override
+  public final Long getIdBirth() {
+    return this.idBirth;
+  }
+
+  /**
+   * <p>Setter for idBirth.</p>
+   * @param pIdBirth reference
+   **/
+  @Override
+  public final void setIdBirth(final Long pIdBirth) {
+    this.idBirth = pIdBirth;
+  }
 
   //Simple getters and setters:
   /**
@@ -65,54 +126,5 @@ public class ServiceToSale extends APersistableBaseNameVersion {
   public final void setItsCategory(
     final ServiceToSaleCategory pItsCategory) {
     this.itsCategory = pItsCategory;
-  }
-
-  /**
-   * <p>Geter for taxCategory.</p>
-   * @return InvItemTaxCategory
-   **/
-  public final InvItemTaxCategory getTaxCategory() {
-    return this.taxCategory;
-  }
-
-  /**
-   * <p>Setter for taxCategory.</p>
-   * @param pTaxCategory reference
-   **/
-  public final void setTaxCategory(final InvItemTaxCategory pTaxCategory) {
-    this.taxCategory = pTaxCategory;
-  }
-
-  /**
-   * <p>Getter for destinationTaxes.</p>
-   * @return List<DestTaxServSelLn>
-   **/
-  public final List<DestTaxServSelLn> getDestinationTaxes() {
-    return this.destinationTaxes;
-  }
-
-  /**
-   * <p>Setter for destinationTaxes.</p>
-   * @param pDestinationTaxes reference
-   **/
-  public final void setDestinationTaxes(
-    final List<DestTaxServSelLn> pDestinationTaxes) {
-    this.destinationTaxes = pDestinationTaxes;
-  }
-
-  /**
-   * <p>Geter for defUnitOfMeasure.</p>
-   * @return UnitOfMeasure
-   **/
-  public final UnitOfMeasure getDefUnitOfMeasure() {
-    return this.defUnitOfMeasure;
-  }
-
-  /**
-   * <p>Setter for defUnitOfMeasure.</p>
-   * @param pDefUnitOfMeasure reference
-   **/
-  public final void setDefUnitOfMeasure(final UnitOfMeasure pDefUnitOfMeasure) {
-    this.defUnitOfMeasure = pDefUnitOfMeasure;
   }
 }

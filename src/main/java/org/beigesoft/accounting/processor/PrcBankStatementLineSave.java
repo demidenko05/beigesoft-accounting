@@ -179,9 +179,9 @@ public class PrcBankStatementLineSave<RS>
       if (forTotStr == null || "".equals(forTotStr)) {
         foreignTotal = BigDecimal.ZERO;
       } else {
-        String dsep = (String) pReqVars.get("dseparatorv");
+        String dsep = (String) pReqVars.get("decSepv");
         if (dsep != null) {
-          String dgsep = (String) pReqVars.get("dgseparatorv");
+          String dgsep = (String) pReqVars.get("decGrSepv");
           forTotStr = forTotStr.replace(dgsep, "").replace(dsep, ".");
         }
         foreignTotal = new BigDecimal(forTotStr);
@@ -300,9 +300,9 @@ public class PrcBankStatementLineSave<RS>
       if (forTotStr == null || "".equals(forTotStr)) {
         foreignTotal = BigDecimal.ZERO;
       } else {
-        String dsep = (String) pReqVars.get("dseparatorv");
+        String dsep = (String) pReqVars.get("decSepv");
         if (dsep != null) {
-          String dgsep = (String) pReqVars.get("dgseparatorv");
+          String dgsep = (String) pReqVars.get("decGrSepv");
           forTotStr = forTotStr.replace(dgsep, "").replace(dsep, ".");
         }
         foreignTotal = new BigDecimal(forTotStr);
