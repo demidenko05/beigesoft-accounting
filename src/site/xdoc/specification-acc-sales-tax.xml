@@ -126,6 +126,7 @@ round(2.244 + 2.244) != round(2.244) + round(2.244);
       </p>
 
       <h4>Price inclusive of taxes</h4>
+      <p>Price inclusive of taxes is the mostly used and buyer's friendly method.</p>
       <p>In case of only tax or aggregate tax rate, price inclusive of taxes may be used for both item and invoice basis methods.
         The equation of tax amount (aggregate or only) extraction is:
 <pre style="white-space: pre-wrap;">
@@ -136,6 +137,9 @@ round(2.244 + 2.244) != round(2.244) + round(2.244);
   price without taxes = 120 / 1.2 = 100
   taxes = 120 - 100 = 20
 </pre>
+<b>*since 1.1.8 version for non-aggregate rate it's available "total taxes rate method" to estimate detail taxes (see "aggregate rate" below).
+In this way invoice basis taxes included "non-aggregate" method is equivalent to "aggregate".</b>
+
       </p>
       <p>Persistable models SalesInvoice and PurchaseInvoice has property "priceIncTax", false default</p>
             
@@ -503,6 +507,11 @@ tax3 = 9.18 - (9.35 + 0.92) = 1.91
 </pre>
 To prevent difference between total aggregate from lines and total taxes cause grouping rounding error,
 the last tax total line is the rest of aggregate tax, and taxes must by ordered by rate descending (the last is minimum rate).
+      </p>
+      <p><b>*Example above shows that using "tax included" with non-aggregate rate (but still revealing from total taxes rate) will bring rounding error for detailed taxes.
+        Despite of this (any way rounding errors always happen in accounting, and taxes are rounded at remitting time) since 1.1.8 version it's used "total tax rate - that is actually aggregate rate" to estimate detail taxes for "price inclusive of taxes, multi-taxes non-aggregate rate".
+        User should decides by itself "does it comply to current law?". Notice "It's used total tax rate without aggregate rate!"->(contract)"TTR without aggregate!" will be reported in invoice comment for such cases.
+      </b>  
       </p>
       <p>Property AccSettings.salTaxUseAggregItBas (use aggregate tax rate or only tax) is used to switch this method, default is false.
       </p>
