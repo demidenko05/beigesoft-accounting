@@ -12,8 +12,8 @@ package org.beigesoft.accounting.persistable;
  * http://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html
  */
 
-import org.beigesoft.model.IOwned;
-import org.beigesoft.persistable.APersistableBaseVersion;
+import org.beigesoft.persistable.IPersistableBase;
+import org.beigesoft.accounting.persistable.base.ADestTaxItemLn;
 
 /**
  * <p>
@@ -22,8 +22,8 @@ import org.beigesoft.persistable.APersistableBaseVersion;
  *
  * @author Yury Demidenko
  */
-public class DestTaxServPurchLn extends APersistableBaseVersion
-  implements IOwned<ServicePurchased> {
+public class DestTaxServPurchLn extends ADestTaxItemLn<ServicePurchased>
+  implements IPersistableBase {
 
   /**
    * <p>Owner.</p>
@@ -31,14 +31,54 @@ public class DestTaxServPurchLn extends APersistableBaseVersion
   private ServicePurchased itsOwner;
 
   /**
-   * <p>Tax destination.</p>
+   * <p>Implicit(there is no database constraints for it)
+   * ID database where Entity was born.
+   * For replication purpose. Not NULL.</p>
    **/
-  private TaxDestination taxDestination;
+  private Integer idDatabaseBirth;
 
   /**
-   * <p>Tax category, null if no taxes applies for this place.</p>
+   * <p>Implicit(there is no database constraints for it)
+   * ID of this Entity from database where it was born.
+   * For replication purpose. NULL if it was born in current database.</p>
    **/
-  private InvItemTaxCategory taxCategory;
+  private Long idBirth;
+
+  /**
+   * <p>Geter for idDatabaseBirth.</p>
+   * @return Integer
+   **/
+  @Override
+  public final Integer getIdDatabaseBirth() {
+    return this.idDatabaseBirth;
+  }
+
+  /**
+   * <p>Setter for idDatabaseBirth.</p>
+   * @param pIdDatabaseBirth reference
+   **/
+  @Override
+  public final void setIdDatabaseBirth(final Integer pIdDatabaseBirth) {
+    this.idDatabaseBirth = pIdDatabaseBirth;
+  }
+
+  /**
+   * <p>Geter for idBirth.</p>
+   * @return Long
+   **/
+  @Override
+  public final Long getIdBirth() {
+    return this.idBirth;
+  }
+
+  /**
+   * <p>Setter for idBirth.</p>
+   * @param pIdBirth reference
+   **/
+  @Override
+  public final void setIdBirth(final Long pIdBirth) {
+    this.idBirth = pIdBirth;
+  }
 
   /**
    * <p>Geter for itsOwner.</p>
@@ -56,38 +96,5 @@ public class DestTaxServPurchLn extends APersistableBaseVersion
   @Override
   public final void setItsOwner(final ServicePurchased pItsOwner) {
     this.itsOwner = pItsOwner;
-  }
-
-  //Simple getters and setters:
-  /**
-   * <p>Getter for taxDestination.</p>
-   * @return TaxDestination
-   **/
-  public final TaxDestination getTaxDestination() {
-    return this.taxDestination;
-  }
-
-  /**
-   * <p>Setter for taxDestination.</p>
-   * @param pTaxDestination reference
-   **/
-  public final void setTaxDestination(final TaxDestination pTaxDestination) {
-    this.taxDestination = pTaxDestination;
-  }
-
-  /**
-   * <p>Getter for taxCategory.</p>
-   * @return InvItemTaxCategory
-   **/
-  public final InvItemTaxCategory getTaxCategory() {
-    return this.taxCategory;
-  }
-
-  /**
-   * <p>Setter for taxCategory.</p>
-   * @param pTaxCategory reference
-   **/
-  public final void setTaxCategory(final InvItemTaxCategory pTaxCategory) {
-    this.taxCategory = pTaxCategory;
   }
 }

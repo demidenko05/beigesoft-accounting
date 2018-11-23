@@ -16,6 +16,7 @@ import java.util.Date;
 import java.math.BigDecimal;
 
 import org.beigesoft.accounting.persistable.base.AInvItemMovementCostTax;
+import org.beigesoft.accounting.persistable.base.AItem;
 
 /**
  * <p>
@@ -75,6 +76,15 @@ public class PurchaseInvoiceLine extends AInvItemMovementCostTax
    * <p>Total in foreign currency, if used.</p>
    **/
   private BigDecimal foreignTotal = BigDecimal.ZERO;
+
+  /**
+   * <p>Geter for item.</p>
+   * @return item
+   **/
+  @Override
+  public final AItem<?, ?> getItem() {
+    return getInvItem();
+  }
 
   /**
    * <p>Geter for theRest.</p>
@@ -182,6 +192,24 @@ public class PurchaseInvoiceLine extends AInvItemMovementCostTax
   @Override
   public final void setItsOwner(final PurchaseInvoice pItsOwner) {
     this.itsOwner = pItsOwner;
+  }
+
+  /**
+   * <p>Getter for itsCost.</p>
+   * @return BigDecimal
+   **/
+  @Override
+  public final BigDecimal getItsPrice() {
+    return getItsCost();
+  }
+
+  /**
+   * <p>Setter for itsCost.</p>
+   * @param pItsPrice reference
+   **/
+  @Override
+  public final void setItsPrice(final BigDecimal pItsPrice) {
+    setItsCost(pItsPrice);
   }
 
   /**

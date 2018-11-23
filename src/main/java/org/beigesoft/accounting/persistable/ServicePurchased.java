@@ -14,18 +14,20 @@ package org.beigesoft.accounting.persistable;
 
 import java.util.List;
 
-import org.beigesoft.persistable.APersistableBaseNameVersion;
+import org.beigesoft.persistable.IPersistableBase;
+import org.beigesoft.accounting.persistable.base.AItem;
 
 /**
- * <pre>
+ * <p>
  * Model of service purchased, e.g. "Shipping to NY",
  * "Repair carburetor MZX567G".
  * Version changed time algorithm.
- * </pre>
+ * </p>
  *
  * @author Yury Demidenko
  */
-public class ServicePurchased extends APersistableBaseNameVersion {
+public class ServicePurchased extends AItem<ServicePurchased, DestTaxServPurchLn>
+  implements IPersistableBase {
 
   /**
    * <p>Its category.
@@ -44,9 +46,78 @@ public class ServicePurchased extends APersistableBaseNameVersion {
   private UnitOfMeasure defUnitOfMeasure;
 
   /**
+   * <p>Implicit(there is no database constraints for it)
+   * ID database where Entity was born.
+   * For replication purpose. Not NULL.</p>
+   **/
+  private Integer idDatabaseBirth;
+
+  /**
+   * <p>Implicit(there is no database constraints for it)
+   * ID of this Entity from database where it was born.
+   * For replication purpose. NULL if it was born in current database.</p>
+   **/
+  private Long idBirth;
+
+  /**
    * <p>Destination taxes categories and rules.</p>
    **/
   private List<DestTaxServPurchLn> destinationTaxes;
+
+  /**
+   * <p>Getter for destinationTaxes.</p>
+   * @return List<DestTaxGoodsLn>
+   **/
+  @Override
+  public final List<DestTaxServPurchLn> getDestinationTaxes() {
+    return this.destinationTaxes;
+  }
+
+  /**
+   * <p>Setter for destinationTaxes.</p>
+   * @param pDestinationTaxes reference
+   **/
+  @Override
+  public final void setDestinationTaxes(
+    final List<DestTaxServPurchLn> pDestinationTaxes) {
+    this.destinationTaxes = pDestinationTaxes;
+  }
+
+  /**
+   * <p>Geter for idDatabaseBirth.</p>
+   * @return Integer
+   **/
+  @Override
+  public final Integer getIdDatabaseBirth() {
+    return this.idDatabaseBirth;
+  }
+
+  /**
+   * <p>Setter for idDatabaseBirth.</p>
+   * @param pIdDatabaseBirth reference
+   **/
+  @Override
+  public final void setIdDatabaseBirth(final Integer pIdDatabaseBirth) {
+    this.idDatabaseBirth = pIdDatabaseBirth;
+  }
+
+  /**
+   * <p>Geter for idBirth.</p>
+   * @return Long
+   **/
+  @Override
+  public final Long getIdBirth() {
+    return this.idBirth;
+  }
+
+  /**
+   * <p>Setter for idBirth.</p>
+   * @param pIdBirth reference
+   **/
+  @Override
+  public final void setIdBirth(final Long pIdBirth) {
+    this.idBirth = pIdBirth;
+  }
 
   //Simple getters and setters:
   /**
@@ -64,54 +135,5 @@ public class ServicePurchased extends APersistableBaseNameVersion {
   public final void setItsCategory(
     final ServicePurchasedCategory pItsCategory) {
     this.itsCategory = pItsCategory;
-  }
-
-  /**
-   * <p>Geter for taxCategory.</p>
-   * @return InvItemTaxCategory
-   **/
-  public final InvItemTaxCategory getTaxCategory() {
-    return this.taxCategory;
-  }
-
-  /**
-   * <p>Setter for taxCategory.</p>
-   * @param pTaxCategory reference
-   **/
-  public final void setTaxCategory(final InvItemTaxCategory pTaxCategory) {
-    this.taxCategory = pTaxCategory;
-  }
-
-  /**
-   * <p>Getter for destinationTaxes.</p>
-   * @return List<DestTaxServPurchLn>
-   **/
-  public final List<DestTaxServPurchLn> getDestinationTaxes() {
-    return this.destinationTaxes;
-  }
-
-  /**
-   * <p>Setter for destinationTaxes.</p>
-   * @param pDestinationTaxes reference
-   **/
-  public final void setDestinationTaxes(
-    final List<DestTaxServPurchLn> pDestinationTaxes) {
-    this.destinationTaxes = pDestinationTaxes;
-  }
-
-  /**
-   * <p>Geter for defUnitOfMeasure.</p>
-   * @return UnitOfMeasure
-   **/
-  public final UnitOfMeasure getDefUnitOfMeasure() {
-    return this.defUnitOfMeasure;
-  }
-
-  /**
-   * <p>Setter for defUnitOfMeasure.</p>
-   * @param pDefUnitOfMeasure reference
-   **/
-  public final void setDefUnitOfMeasure(final UnitOfMeasure pDefUnitOfMeasure) {
-    this.defUnitOfMeasure = pDefUnitOfMeasure;
   }
 }

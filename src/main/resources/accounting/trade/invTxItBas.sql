@@ -2,7 +2,7 @@ select TAX as TAXID, TAX.ITSNAME as TAXNAME, sum(ITSTOTAL) as TOTALTAX, sum(FORE
 from
 (
   select TAX, ITSTOTAL, FOREIGNTOTALTAXES
-  from :TGOODSTXLN 
+  from :TGOODTXLN 
   where REVERSEDID is null and INVOICEID=:INVOICEID
 
   union all

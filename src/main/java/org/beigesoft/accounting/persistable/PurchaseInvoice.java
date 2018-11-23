@@ -242,6 +242,14 @@ public class PurchaseInvoice extends ADocWithTaxesPayments implements IInvoice {
   public final void setOmitTaxes(final Boolean pOmitTaxes) {
     this.omitTaxes = pOmitTaxes;
   }
+  /**
+   * <p>Geter for vendor.</p>
+   * @return DebtorCreditor
+   **/
+  @Override
+  public final DebtorCreditor getCustomer() {
+    return this.vendor;
+  }
 
   //Simple getters and setters:
   /**

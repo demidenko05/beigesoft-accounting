@@ -15,6 +15,7 @@ package org.beigesoft.accounting.persistable;
 import java.math.BigDecimal;
 
 import org.beigesoft.persistable.APersistableBaseVersion;
+import org.beigesoft.accounting.persistable.base.AItem;
 
 /**
  * <p>
@@ -115,6 +116,15 @@ public class PurchaseInvoiceServiceLine extends APersistableBaseVersion
    * <p>Origin or destination tax category.</p>
    **/
   private InvItemTaxCategory taxCategory;
+
+  /**
+   * <p>Geter for item.</p>
+   * @return item
+   **/
+  @Override
+  public final AItem<?, ?> getItem() {
+    return getService();
+  }
 
   /**
    * <p>Geter for itsOwner.</p>
@@ -276,6 +286,24 @@ public class PurchaseInvoiceServiceLine extends APersistableBaseVersion
   @Override
   public final void setSubtotal(final BigDecimal pSubtotal) {
     this.subtotal = pSubtotal;
+  }
+
+  /**
+   * <p>Getter for itsCost.</p>
+   * @return BigDecimal
+   **/
+  @Override
+  public final BigDecimal getItsPrice() {
+    return getItsCost();
+  }
+
+  /**
+   * <p>Setter for itsCost.</p>
+   * @param pItsPrice reference
+   **/
+  @Override
+  public final void setItsPrice(final BigDecimal pItsPrice) {
+    setItsCost(pItsPrice);
   }
 
   /**

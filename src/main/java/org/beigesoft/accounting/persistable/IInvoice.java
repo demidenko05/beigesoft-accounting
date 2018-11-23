@@ -24,6 +24,36 @@ import java.math.BigDecimal;
 public interface IInvoice extends IDocWarehouse {
 
   /**
+   * <p>Geter for subtotal.</p>
+   * @return BigDecimal
+   **/
+  BigDecimal getSubtotal();
+
+  /**
+   * <p>Geter for customer/vendor.</p>
+   * @return customer/vendor
+   **/
+  DebtorCreditor getCustomer();
+
+  /**
+   * <p>Setter for subtotal.</p>
+   * @param pSubtotal reference
+   **/
+  void setSubtotal(BigDecimal pSubtotal);
+
+  /**
+   * <p>Getter for totalTaxes.</p>
+   * @return BigDecimal
+   **/
+  BigDecimal getTotalTaxes();
+
+  /**
+   * <p>Setter for totalTaxes.</p>
+   * @param pTotalTaxes reference
+   **/
+  void setTotalTaxes(BigDecimal pTotalTaxes);
+
+  /**
    * <p>Getter for foreignCurrency.</p>
    * @return Currency
    **/

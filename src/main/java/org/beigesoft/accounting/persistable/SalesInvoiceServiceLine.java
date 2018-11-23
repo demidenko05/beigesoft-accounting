@@ -15,6 +15,7 @@ package org.beigesoft.accounting.persistable;
 import java.math.BigDecimal;
 
 import org.beigesoft.persistable.APersistableBaseVersion;
+import org.beigesoft.accounting.persistable.base.AItem;
 
 /**
  * <pre>
@@ -109,6 +110,15 @@ public class SalesInvoiceServiceLine extends APersistableBaseVersion
    * <p>Origin or destination tax category.</p>
    **/
   private InvItemTaxCategory taxCategory;
+
+  /**
+   * <p>Geter for item.</p>
+   * @return item
+   **/
+  @Override
+  public final AItem<?, ?> getItem() {
+    return getService();
+  }
 
   /**
    * <p>Geter for itsOwner.</p>

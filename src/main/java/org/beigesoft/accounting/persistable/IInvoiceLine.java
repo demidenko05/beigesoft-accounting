@@ -17,6 +17,7 @@ import java.math.BigDecimal;
 import org.beigesoft.model.IOwned;
 import org.beigesoft.model.IHasVersion;
 import org.beigesoft.persistable.IPersistableBase;
+import org.beigesoft.accounting.persistable.base.AItem;
 
 /**
  * <p>
@@ -34,6 +35,12 @@ public interface IInvoiceLine<T extends IInvoice>
    * @return Long
    **/
   Long getReversedId();
+
+  /**
+   * <p>Getter for item.</p>
+   * @return item
+   **/
+  AItem<?, ?> getItem();
 
   /**
    * <p>Setter for reversedId.</p>
@@ -124,6 +131,19 @@ public interface IInvoiceLine<T extends IInvoice>
    * @param pSubtotal reference
    **/
   void setSubtotal(BigDecimal pSubtotal);
+
+  /**
+   * <p>Getter for price/cost.</p>
+   * @return BigDecimal
+   **/
+  BigDecimal getItsPrice();
+
+  /**
+   * <p>Setter for price/cost.</p>
+   * @param pItsPrice reference
+   **/
+  void setItsPrice(BigDecimal pItsPrice);
+
   /**
    * <p>Getter for foreignPrice.</p>
    * @return BigDecimal
