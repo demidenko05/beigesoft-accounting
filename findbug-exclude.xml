@@ -11,6 +11,14 @@
   Using annotation "immutable" is the best way to implements logic: "do not change
   mutable object outside or better - by annotated allowChangeImmutableFor[]".-->
   <Match>
+     <Class name="org.beigesoft.accounting.processor.UtlInvoice" />
+     <Bug pattern="EI_EXPOSE_REP" />
+  </Match>
+  <Match>
+     <Class name="org.beigesoft.accounting.processor.UtlInvoice" />
+     <Bug pattern="EI_EXPOSE_REP2" />
+  </Match>
+  <Match>
      <Class name="org.beigesoft.accounting.persistable.BankStatementLine" />
      <Bug pattern="EI_EXPOSE_REP" />
   </Match>

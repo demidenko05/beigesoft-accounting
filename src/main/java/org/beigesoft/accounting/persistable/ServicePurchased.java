@@ -26,24 +26,15 @@ import org.beigesoft.accounting.persistable.base.AItem;
  *
  * @author Yury Demidenko
  */
-public class ServicePurchased extends AItem<ServicePurchased, DestTaxServPurchLn>
-  implements IPersistableBase {
+public class ServicePurchased
+  extends AItem<ServicePurchased, DestTaxServPurchLn>
+    implements IPersistableBase {
 
   /**
    * <p>Its category.
    * It used to filter list of services and as subaccount.</p>
    **/
   private ServicePurchasedCategory itsCategory;
-
-  /**
-   * <p>Tax category e.g. "NY: tax1 10%, tax2 5%".</p>
-   **/
-  private InvItemTaxCategory taxCategory;
-
-  /**
-   * <p>Default unit of measure.</p>
-   **/
-  private UnitOfMeasure defUnitOfMeasure;
 
   /**
    * <p>Implicit(there is no database constraints for it)

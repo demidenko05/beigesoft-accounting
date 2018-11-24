@@ -20,10 +20,12 @@ import org.beigesoft.accounting.persistable.IInvoiceLine;
  * <p>Model of invoice tax Lines for service line for
  * implementing item basis method.</p>
  *
+ * @param <T> invoice type
+ * @param <L> invoice line type
  * @author Yury Demidenko
  */
-public abstract class ALineTxLn <T extends IInvoice, LN extends IInvoiceLine<T>>
-  extends ADocTaxLineFc implements IOwned<LN> {
+public abstract class ALineTxLn<T extends IInvoice, L extends IInvoiceLine<T>>
+  extends ADocTaxLineFc implements IOwned<L> {
 
   /**
    * <p>Invoice ID (to improve performance).</p>

@@ -13,27 +13,20 @@ package org.beigesoft.accounting.processor;
  */
 
 import java.util.Map;
-import java.util.Set;
-import java.util.HashSet;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
 
 import org.beigesoft.log.ILogger;
-import org.beigesoft.exception.ExceptionWithCode;
 import org.beigesoft.model.IRecordSet;
 import org.beigesoft.service.ISrvOrm;
 import org.beigesoft.service.ISrvDatabase;
 import org.beigesoft.service.ISrvNumberToString;
 import org.beigesoft.accounting.model.CmprInvLnTotal;
-import org.beigesoft.accounting.model.CmprTaxCatLnRate;
-import org.beigesoft.accounting.persistable.base.AInvTxLn;
+import org.beigesoft.accounting.persistable.base.ADestTaxItemLn;
 import org.beigesoft.accounting.persistable.AccSettings;
 import org.beigesoft.accounting.persistable.IInvoice;
 import org.beigesoft.accounting.persistable.IInvoiceLine;
@@ -42,7 +35,6 @@ import org.beigesoft.accounting.persistable.Tax;
 import org.beigesoft.accounting.persistable.TaxDestination;
 import org.beigesoft.accounting.persistable.InvItemTaxCategory;
 import org.beigesoft.accounting.persistable.InvItemTaxCategoryLine;
-import org.beigesoft.accounting.service.ISrvAccSettings;
 
 /**
  * <p>Utility for purchase/sales invoice. Base shared code-bunch.</p>
@@ -68,147 +60,332 @@ public class UtlInvBase<RS> {
   private ISrvOrm<RS> srvOrm;
 
   /**
-   * <p>Query invoice totals.</p>
-   **/
-  private String quTotals;
-
-  /**
-   * <p>Query invoice taxes item basis method
-   * non-aggregate tax rate.</p>
-   **/
-  private String quTxItBas;
-
-  /**
-   * <p>Query invoice taxes item basis method
-   * aggregate tax rate.</p>
-   **/
-  private String quTxItBasAggr;
-
-  /**
-   * <p>Query invoice taxes invoice basis method
-   * aggregate tax rate.</p>
-   **/
-  private String quTxInvBasAggr;
-
-  /**
-   * <p>Query invoice taxes invoice basis method
-   * non-aggregate tax rate.</p>
-   **/
-  private String quTxInvBas;
-
-  /**
-   * <p>File invoice totals.</p>
-   **/
-  private String flTotals;
-
-  /**
-   * <p>File invoice taxes item basis method
-   * non-aggregate tax rate.</p>
-   **/
-  private String flTxItBas;
-
-  /**
-   * <p>File invoice taxes item basis method
-   * aggregate tax rate.</p>
-   **/
-  private String flTxItBasAggr;
-
-  /**
-   * <p>File invoice taxes invoice basis method
-   * aggregate tax rate.</p>
-   **/
-  private String flTxInvBasAggr;
-
-  /**
-   * <p>File invoice taxes invoice basis method
-   * non-aggregate tax rate.</p>
-   **/
-  private String flTxInvBas;
-
-  /**
-   * <p>Business service for accounting settings.</p>
-   **/
-  private ISrvAccSettings srvAccSettings;
-
-  /**
    * <p>Service print number.</p>
    **/
   private ISrvNumberToString srvNumberToString;
 
   /**
-   * <p>Makes invoice totals after its line has been changed/deleted.</p>
-   * @param pReqVars additional param
-   * @param pInv Invoice
-   * @param pTblNms tables names
-   * @throws Exception - an exception
+   * <p>Makes invoice line taxes, totals.</p>
+   * @param <T> invoice type
+   * @param <L> invoice line type
+   * @param pReqVars request scoped vars
+   * @param pLine invoice line
+   * @param pAs Accounting Settings
+   * @param pTxRules NULL if not taxable
+   * @param pMakerLn invoice line taxes item basis non-aggregate maker
+   * @throws Exception - an exception.
    **/
-  public final <T extends IInvoice> void makeTotals(
-    final Map<String, Object> pReqVars, final T pInv,
-      final String[] pTblNms) throws Exception {
-    String query = lazyGetQuTotals();
-    query = query.replace(":ITSOWNER", pInv.getItsId().toString());
-    if (pTblNms.length == 3) { //sales/purchase:
-      query = query.replace(":TGOODLN", pTblNms[0]);
-      query = query.replace(":TSERVICELN", pTblNms[1]);
-      query = query.replace(":TTAXLN", pTblNms[2]);
-    } else { //returns:
-      query = query.replace(":TITEMLN", pTblNms[0]);
-      query = query.replace(":TTAXLN", pTblNms[1]);
-    }
-    String[] columns = new String[] {"SUBTOTAL", "ITSTOTAL", "TOTALTAXES",
-      "FOREIGNSUBTOTAL", "FOREIGNTOTAL", "FOREIGNTOTALTAXES"};
-    Double[] totals = getSrvDatabase().evalDoubleResults(query, columns);
-    if (totals[0] == null) {
-      totals[0] = 0d;
-    }
-    if (totals[1] == null) {
-      totals[1] = 0d;
-    }
-    if (totals[2] == null) {
-      totals[2] = 0d;
-    }
-    if (totals[3] == null) {
-      totals[3] = 0d;
-    }
-    if (totals[4] == null) {
-      totals[4] = 0d;
-    }
-    if (totals[5] == null) {
-      totals[5] = 0d;
-    }
-    AccSettings as = getSrvAccSettings().lazyGetAccSettings(pReqVars);
-    if (pInv.getPriceIncTax()) {
-      pInv.setItsTotal(BigDecimal.valueOf(totals[1]).setScale(
-        as.getPricePrecision(), as.getRoundingMode()));
-      pInv.setTotalTaxes(BigDecimal.valueOf(totals[2]).setScale(
-        as.getPricePrecision(), as.getSalTaxRoundMode()));
-      pInv.setSubtotal(pInv.getItsTotal().subtract(pInv.getTotalTaxes()));
-      pInv.setForeignTotal(BigDecimal.valueOf(totals[4]).setScale(
-        as.getPricePrecision(), as.getRoundingMode()));
-      pInv.setForeignTotalTaxes(BigDecimal.valueOf(totals[5]).setScale(
-        as.getPricePrecision(), as.getSalTaxRoundMode()));
-      pInv.setForeignSubtotal(pInv.getForeignTotal().
-        subtract(pInv.getForeignTotalTaxes()));
+  public final <T extends IInvoice, L extends IInvoiceLine<T>> void makeLine(
+    final Map<String, Object> pReqVars, final L pLine, final AccSettings pAs,
+      final TaxDestination pTxRules,
+        final IMakerLn<T, L> pMakerLn) throws Exception {
+    if (pTxRules != null) {
+      pLine.setTaxCategory(pLine.getItem().getTaxCategory());
+      if (pLine.getItsOwner().getCustomer().getTaxDestination() != null) {
+        //override tax method:
+        pReqVars.put(pMakerLn.getDstTxItLnCl().getSimpleName()
+          + "itsOwnerdeepLevel", 1);
+        List<ADestTaxItemLn<?>> dtls = (List<ADestTaxItemLn<?>>) getSrvOrm()
+          .retrieveListWithConditions(pReqVars, pMakerLn.getDstTxItLnCl(),
+            "where ITSOWNER=" + pLine.getItem().getItsId());
+        pReqVars.remove(pMakerLn.getDstTxItLnCl().getSimpleName()
+          + "itsOwnerdeepLevel");
+        for (ADestTaxItemLn<?> dtl : dtls) {
+          if (dtl.getTaxDestination().getItsId().equals(pLine.getItsOwner()
+            .getCustomer().getTaxDestination().getItsId())) {
+            pLine.setTaxCategory(dtl.getTaxCategory()); //it may be null
+            break;
+          }
+        }
+      }
     } else {
-      pInv.setSubtotal(BigDecimal.valueOf(totals[0]).setScale(
-        as.getPricePrecision(), as.getRoundingMode()));
-      pInv.setTotalTaxes(BigDecimal.valueOf(totals[2]).setScale(
-        as.getPricePrecision(), as.getSalTaxRoundMode()));
-      pInv.setItsTotal(pInv.getSubtotal().add(pInv.getTotalTaxes()));
-      pInv.setForeignSubtotal(BigDecimal.valueOf(totals[3]).setScale(
-        as.getPricePrecision(), as.getRoundingMode()));
-      pInv.setForeignTotalTaxes(BigDecimal.valueOf(totals[5]).setScale(
-        as.getPricePrecision(), as.getSalTaxRoundMode()));
-      pInv.setForeignTotal(pInv.getForeignSubtotal().
-        add(pInv.getForeignTotalTaxes()));
+      pLine.setTaxCategory(null);
     }
-    getSrvOrm().updateEntity(pReqVars, pInv);
+    if (pLine.getTaxCategory() != null) {
+      if (!pTxRules.getSalTaxIsInvoiceBase()) {
+        BigDecimal totTxs = BigDecimal.ZERO;
+        BigDecimal totTxsFc = BigDecimal.ZERO;
+        BigDecimal bd100 = new BigDecimal("100.00");
+        if (!pTxRules.getSalTaxUseAggregItBas()) {
+          pMakerLn.mkLnTxItBasNonAggr(pReqVars, pLine, pAs, pTxRules);
+        } else {
+          if (pLine.getItsOwner().getPriceIncTax()) {
+        totTxs = pLine.getItsTotal().subtract(pLine.getItsTotal()
+    .divide(BigDecimal.ONE.add(pLine.getTaxCategory().getAggrOnlyPercent()
+  .divide(bd100)), pAs.getPricePrecision(), pTxRules.getSalTaxRoundMode()));
+            if (pLine.getItsOwner().getForeignCurrency() != null) {
+        totTxsFc = pLine.getForeignTotal().subtract(pLine.getForeignTotal()
+    .divide(BigDecimal.ONE.add(pLine.getTaxCategory().getAggrOnlyPercent()
+  .divide(bd100)), pAs.getPricePrecision(), pTxRules.getSalTaxRoundMode()));
+            }
+          } else {
+            totTxs = pLine.getSubtotal().multiply(pLine.getTaxCategory()
+          .getAggrOnlyPercent()).divide(bd100, pAs.getPricePrecision(),
+        pTxRules.getSalTaxRoundMode());
+            if (pLine.getItsOwner().getForeignCurrency() != null) {
+              totTxsFc = pLine.getForeignSubtotal().multiply(pLine
+            .getTaxCategory().getAggrOnlyPercent()).divide(bd100, pAs
+          .getPricePrecision(), pTxRules.getSalTaxRoundMode());
+            }
+          }
+          pLine.setTaxesDescription(pLine.getTaxCategory().getItsName());
+        }
+        if (pMakerLn.getIsTxByUser()) {
+          if (pLine.getItsOwner().getForeignCurrency() == null) {
+            if (pLine.getTotalTaxes().compareTo(totTxs) != 0) {
+              if (pLine.getDescription() == null) {
+                pLine.setDescription(pLine.getTotalTaxes().toString() + "!="
+                  + totTxs + "!");
+              } else {
+                pLine.setDescription(pLine.getDescription() + " " + pLine
+                  .getTotalTaxes().toString() + "!=" + totTxs + "!");
+              }
+            }
+          } else {
+            pLine.setTotalTaxes(totTxs);
+            if (pLine.getForeignTotalTaxes().compareTo(totTxsFc) != 0) {
+              if (pLine.getDescription() == null) {
+                pLine.setDescription(pLine.getForeignTotalTaxes().toString()
+                  + "!=" + totTxsFc + "!");
+              } else {
+                pLine.setDescription(pLine.getDescription() + " " + pLine
+                  .getForeignTotalTaxes().toString() + "!=" + totTxsFc + "!");
+              }
+            }
+          }
+        } else {
+          pLine.setTotalTaxes(totTxs);
+          pLine.setForeignTotalTaxes(totTxsFc);
+        }
+      } else {
+        pLine.setTaxesDescription(pLine.getTaxCategory().getItsName());
+        pLine.setTotalTaxes(BigDecimal.ZERO);
+        pLine.setForeignTotalTaxes(BigDecimal.ZERO);
+      }
+    } else {
+      pLine.setTaxesDescription(null);
+      pLine.setTotalTaxes(BigDecimal.ZERO);
+      pLine.setForeignTotalTaxes(BigDecimal.ZERO);
+    }
+    if (pLine.getItsOwner().getForeignCurrency() == null) {
+      pLine.setForeignTotalTaxes(BigDecimal.ZERO);
+      pLine.setForeignTotal(BigDecimal.ZERO);
+      pLine.setForeignSubtotal(BigDecimal.ZERO);
+    }
+    //invoice basis - lines tax, subt, tot will be adjusted later!
+    if (!pLine.getItsOwner().getPriceIncTax()) {
+      pLine.setItsTotal(pLine.getSubtotal().add(pLine.getTotalTaxes()));
+      if (pLine.getItsOwner().getForeignCurrency() != null) {
+        pLine.setForeignTotal(pLine.getForeignSubtotal()
+          .add(pLine.getForeignTotalTaxes()));
+      }
+    } else {
+      pLine.setSubtotal(pLine.getItsTotal().subtract(pLine.getTotalTaxes()));
+      if (pLine.getItsOwner().getForeignCurrency() != null) {
+        pLine.setForeignSubtotal(pLine.getForeignSubtotal()
+          .subtract(pLine.getForeignTotalTaxes()));
+      }
+    }
+    if (pLine.getIsNew()) {
+      getSrvOrm().insertEntity(pReqVars, pLine);
+    } else {
+      getSrvOrm().updateEntity(pReqVars, pLine);
+    }
+  }
+
+  /**
+   * <p>Retrieve from database bundle of tax data.</p>
+   * @param <T> invoice type
+   * @param <L> invoice line type
+   * @param pReqVars request scoped vars
+   * @param pLine affected line
+   * @param pAs Accounting Settings
+   * @param pTxRules taxable rules
+   * @param pMakerLn invoice line taxes item basis non-aggregate maker
+   * @return taxes data
+   * @throws Exception - an exception.
+   **/
+  public final <T extends IInvoice, L extends IInvoiceLine<T>>
+    DataTx retrieveDataTx(final Map<String, Object> pReqVars,
+      final L pLine, final AccSettings pAs, final TaxDestination pTxRules,
+        final IMakerLn<T, L> pMakerLn) throws Exception {
+    DataTx dtTx = new DataTx();
+    if (getLogger().getIsShowDebugMessagesFor(getClass())
+      && getLogger().getDetailLevel() > 40000) {
+      getLogger().debug(pReqVars, UtlInvBase.class,
+        "Tax rules: aggregate/invoice basis/zip/RM = " + pTxRules
+          .getSalTaxUseAggregItBas() + "/" + pTxRules.getSalTaxIsInvoiceBase()
+            + "/" + pTxRules.getRegZip() + "/" + pTxRules.getSalTaxRoundMode());
+      String txCat;
+      if (pLine.getTaxCategory() != null) {
+        txCat = pLine.getTaxCategory().getItsName();
+      } else {
+        txCat = "-";
+      }
+      getLogger().debug(pReqVars, UtlInvBase.class, "Item: name/tax category = "
+        + pLine.getItem().getItsName() + "/" + txCat);
+    }
+    String query;
+    if (!pTxRules.getSalTaxUseAggregItBas() && !(pTxRules
+      .getSalTaxIsInvoiceBase() && pLine.getItsOwner().getPriceIncTax())) {
+      //non-aggregate except invoice basis with included taxes:
+      dtTx.setTxs(new ArrayList<Tax>());
+      dtTx.setTxTotTaxb(new ArrayList<Double>());
+      if (!pTxRules.getSalTaxIsInvoiceBase()) {
+        //item basis:
+        query = pMakerLn.lazyGetQuTxItBas();
+      } else {
+        //invoice basis, taxes excluded:
+        dtTx.setTxPerc(new ArrayList<Double>());
+        query = pMakerLn.lazyGetQuTxInvBas();
+      }
+    } else { //non-aggregate invoice basis with included taxes
+      //and aggregate for others:
+      dtTx.setTxdLns(new ArrayList<SalesInvoiceServiceLine>());
+      if (!pTxRules.getSalTaxIsInvoiceBase()) { //item basis
+        query = pMakerLn.lazyGetQuTxItBasAggr();
+      } else { //invoice basis:
+        query = pMakerLn.lazyGetQuTxInvBasAggr();
+      }
+    }
+    query = query.replace(":INVOICEID", pLine.getItsOwner()
+      .getItsId().toString());
+    IRecordSet<RS> recordSet = null;
+    try {
+      recordSet = getSrvDatabase().retrieveRecords(query);
+      if (recordSet.moveToFirst()) {
+        do {
+          Long txId = recordSet.getLong("TAXID");
+          String txNm = recordSet.getString("TAXNAME");
+          Tax tax = new Tax();
+          tax.setItsId(txId);
+          tax.setItsName(txNm);
+          if (!pTxRules.getSalTaxUseAggregItBas() && !(pTxRules
+           .getSalTaxIsInvoiceBase() && pLine.getItsOwner().getPriceIncTax())) {
+            //non-aggregate except invoice basis with included taxes:
+            dtTx.getTxs().add(tax);
+            if (!pTxRules.getSalTaxIsInvoiceBase()) {
+              //item basis, taxes excluded/included:
+              dtTx.getTxTotTaxb().add(recordSet.getDouble("TOTALTAX"));
+            } else {
+              //invoice basis, taxes excluded:
+              dtTx.getTxPerc().add(recordSet.getDouble("ITSPERCENTAGE"));
+              dtTx.getTxTotTaxb().add(recordSet.getDouble("SUBTOTAL"));
+            }
+          } else { //non-aggregate invoice basis with included taxes
+            //and aggregate for others:
+            Double percent = recordSet.getDouble("ITSPERCENTAGE");
+            Long tcId = recordSet.getLong("TAXCATID");
+            if (!pTxRules.getSalTaxIsInvoiceBase()) { //item basis:
+              Long clId = recordSet.getLong("CLID");
+              SalesInvoiceServiceLine txdLn = makeTxdLine(dtTx.getTxdLns(),
+                clId, tcId, tax, percent, pAs);
+              txdLn.setTotalTaxes(BigDecimal.valueOf(recordSet
+                .getDouble("TOTALTAXES"))
+                  .setScale(pAs.getPricePrecision(), RoundingMode.HALF_UP));
+            } else { //invoice basis:
+              SalesInvoiceServiceLine txdLn = makeTxdLine(dtTx.getTxdLns(),
+                tcId, tcId, tax, percent, pAs);
+              txdLn.setItsTotal(BigDecimal.valueOf(recordSet
+                .getDouble("ITSTOTAL"))
+                  .setScale(pAs.getPricePrecision(), RoundingMode.HALF_UP));
+              txdLn.setSubtotal(BigDecimal.valueOf(recordSet
+                .getDouble("SUBTOTAL"))
+                  .setScale(pAs.getPricePrecision(), RoundingMode.HALF_UP));
+            }
+          }
+        } while (recordSet.moveToNext());
+      }
+    } finally {
+      if (recordSet != null) {
+        recordSet.close();
+      }
+    }
+    return dtTx;
+  }
+
+  /**
+   * <p>Adjust invoice lines totals/subtotals/cost for invoice basis.</p>
+   * @param <T> invoice type
+   * @param pReqVars additional param
+   * @param pInv invoice
+   * @param pTxdLns Tax Data lines
+   * @param pAs AS
+   * @param pMakerLn invoice maker
+   * @throws Exception an Exception
+   **/
+  public final <T extends IInvoice> void adjustInvoiceLns(
+    final Map<String, Object> pReqVars, final T pInv,
+      final List<SalesInvoiceServiceLine> pTxdLns, final AccSettings pAs,
+        final IMakerLn<T, ?> pMakerLn) throws Exception {
+    String tbNm = pMakerLn.getGoodLnCl().getSimpleName();
+    pReqVars.put(tbNm + "itsOwnerdeepLevel", 1);
+    List<IInvoiceLine<T>> gls = getSrvOrm().retrieveListWithConditions(pReqVars,
+      pMakerLn.getGoodLnCl(), "where " + tbNm.toUpperCase()
+        + ".TAXCATEGORY is not null and ITSOWNER=" + pInv.getItsId());
+    pReqVars.remove(tbNm + "itsOwnerdeepLevel");
+    List<IInvoiceLine<T>> sls = null;
+    if (pMakerLn.getServiceLnCl() != null) {
+      tbNm = pMakerLn.getServiceLnCl().getSimpleName();
+      pReqVars.put(tbNm + "itsOwnerdeepLevel", 1);
+      sls = getSrvOrm().retrieveListWithConditions(pReqVars,
+        pMakerLn.getGoodLnCl(), "where " + tbNm.toUpperCase()
+          + ".TAXCATEGORY is not null and ITSOWNER=" + pInv.getItsId());
+      pReqVars.remove(tbNm + "itsOwnerdeepLevel");
+    }
+    //matched to current tax category (affected) invoice lines:
+    List<IInvoiceLine<T>> ilsm = new ArrayList<IInvoiceLine<T>>();
+    Comparator<IInvoiceLine<?>> cmpr = Collections
+      .reverseOrder(new CmprInvLnTotal());
+    for (SalesInvoiceServiceLine txdLn : pTxdLns) {
+      for (IInvoiceLine<T> gl : gls) {
+        if (gl.getTaxCategory().getItsId()
+          .equals(txdLn.getTaxCategory().getItsId())) {
+          ilsm.add(gl);
+        }
+      }
+      if (sls != null) {
+        for (IInvoiceLine<T> sl : sls) {
+          if (sl.getTaxCategory().getItsId()
+            .equals(txdLn.getTaxCategory().getItsId())) {
+            ilsm.add(sl);
+          }
+        }
+      }
+      Collections.sort(ilsm, cmpr);
+      BigDecimal txRest = txdLn.getTotalTaxes();
+      for (int i = 0; i < ilsm.size(); i++) {
+        if (i + 1 == ilsm.size()) {
+          if (pInv.getPriceIncTax()) {
+            ilsm.get(i).setSubtotal(ilsm.get(i).getItsTotal().subtract(txRest));
+          } else {
+            ilsm.get(i).setItsTotal(ilsm.get(i).getSubtotal().add(txRest));
+          }
+          ilsm.get(i).setTotalTaxes(txRest);
+        } else {
+          BigDecimal taxTot;
+          if (pInv.getPriceIncTax()) {
+            taxTot = txdLn.getTotalTaxes().multiply(ilsm.get(i).getItsTotal())
+    .divide(txdLn.getItsTotal(), pAs.getPricePrecision(), RoundingMode.HALF_UP);
+            ilsm.get(i).setSubtotal(ilsm.get(i).getItsTotal().subtract(taxTot));
+          } else {
+            taxTot = txdLn.getTotalTaxes().multiply(ilsm.get(i).getSubtotal())
+    .divide(txdLn.getSubtotal(), pAs.getPricePrecision(), RoundingMode.HALF_UP);
+            ilsm.get(i).setItsTotal(ilsm.get(i).getSubtotal().add(taxTot));
+          }
+          ilsm.get(i).setTotalTaxes(taxTot);
+          txRest = txRest.subtract(taxTot);
+        }
+        getSrvOrm().updateEntity(pReqVars, ilsm.get(i));
+      }
+      ilsm.clear();
+    }
   }
 
   /**
    * <p>Make invoice line that stores taxes data in lines set
    * for invoice basis or item basis aggregate rate.</p>
-   * @param pTxdLns TD lines
+   * @param pTxdLns Tax Data lines
    * @param pTdlId line ID
    * @param pCatId tax category ID
    * @param pTax tax
@@ -248,7 +425,7 @@ public class UtlInvBase<RS> {
   /**
    * <p>Reveal shared tax rules for invoice..</p>
    * @param pReqVars request scoped vars
-   * @param pCart cart
+   * @param pInv invoice
    * @param pAs Accounting Settings
    * @param pIsExtrTx if extract taxes
    * @return tax rules, NULL if not taxable
@@ -271,93 +448,6 @@ public class UtlInvBase<RS> {
       }
     }
     return txRules;
-  }
-
-  /**
-   * <p>Lazy get for quTotals.</p>
-   * @return String
-   * @throws IOException - IO exception
-   **/
-  public final String lazyGetQuTotals() throws IOException {
-    if (this.quTotals == null) {
-      this.quTotals = loadString("/accounting/trade/" + this.flTotals);
-    }
-    return this.quTotals;
-  }
-
-  /**
-   * <p>Lazy get for quTxInvBas.</p>
-   * @return String
-   * @throws IOException - IO exception
-   **/
-  public final String lazyGetQuTxInvBas() throws IOException {
-    if (this.quTxInvBas == null) {
-      this.quTxInvBas = loadString("/accounting/trade/" + this.flTxInvBas);
-    }
-    return this.quTxInvBas;
-  }
-
-  /**
-   * <p>Lazy get for quTxInvBasAggr.</p>
-   * @return String
-   * @throws IOException - IO exception
-   **/
-  public final String lazyGetQuTxInvBasAggr() throws IOException {
-    if (this.quTxInvBasAggr == null) {
-      this.quTxInvBasAggr = loadString("/accounting/trade/"
-        + this.flTxInvBasAggr);
-    }
-    return this.quTxInvBasAggr;
-  }
-
-  /**
-   * <p>Lazy get for quTxItBasAggr.</p>
-   * @return String
-   * @throws IOException - IO exception
-   **/
-  public final String lazyGetQuTxItBasAggr() throws IOException {
-    if (this.quTxItBasAggr == null) {
-      this.quTxItBasAggr =
-        loadString("/accounting/trade/" + this.flTxItBasAggr);
-    }
-    return this.quTxItBasAggr;
-  }
-
-  /**
-   * <p>Lazy get for quTxItBas.</p>
-   * @return String
-   * @throws IOException - IO exception
-   **/
-  public final String lazyGetQuTxItBas() throws IOException {
-    if (this.quTxItBas == null) {
-      this.quTxItBas = loadString("/accounting/trade/"
-        + this.flTxItBas);
-    }
-    return this.quTxItBas;
-  }
-
-  /**
-   * <p>Load string file (usually SQL query).</p>
-   * @param pFileName file name
-   * @return String usually SQL query
-   * @throws IOException - IO exception
-   **/
-  public final String loadString(final String pFileName) throws IOException {
-    URL urlFile = UtlInvBase.class.getResource(pFileName);
-    if (urlFile != null) {
-      InputStream inputStream = null;
-      try {
-        inputStream = UtlInvBase.class.getResourceAsStream(pFileName);
-        byte[] bArray = new byte[inputStream.available()];
-        inputStream.read(bArray, 0, inputStream.available());
-        return new String(bArray, "UTF-8");
-      } finally {
-        if (inputStream != null) {
-          inputStream.close();
-        }
-      }
-    }
-    return null;
   }
 
   /**
@@ -394,46 +484,6 @@ public class UtlInvBase<RS> {
   }
 
   /**
-   * <p>Setter for quTotals.</p>
-   * @param pQuTotals reference
-   **/
-  public final void setQuTotals(final String pQuTotals) {
-    this.quTotals = pQuTotals;
-  }
-
-  /**
-   * <p>Setter for quTxItBas.</p>
-   * @param pQuTxItBas reference
-   **/
-  public final void setQuTxItBas(final String pQuTxItBas) {
-    this.quTxItBas = pQuTxItBas;
-  }
-
-  /**
-   * <p>Setter for quTxItBasAggr.</p>
-   * @param pQuTxItBasAggr reference
-   **/
-  public final void setQuTxItBasAggr(final String pQuTxItBasAggr) {
-    this.quTxItBasAggr = pQuTxItBasAggr;
-  }
-
-  /**
-   * <p>Setter for quTxInvBasAggr.</p>
-   * @param pQuTxInvBasAggr reference
-   **/
-  public final void setQuTxInvBasAggr(final String pQuTxInvBasAggr) {
-    this.quTxInvBasAggr = pQuTxInvBasAggr;
-  }
-
-  /**
-   * <p>Setter for quTxInvBas.</p>
-   * @param pQuTxInvBas reference
-   **/
-  public final void setQuTxInvBas(final String pQuTxInvBas) {
-    this.quTxInvBas = pQuTxInvBas;
-  }
-
-  /**
    * <p>Getter for srvDatabase.</p>
    * @return ISrvDatabase<RS>
    **/
@@ -466,22 +516,6 @@ public class UtlInvBase<RS> {
   }
 
   /**
-   * <p>Getter for srvAccSettings.</p>
-   * @return ISrvAccSettings
-   **/
-  public final ISrvAccSettings getSrvAccSettings() {
-    return this.srvAccSettings;
-  }
-
-  /**
-   * <p>Setter for srvAccSettings.</p>
-   * @param pSrvAccSettings reference
-   **/
-  public final void setSrvAccSettings(final ISrvAccSettings pSrvAccSettings) {
-    this.srvAccSettings = pSrvAccSettings;
-  }
-
-  /**
    * <p>Geter for logger.</p>
    * @return ILogger
    **/
@@ -495,85 +529,5 @@ public class UtlInvBase<RS> {
    **/
   public final void setLogger(final ILogger pLogger) {
     this.logger = pLogger;
-  }
-
-  /**
-   * <p>Getter for flTotals.</p>
-   * @return String
-   **/
-  public final String getFlTotals() {
-    return this.flTotals;
-  }
-
-  /**
-   * <p>Setter for flTotals.</p>
-   * @param pFlTotals reference
-   **/
-  public final void setFlTotals(final String pFlTotals) {
-    this.flTotals = pFlTotals;
-  }
-
-  /**
-   * <p>Getter for flTxItBas.</p>
-   * @return String
-   **/
-  public final String getFlTxItBas() {
-    return this.flTxItBas;
-  }
-
-  /**
-   * <p>Setter for flTxItBas.</p>
-   * @param pFlTxItBas reference
-   **/
-  public final void setFlTxItBas(final String pFlTxItBas) {
-    this.flTxItBas = pFlTxItBas;
-  }
-
-  /**
-   * <p>Getter for flTxItBasAggr.</p>
-   * @return String
-   **/
-  public final String getFlTxItBasAggr() {
-    return this.flTxItBasAggr;
-  }
-
-  /**
-   * <p>Setter for flTxItBasAggr.</p>
-   * @param pFlTxItBasAggr reference
-   **/
-  public final void setFlTxItBasAggr(final String pFlTxItBasAggr) {
-    this.flTxItBasAggr = pFlTxItBasAggr;
-  }
-
-  /**
-   * <p>Getter for flTxInvBasAggr.</p>
-   * @return String
-   **/
-  public final String getFlTxInvBasAggr() {
-    return this.flTxInvBasAggr;
-  }
-
-  /**
-   * <p>Setter for flTxInvBasAggr.</p>
-   * @param pFlTxInvBasAggr reference
-   **/
-  public final void setFlTxInvBasAggr(final String pFlTxInvBasAggr) {
-    this.flTxInvBasAggr = pFlTxInvBasAggr;
-  }
-
-  /**
-   * <p>Getter for flTxInvBas.</p>
-   * @return String
-   **/
-  public final String getFlTxInvBas() {
-    return this.flTxInvBas;
-  }
-
-  /**
-   * <p>Setter for flTxInvBas.</p>
-   * @param pFlTxInvBas reference
-   **/
-  public final void setFlTxInvBas(final String pFlTxInvBas) {
-    this.flTxInvBas = pFlTxInvBas;
   }
 }

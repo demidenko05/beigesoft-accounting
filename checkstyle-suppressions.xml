@@ -26,4 +26,6 @@
     files="BalanceAtAllDirtyCheck|SrvBalanceStd|GoodsLoss|GoodsLossLine|SalesReturn|SalesReturnLine|PurchaseReturn|PurchaseReturnLine|HndlAccVarsRequest|PrcInvoiceLnGfe"/>
   <suppress checks="MagicNumberCheck"
     files="MoveItems|MoveItemsLine|BeginningInventory|BeginningInventoryLine|InvoiceReportPdf|BalanceSheetPdf|SrvBalanceSheet|ServiceToSaleCategory|UtlSalesGoodsServiceLine|UtlPurchaseGoodsServiceLine|PrcPurchRetGfe"/>
+  <suppress checks="MagicNumberCheck"
+    files="UtlInvBase|UtlInvoice"/>
 </suppressions>
