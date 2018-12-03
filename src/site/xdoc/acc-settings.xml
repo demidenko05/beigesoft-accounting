@@ -92,7 +92,7 @@ security.provider.11=org.bouncycastle.jce.provider.BouncyCastleProvider
   then you should install "Java Cryptography Extension (JCE) Unlimited Strength Jurisdiction Policy Files for Java 8" into
   folder [JAVA_HOME]/lib/security. For MS Windows you can find these files in folder "C:\Program Files (x86)\Java\jre[version#8]\lib\security\policy\unlimited",
   otherwise download these from Oracle HTTPS web-site.
-  Encryption with strong keys (long size) protects you (your information) from scams (swindlers), so any law must protect you too.
+  Encryption with strong keys (long size) protects you (your information) from swindlers, so any law must protect you too.
 </p>
 
 <p>
@@ -1573,13 +1573,10 @@ Debit "Cash In Bank.#1236786b17 in Bank" Credit "Bob's Started Capital" for 40,0
   </ul>
 </p>
 
-<h4>Running Beige-Accounting in "protected from light scamware" mode.</h4>
-<p>English language likes freedom, so here word "scam" means a person who deprives you of any your value (tangible/intangible) by using non-robbery's methods like cheating.
-  This word songs similar to European one "skam" (means shame) and English "scar".
-</p>
+<h4>Running Beige-Accounting in "protected from light harmful software" mode.</h4>
 <p>
-  Light scamware is software that can poison an application or it is any harmful-script, e.g script on HTML page.
-  Light scamware is running under your regular account and can read file system that you can read.
+  Light harmful software hide inside a regular application (not inside an operation system file), or it is any harmful-script, e.g script on HTML page.
+  Light harmful software run under your regular account, and it can read any file that you can read.
   On *nix OS (Linux...) you can run Beige Accounting under another account in terminal. To do this:
   <ol>
     <li>Open terminal and login as ROOT user - command "su"</li>
@@ -1607,19 +1604,18 @@ $ sudo chmod o+w /file-exch
   To start Beige Accounting in "command line mode" run: "java -jar beigesoft-accountingoio-ajetty-jar-with-dependencies.jar cli":
   <p align="center"><img style="max-width: 100%" src="images/commandline3.png" /></p>
 </p>
-<p>As a result you (and possible light scamware, e.g. if your web-browser has allowed scamscript from HTML page read your file system) can't read "accountant" files:
+<p>As a result you (and possible light harmful software, e.g. if your web-browser has allowed from HTML page read your file system) can't read "accountant" files:
   <p align="center"><img style="max-width: 100%" src="images/commandline4.png" /></p>
 </p>
 <p>
-  Light scamware can try to match your password and steal your data by making HTTP requests. But you are protected with strong password and maximum 5 fail login attempts per session:
+  Light harmful software can try to match your password and steal your data by making HTTP requests. But you are protected with strong password and maximum 5 fail login attempts per session:
   <p align="center"><img style="max-width: 100%" src="images/loginprotect1.png" /></p>
   <p>you should check <b>secure.log</b> periodically:</p>
   <p align="center"><img style="max-width: 100%" src="images/loginprotect2.png" /></p>
 </p>
 <p>
-  Heavy scamware poisons your operation system, so it can does everything. OS updates might remove it, but complex scamware can fakes "OS updates",
+  Heavy harmful software poison your operation system, so it can do everything. OS updates might remove it, but complex harmware can fake "OS updates",
   so you have only way to heal your computer - completely reinstall OS by using clean, write-protected installation source (DVD).
-  Non-write protected installation sources may be poisoned by scamware, that may breaks "installation self-protection", i.e. you will see fake "verifying successful".
 </p>
     </section>
 

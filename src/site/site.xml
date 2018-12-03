@@ -12,7 +12,6 @@
     <menu ref="reports" />
     <menu name="Articles">
       <item name="Specification Beigesoft Accounting" href="specification-accounting.html" />
-      <item name="Data protection" href="data-protect.html" />
       <item name="Business logic" href="specification-business-logic.html" />
       <item name="Beige Accounting, Bob's pizza example " href="bobs-pizza.html" />
       <item name="Beigesoft™ Accounting Privacy Policy" href="privacypolicy.html" />

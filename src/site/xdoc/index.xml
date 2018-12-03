@@ -86,8 +86,7 @@
         <ul>
           <li>It packs TTF font with only used characters. Even DeJaVue.TTF is 800KB, so without packing resulting PDF file is big. Asian languages (with hieroglyphs) TTF files are extremely huge.</li>
           <li>Ready for high load job. Performance test's (thread per invoice) results shows that making 100 invoices (3pages each) takes less than 4 seconds on ordinal notebook. Invoice file size is 26KB cause embed TTF font has only used characters.</li>
-          <li>There are not 3-d party libraries. Beigesoft™ Document Writer, Swing/Android graphics libraries, Logger are licensed under free GPLv2. Every day English language is polluted with new words that duplicate old ones, and old words are polluted with new meanings, so there are "free open source software" that are actually non-free.
-            In other hand there are free software that have not noticed that "it has dependencies with non-three licenses" (truly free license always means "forever").</li>
+          <li>There are not 3-d party libraries. Beigesoft™ Document Writer, Swing/Android graphics libraries, Logger are licensed under truly free GPLv2.</li>
         </ul>
         Although Beigesoft™ PDF Writer hasn't yet implemented graphic charts and other features, and it has no visual editor, it's really enough to create complex black and white (include non-masked RGB images) business reports quickly.
         Visual editor is planned to be the same as MS Word or LibreOffice Writer. Here are PDF files for example:
