@@ -18,6 +18,7 @@ import java.util.HashMap;
 import org.beigesoft.log.ILogger;
 import org.beigesoft.model.IHasId;
 import org.beigesoft.persistable.IPersistableBase;
+import org.beigesoft.factory.FactoryPersistableBase;
 import org.beigesoft.factory.IFactoryAppBeans;
 import org.beigesoft.factory.IFactoryAppBeansByName;
 import org.beigesoft.holder.IHolderForClassByName;
@@ -144,6 +145,9 @@ import org.beigesoft.accounting.processor.PrcBankStatementSave;
 import org.beigesoft.accounting.processor.PrcBankStatementLineGfe;
 import org.beigesoft.accounting.processor.PrcBankStatementLineSave;
 import org.beigesoft.accounting.processor.PrcAccSettingsLineSave;
+import org.beigesoft.accounting.processor.UtlInvBase;
+import org.beigesoft.accounting.processor.UtlInvLine;
+import org.beigesoft.accounting.processor.InvTxMeth;
 import org.beigesoft.replicator.persistable.
   base.AReplExcludeAccountsDebitCredit;
 import org.beigesoft.accounting.persistable.base.ADocWithTaxes;
@@ -175,6 +179,10 @@ import org.beigesoft.accounting.persistable.BeginningInventoryLine;
 import org.beigesoft.accounting.persistable.PurchaseInvoiceLine;
 import org.beigesoft.accounting.persistable.PurchaseInvoiceServiceLine;
 import org.beigesoft.accounting.persistable.IInvoiceLine;
+import org.beigesoft.accounting.persistable.PurchaseInvoice;
+import org.beigesoft.accounting.persistable.PurchaseInvoiceTaxLine;
+import org.beigesoft.accounting.persistable.PurchaseInvoiceGoodsTaxLine;
+import org.beigesoft.accounting.persistable.DestTaxGoodsLn;
 import org.beigesoft.accounting.service.ISrvTypeCode;
 import org.beigesoft.accounting.service.ISrvAccEntry;
 import org.beigesoft.accounting.service.ISrvWarehouseEntry;
@@ -303,6 +311,22 @@ public class FctBnAccEntitiesProcessors<RS>
    * <p>CSV reader.</p>
    **/
   private ICsvReader csvReader;
+
+  /**
+   * <p>Shared invoice code-bunch.</p>
+   **/
+  private UtlInvBase<RS> utlInvBase;
+
+  /**
+   * <p>Purchase invoice tax method data/code.</p>
+   **/
+  private InvTxMeth<PurchaseInvoice, PurchaseInvoiceTaxLine> purInvTxMeth;
+
+  /**
+   * <p>Purchase invoice good line utility.</p>
+   **/
+  private UtlInvLine<RS, PurchaseInvoice, PurchaseInvoiceLine,
+    PurchaseInvoiceTaxLine, PurchaseInvoiceGoodsTaxLine> utlPurInvGdLn;
 
   /**
    * <p>Converters map "converter name"-"object' s converter".</p>
@@ -1585,8 +1609,7 @@ public class FctBnAccEntitiesProcessors<RS>
       proc.setSrvNumberToString(getSrvNumberToString());
       proc.setSrvOrm(getSrvOrm());
       proc.setSrvWarehouseEntry(getSrvWarehouseEntry());
-      proc.setUtlPurchaseGoodsServiceLine(
-        lazyGetUtlPurchaseGoodsServiceLine(pAddParam));
+      proc.setUtlInvLine(lazyGetUtlPurGdLn(pAddParam));
       //assigning fully initialized object:
       this.processorsMap
         .put(PrcPurchaseInvoiceLineSave.class.getSimpleName(), proc);
@@ -2000,6 +2023,92 @@ public class FctBnAccEntitiesProcessors<RS>
       this.utlSalesGoodsServiceLine = proc;
     }
     return proc;
+  }
+
+  /**
+   * <p>Get UtlPurchaseGoodsServiceLine (create and put into map).</p>
+   * @param pAddParam additional param
+   * @return requested UtlPurchaseGoodsServiceLine
+   * @throws Exception - an exception
+   */
+  protected final UtlInvBase<RS> lazyGetUtlInvBase(
+      final Map<String, Object> pAddParam) throws Exception {
+    UtlInvBase<RS> utlInvBs = this.utlInvBase;
+    if (utlInvBs == null) {
+      utlInvBs = new UtlInvBase<RS>();
+      utlInvBs.setSrvOrm(getSrvOrm());
+      utlInvBs.setLogger(getLogger());
+      utlInvBs.setSrvDatabase(getSrvDatabase());
+      utlInvBs.setSrvNumberToString(getSrvNumberToString());
+      //assigning fully initialized object:
+      this.utlInvBase = utlInvBs;
+    }
+    return utlInvBs;
+  }
+
+  /**
+   * <p>Get InvTxMeth<PurchaseInvoice, PurchaseInvoiceTaxLine>.</p>
+   * @param pAddParam additional param
+   * @return requested InvTxMeth<PurchaseInvoice, PurchaseInvoiceTaxLine>
+   * @throws Exception - an exception
+   */
+  protected final InvTxMeth<PurchaseInvoice, PurchaseInvoiceTaxLine>
+    lazyGetPurInvTxMeth(final Map<String, Object> pAddParam) throws Exception {
+    InvTxMeth<PurchaseInvoice, PurchaseInvoiceTaxLine> purInvTxMe =
+      this.purInvTxMeth;
+    if (purInvTxMe == null) {
+      purInvTxMe = new InvTxMeth<PurchaseInvoice, PurchaseInvoiceTaxLine>();
+      purInvTxMe.setGoodLnCl(PurchaseInvoiceLine.class);
+      purInvTxMe.setServiceLnCl(PurchaseInvoiceServiceLine.class);
+      purInvTxMe.setInvTxLnCl(PurchaseInvoiceTaxLine.class);
+      purInvTxMe.setIsTxByUser(true);
+      purInvTxMe.setFlTotals("invTotals.sql");
+      purInvTxMe.setFlTxItBas("invTxItBase.sql");
+      purInvTxMe.setFlTxItBasAggr("invTxItBaseAggr.sql");
+      purInvTxMe.setFlTxInvBas("invTxInvBase.sql");
+      purInvTxMe.setFlTxInvBasAggr("invTxInvBaseAggr.sql");
+      purInvTxMe.setTblNmsTot(new String[] {"PURCHASEINVOICELINE",
+          "PURCHASEINVOICESERVICELINE", "PURCHASEINVOICETAXLINE"});
+      FactoryPersistableBase<PurchaseInvoiceTaxLine> fctItl =
+        new FactoryPersistableBase<PurchaseInvoiceTaxLine>();
+      fctItl.setObjectClass(PurchaseInvoiceTaxLine.class);
+      fctItl.setDatabaseId(getSrvDatabase().getIdDatabase());
+      purInvTxMe.setFctInvTxLn(fctItl);
+      //assigning fully initialized object:
+      this.purInvTxMeth = purInvTxMe;
+    }
+    return purInvTxMe;
+  }
+
+  /**
+   * <p>Get purchase invoice good line utility.</p>
+   * @param pAddParam additional param
+   * @return purchase invoice good line utility
+   * @throws Exception - an exception
+   */
+  protected final UtlInvLine<RS, PurchaseInvoice, PurchaseInvoiceLine,
+    PurchaseInvoiceTaxLine, PurchaseInvoiceGoodsTaxLine> lazyGetUtlPurGdLn(
+      final Map<String, Object> pAddParam) throws Exception {
+    UtlInvLine<RS, PurchaseInvoice, PurchaseInvoiceLine,
+      PurchaseInvoiceTaxLine, PurchaseInvoiceGoodsTaxLine> utlInvLn = this
+        .utlPurInvGdLn;
+    if (utlInvLn == null) {
+      utlInvLn = new UtlInvLine<RS, PurchaseInvoice, PurchaseInvoiceLine,
+        PurchaseInvoiceTaxLine, PurchaseInvoiceGoodsTaxLine>();
+      utlInvLn.setUtlInvBase(lazyGetUtlInvBase(pAddParam));
+      utlInvLn.setInvTxMeth(lazyGetPurInvTxMeth(pAddParam));
+      utlInvLn.setIsMutable(false);
+      utlInvLn.setLtlCl(PurchaseInvoiceGoodsTaxLine.class);
+      utlInvLn.setDstTxItLnCl(DestTaxGoodsLn.class);
+      FactoryPersistableBase<PurchaseInvoiceGoodsTaxLine> fctLtl =
+        new FactoryPersistableBase<PurchaseInvoiceGoodsTaxLine>();
+      fctLtl.setObjectClass(PurchaseInvoiceGoodsTaxLine.class);
+      fctLtl.setDatabaseId(getSrvDatabase().getIdDatabase());
+      utlInvLn.setFctLineTxLn(fctLtl);
+      //assigning fully initialized object:
+      this.utlPurInvGdLn = utlInvLn;
+    }
+    return utlInvLn;
   }
 
   /**

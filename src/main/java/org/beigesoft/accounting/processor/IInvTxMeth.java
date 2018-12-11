@@ -12,55 +12,52 @@ package org.beigesoft.accounting.processor;
  * http://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html
  */
 
-import java.util.Map;
 import java.io.IOException;
 
-import org.beigesoft.accounting.persistable.base.ADestTaxItemLn;
+import org.beigesoft.factory.IFactorySimple;
+import org.beigesoft.accounting.persistable.base.AInvTxLn;
 import org.beigesoft.accounting.persistable.IInvoice;
 import org.beigesoft.accounting.persistable.IInvoiceLine;
-import org.beigesoft.accounting.persistable.AccSettings;
-import org.beigesoft.accounting.persistable.TaxDestination;
 
 /**
- * <p>Abstraction of invoice line taxes item basis non-aggregate maker, and
- * holder of item's destination tax line class,
- * and other relative to invoice type information.</p>
+ * <p>Abstraction of tax method code/data for purchase/sales invoice.
+ * It contains data dedicated to concrete invoice type.</p>
  *
  * @param <T> invoice type
- * @param <L> invoice line type
+ * @param <TL> invoice tax line type
  * @author Yury Demidenko
  */
-public interface IMakerLn<T extends IInvoice, L extends IInvoiceLine<T>> {
+public interface IInvTxMeth<T extends IInvoice, TL extends AInvTxLn<T>> {
 
   /**
-   * <p>Makes invoice line taxes item basis basis non-aggregate.</p>
-   * @param pReqVars request scoped vars
-   * @param pLine invoice line
-   * @param pAs Accounting Settings
-   * @param pTxRules taxable rules
-   * @throws Exception - an exception.
+   * <p>Getter for tblNmsTot.</p>
+   * @return String[]
    **/
-  void mkLnTxItBasNonAggr(Map<String, Object> pReqVars,
-    L pLine, AccSettings pAs, TaxDestination pTxRules) throws Exception;
-
-  /**
-   * <p>Getter for item's destination tax line class.</p>
-   * @return Class<?>
-   **/
-  Class<? extends ADestTaxItemLn<?>> getDstTxItLnCl();
+  String[] getTblNmsTot();
 
   /**
    * <p>Getter for good line class.</p>
    * @return Class<InvoiceLine<T>>
    **/
-  Class<IInvoiceLine<T>> getGoodLnCl();
+  Class<? extends IInvoiceLine<T>> getGoodLnCl();
 
   /**
    * <p>Getter for service line class.</p>
-   * @return Class<IInvoiceLine<T>>
+   * @return Class<? extends IInvoiceLine<T>>
    **/
-  Class<IInvoiceLine<T>> getServiceLnCl();
+  Class<? extends IInvoiceLine<T>> getServiceLnCl();
 
+  /**
+   * <p>Getter for invTxLnCl.</p>
+   * @return Class<TL>
+   **/
+  Class<TL> getInvTxLnCl();
+
+  /**
+   * <p>Getter for fctInvTxLn.</p>
+   * @return IFactorySimple<TL>
+   **/
+  IFactorySimple<TL> getFctInvTxLn();
 
   /**
    * <p>Getter for isTxByUser, if line tax must be set by user.</p>
@@ -95,4 +92,11 @@ public interface IMakerLn<T extends IInvoice, L extends IInvoiceLine<T>> {
    * @throws IOException - IO exception
    **/
   String lazyGetQuTxItBas() throws IOException;
+
+  /**
+   * <p>Lazy get for quTotals.</p>
+   * @return String
+   * @throws IOException - IO exception
+   **/
+  String lazyGetQuTotals() throws IOException;
 }
