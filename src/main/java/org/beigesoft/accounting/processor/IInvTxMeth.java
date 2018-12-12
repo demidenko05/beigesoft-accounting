@@ -30,7 +30,9 @@ import org.beigesoft.accounting.persistable.IInvoiceLine;
 public interface IInvTxMeth<T extends IInvoice, TL extends AInvTxLn<T>> {
 
   /**
-   * <p>Getter for tblNmsTot.</p>
+   * <p>Getter for invoice SQL tables names: {[GOOD LINE], [SERVICE LINE],
+   * [TAX LINE], [GOOD TAX LINE], [SERVICE TAX LINE]} or
+   * {[GOOD LINE], [TAX LINE], [GOOD TAX LINE]}.</p>
    * @return String[]
    **/
   String[] getTblNmsTot();

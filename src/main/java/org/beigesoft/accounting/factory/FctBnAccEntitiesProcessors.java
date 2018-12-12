@@ -191,7 +191,13 @@ import org.beigesoft.accounting.service.ISrvAccSettings;
 import org.beigesoft.accounting.service.ISrvBalance;
 
 /**
- * <p>ORM entities processors factory.</p>
+ * <p>ORM entities processors factory. This is inner factory inside
+ * IFactoryBldServices, that is also inner one inside main application factory.
+ * It's invoked by entity processor, so it's synchronized.
+ * Reference of this factory is in "application beans map" in
+ * main factory, so reinitializing (e.g. cause changing database) will clear
+ * that map, so this factory and all initialized by it beans will be destroyed
+ * by garbage collector.</p>
  *
  * @param <RS> platform dependent record set type
  * @author Yury Demidenko
@@ -293,11 +299,6 @@ public class FctBnAccEntitiesProcessors<RS>
   private IHolderForClassByName<String> fieldConverterNamesHolder;
 
   /**
-   * <p>Additional entities processors factory, e.g. webstore.</p>
-   **/
-  private IFactoryAppBeansByName<IEntityProcessor> additionalEpf;
-
-  /**
    * <p>Balance service.</p>
    **/
   private ISrvBalance srvBalance;
@@ -332,8 +333,7 @@ public class FctBnAccEntitiesProcessors<RS>
    * <p>Converters map "converter name"-"object' s converter".</p>
    **/
   private final Map<String, IEntityProcessor>
-    processorsMap =
-      new HashMap<String, IEntityProcessor>();
+    processorsMap = new HashMap<String, IEntityProcessor>();
 
   /**
    * <p>Get bean in lazy mode (if bean is null then initialize it).</p>
@@ -349,13 +349,10 @@ public class FctBnAccEntitiesProcessors<RS>
     IEntityProcessor proc =
       this.processorsMap.get(pBeanName);
     if (proc == null) {
-      // locking:
-      synchronized (this.processorsMap) {
-        // make sure again whether it's null after locking:
+      synchronized (this) {
         proc = this.processorsMap.get(pBeanName);
         if (proc == null) {
-          if (pBeanName
-            .equals(PrcAccEntryCopy.class.getSimpleName())) {
+          if (pBeanName.equals(PrcAccEntryCopy.class.getSimpleName())) {
             proc = lazyGetPrcAccEntryCopy(pAddParam);
           } else if (pBeanName
             .equals(PrcAccEntryCreate.class.getSimpleName())) {
@@ -551,6 +548,9 @@ public class FctBnAccEntitiesProcessors<RS>
             .equals(PrcManufactureGfr.class.getSimpleName())) {
             proc = createPutPrcManufactureGfr(pAddParam);
           } else if (pBeanName
+            .equals(PrcManufactureCopy.class.getSimpleName())) {
+            proc = createPutPrcManufactureCopy(pAddParam);
+          } else if (pBeanName
             .equals(PrcManufacturingProcessSave.class.getSimpleName())) {
             proc = lazyGetPrcManufacturingProcessSave(pAddParam);
           } else if (pBeanName
@@ -668,13 +668,8 @@ public class FctBnAccEntitiesProcessors<RS>
       }
     }
     if (proc == null) {
-      if (this.additionalEpf != null) {
-        proc = this.additionalEpf.lazyGet(pAddParam, pBeanName);
-      }
-      if (proc == null) {
-        throw new ExceptionWithCode(ExceptionWithCode.CONFIGURATION_MISTAKE,
-          "There is no entity processor with name " + pBeanName);
-      }
+      throw new ExceptionWithCode(ExceptionWithCode.CONFIGURATION_MISTAKE,
+        "There is no entity processor with name " + pBeanName);
     }
     return proc;
   }
@@ -2063,12 +2058,13 @@ public class FctBnAccEntitiesProcessors<RS>
       purInvTxMe.setInvTxLnCl(PurchaseInvoiceTaxLine.class);
       purInvTxMe.setIsTxByUser(true);
       purInvTxMe.setFlTotals("invTotals.sql");
-      purInvTxMe.setFlTxItBas("invTxItBase.sql");
-      purInvTxMe.setFlTxItBasAggr("invTxItBaseAggr.sql");
-      purInvTxMe.setFlTxInvBas("invTxInvBase.sql");
-      purInvTxMe.setFlTxInvBasAggr("invTxInvBaseAggr.sql");
+      purInvTxMe.setFlTxItBas("invTxItBas.sql");
+      purInvTxMe.setFlTxItBasAggr("invTxItBasAggr.sql");
+      purInvTxMe.setFlTxInvBas("invTxInvBas.sql");
+      purInvTxMe.setFlTxInvBasAggr("invTxInvBasAggr.sql");
       purInvTxMe.setTblNmsTot(new String[] {"PURCHASEINVOICELINE",
-          "PURCHASEINVOICESERVICELINE", "PURCHASEINVOICETAXLINE"});
+        "PURCHASEINVOICESERVICELINE", "PURCHASEINVOICETAXLINE",
+           "PURCHASEINVOICEGOODSTAXLINE", "PURCHASEINVOICESERVICETAXLINE"});
       FactoryPersistableBase<PurchaseInvoiceTaxLine> fctItl =
         new FactoryPersistableBase<PurchaseInvoiceTaxLine>();
       fctItl.setObjectClass(PurchaseInvoiceTaxLine.class);
@@ -3282,29 +3278,13 @@ public class FctBnAccEntitiesProcessors<RS>
     return proc;
   }
 
-  //Simple getters and setters:
-  /**
-   * <p>Getter for factoryAppBeans.</p>
-   * @return IFactoryAppBeans
-   **/
-  public final IFactoryAppBeans getFactoryAppBeans() {
-    return this.factoryAppBeans;
-  }
-
-  /**
-   * <p>Setter for factoryAppBeans.</p>
-   * @param pFactoryAppBeans reference
-   **/
-  public final void setFactoryAppBeans(
-    final IFactoryAppBeans pFactoryAppBeans) {
-    this.factoryAppBeans = pFactoryAppBeans;
-  }
-
+  //Synchronized getters and setters:
   /**
    * <p>Getter for fctBnEntitiesProcessors.</p>
    * @return FctBnEntitiesProcessors<RS>
    **/
-  public final FctBnEntitiesProcessors<RS> getFctBnEntitiesProcessors() {
+  public final synchronized FctBnEntitiesProcessors<RS>
+    getFctBnEntitiesProcessors() {
     return this.fctBnEntitiesProcessors;
   }
 
@@ -3312,16 +3292,33 @@ public class FctBnAccEntitiesProcessors<RS>
    * <p>Setter for fctBnEntitiesProcessors.</p>
    * @param pFctBnEntitiesProcessors reference
    **/
-  public final void setFctBnEntitiesProcessors(
+  public final synchronized void setFctBnEntitiesProcessors(
     final FctBnEntitiesProcessors<RS> pFctBnEntitiesProcessors) {
     this.fctBnEntitiesProcessors = pFctBnEntitiesProcessors;
+  }
+
+  /**
+   * <p>Getter for factoryAppBeans.</p>
+   * @return IFactoryAppBeans
+   **/
+  public final synchronized IFactoryAppBeans getFactoryAppBeans() {
+    return this.factoryAppBeans;
+  }
+
+  /**
+   * <p>Setter for factoryAppBeans.</p>
+   * @param pFactoryAppBeans reference
+   **/
+  public final synchronized void setFactoryAppBeans(
+    final IFactoryAppBeans pFactoryAppBeans) {
+    this.factoryAppBeans = pFactoryAppBeans;
   }
 
   /**
    * <p>Getter for srvAccSettings.</p>
    * @return ISrvAccSettings
    **/
-  public final ISrvAccSettings getSrvAccSettings() {
+  public final synchronized ISrvAccSettings getSrvAccSettings() {
     return this.srvAccSettings;
   }
 
@@ -3329,7 +3326,8 @@ public class FctBnAccEntitiesProcessors<RS>
    * <p>Setter for srvAccSettings.</p>
    * @param pSrvAccSettings reference
    **/
-  public final void setSrvAccSettings(final ISrvAccSettings pSrvAccSettings) {
+  public final synchronized void setSrvAccSettings(
+    final ISrvAccSettings pSrvAccSettings) {
     this.srvAccSettings = pSrvAccSettings;
   }
 
@@ -3337,7 +3335,7 @@ public class FctBnAccEntitiesProcessors<RS>
    * <p>Getter for srvOrm.</p>
    * @return ISrvOrm<RS>
    **/
-  public final ISrvOrm<RS> getSrvOrm() {
+  public final synchronized ISrvOrm<RS> getSrvOrm() {
     return this.srvOrm;
   }
 
@@ -3345,7 +3343,7 @@ public class FctBnAccEntitiesProcessors<RS>
    * <p>Setter for srvOrm.</p>
    * @param pSrvOrm reference
    **/
-  public final void setSrvOrm(final ISrvOrm<RS> pSrvOrm) {
+  public final synchronized void setSrvOrm(final ISrvOrm<RS> pSrvOrm) {
     this.srvOrm = pSrvOrm;
   }
 
@@ -3353,7 +3351,7 @@ public class FctBnAccEntitiesProcessors<RS>
    * <p>Geter for srvDatabase.</p>
    * @return ISrvDatabase
    **/
-  public final ISrvDatabase<RS> getSrvDatabase() {
+  public final synchronized ISrvDatabase<RS> getSrvDatabase() {
     return this.srvDatabase;
   }
 
@@ -3361,7 +3359,8 @@ public class FctBnAccEntitiesProcessors<RS>
    * <p>Setter for srvDatabase.</p>
    * @param pSrvDatabase reference
    **/
-  public final void setSrvDatabase(final ISrvDatabase<RS> pSrvDatabase) {
+  public final synchronized void setSrvDatabase(
+    final ISrvDatabase<RS> pSrvDatabase) {
     this.srvDatabase = pSrvDatabase;
   }
 
@@ -3369,7 +3368,7 @@ public class FctBnAccEntitiesProcessors<RS>
    * <p>Geter for srvTypeCode.</p>
    * @return ISrvTypeCode
    **/
-  public final ISrvTypeCode getSrvTypeCode() {
+  public final synchronized ISrvTypeCode getSrvTypeCode() {
     return this.srvTypeCode;
   }
 
@@ -3377,7 +3376,8 @@ public class FctBnAccEntitiesProcessors<RS>
    * <p>Setter for srvTypeCode.</p>
    * @param pSrvTypeCode reference
    **/
-  public final void setSrvTypeCode(final ISrvTypeCode pSrvTypeCode) {
+  public final synchronized void setSrvTypeCode(
+    final ISrvTypeCode pSrvTypeCode) {
     this.srvTypeCode = pSrvTypeCode;
   }
 
@@ -3385,7 +3385,7 @@ public class FctBnAccEntitiesProcessors<RS>
    * <p>Geter for srvI18n.</p>
    * @return ISrvI18n
    **/
-  public final ISrvI18n getSrvI18n() {
+  public final synchronized ISrvI18n getSrvI18n() {
     return this.srvI18n;
   }
 
@@ -3393,7 +3393,7 @@ public class FctBnAccEntitiesProcessors<RS>
    * <p>Setter for srvI18n.</p>
    * @param pSrvI18n reference
    **/
-  public final void setSrvI18n(final ISrvI18n pSrvI18n) {
+  public final synchronized void setSrvI18n(final ISrvI18n pSrvI18n) {
     this.srvI18n = pSrvI18n;
   }
 
@@ -3401,7 +3401,7 @@ public class FctBnAccEntitiesProcessors<RS>
    * <p>Getter for srvAccEntry.</p>
    * @return ISrvAccEntry
    **/
-  public final ISrvAccEntry getSrvAccEntry() {
+  public final synchronized ISrvAccEntry getSrvAccEntry() {
     return this.srvAccEntry;
   }
 
@@ -3409,7 +3409,8 @@ public class FctBnAccEntitiesProcessors<RS>
    * <p>Setter for srvAccEntry.</p>
    * @param pSrvAccEntry reference
    **/
-  public final void setSrvAccEntry(final ISrvAccEntry pSrvAccEntry) {
+  public final synchronized void setSrvAccEntry(
+    final ISrvAccEntry pSrvAccEntry) {
     this.srvAccEntry = pSrvAccEntry;
   }
 
@@ -3417,7 +3418,7 @@ public class FctBnAccEntitiesProcessors<RS>
    * <p>Geter for srvWarehouseEntry.</p>
    * @return ISrvWarehouseEntry
    **/
-  public final ISrvWarehouseEntry getSrvWarehouseEntry() {
+  public final synchronized ISrvWarehouseEntry getSrvWarehouseEntry() {
     return this.srvWarehouseEntry;
   }
 
@@ -3425,7 +3426,7 @@ public class FctBnAccEntitiesProcessors<RS>
    * <p>Setter for srvWarehouseEntry.</p>
    * @param pSrvWarehouseEntry reference
    **/
-  public final void setSrvWarehouseEntry(
+  public final synchronized void setSrvWarehouseEntry(
     final ISrvWarehouseEntry pSrvWarehouseEntry) {
     this.srvWarehouseEntry = pSrvWarehouseEntry;
   }
@@ -3434,7 +3435,7 @@ public class FctBnAccEntitiesProcessors<RS>
    * <p>Getter for srvCogsEntry.</p>
    * @return ISrvDrawItemEntry<CogsEntry>
    **/
-  public final ISrvDrawItemEntry<CogsEntry> getSrvCogsEntry() {
+  public final synchronized ISrvDrawItemEntry<CogsEntry> getSrvCogsEntry() {
     return this.srvCogsEntry;
   }
 
@@ -3442,7 +3443,7 @@ public class FctBnAccEntitiesProcessors<RS>
    * <p>Setter for srvCogsEntry.</p>
    * @param pSrvCogsEntry reference
    **/
-  public final void setSrvCogsEntry(
+  public final synchronized void setSrvCogsEntry(
     final ISrvDrawItemEntry<CogsEntry> pSrvCogsEntry) {
     this.srvCogsEntry = pSrvCogsEntry;
   }
@@ -3451,7 +3452,8 @@ public class FctBnAccEntitiesProcessors<RS>
    * <p>Getter for srvUseMaterialEntry.</p>
    * @return ISrvDrawItemEntry<UseMaterialEntry>
    **/
-  public final ISrvDrawItemEntry<UseMaterialEntry> getSrvUseMaterialEntry() {
+  public final synchronized ISrvDrawItemEntry<UseMaterialEntry>
+    getSrvUseMaterialEntry() {
     return this.srvUseMaterialEntry;
   }
 
@@ -3459,7 +3461,7 @@ public class FctBnAccEntitiesProcessors<RS>
    * <p>Setter for srvUseMaterialEntry.</p>
    * @param pSrvUseMaterialEntry reference
    **/
-  public final void setSrvUseMaterialEntry(
+  public final synchronized void setSrvUseMaterialEntry(
     final ISrvDrawItemEntry<UseMaterialEntry> pSrvUseMaterialEntry) {
     this.srvUseMaterialEntry = pSrvUseMaterialEntry;
   }
@@ -3468,7 +3470,7 @@ public class FctBnAccEntitiesProcessors<RS>
    * <p>Getter for srvDate.</p>
    * @return ISrvDate
    **/
-  public final ISrvDate getSrvDate() {
+  public final synchronized ISrvDate getSrvDate() {
     return this.srvDate;
   }
 
@@ -3476,7 +3478,7 @@ public class FctBnAccEntitiesProcessors<RS>
    * <p>Setter for srvDate.</p>
    * @param pSrvDate reference
    **/
-  public final void setSrvDate(final ISrvDate pSrvDate) {
+  public final synchronized void setSrvDate(final ISrvDate pSrvDate) {
     this.srvDate = pSrvDate;
   }
 
@@ -3484,7 +3486,7 @@ public class FctBnAccEntitiesProcessors<RS>
    * <p>Getter for mngUvdSettings.</p>
    * @return IMngSettings
    **/
-  public final IMngSettings getMngUvdSettings() {
+  public final synchronized IMngSettings getMngUvdSettings() {
     return this.mngUvdSettings;
   }
 
@@ -3492,7 +3494,8 @@ public class FctBnAccEntitiesProcessors<RS>
    * <p>Setter for mngUvdSettings.</p>
    * @param pMngUvdSettings reference
    **/
-  public final void setMngUvdSettings(final IMngSettings pMngUvdSettings) {
+  public final synchronized void setMngUvdSettings(
+    final IMngSettings pMngUvdSettings) {
     this.mngUvdSettings = pMngUvdSettings;
   }
 
@@ -3500,7 +3503,7 @@ public class FctBnAccEntitiesProcessors<RS>
    * <p>Getter for convertersFieldsFatory.</p>
    * @return IFactoryAppBeansByName<IConverterToFromString<?>>
    **/
-  public final IFactoryAppBeansByName<IConverterToFromString<?>>
+  public final synchronized IFactoryAppBeansByName<IConverterToFromString<?>>
     getConvertersFieldsFatory() {
     return this.convertersFieldsFatory;
   }
@@ -3509,7 +3512,7 @@ public class FctBnAccEntitiesProcessors<RS>
    * <p>Setter for convertersFieldsFatory.</p>
    * @param pConvertersFieldsFatory reference
    **/
-  public final void setConvertersFieldsFatory(
+  public final synchronized void setConvertersFieldsFatory(
     final IFactoryAppBeansByName<IConverterToFromString<?>>
       pConvertersFieldsFatory) {
     this.convertersFieldsFatory = pConvertersFieldsFatory;
@@ -3519,7 +3522,8 @@ public class FctBnAccEntitiesProcessors<RS>
    * <p>Getter for fieldConverterNamesHolder.</p>
    * @return IHolderForClassByName<String>
    **/
-  public final IHolderForClassByName<String> getFieldConverterNamesHolder() {
+  public final synchronized IHolderForClassByName<String>
+    getFieldConverterNamesHolder() {
     return this.fieldConverterNamesHolder;
   }
 
@@ -3527,33 +3531,16 @@ public class FctBnAccEntitiesProcessors<RS>
    * <p>Setter for fieldConverterNamesHolder.</p>
    * @param pFieldConverterNamesHolder reference
    **/
-  public final void setFieldConverterNamesHolder(
+  public final synchronized void setFieldConverterNamesHolder(
     final IHolderForClassByName<String> pFieldConverterNamesHolder) {
     this.fieldConverterNamesHolder = pFieldConverterNamesHolder;
-  }
-
-  /**
-   * <p>Getter for additionalEpf.</p>
-   * @return IFactoryAppBeansByName<IEntityProcessor>
-   **/
-  public final IFactoryAppBeansByName<IEntityProcessor> getAdditionalEpf() {
-    return this.additionalEpf;
-  }
-
-  /**
-   * <p>Setter for additionalEpf.</p>
-   * @param pAdditionalEpf reference
-   **/
-  public final void setAdditionalEpf(
-    final IFactoryAppBeansByName<IEntityProcessor> pAdditionalEpf) {
-    this.additionalEpf = pAdditionalEpf;
   }
 
   /**
    * <p>Getter for srvBalance.</p>
    * @return ISrvBalance
    **/
-  public final ISrvBalance getSrvBalance() {
+  public final synchronized ISrvBalance getSrvBalance() {
     return this.srvBalance;
   }
 
@@ -3561,7 +3548,7 @@ public class FctBnAccEntitiesProcessors<RS>
    * <p>Setter for srvBalance.</p>
    * @param pSrvBalance reference
    **/
-  public final void setSrvBalance(final ISrvBalance pSrvBalance) {
+  public final synchronized void setSrvBalance(final ISrvBalance pSrvBalance) {
     this.srvBalance = pSrvBalance;
   }
 
@@ -3569,7 +3556,7 @@ public class FctBnAccEntitiesProcessors<RS>
    * <p>Getter for srvNumberToString.</p>
    * @return ISrvNumberToString
    **/
-  public final ISrvNumberToString getSrvNumberToString() {
+  public final synchronized ISrvNumberToString getSrvNumberToString() {
     return this.srvNumberToString;
   }
 
@@ -3577,7 +3564,7 @@ public class FctBnAccEntitiesProcessors<RS>
    * <p>Setter for srvNumberToString.</p>
    * @param pSrvNumberToString reference
    **/
-  public final void setSrvNumberToString(
+  public final synchronized void setSrvNumberToString(
     final ISrvNumberToString pSrvNumberToString) {
     this.srvNumberToString = pSrvNumberToString;
   }
@@ -3586,7 +3573,7 @@ public class FctBnAccEntitiesProcessors<RS>
    * <p>Getter for csvReader.</p>
    * @return ICsvReader
    **/
-  public final ICsvReader getCsvReader() {
+  public final synchronized ICsvReader getCsvReader() {
     return this.csvReader;
   }
 
@@ -3594,7 +3581,7 @@ public class FctBnAccEntitiesProcessors<RS>
    * <p>Setter for csvReader.</p>
    * @param pCsvReader reference
    **/
-  public final void setCsvReader(final ICsvReader pCsvReader) {
+  public final synchronized void setCsvReader(final ICsvReader pCsvReader) {
     this.csvReader = pCsvReader;
   }
 
@@ -3602,7 +3589,7 @@ public class FctBnAccEntitiesProcessors<RS>
    * <p>Geter for logger.</p>
    * @return ILogger
    **/
-  public final ILogger getLogger() {
+  public final synchronized ILogger getLogger() {
     return this.logger;
   }
 
@@ -3610,7 +3597,7 @@ public class FctBnAccEntitiesProcessors<RS>
    * <p>Setter for logger.</p>
    * @param pLogger reference
    **/
-  public final void setLogger(final ILogger pLogger) {
+  public final synchronized void setLogger(final ILogger pLogger) {
     this.logger = pLogger;
   }
 }

@@ -110,24 +110,15 @@ public class PrcPurchInvTaxLnSave<RS>
     //rounding:
     pEntity.setItsTotal(pEntity.getItsTotal().setScale(as
       .getPricePrecision(), rm));
-    BigDecimal totalTaxes;
-    BigDecimal bd100 = new BigDecimal("100.00");
-    if (pEntity.getItsOwner().getPriceIncTax()) {
-      totalTaxes = pEntity.getTaxableInvBas().subtract(pEntity
-    .getTaxableInvBas().divide(BigDecimal.ONE.add(pEntity.getTax()
-  .getItsPercentage().divide(bd100)), as.getPricePrecision(), rm));
-    } else {
-      totalTaxes = pEntity.getTaxableInvBas().multiply(pEntity.getTax()
-        .getItsPercentage()).divide(bd100, as.getPricePrecision(), rm);
-    }
-    if (pEntity.getItsTotal().compareTo(totalTaxes) != 0) {
+    if (pEntity.getItsTotal().compareTo(oldEntity.getItsTotal()) != 0) {
       if (pEntity.getItsOwner().getDescription() == null) {
-        pEntity.getItsOwner().setDescription(pEntity.getItsTotal().toString()
-          + "!=" + totalTaxes + "!");
+        pEntity.getItsOwner().setDescription(pEntity.getTax().getItsName()
+         + ": " + oldEntity.getItsTotal() + "->" + pEntity.getItsTotal() + "!");
       } else {
         pEntity.getItsOwner().setDescription(pEntity.getItsOwner()
-          .getDescription() + " " + pEntity.getItsTotal().toString()
-            + "!=" + totalTaxes + "!");
+          .getDescription() + " " + pEntity.getTax().getItsName()
+            + ": " + oldEntity.getItsTotal() + "->"
+              + pEntity.getItsTotal() + "!");
       }
     }
     getSrvOrm().updateEntity(pReqVars, pEntity);

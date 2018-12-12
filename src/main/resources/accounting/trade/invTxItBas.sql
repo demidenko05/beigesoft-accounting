@@ -8,7 +8,7 @@ from
   union all
 
   select TAX, ITSTOTAL, FOREIGNTOTALTAXES
-  from :TSERVISETXLN 
+  from :TSERVICETXLN 
   where INVOICEID=:INVOICEID
 ) as ALL_LINES
 join TAX on ALL_LINES.TAX=TAX.ITSID

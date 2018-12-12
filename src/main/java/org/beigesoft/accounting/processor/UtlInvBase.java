@@ -229,6 +229,16 @@ public class UtlInvBase<RS> {
         getSrvOrm().deleteEntity(pReqVars, tl);
       }
     }
+    if (pTxRules != null && !pTxRules.getSalTaxUseAggregItBas()
+      && pLine.getItsOwner().getPriceIncTax()) {
+      String watr = "TTR without aggregate! ";
+      if (pLine.getItsOwner().getDescription() == null) {
+        pLine.getItsOwner().setDescription(watr);
+      } else if (!pLine.getItsOwner().getDescription().contains(watr)) {
+        pLine.getItsOwner().setDescription(watr
+          + pLine.getItsOwner().getDescription());
+      }
+    }
     updInvTots(pReqVars, pLine.getItsOwner(), pAs, pInvTxMeth);
   }
 
@@ -247,7 +257,7 @@ public class UtlInvBase<RS> {
       final IInvTxMeth<T, ?> pInvTxMeth) throws Exception {
     String query = pInvTxMeth.lazyGetQuTotals();
     query = query.replace(":ITSOWNER", pInv.getItsId().toString());
-    if (pInvTxMeth.getTblNmsTot().length == 3) { //sales/purchase:
+    if (pInvTxMeth.getTblNmsTot().length == 5) { //sales/purchase:
       query = query.replace(":TGOODLN", pInvTxMeth.getTblNmsTot()[0]);
       query = query.replace(":TSERVICELN", pInvTxMeth.getTblNmsTot()[1]);
       query = query.replace(":TTAXLN", pInvTxMeth.getTblNmsTot()[2]);
@@ -334,7 +344,7 @@ public class UtlInvBase<RS> {
       tbNm = pInvTxMeth.getServiceLnCl().getSimpleName();
       pReqVars.put(tbNm + "itsOwnerdeepLevel", 1);
       sls = getSrvOrm().retrieveListWithConditions(pReqVars,
-        pInvTxMeth.getGoodLnCl(), "where " + tbNm.toUpperCase()
+        pInvTxMeth.getServiceLnCl(), "where " + tbNm.toUpperCase()
           + ".TAXCATEGORY is not null and ITSOWNER=" + pInv.getItsId());
       pReqVars.remove(tbNm + "itsOwnerdeepLevel");
     }
@@ -432,13 +442,13 @@ public class UtlInvBase<RS> {
     List<LTL> itls = null;
     if (pLine.getTaxCategory() != null) {
       if (!pTxRules.getSalTaxIsInvoiceBase()) {
-        BigDecimal totTxs = BigDecimal.ZERO;
-        BigDecimal totTxsFc = BigDecimal.ZERO;
-        BigDecimal bd100 = new BigDecimal("100.00");
         if (!pTxRules.getSalTaxUseAggregItBas()) {
           itls = mkLnTxItBasNonAggr(pReqVars, pLine, pAs, pTxRules,
-            pInvLnTxMeth);
+            pInvTxMeth, pInvLnTxMeth);
         } else {
+          BigDecimal totTxs = BigDecimal.ZERO;
+          BigDecimal totTxsFc = BigDecimal.ZERO;
+          BigDecimal bd100 = new BigDecimal("100.00");
           if (pLine.getItsOwner().getPriceIncTax()) {
         totTxs = pLine.getItsTotal().subtract(pLine.getItsTotal()
     .divide(BigDecimal.ONE.add(pLine.getTaxCategory().getAggrOnlyPercent()
@@ -458,34 +468,7 @@ public class UtlInvBase<RS> {
           .getPricePrecision(), pTxRules.getSalTaxRoundMode());
             }
           }
-          pLine.setTaxesDescription(pLine.getTaxCategory().getItsName());
-        }
-        if (pInvTxMeth.getIsTxByUser()) {
-          if (pLine.getItsOwner().getForeignCurrency() == null) {
-            if (pLine.getTotalTaxes().compareTo(totTxs) != 0) {
-              if (pLine.getDescription() == null) {
-                pLine.setDescription(pLine.getTotalTaxes().toString() + "!="
-                  + totTxs + "!");
-              } else {
-                pLine.setDescription(pLine.getDescription() + " " + pLine
-                  .getTotalTaxes().toString() + "!=" + totTxs + "!");
-              }
-            }
-          } else {
-            pLine.setTotalTaxes(totTxs);
-            if (pLine.getForeignTotalTaxes().compareTo(totTxsFc) != 0) {
-              if (pLine.getDescription() == null) {
-                pLine.setDescription(pLine.getForeignTotalTaxes().toString()
-                  + "!=" + totTxsFc + "!");
-              } else {
-                pLine.setDescription(pLine.getDescription() + " " + pLine
-                  .getForeignTotalTaxes().toString() + "!=" + totTxsFc + "!");
-              }
-            }
-          }
-        } else {
-          pLine.setTotalTaxes(totTxs);
-          pLine.setForeignTotalTaxes(totTxsFc);
+          mkLnFinal(pLine, totTxs, totTxsFc, pInvTxMeth.getIsTxByUser());
         }
       } else {
         pLine.setTaxesDescription(pLine.getTaxCategory().getItsName());
@@ -571,6 +554,31 @@ public class UtlInvBase<RS> {
         final TaxDestination pTxRules,
           final IInvTxMeth<T, TL> pInvTxMeth) throws Exception {
     DataTx dtTx = new DataTx();
+    String query;
+    if (!pTxRules.getSalTaxUseAggregItBas() && !(pTxRules
+      .getSalTaxIsInvoiceBase() && pLine.getItsOwner().getPriceIncTax())) {
+      //non-aggregate except invoice basis with included taxes:
+      dtTx.setTxs(new ArrayList<Tax>());
+      dtTx.setTxTotTaxb(new ArrayList<Double>());
+      if (!pTxRules.getSalTaxIsInvoiceBase()) {
+        //item basis:
+        query = pInvTxMeth.lazyGetQuTxItBas();
+      } else {
+        //invoice basis, taxes excluded:
+        dtTx.setTxPerc(new ArrayList<Double>());
+        query = pInvTxMeth.lazyGetQuTxInvBas();
+        //totals by tax category for farther adjusting invoice:
+        dtTx.setTxdLns(new ArrayList<SalesInvoiceServiceLine>());
+      }
+    } else { //non-aggregate invoice basis with included taxes
+      //and aggregate for others:
+      dtTx.setTxdLns(new ArrayList<SalesInvoiceServiceLine>());
+      if (!pTxRules.getSalTaxIsInvoiceBase()) { //item basis
+        query = pInvTxMeth.lazyGetQuTxItBasAggr();
+      } else { //invoice basis:
+        query = pInvTxMeth.lazyGetQuTxInvBasAggr();
+      }
+    }
     if (getLogger().getIsShowDebugMessagesFor(getClass())
       && getLogger().getDetailLevel() > 40000) {
       getLogger().debug(pReqVars, UtlInvBase.class,
@@ -585,28 +593,22 @@ public class UtlInvBase<RS> {
       }
       getLogger().debug(pReqVars, UtlInvBase.class, "Item: name/tax category = "
         + pLine.getItem().getItsName() + "/" + txCat);
+      getLogger().debug(pReqVars, UtlInvBase.class, "Tax query: " + query);
     }
-    String query;
-    if (!pTxRules.getSalTaxUseAggregItBas() && !(pTxRules
-      .getSalTaxIsInvoiceBase() && pLine.getItsOwner().getPriceIncTax())) {
-      //non-aggregate except invoice basis with included taxes:
-      dtTx.setTxs(new ArrayList<Tax>());
-      dtTx.setTxTotTaxb(new ArrayList<Double>());
-      if (!pTxRules.getSalTaxIsInvoiceBase()) {
-        //item basis:
-        query = pInvTxMeth.lazyGetQuTxItBas();
-      } else {
-        //invoice basis, taxes excluded:
-        dtTx.setTxPerc(new ArrayList<Double>());
-        query = pInvTxMeth.lazyGetQuTxInvBas();
+    if (!pTxRules.getSalTaxUseAggregItBas()
+      && !pTxRules.getSalTaxIsInvoiceBase()) {
+      if (pInvTxMeth.getTblNmsTot().length == 5) { //sales/purchase:
+        query = query.replace(":TGOODTXLN", pInvTxMeth.getTblNmsTot()[3]);
+        query = query.replace(":TSERVICETXLN", pInvTxMeth.getTblNmsTot()[4]);
+      } else { //returns:
+        query = query.replace(":TITEMTXLN", pInvTxMeth.getTblNmsTot()[2]);
       }
-    } else { //non-aggregate invoice basis with included taxes
-      //and aggregate for others:
-      dtTx.setTxdLns(new ArrayList<SalesInvoiceServiceLine>());
-      if (!pTxRules.getSalTaxIsInvoiceBase()) { //item basis
-        query = pInvTxMeth.lazyGetQuTxItBasAggr();
-      } else { //invoice basis:
-        query = pInvTxMeth.lazyGetQuTxInvBasAggr();
+    } else {
+      if (pInvTxMeth.getTblNmsTot().length == 5) { //sales/purchase:
+        query = query.replace(":TGOODLN", pInvTxMeth.getTblNmsTot()[0]);
+        query = query.replace(":TSERVICELN", pInvTxMeth.getTblNmsTot()[1]);
+      } else { //returns:
+        query = query.replace(":TITEMLN", pInvTxMeth.getTblNmsTot()[0]);
       }
     }
     query = query.replace(":INVOICEID", pLine.getItsOwner()
@@ -624,21 +626,37 @@ public class UtlInvBase<RS> {
           if (!pTxRules.getSalTaxUseAggregItBas() && !(pTxRules
            .getSalTaxIsInvoiceBase() && pLine.getItsOwner().getPriceIncTax())) {
             //non-aggregate except invoice basis with included taxes:
-            dtTx.getTxs().add(tax);
             if (!pTxRules.getSalTaxIsInvoiceBase()) {
               //item basis, taxes excluded/included:
+              dtTx.getTxs().add(tax);
               dtTx.getTxTotTaxb().add(recordSet.getDouble("TOTALTAX"));
             } else {
               //invoice basis, taxes excluded:
-              dtTx.getTxPerc().add(recordSet.getDouble("ITSPERCENTAGE"));
-              dtTx.getTxTotTaxb().add(recordSet.getDouble("SUBTOTAL"));
+              boolean isNew = true;
+              int li = dtTx.getTxTotTaxb().size() - 1;
+              if (li >= 0 && dtTx.getTxs().get(li).getItsId()
+                .equals(tax.getItsId())) {
+                isNew = false;
+              }
+              Double su = recordSet.getDouble("SUBTOTAL");
+              Double pr = recordSet.getDouble("ITSPERCENTAGE");
+              if (isNew) {
+                dtTx.getTxs().add(tax);
+                dtTx.getTxTotTaxb().add(su);
+                dtTx.getTxPerc().add(pr);
+              } else {
+                Double sut = su + dtTx.getTxTotTaxb().get(li);
+                dtTx.getTxTotTaxb().set(li, sut);
+              }
+              Long tcId = recordSet.getLong("TAXCATID");
+              addInvBsTxExTxc(dtTx.getTxdLns(), tcId, su, pr, pAs, pTxRules);
             }
           } else { //non-aggregate invoice basis with included taxes
             //and aggregate for others:
             Double percent = recordSet.getDouble("ITSPERCENTAGE");
             Long tcId = recordSet.getLong("TAXCATID");
             if (!pTxRules.getSalTaxIsInvoiceBase()) { //item basis:
-              Long clId = recordSet.getLong("CLID");
+              Long clId = recordSet.getLong("ILID");
               SalesInvoiceServiceLine txdLn = makeTxdLine(dtTx.getTxdLns(),
                 clId, tcId, tax, percent, pAs);
               txdLn.setTotalTaxes(BigDecimal.valueOf(recordSet
@@ -663,6 +681,39 @@ public class UtlInvBase<RS> {
       }
     }
     return dtTx;
+  }
+
+  /**
+   * <p>Adds total tax by category for farther invoice adjusting.</p>
+   * @param pTxdLns Tax Data lines
+   * @param pCatId tax category ID
+   * @param pSubt subtotal without taxes
+   * @param pPercent tax rate
+   * @param pAs AS
+   * @param pTxRules tax rules
+   **/
+  public final void addInvBsTxExTxc(final List<SalesInvoiceServiceLine> pTxdLns,
+    final Long pCatId, final Double pSubt, final Double pPercent,
+      final AccSettings pAs, final TaxDestination pTxRules) {
+    SalesInvoiceServiceLine txdLn = null;
+    for (SalesInvoiceServiceLine tdl : pTxdLns) {
+      if (tdl.getItsId().equals(pCatId)) {
+        txdLn = tdl;
+      }
+    }
+    if (txdLn == null) {
+      txdLn = new SalesInvoiceServiceLine();
+      txdLn.setItsId(pCatId);
+      InvItemTaxCategory tc = new InvItemTaxCategory();
+      tc.setItsId(pCatId);
+      txdLn.setTaxCategory(tc);
+      pTxdLns.add(txdLn);
+    }
+    BigDecimal bd100 = new BigDecimal("100.00");
+    BigDecimal txv = BigDecimal.valueOf(pSubt).multiply(BigDecimal
+      .valueOf(pPercent)).divide(bd100, pAs.getPricePrecision(),
+        pTxRules.getSalTaxRoundMode());
+    txdLn.setTotalTaxes(txdLn.getTotalTaxes().add(txv));
   }
 
   /**
@@ -714,6 +765,7 @@ public class UtlInvBase<RS> {
    * @param pLine invoice line
    * @param pAs Accounting Settings
    * @param pTxRules taxable rules
+   * @param pInvTxMeth tax method code/data for purchase/sales invoice
    * @param pInvLnTxMeth tax method code/data for purchase/sales invoice line
    * @return created invoice line taxes for farther proceed
    * @throws Exception - an exception.
@@ -721,7 +773,7 @@ public class UtlInvBase<RS> {
   public final <T extends IInvoice, L extends IInvoiceLine<T>,
     LTL extends ALineTxLn<T, L>> List<LTL> mkLnTxItBasNonAggr(
       final Map<String, Object> pReqVars, final L pLine, final AccSettings pAs,
-        final TaxDestination pTxRules,
+        final TaxDestination pTxRules, final IInvTxMeth<T, ?> pInvTxMeth,
           final IInvLnTxMeth<T, L, LTL> pInvLnTxMeth) throws Exception {
     List<LTL> itls = new ArrayList<LTL>();
     BigDecimal totTxs = BigDecimal.ZERO;
@@ -764,6 +816,7 @@ public class UtlInvBase<RS> {
         BigDecimal addTx;
         BigDecimal addTxFc = null;
         if (pLine.getItsOwner().getPriceIncTax()) {
+          //tax set by user:
           if (i < itcls.size()) {
             addTx = taxTot.multiply(itcl.getItsPercentage()).divide(
               pLine.getTaxCategory().getAggrOnlyPercent(),
@@ -783,6 +836,7 @@ public class UtlInvBase<RS> {
             }
           }
         } else {
+          //tax always calculated:
           addTx = pLine.getSubtotal().multiply(itcl.getItsPercentage())
         .divide(bd100, pAs.getPricePrecision(), pTxRules.getSalTaxRoundMode());
           if (pLine.getItsOwner().getForeignCurrency() != null) {
@@ -801,7 +855,50 @@ public class UtlInvBase<RS> {
       }
     }
     pLine.setTaxesDescription(sb.toString());
+    mkLnFinal(pLine, totTxs, totTxsFc, pLine.getItsOwner().getPriceIncTax());
     return itls;
+  }
+
+  /**
+   * <p>Makes invoice line final results.</p>
+   * @param <T> invoice type
+   * @param <L> invoice line type
+   * @param pLine invoice line
+   * @param pTotTxs total line taxes
+   * @param pTotTxsFc total line taxes FC
+   * @param pIsTxByUser if tax set by user
+   **/
+  public final <T extends IInvoice, L extends IInvoiceLine<T>> void mkLnFinal(
+    final L pLine, final BigDecimal pTotTxs, final BigDecimal pTotTxsFc,
+      final Boolean pIsTxByUser) {
+    pLine.setTaxesDescription(pLine.getTaxCategory().getItsName());
+    if (pIsTxByUser) {
+      if (pLine.getItsOwner().getForeignCurrency() == null) {
+        if (pLine.getTotalTaxes().compareTo(pTotTxs) != 0) {
+          if (pLine.getDescription() == null) {
+            pLine.setDescription(pLine.getTotalTaxes().toString() + "!="
+              + pTotTxs + "!");
+          } else {
+            pLine.setDescription(pLine.getDescription() + " " + pLine
+              .getTotalTaxes().toString() + "!=" + pTotTxs + "!");
+          }
+        }
+      } else {
+        pLine.setTotalTaxes(pTotTxs);
+        if (pLine.getForeignTotalTaxes().compareTo(pTotTxsFc) != 0) {
+          if (pLine.getDescription() == null) {
+            pLine.setDescription(pLine.getForeignTotalTaxes().toString()
+              + "!=" + pTotTxsFc + "!");
+          } else {
+            pLine.setDescription(pLine.getDescription() + " " + pLine
+              .getForeignTotalTaxes().toString() + "!=" + pTotTxsFc + "!");
+          }
+        }
+      }
+    } else {
+      pLine.setTotalTaxes(pTotTxs);
+      pLine.setForeignTotalTaxes(pTotTxsFc);
+    }
   }
 
   /**

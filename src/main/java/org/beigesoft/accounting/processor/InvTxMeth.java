@@ -91,7 +91,9 @@ public class InvTxMeth<T extends IInvoice, TL extends AInvTxLn<T>>
   private String flTxInvBas;
 
   /**
-   * <p>Tables names for totals query.</p>
+   * <p>Invoice SQL tables names: {[GOOD LINE], [SERVICE LINE],
+   * [TAX LINE], [GOOD TAX LINE], [SERVICE TAX LINE]} or
+   * {[GOOD LINE], [TAX LINE], [GOOD TAX LINE]}.</p>
    **/
   private String[] tblNmsTot;
 
@@ -205,8 +207,7 @@ public class InvTxMeth<T extends IInvoice, TL extends AInvTxLn<T>>
   @Override
   public final String lazyGetQuTxItBas() throws IOException {
     if (this.quTxItBas == null) {
-      this.quTxItBas = loadString("/accounting/trade/"
-        + this.flTxItBas);
+      this.quTxItBas = loadString("/accounting/trade/" + this.flTxItBas);
     }
     return this.quTxItBas;
   }
@@ -225,7 +226,9 @@ public class InvTxMeth<T extends IInvoice, TL extends AInvTxLn<T>>
   }
 
   /**
-   * <p>Getter for tblNmsTot.</p>
+   * <p>Getter for invoice SQL tables names: {[GOOD LINE], [SERVICE LINE],
+   * [TAX LINE], [GOOD TAX LINE], [SERVICE TAX LINE]} or
+   * {[GOOD LINE], [TAX LINE], [GOOD TAX LINE]}.</p>
    * @return String[]
    **/
   @Override
