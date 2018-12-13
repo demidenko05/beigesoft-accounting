@@ -151,6 +151,20 @@ public class UtlInvLine<RS, T extends IInvoice, L extends IInvoiceLine<T>,
       .makeTotals(pReqVars, pLine, pAs, pTxRules, this.invTxMeth);
   }
 
+  /**
+   * <p>Update invoice totals after tax line has
+   * been changed (Invoice basis).</p>
+   * @param pReqVars additional param
+   * @param pInv Invoice
+   * @param pAs accounting settings
+   * @throws Exception - an exception
+   **/
+  public final void updInvTots(
+    final Map<String, Object> pReqVars, final T pInv,
+      final AccSettings pAs) throws Exception {
+    this.utlInvBase.updInvTots(pReqVars, pInv, pAs, this.invTxMeth);
+  }
+
   //Simple getters and setters:
   /**
    * <p>Getter for utlInvBase.</p>

@@ -85,7 +85,6 @@ import org.beigesoft.accounting.processor.PrcPurchRetTaxLnSave;
 import org.beigesoft.accounting.processor.PrcSalRetTaxLnSave;
 import org.beigesoft.accounting.processor.PrcPurchaseInvoiceLineCopy;
 import org.beigesoft.accounting.processor.PrcPurchaseInvoiceLineGfr;
-import org.beigesoft.accounting.processor.UtlPurchaseGoodsServiceLine;
 import org.beigesoft.accounting.processor.PrcGoodsLossSave;
 import org.beigesoft.accounting.processor.PrcGoodsLossLineSave;
 import org.beigesoft.accounting.processor.PrcGoodsLossLineCopy;
@@ -101,7 +100,6 @@ import org.beigesoft.accounting.processor.PrcSalesInvoiceLineCopy;
 import org.beigesoft.accounting.processor.PrcSalesInvoiceLineGfr;
 import org.beigesoft.accounting.processor.PrcSalesInvoiceServiceLineSave;
 import org.beigesoft.accounting.processor.PrcSalesInvoiceServiceLineDelete;
-import org.beigesoft.accounting.processor.UtlSalesGoodsServiceLine;
 import org.beigesoft.accounting.processor.PrcManufactureGfr;
 import org.beigesoft.accounting.processor.PrcManufactureCopy;
 import org.beigesoft.accounting.processor.PrcManufactureSave;
@@ -173,16 +171,23 @@ import org.beigesoft.accounting.persistable.PurchaseReturnLine;
 import org.beigesoft.accounting.persistable.SalesReturn;
 import org.beigesoft.accounting.persistable.SalesReturnLine;
 import org.beigesoft.accounting.persistable.GoodsLossLine;
+import org.beigesoft.accounting.persistable.SalesInvoice;
 import org.beigesoft.accounting.persistable.SalesInvoiceLine;
+import org.beigesoft.accounting.persistable.SalesInvoiceGoodsTaxLine;
 import org.beigesoft.accounting.persistable.SalesInvoiceServiceLine;
+import org.beigesoft.accounting.persistable.SalesInvoiceTaxLine;
+import org.beigesoft.accounting.persistable.SalesInvoiceServiceTaxLine;
 import org.beigesoft.accounting.persistable.BeginningInventoryLine;
 import org.beigesoft.accounting.persistable.PurchaseInvoiceLine;
 import org.beigesoft.accounting.persistable.PurchaseInvoiceServiceLine;
 import org.beigesoft.accounting.persistable.IInvoiceLine;
 import org.beigesoft.accounting.persistable.PurchaseInvoice;
 import org.beigesoft.accounting.persistable.PurchaseInvoiceTaxLine;
+import org.beigesoft.accounting.persistable.PurchaseInvoiceServiceTaxLine;
 import org.beigesoft.accounting.persistable.PurchaseInvoiceGoodsTaxLine;
 import org.beigesoft.accounting.persistable.DestTaxGoodsLn;
+import org.beigesoft.accounting.persistable.DestTaxServPurchLn;
+import org.beigesoft.accounting.persistable.DestTaxServSelLn;
 import org.beigesoft.accounting.service.ISrvTypeCode;
 import org.beigesoft.accounting.service.ISrvAccEntry;
 import org.beigesoft.accounting.service.ISrvWarehouseEntry;
@@ -268,16 +273,6 @@ public class FctBnAccEntitiesProcessors<RS>
   private ISrvDrawItemEntry<UseMaterialEntry> srvUseMaterialEntry;
 
   /**
-   * <p>Business service for purchase goods/service line.</p>
-   **/
-  private UtlSalesGoodsServiceLine<RS> utlSalesGoodsServiceLine;
-
-  /**
-   * <p>Business service for purchase goods/service line.</p>
-   **/
-  private UtlPurchaseGoodsServiceLine<RS> utlPurchaseGoodsServiceLine;
-
-  /**
    * <p>Date service.</p>
    **/
   private ISrvDate srvDate;
@@ -328,6 +323,29 @@ public class FctBnAccEntitiesProcessors<RS>
    **/
   private UtlInvLine<RS, PurchaseInvoice, PurchaseInvoiceLine,
     PurchaseInvoiceTaxLine, PurchaseInvoiceGoodsTaxLine> utlPurInvGdLn;
+
+  /**
+   * <p>Purchase invoice service line utility.</p>
+   **/
+  private UtlInvLine<RS, PurchaseInvoice, PurchaseInvoiceServiceLine,
+    PurchaseInvoiceTaxLine, PurchaseInvoiceServiceTaxLine> utlPurInvSrLn;
+
+  /**
+   * <p>Sales invoice tax method data/code.</p>
+   **/
+  private InvTxMeth<SalesInvoice, SalesInvoiceTaxLine> salInvTxMeth;
+
+  /**
+   * <p>Sales invoice good line utility.</p>
+   **/
+  private UtlInvLine<RS, SalesInvoice, SalesInvoiceLine,
+    SalesInvoiceTaxLine, SalesInvoiceGoodsTaxLine> utlSalInvGdLn;
+
+  /**
+   * <p>Sales invoice service line utility.</p>
+   **/
+  private UtlInvLine<RS, SalesInvoice, SalesInvoiceServiceLine,
+    SalesInvoiceTaxLine, SalesInvoiceServiceTaxLine> utlSalInvSrLn;
 
   /**
    * <p>Converters map "converter name"-"object' s converter".</p>
@@ -810,8 +828,8 @@ public class FctBnAccEntitiesProcessors<RS>
           .lazyGet(pAddParam, PrcEntityPbDelete.class.getSimpleName());
     proc.setSrvOrm(getSrvOrm());
     proc.setPrcAccEntityPbDelete(procDlg);
-    proc.setUtlSalesGoodsServiceLine(
-      lazyGetUtlSalesGoodsServiceLine(pAddParam));
+    proc.setSrvAccSettings(getSrvAccSettings());
+    proc.setUtlInvLine(lazyGetUtlSalSrLn(pAddParam));
     //assigning fully initialized object:
     this.processorsMap
       .put(PrcSalesInvoiceServiceLineDelete.class.getSimpleName(), proc);
@@ -836,8 +854,8 @@ public class FctBnAccEntitiesProcessors<RS>
           .lazyGet(pAddParam, PrcEntityPbDelete.class.getSimpleName());
     proc.setSrvOrm(getSrvOrm());
     proc.setPrcAccEntityPbDelete(procDlg);
-    proc.setUtlPurchaseGoodsServiceLine(
-      lazyGetUtlPurchaseGoodsServiceLine(pAddParam));
+    proc.setSrvAccSettings(getSrvAccSettings());
+    proc.setUtlInvLine(lazyGetUtlPurSrLn(pAddParam));
     //assigning fully initialized object:
     this.processorsMap
       .put(PrcPurchaseInvoiceServiceLineDelete.class.getSimpleName(), proc);
@@ -1366,12 +1384,10 @@ public class FctBnAccEntitiesProcessors<RS>
     if (proc == null) {
       proc = new PrcSalesInvoiceLineSave<RS>();
       proc.setSrvAccSettings(getSrvAccSettings());
-      proc.setSrvNumberToString(getSrvNumberToString());
       proc.setSrvOrm(getSrvOrm());
       proc.setSrvWarehouseEntry(getSrvWarehouseEntry());
       proc.setSrvCogsEntry(getSrvCogsEntry());
-      proc.setUtlSalesGoodsServiceLine(
-        lazyGetUtlSalesGoodsServiceLine(pAddParam));
+      proc.setUtlInvLine(lazyGetUtlSalGdLn(pAddParam));
       //assigning fully initialized object:
       this.processorsMap
         .put(PrcSalesInvoiceLineSave.class.getSimpleName(), proc);
@@ -1577,8 +1593,7 @@ public class FctBnAccEntitiesProcessors<RS>
       proc = new PrcPurchInvTaxLnSave<RS>();
       proc.setSrvAccSettings(getSrvAccSettings());
       proc.setSrvOrm(getSrvOrm());
-      proc.setUtlPurchaseGoodsServiceLine(
-        lazyGetUtlPurchaseGoodsServiceLine(pAddParam));
+      proc.setUtlInvLine(lazyGetUtlPurGdLn(pAddParam));
       //assigning fully initialized object:
       this.processorsMap
         .put(PrcPurchInvTaxLnSave.class.getSimpleName(), proc);
@@ -1601,7 +1616,6 @@ public class FctBnAccEntitiesProcessors<RS>
     if (proc == null) {
       proc = new PrcPurchaseInvoiceLineSave<RS>();
       proc.setSrvAccSettings(getSrvAccSettings());
-      proc.setSrvNumberToString(getSrvNumberToString());
       proc.setSrvOrm(getSrvOrm());
       proc.setSrvWarehouseEntry(getSrvWarehouseEntry());
       proc.setUtlInvLine(lazyGetUtlPurGdLn(pAddParam));
@@ -1812,10 +1826,8 @@ public class FctBnAccEntitiesProcessors<RS>
     if (proc == null) {
       proc = new PrcSalesInvoiceServiceLineSave<RS>();
       proc.setSrvAccSettings(getSrvAccSettings());
-      proc.setSrvNumberToString(getSrvNumberToString());
       proc.setSrvOrm(getSrvOrm());
-      proc.setUtlSalesGoodsServiceLine(
-        lazyGetUtlSalesGoodsServiceLine(pAddParam));
+      proc.setUtlInvLine(lazyGetUtlSalSrLn(pAddParam));
       //assigning fully initialized object:
       this.processorsMap
         .put(PrcSalesInvoiceServiceLineSave.class.getSimpleName(), proc);
@@ -1840,10 +1852,8 @@ public class FctBnAccEntitiesProcessors<RS>
     if (proc == null) {
       proc = new PrcPurchaseInvoiceServiceLineSave<RS>();
       proc.setSrvAccSettings(getSrvAccSettings());
-      proc.setSrvNumberToString(getSrvNumberToString());
       proc.setSrvOrm(getSrvOrm());
-      proc.setUtlPurchaseGoodsServiceLine(
-        lazyGetUtlPurchaseGoodsServiceLine(pAddParam));
+      proc.setUtlInvLine(lazyGetUtlPurSrLn(pAddParam));
       //assigning fully initialized object:
       this.processorsMap
         .put(PrcPurchaseInvoiceServiceLineSave.class.getSimpleName(), proc);
@@ -1999,28 +2009,6 @@ public class FctBnAccEntitiesProcessors<RS>
   }
 
   /**
-   * <p>Get UtlSalesGoodsServiceLine (create and put into map).</p>
-   * @param pAddParam additional param
-   * @return requested UtlSalesGoodsServiceLine
-   * @throws Exception - an exception
-   */
-  protected final UtlSalesGoodsServiceLine<RS>
-    lazyGetUtlSalesGoodsServiceLine(
-      final Map<String, Object> pAddParam) throws Exception {
-    UtlSalesGoodsServiceLine<RS> proc = this.utlSalesGoodsServiceLine;
-    if (proc == null) {
-      proc = new UtlSalesGoodsServiceLine<RS>();
-      proc.setSrvAccSettings(getSrvAccSettings());
-      proc.setSrvOrm(getSrvOrm());
-      proc.setLogger(getLogger());
-      proc.setSrvDatabase(getSrvDatabase());
-      //assigning fully initialized object:
-      this.utlSalesGoodsServiceLine = proc;
-    }
-    return proc;
-  }
-
-  /**
    * <p>Get UtlPurchaseGoodsServiceLine (create and put into map).</p>
    * @param pAddParam additional param
    * @return requested UtlPurchaseGoodsServiceLine
@@ -2108,25 +2096,131 @@ public class FctBnAccEntitiesProcessors<RS>
   }
 
   /**
-   * <p>Get UtlPurchaseGoodsServiceLine (create and put into map).</p>
+   * <p>Get purchase invoice service line utility.</p>
    * @param pAddParam additional param
-   * @return requested UtlPurchaseGoodsServiceLine
+   * @return purchase invoice service line utility
    * @throws Exception - an exception
    */
-  protected final UtlPurchaseGoodsServiceLine<RS>
-    lazyGetUtlPurchaseGoodsServiceLine(
+  protected final UtlInvLine<RS, PurchaseInvoice, PurchaseInvoiceServiceLine,
+    PurchaseInvoiceTaxLine, PurchaseInvoiceServiceTaxLine> lazyGetUtlPurSrLn(
       final Map<String, Object> pAddParam) throws Exception {
-    UtlPurchaseGoodsServiceLine<RS> proc = this.utlPurchaseGoodsServiceLine;
-    if (proc == null) {
-      proc = new UtlPurchaseGoodsServiceLine<RS>();
-      proc.setSrvAccSettings(getSrvAccSettings());
-      proc.setLogger(getLogger());
-      proc.setSrvOrm(getSrvOrm());
-      proc.setSrvDatabase(getSrvDatabase());
+    UtlInvLine<RS, PurchaseInvoice, PurchaseInvoiceServiceLine,
+      PurchaseInvoiceTaxLine, PurchaseInvoiceServiceTaxLine> utlInvLn = this
+        .utlPurInvSrLn;
+    if (utlInvLn == null) {
+      utlInvLn = new UtlInvLine<RS, PurchaseInvoice, PurchaseInvoiceServiceLine,
+        PurchaseInvoiceTaxLine, PurchaseInvoiceServiceTaxLine>();
+      utlInvLn.setUtlInvBase(lazyGetUtlInvBase(pAddParam));
+      utlInvLn.setInvTxMeth(lazyGetPurInvTxMeth(pAddParam));
+      utlInvLn.setIsMutable(true);
+      utlInvLn.setLtlCl(PurchaseInvoiceServiceTaxLine.class);
+      utlInvLn.setDstTxItLnCl(DestTaxServPurchLn.class);
+      FactoryPersistableBase<PurchaseInvoiceServiceTaxLine> fctLtl =
+        new FactoryPersistableBase<PurchaseInvoiceServiceTaxLine>();
+      fctLtl.setObjectClass(PurchaseInvoiceServiceTaxLine.class);
+      fctLtl.setDatabaseId(getSrvDatabase().getIdDatabase());
+      utlInvLn.setFctLineTxLn(fctLtl);
       //assigning fully initialized object:
-      this.utlPurchaseGoodsServiceLine = proc;
+      this.utlPurInvSrLn = utlInvLn;
     }
-    return proc;
+    return utlInvLn;
+  }
+
+  /**
+   * <p>Get InvTxMeth<SalesInvoice, SalesInvoiceTaxLine>.</p>
+   * @param pAddParam additional param
+   * @return requested InvTxMeth<SalesInvoice, SalesInvoiceTaxLine>
+   * @throws Exception - an exception
+   */
+  protected final InvTxMeth<SalesInvoice, SalesInvoiceTaxLine>
+    lazyGetSalInvTxMeth(final Map<String, Object> pAddParam) throws Exception {
+    InvTxMeth<SalesInvoice, SalesInvoiceTaxLine> salInvTxMe =
+      this.salInvTxMeth;
+    if (salInvTxMe == null) {
+      salInvTxMe = new InvTxMeth<SalesInvoice, SalesInvoiceTaxLine>();
+      salInvTxMe.setGoodLnCl(SalesInvoiceLine.class);
+      salInvTxMe.setServiceLnCl(SalesInvoiceServiceLine.class);
+      salInvTxMe.setInvTxLnCl(SalesInvoiceTaxLine.class);
+      salInvTxMe.setIsTxByUser(true);
+      salInvTxMe.setFlTotals("invTotals.sql");
+      salInvTxMe.setFlTxItBas("invTxItBas.sql");
+      salInvTxMe.setFlTxItBasAggr("invTxItBasAggr.sql");
+      salInvTxMe.setFlTxInvBas("invTxInvBas.sql");
+      salInvTxMe.setFlTxInvBasAggr("invTxInvBasAggr.sql");
+      salInvTxMe.setTblNmsTot(new String[] {"SALESINVOICELINE",
+        "SALESINVOICESERVICELINE", "SALESINVOICETAXLINE",
+           "SALESINVOICEGOODSTAXLINE", "SALESINVOICESERVICETAXLINE"});
+      FactoryPersistableBase<SalesInvoiceTaxLine> fctItl =
+        new FactoryPersistableBase<SalesInvoiceTaxLine>();
+      fctItl.setObjectClass(SalesInvoiceTaxLine.class);
+      fctItl.setDatabaseId(getSrvDatabase().getIdDatabase());
+      salInvTxMe.setFctInvTxLn(fctItl);
+      //assigning fully initialized object:
+      this.salInvTxMeth = salInvTxMe;
+    }
+    return salInvTxMe;
+  }
+
+  /**
+   * <p>Get sales invoice good line utility.</p>
+   * @param pAddParam additional param
+   * @return sales invoice good line utility
+   * @throws Exception - an exception
+   */
+  protected final UtlInvLine<RS, SalesInvoice, SalesInvoiceLine,
+    SalesInvoiceTaxLine, SalesInvoiceGoodsTaxLine> lazyGetUtlSalGdLn(
+      final Map<String, Object> pAddParam) throws Exception {
+    UtlInvLine<RS, SalesInvoice, SalesInvoiceLine,
+      SalesInvoiceTaxLine, SalesInvoiceGoodsTaxLine> utlInvLn = this
+        .utlSalInvGdLn;
+    if (utlInvLn == null) {
+      utlInvLn = new UtlInvLine<RS, SalesInvoice, SalesInvoiceLine,
+        SalesInvoiceTaxLine, SalesInvoiceGoodsTaxLine>();
+      utlInvLn.setUtlInvBase(lazyGetUtlInvBase(pAddParam));
+      utlInvLn.setInvTxMeth(lazyGetSalInvTxMeth(pAddParam));
+      utlInvLn.setIsMutable(false);
+      utlInvLn.setLtlCl(SalesInvoiceGoodsTaxLine.class);
+      utlInvLn.setDstTxItLnCl(DestTaxGoodsLn.class);
+      FactoryPersistableBase<SalesInvoiceGoodsTaxLine> fctLtl =
+        new FactoryPersistableBase<SalesInvoiceGoodsTaxLine>();
+      fctLtl.setObjectClass(SalesInvoiceGoodsTaxLine.class);
+      fctLtl.setDatabaseId(getSrvDatabase().getIdDatabase());
+      utlInvLn.setFctLineTxLn(fctLtl);
+      //assigning fully initialized object:
+      this.utlSalInvGdLn = utlInvLn;
+    }
+    return utlInvLn;
+  }
+
+  /**
+   * <p>Get sales invoice service line utility.</p>
+   * @param pAddParam additional param
+   * @return sales invoice service line utility
+   * @throws Exception - an exception
+   */
+  protected final UtlInvLine<RS, SalesInvoice, SalesInvoiceServiceLine,
+    SalesInvoiceTaxLine, SalesInvoiceServiceTaxLine> lazyGetUtlSalSrLn(
+      final Map<String, Object> pAddParam) throws Exception {
+    UtlInvLine<RS, SalesInvoice, SalesInvoiceServiceLine,
+      SalesInvoiceTaxLine, SalesInvoiceServiceTaxLine> utlInvLn = this
+        .utlSalInvSrLn;
+    if (utlInvLn == null) {
+      utlInvLn = new UtlInvLine<RS, SalesInvoice, SalesInvoiceServiceLine,
+        SalesInvoiceTaxLine, SalesInvoiceServiceTaxLine>();
+      utlInvLn.setUtlInvBase(lazyGetUtlInvBase(pAddParam));
+      utlInvLn.setInvTxMeth(lazyGetSalInvTxMeth(pAddParam));
+      utlInvLn.setIsMutable(true);
+      utlInvLn.setLtlCl(SalesInvoiceServiceTaxLine.class);
+      utlInvLn.setDstTxItLnCl(DestTaxServSelLn.class);
+      FactoryPersistableBase<SalesInvoiceServiceTaxLine> fctLtl =
+        new FactoryPersistableBase<SalesInvoiceServiceTaxLine>();
+      fctLtl.setObjectClass(SalesInvoiceServiceTaxLine.class);
+      fctLtl.setDatabaseId(getSrvDatabase().getIdDatabase());
+      utlInvLn.setFctLineTxLn(fctLtl);
+      //assigning fully initialized object:
+      this.utlSalInvSrLn = utlInvLn;
+    }
+    return utlInvLn;
   }
 
   /**

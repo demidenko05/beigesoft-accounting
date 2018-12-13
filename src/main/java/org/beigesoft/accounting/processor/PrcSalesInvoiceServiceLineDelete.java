@@ -17,9 +17,13 @@ import java.util.Map;
 import org.beigesoft.model.IRequestData;
 import org.beigesoft.service.IEntityProcessor;
 import org.beigesoft.service.ISrvOrm;
+import org.beigesoft.accounting.persistable.AccSettings;
+import org.beigesoft.accounting.persistable.TaxDestination;
 import org.beigesoft.accounting.persistable.SalesInvoiceServiceLine;
 import org.beigesoft.accounting.persistable.SalesInvoice;
+import org.beigesoft.accounting.persistable.SalesInvoiceTaxLine;
 import org.beigesoft.accounting.persistable.SalesInvoiceServiceTaxLine;
+import org.beigesoft.accounting.service.ISrvAccSettings;
 
 /**
  * <p>Service that delete SalesInvoiceServiceLine from DB.</p>
@@ -42,9 +46,16 @@ public class PrcSalesInvoiceServiceLineDelete<RS>
     prcAccEntityPbDelete;
 
   /**
-   * <p>It makes total for owner.</p>
+   * <p>Business service for accounting settings.</p>
    **/
-  private UtlSalesGoodsServiceLine<RS> utlSalesGoodsServiceLine;
+  private ISrvAccSettings srvAccSettings;
+
+  /**
+   * <p>It makes line and total for owner.</p>
+   **/
+  private UtlInvLine<RS, SalesInvoice, SalesInvoiceServiceLine,
+    SalesInvoiceTaxLine, SalesInvoiceServiceTaxLine> utlInvLine;
+
 
   /**
    * <p>Process entity request.</p>
@@ -72,14 +83,36 @@ public class PrcSalesInvoiceServiceLineDelete<RS>
     Long ownerVersion = Long.valueOf(pRequestData
       .getParameter(SalesInvoice.class.getSimpleName() + ".ownerVersion"));
     pEntity.getItsOwner().setItsVersion(ownerVersion);
-    this.utlSalesGoodsServiceLine
-      .updateOwner(pReqVars, pEntity.getItsOwner());
+    AccSettings as = getSrvAccSettings().lazyGetAccSettings(pReqVars);
+    TaxDestination txRules = this.utlInvLine.revealTaxRules(pReqVars,
+      pEntity.getItsOwner(), as, as.getIsExtractSalesTaxFromSales());
+    this.utlInvLine.makeTotals(pReqVars, pEntity, as, txRules);
     pReqVars.put("nextEntity", pEntity.getItsOwner());
     pReqVars.put("nameOwnerEntity", SalesInvoice.class.getSimpleName());
     return null;
   }
 
   //Simple getters and setters:
+  /**
+   * <p>Getter for utlInvLine.</p>
+   * @return UtlInvLine<RS, SalesInvoice, SalesInvoiceServiceLine,
+   *  SalesInvoiceTaxLine, SalesInvoiceServiceTaxLine>
+   **/
+  public final UtlInvLine<RS, SalesInvoice, SalesInvoiceServiceLine,
+    SalesInvoiceTaxLine, SalesInvoiceServiceTaxLine> getUtlInvLine() {
+    return this.utlInvLine;
+  }
+
+  /**
+   * <p>Setter for utlInvLine.</p>
+   * @param pUtlInvLine reference
+   **/
+  public final void setUtlInvLine(final UtlInvLine<RS, SalesInvoice,
+    SalesInvoiceServiceLine, SalesInvoiceTaxLine,
+      SalesInvoiceServiceTaxLine> pUtlInvLine) {
+    this.utlInvLine = pUtlInvLine;
+  }
+
   /**
    * <p>Getter for srvOrm.</p>
    * @return ISrvOrm<RS>
@@ -116,20 +149,18 @@ public class PrcSalesInvoiceServiceLineDelete<RS>
   }
 
   /**
-   * <p>Getter for utlSalesGoodsServiceLine.</p>
-   * @return UtlSalesGoodsServiceLine<RS>
+   * <p>Getter for srvAccSettings.</p>
+   * @return ISrvAccSettings
    **/
-  public final UtlSalesGoodsServiceLine<RS>
-    getUtlSalesGoodsServiceLine() {
-    return this.utlSalesGoodsServiceLine;
+  public final ISrvAccSettings getSrvAccSettings() {
+    return this.srvAccSettings;
   }
 
   /**
-   * <p>Setter for utlSalesGoodsServiceLine.</p>
-   * @param pUtlSalesGoodsServiceLine reference
+   * <p>Setter for srvAccSettings.</p>
+   * @param pSrvAccSettings reference
    **/
-  public final void setUtlSalesGoodsServiceLine(
-    final UtlSalesGoodsServiceLine<RS> pUtlSalesGoodsServiceLine) {
-    this.utlSalesGoodsServiceLine = pUtlSalesGoodsServiceLine;
+  public final void setSrvAccSettings(final ISrvAccSettings pSrvAccSettings) {
+    this.srvAccSettings = pSrvAccSettings;
   }
 }

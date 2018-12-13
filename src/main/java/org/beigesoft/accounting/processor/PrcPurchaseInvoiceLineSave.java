@@ -21,7 +21,6 @@ import org.beigesoft.model.IRequestData;
 import org.beigesoft.exception.ExceptionWithCode;
 import org.beigesoft.service.IEntityProcessor;
 import org.beigesoft.service.ISrvOrm;
-import org.beigesoft.service.ISrvNumberToString;
 import org.beigesoft.accounting.persistable.InvItem;
 import org.beigesoft.accounting.persistable.PurchaseInvoiceGoodsTaxLine;
 import org.beigesoft.accounting.persistable.PurchaseInvoiceTaxLine;
@@ -61,11 +60,6 @@ public class PrcPurchaseInvoiceLineSave<RS>
    * <p>Business service for accounting settings.</p>
    **/
   private ISrvAccSettings srvAccSettings;
-
-  /**
-   * <p>Service print number.</p>
-   **/
-  private ISrvNumberToString srvNumberToString;
 
   /**
    * <p>Process entity request.</p>
@@ -208,21 +202,6 @@ public class PrcPurchaseInvoiceLineSave<RS>
     }
   }
 
-  /**
-   * <p>Simple delegator to print number.</p>
-   * @param pReqVars additional param
-   * @param pVal value
-   * @return String
-   **/
-  public final String prn(final Map<String, Object> pReqVars,
-    final BigDecimal pVal) {
-    return this.srvNumberToString.print(pVal.toString(),
-      (String) pReqVars.get("decSepv"),
-        (String) pReqVars.get("decGrSepv"),
-          (Integer) pReqVars.get("priceDp"),
-            (Integer) pReqVars.get("digInGr"));
-  }
-
   //Simple getters and setters:
   /**
    * <p>Getter for utlInvLine.</p>
@@ -291,22 +270,5 @@ public class PrcPurchaseInvoiceLineSave<RS>
   public final void setSrvWarehouseEntry(
     final ISrvWarehouseEntry pSrvWarehouseEntry) {
     this.srvWarehouseEntry = pSrvWarehouseEntry;
-  }
-
-  /**
-   * <p>Getter for srvNumberToString.</p>
-   * @return ISrvNumberToString
-   **/
-  public final ISrvNumberToString getSrvNumberToString() {
-    return this.srvNumberToString;
-  }
-
-  /**
-   * <p>Setter for srvNumberToString.</p>
-   * @param pSrvNumberToString reference
-   **/
-  public final void setSrvNumberToString(
-    final ISrvNumberToString pSrvNumberToString) {
-    this.srvNumberToString = pSrvNumberToString;
   }
 }

@@ -189,6 +189,7 @@ public class UtlInvBase<RS> {
                 taxAggegated = txdLn.getTotalTaxes();
               }
             }
+            //here total taxes mean total for current tax:
             if (ti < txdLn.getTaxCategory().getTaxes().size()) {
               txdLn.setTotalTaxes(taxAggegated.multiply(itcl.getItsPercentage())
                 .divide(txdLn.getTaxCategory().getAggrOnlyPercent(),
@@ -201,6 +202,10 @@ public class UtlInvBase<RS> {
               invTxLns, itcl.getTax(), true, pInvTxMeth.getFctInvTxLn());
             tl.setItsTotal(tl.getItsTotal().add(txdLn.getTotalTaxes()));
             if (pTxRules.getSalTaxIsInvoiceBase()) {
+              if (ti == txdLn.getTaxCategory().getTaxes().size()) {
+                //total line taxes for farther invoice adjusting:
+                txdLn.setTotalTaxes(taxAggegated);
+              }
               if (!pLine.getItsOwner().getPriceIncTax()) {
                 tl.setTaxableInvBas(tl.getTaxableInvBas()
                   .add(txdLn.getSubtotal()));
@@ -244,7 +249,8 @@ public class UtlInvBase<RS> {
 
   /**
    * <p>Update invoice totals after its line has been changed/deleted
-   * and taxes lines has been made.</p>
+   * and taxes lines has been made
+   * or after tax line has been changed (Invoice basis).</p>
    * @param <T> invoice type
    * @param pReqVars additional param
    * @param pInv Invoice
@@ -335,9 +341,10 @@ public class UtlInvBase<RS> {
     String tbNm = pInvTxMeth.getGoodLnCl().getSimpleName();
     pReqVars.put(tbNm + "itsOwnerdeepLevel", 1);
     List<? extends IInvoiceLine<T>> gls = getSrvOrm()
-      .retrieveListWithConditions(pReqVars,
-        pInvTxMeth.getGoodLnCl(), "where " + tbNm.toUpperCase()
-          + ".TAXCATEGORY is not null and ITSOWNER=" + pInv.getItsId());
+      .retrieveListWithConditions(pReqVars, pInvTxMeth.getGoodLnCl(), "where "
+        + tbNm.toUpperCase()
+          + ".TAXCATEGORY is not null and REVERSEDID is null and ITSOWNER="
+            + pInv.getItsId());
     pReqVars.remove(tbNm + "itsOwnerdeepLevel");
     List<? extends IInvoiceLine<T>> sls = null;
     if (pInvTxMeth.getServiceLnCl() != null) {
@@ -468,6 +475,7 @@ public class UtlInvBase<RS> {
           .getPricePrecision(), pTxRules.getSalTaxRoundMode());
             }
           }
+          pLine.setTaxesDescription(pLine.getTaxCategory().getItsName());
           mkLnFinal(pLine, totTxs, totTxsFc, pInvTxMeth.getIsTxByUser());
         }
       } else {
@@ -871,7 +879,6 @@ public class UtlInvBase<RS> {
   public final <T extends IInvoice, L extends IInvoiceLine<T>> void mkLnFinal(
     final L pLine, final BigDecimal pTotTxs, final BigDecimal pTotTxsFc,
       final Boolean pIsTxByUser) {
-    pLine.setTaxesDescription(pLine.getTaxCategory().getItsName());
     if (pIsTxByUser) {
       if (pLine.getItsOwner().getForeignCurrency() == null) {
         if (pLine.getTotalTaxes().compareTo(pTotTxs) != 0) {

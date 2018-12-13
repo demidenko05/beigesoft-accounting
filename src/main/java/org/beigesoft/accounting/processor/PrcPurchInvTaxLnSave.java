@@ -16,13 +16,13 @@ import java.util.Set;
 import java.util.HashSet;
 import java.util.Map;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 
 import org.beigesoft.model.IRequestData;
 import org.beigesoft.exception.ExceptionWithCode;
 import org.beigesoft.service.IEntityProcessor;
 import org.beigesoft.service.ISrvOrm;
 import org.beigesoft.accounting.persistable.AccSettings;
+import org.beigesoft.accounting.persistable.TaxDestination;
 import org.beigesoft.accounting.persistable.PurchaseInvoiceTaxLine;
 import org.beigesoft.accounting.persistable.PurchaseInvoice;
 import org.beigesoft.accounting.service.ISrvAccSettings;
@@ -43,14 +43,15 @@ public class PrcPurchInvTaxLnSave<RS>
   private ISrvOrm<RS> srvOrm;
 
   /**
-   * <p>It makes total for owner.</p>
-   **/
-  private UtlPurchaseGoodsServiceLine<RS> utlPurchaseGoodsServiceLine;
-
-  /**
    * <p>Business service for accounting settings.</p>
    **/
   private ISrvAccSettings srvAccSettings;
+
+  /**
+   * <p>It makes line and total for owner.</p>
+   **/
+  private UtlInvLine<RS, PurchaseInvoice, ?, ?, ?> utlInvLine;
+
 
   /**
    * <p>Process entity request.</p>
@@ -70,7 +71,6 @@ public class PrcPurchInvTaxLnSave<RS>
       throw new ExceptionWithCode(ExceptionWithCode.WRONG_PARAMETER,
         "total_less_or_eq_zero");
     }
-    AccSettings as = getSrvAccSettings().lazyGetAccSettings(pReqVars);
     // Beige-Orm refresh:
     pReqVars.put("DebtorCreditortaxDestinationdeepLevel", 2);
     Set<String> ndFlDc = new HashSet<String>();
@@ -82,34 +82,25 @@ public class PrcPurchInvTaxLnSave<RS>
       .retrieveEntity(pReqVars, pEntity.getItsOwner()));
     pReqVars.remove("DebtorCreditorneededFields");
     pReqVars.remove("DebtorCreditortaxDestinationdeepLevel");
-    boolean isTaxable = as.getIsExtractSalesTaxFromPurchase() && !pEntity
-      .getItsOwner().getOmitTaxes() && !pEntity.getItsOwner().getVendor()
-        .getIsForeigner();
-    if (!isTaxable) {
+    AccSettings as = getSrvAccSettings().lazyGetAccSettings(pReqVars);
+    TaxDestination txRules = this.utlInvLine.revealTaxRules(pReqVars,
+      pEntity.getItsOwner(), as, as.getIsExtractSalesTaxFromPurchase());
+    if (txRules == null) {
       throw new ExceptionWithCode(ExceptionWithCode.WRONG_PARAMETER,
         "non_taxable");
+    }
+    if (!txRules.getSalTaxIsInvoiceBase()) {
+      throw new ExceptionWithCode(ExceptionWithCode.WRONG_PARAMETER,
+        "cant_edit_item_basis_tax");
     }
     PurchaseInvoiceTaxLine oldEntity = getSrvOrm()
       .retrieveEntity(pReqVars, pEntity);
     pEntity.setTax(oldEntity.getTax());
     pEntity.setTaxableInvBas(oldEntity.getTaxableInvBas());
     pEntity.setTaxableInvBasFc(oldEntity.getTaxableInvBasFc());
-    boolean isItemBasis = !as.getSalTaxIsInvoiceBase();
-    RoundingMode rm = as.getSalTaxRoundMode();
-    if (pEntity.getItsOwner().getVendor().getTaxDestination() != null) {
-      //override tax method:
-      isItemBasis = !pEntity.getItsOwner().getVendor()
-        .getTaxDestination().getSalTaxIsInvoiceBase();
-      rm = pEntity.getItsOwner().getVendor()
-        .getTaxDestination().getSalTaxRoundMode();
-    }
-    if (isItemBasis) {
-      throw new ExceptionWithCode(ExceptionWithCode.WRONG_PARAMETER,
-        "cant_edit_item_basis_tax");
-    }
     //rounding:
     pEntity.setItsTotal(pEntity.getItsTotal().setScale(as
-      .getPricePrecision(), rm));
+      .getPricePrecision(), txRules.getSalTaxRoundMode()));
     if (pEntity.getItsTotal().compareTo(oldEntity.getItsTotal()) != 0) {
       if (pEntity.getItsOwner().getDescription() == null) {
         pEntity.getItsOwner().setDescription(pEntity.getTax().getItsName()
@@ -126,14 +117,31 @@ public class PrcPurchInvTaxLnSave<RS>
     Long ownerVersion = Long.valueOf(pRequestData
       .getParameter(PurchaseInvoice.class.getSimpleName() + ".ownerVersion"));
     pEntity.getItsOwner().setItsVersion(ownerVersion);
-    this.utlPurchaseGoodsServiceLine
-      .updateOwnerTotals(pReqVars, pEntity.getItsOwner());
+    this.utlInvLine.updInvTots(pReqVars, pEntity.getItsOwner(), as);
     pReqVars.put("nextEntity", pEntity.getItsOwner());
     pReqVars.put("nameOwnerEntity", PurchaseInvoice.class.getSimpleName());
     return null;
   }
 
   //Simple getters and setters:
+  /**
+   * <p>Getter for utlInvLine.</p>
+   * @return UtlInvLine<RS, PurchaseInvoice, ?,
+   *  PurchaseInvoiceTaxLine, ?>
+   **/
+  public final UtlInvLine<RS, PurchaseInvoice, ?, ?, ?> getUtlInvLine() {
+    return this.utlInvLine;
+  }
+
+  /**
+   * <p>Setter for utlInvLine.</p>
+   * @param pUtlInvLine reference
+   **/
+  public final void setUtlInvLine(
+    final UtlInvLine<RS, PurchaseInvoice, ?, ?, ?> pUtlInvLine) {
+    this.utlInvLine = pUtlInvLine;
+  }
+
   /**
    * <p>Getter for srvOrm.</p>
    * @return ISrvOrm<RS>
@@ -164,23 +172,5 @@ public class PrcPurchInvTaxLnSave<RS>
    **/
   public final void setSrvAccSettings(final ISrvAccSettings pSrvAccSettings) {
     this.srvAccSettings = pSrvAccSettings;
-  }
-
-  /**
-   * <p>Getter for utlPurchaseGoodsServiceLine.</p>
-   * @return UtlPurchaseGoodsServiceLine<RS>
-   **/
-  public final UtlPurchaseGoodsServiceLine<RS>
-    getUtlPurchaseGoodsServiceLine() {
-    return this.utlPurchaseGoodsServiceLine;
-  }
-
-  /**
-   * <p>Setter for utlPurchaseGoodsServiceLine.</p>
-   * @param pUtlPurchaseGoodsServiceLine reference
-   **/
-  public final void setUtlPurchaseGoodsServiceLine(
-    final UtlPurchaseGoodsServiceLine<RS> pUtlPurchaseGoodsServiceLine) {
-    this.utlPurchaseGoodsServiceLine = pUtlPurchaseGoodsServiceLine;
   }
 }
