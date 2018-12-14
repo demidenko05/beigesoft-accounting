@@ -1,7 +1,7 @@
 package org.beigesoft.accounting.persistable;
 
 /*
- * Copyright (c) 2018 Beigesoft ™
+ * Copyright (c) 2018 Beigesoft™
  *
  * Licensed under the GNU General Public License (GPL), Version 2.0
  * (the "License");
@@ -12,8 +12,7 @@ package org.beigesoft.accounting.persistable;
  * http://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html
  */
 
-import org.beigesoft.model.IOwned;
-import org.beigesoft.accounting.persistable.base.ADocTaxLine;
+import org.beigesoft.accounting.persistable.base.ALineTxLn;
 
 /**
  * <p>
@@ -22,13 +21,8 @@ import org.beigesoft.accounting.persistable.base.ADocTaxLine;
  *
  * @author Yury Demidenko
  */
-public class PurchaseReturnGoodsTaxLine extends ADocTaxLine
-  implements IOwned<PurchaseReturnLine> {
-
-  /**
-   * <p>Return ID (to improve performance).</p>
-   **/
-  private Long invoiceId;
+public class PurchaseReturnGoodsTaxLine
+  extends ALineTxLn<PurchaseReturn, PurchaseReturnLine> {
 
   /**
    * <p>Goods line.</p>
@@ -51,22 +45,5 @@ public class PurchaseReturnGoodsTaxLine extends ADocTaxLine
   @Override
   public final void setItsOwner(final PurchaseReturnLine pItsOwner) {
     this.itsOwner = pItsOwner;
-  }
-
-  //Simple getters and setters:
-  /**
-   * <p>Getter for invoiceId.</p>
-   * @return Long
-   **/
-  public final Long getInvoiceId() {
-    return this.invoiceId;
-  }
-
-  /**
-   * <p>Setter for invoiceId.</p>
-   * @param pInvoiceId reference
-   **/
-  public final void setInvoiceId(final Long pInvoiceId) {
-    this.invoiceId = pInvoiceId;
   }
 }

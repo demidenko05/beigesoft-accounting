@@ -1,2 +1,11 @@
+alter table PURCHASERETURN add column FOREIGNSUBTOTAL decimal(19,4) default 0;
+alter table PURCHASERETURN add column FOREIGNTOTALTAXES decimal(19,4) default 0;
+alter table PURCHASERETURN add column FOREIGNTOTAL decimal(19,4) default 0;
+alter table PURCHASERETURNLINE add column FOREIGNSUBTOTAL decimal(19,4) default 0;
+alter table PURCHASERETURNLINE add column FOREIGNTOTALTAXES decimal(19,4) default 0;
+alter table PURCHASERETURNLINE add column FOREIGNTOTAL decimal(19,4) default 0;
+alter table PURCHASERETURNTAXLINE add column FOREIGNTOTALTAXES decimal(19,4) default 0;
+alter table PURCHASERETURNTAXLINE add column TAXABLEINVBAS decimal(19,4) default 0;
+alter table PURCHASERETURNTAXLINE add column TAXABLEINVBASFC decimal(19,4) default 0;
 alter table TAXDESTINATION add column REGZIP varchar(10);
 update DATABASEINFO set DATABASEVERSION=8, DESCRIPTION='Beige Accounting DB version 8';

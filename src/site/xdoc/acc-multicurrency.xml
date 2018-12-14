@@ -67,6 +67,11 @@
         You have to fill in "Payment From" field "Total FO" (total in foreign currency) for payments tracking (in foreign currency for such invoices):
         <p align="center"><img style="max-width: 100%" src="images/salesmc8.png" /></p>
       </p>
+      <h4>Handling big exchange rate, e.g. <b>0.0154781432211</b></h4>
+      <p>In this case use negative foreign currency value, e.g. 1USD=63.12RUB,
+      if RUB is national currency then enter <b>63.12</b>, otherwise (USD is national currency) enter <b>-63.12</b>.
+      Application itself makes rate=1/63.12.
+      </p>
     </section>
 
   </body>

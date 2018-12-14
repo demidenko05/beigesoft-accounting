@@ -1,2 +1,11 @@
+alter table PURCHASERETURN add column FOREIGNSUBTOTAL real default 0;
+alter table PURCHASERETURN add column FOREIGNTOTALTAXES real default 0;
+alter table PURCHASERETURN add column FOREIGNTOTAL real default 0;
+alter table PURCHASERETURNLINE add column FOREIGNSUBTOTAL real default 0;
+alter table PURCHASERETURNLINE add column FOREIGNTOTALTAXES real default 0;
+alter table PURCHASERETURNLINE add column FOREIGNTOTAL real default 0;
+alter table PURCHASERETURNTAXLINE add column FOREIGNTOTALTAXES real default 0;
+alter table PURCHASERETURNTAXLINE add column TAXABLEINVBAS real default 0;
+alter table PURCHASERETURNTAXLINE add column TAXABLEINVBASFC real default 0;
 alter table TAXDESTINATION add column REGZIP text;
 update DATABASEINFO set DATABASEVERSION=8, DESCRIPTION='Beige Accounting DB version 8';

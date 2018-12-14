@@ -53,4 +53,10 @@ public interface IInvLnTxMeth<T extends IInvoice, L extends IInvoiceLine<T>,
    * @return IFactorySimple<LTL>
    **/
   IFactorySimple<LTL> getFctLineTxLn();
+
+  /**
+   * <p>Getter for need make line tax category (purchase return not).</p>
+   * @return Boolean
+   **/
+  Boolean getNeedMkTxCat();
 }

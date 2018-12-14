@@ -16,6 +16,7 @@ import java.util.Set;
 import java.util.HashSet;
 import java.util.Map;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 import org.beigesoft.model.IRequestData;
 import org.beigesoft.exception.ExceptionWithCode;
@@ -144,6 +145,11 @@ public class PrcPurchaseInvoiceLineSave<RS>
             "type_must_be_material_or_merchandise::" + pReqVars.get("user"));
         }
         pEntity.setTheRest(pEntity.getItsQuantity());
+        BigDecimal exchRate = pEntity.getItsOwner().getExchangeRate();
+        if (exchRate != null && exchRate.compareTo(BigDecimal.ZERO) == -1) {
+          exchRate = BigDecimal.ONE.divide(exchRate.negate(), 15,
+            RoundingMode.HALF_UP);
+        }
         if (pEntity.getInvItem().getKnownCost() != null) {
           if (pEntity.getItsOwner().getForeignCurrency() != null) {
             pEntity.setForeignPrice(pEntity.getInvItem().getKnownCost());
@@ -154,9 +160,8 @@ public class PrcPurchaseInvoiceLineSave<RS>
             pEntity.setForeignSubtotal(pEntity.getItsQuantity().multiply(pEntity
     .getForeignPrice()).setScale(as.getPricePrecision(), as.getRoundingMode()));
             }
-            pEntity.setItsCost(pEntity.getForeignPrice().multiply(pEntity
-              .getItsOwner().getExchangeRate()).setScale(as
-                .getPricePrecision(), as.getRoundingMode()));
+            pEntity.setItsCost(pEntity.getForeignPrice().multiply(exchRate)
+              .setScale(as.getPricePrecision(), as.getRoundingMode()));
           } else {
             pEntity.setItsCost(pEntity.getInvItem().getKnownCost());
           }
@@ -170,17 +175,14 @@ public class PrcPurchaseInvoiceLineSave<RS>
         } else {
           //using user passed values:
           if (pEntity.getItsOwner().getForeignCurrency() != null) {
-            pEntity.setItsCost(pEntity.getForeignPrice().multiply(pEntity
-              .getItsOwner().getExchangeRate()).setScale(as
-                .getPricePrecision(), as.getRoundingMode()));
+            pEntity.setItsCost(pEntity.getForeignPrice().multiply(exchRate)
+              .setScale(as.getPricePrecision(), as.getRoundingMode()));
             if (txRules == null || pEntity.getItsOwner().getPriceIncTax()) {
-              pEntity.setItsTotal(pEntity.getForeignTotal().multiply(pEntity
-              .getItsOwner().getExchangeRate()).setScale(as
-                .getPricePrecision(), as.getRoundingMode()));
+              pEntity.setItsTotal(pEntity.getForeignTotal().multiply(exchRate)
+                .setScale(as.getPricePrecision(), as.getRoundingMode()));
             } else {
-              pEntity.setSubtotal(pEntity.getForeignSubtotal().multiply(pEntity
-              .getItsOwner().getExchangeRate()).setScale(as
-                .getPricePrecision(), as.getRoundingMode()));
+              pEntity.setSubtotal(pEntity.getForeignSubtotal().multiply(
+            exchRate).setScale(as.getPricePrecision(), as.getRoundingMode()));
             }
           }
         }

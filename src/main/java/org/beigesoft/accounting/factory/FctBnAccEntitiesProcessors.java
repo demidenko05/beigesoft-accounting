@@ -2082,6 +2082,7 @@ public class FctBnAccEntitiesProcessors<RS>
       utlInvLn.setUtlInvBase(lazyGetUtlInvBase(pAddParam));
       utlInvLn.setInvTxMeth(lazyGetPurInvTxMeth(pAddParam));
       utlInvLn.setIsMutable(false);
+      utlInvLn.setNeedMkTxCat(true);
       utlInvLn.setLtlCl(PurchaseInvoiceGoodsTaxLine.class);
       utlInvLn.setDstTxItLnCl(DestTaxGoodsLn.class);
       FactoryPersistableBase<PurchaseInvoiceGoodsTaxLine> fctLtl =
@@ -2113,6 +2114,7 @@ public class FctBnAccEntitiesProcessors<RS>
       utlInvLn.setUtlInvBase(lazyGetUtlInvBase(pAddParam));
       utlInvLn.setInvTxMeth(lazyGetPurInvTxMeth(pAddParam));
       utlInvLn.setIsMutable(true);
+      utlInvLn.setNeedMkTxCat(true);
       utlInvLn.setLtlCl(PurchaseInvoiceServiceTaxLine.class);
       utlInvLn.setDstTxItLnCl(DestTaxServPurchLn.class);
       FactoryPersistableBase<PurchaseInvoiceServiceTaxLine> fctLtl =
@@ -2179,6 +2181,7 @@ public class FctBnAccEntitiesProcessors<RS>
       utlInvLn.setUtlInvBase(lazyGetUtlInvBase(pAddParam));
       utlInvLn.setInvTxMeth(lazyGetSalInvTxMeth(pAddParam));
       utlInvLn.setIsMutable(false);
+      utlInvLn.setNeedMkTxCat(true);
       utlInvLn.setLtlCl(SalesInvoiceGoodsTaxLine.class);
       utlInvLn.setDstTxItLnCl(DestTaxGoodsLn.class);
       FactoryPersistableBase<SalesInvoiceGoodsTaxLine> fctLtl =
@@ -2210,6 +2213,7 @@ public class FctBnAccEntitiesProcessors<RS>
       utlInvLn.setUtlInvBase(lazyGetUtlInvBase(pAddParam));
       utlInvLn.setInvTxMeth(lazyGetSalInvTxMeth(pAddParam));
       utlInvLn.setIsMutable(true);
+      utlInvLn.setNeedMkTxCat(true);
       utlInvLn.setLtlCl(SalesInvoiceServiceTaxLine.class);
       utlInvLn.setDstTxItLnCl(DestTaxServSelLn.class);
       FactoryPersistableBase<SalesInvoiceServiceTaxLine> fctLtl =

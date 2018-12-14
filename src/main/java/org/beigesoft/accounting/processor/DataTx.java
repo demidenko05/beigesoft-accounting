@@ -45,6 +45,13 @@ public class DataTx {
   private List<Double> txTotTaxb;
 
   /**
+   * <p>Tax's totals/taxables FC data storage for non-aggregate rate
+   * except invoice basis with included taxes.
+   * </p>
+   **/
+  private List<Double> txTotTaxbFc;
+
+  /**
    * <p>Tax's percents for invoice basis data storage for non-aggregate rate
    * except invoice basis with included taxes.
    * </p>
@@ -83,6 +90,22 @@ public class DataTx {
    **/
   public final void setTxs(final List<Tax> pTxs) {
     this.txs = pTxs;
+  }
+
+  /**
+   * <p>Getter for txTotTaxbFc.</p>
+   * @return List<Double>
+   **/
+  public final List<Double> getTxTotTaxbFc() {
+    return this.txTotTaxbFc;
+  }
+
+  /**
+   * <p>Setter for txTotTaxbFc.</p>
+   * @param pTxTotTaxbFc reference
+   **/
+  public final void setTxTotTaxbFc(final List<Double> pTxTotTaxbFc) {
+    this.txTotTaxbFc = pTxTotTaxbFc;
   }
 
   /**

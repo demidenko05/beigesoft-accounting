@@ -76,6 +76,12 @@ public class PrcPurchaseReturnSave<RS>
             .getPurchaseInvoiceLine());
           reversingLine.setItsQuantity(reversedLine.getItsQuantity()
             .negate());
+          reversingLine.setForeignTotal(reversedLine.getForeignTotal()
+            .negate());
+          reversingLine.setForeignSubtotal(reversedLine.getForeignSubtotal()
+            .negate());
+          reversingLine.setForeignTotalTaxes(reversedLine.getForeignTotalTaxes()
+            .negate());
           reversingLine.setItsTotal(reversedLine.getItsTotal().negate());
           reversingLine.setSubtotal(reversedLine.getSubtotal().negate());
           reversingLine.setTotalTaxes(reversedLine.getTotalTaxes().negate());
@@ -122,7 +128,10 @@ public class PrcPurchaseReturnSave<RS>
           reversingLine.setIdDatabaseBirth(getSrvOrm().getIdDatabase());
           reversingLine.setReversedId(reversedLine.getItsId());
           reversingLine.setItsTotal(reversedLine.getItsTotal().negate());
+          reversingLine.setForeignTotalTaxes(reversedLine.getForeignTotalTaxes()
+            .negate());
           reversingLine.setTaxableInvBas(reversedLine.getTaxableInvBas());
+          reversingLine.setTaxableInvBasFc(reversedLine.getTaxableInvBasFc());
           reversingLine.setTax(reversedLine.getTax());
           reversingLine.setIsNew(true);
           reversingLine.setItsOwner(pEntity);

@@ -70,6 +70,20 @@ public class UtlInvLine<RS, T extends IInvoice, L extends IInvoiceLine<T>,
   private Boolean isMutable;
 
   /**
+   * <p>If need make line tax category (purchase return not).</p>
+   **/
+  private Boolean needMkTxCat;
+
+  /**
+   * <p>Getter for need make line tax category (purchase return not).</p>
+   * @return Boolean
+   **/
+  @Override
+  public final Boolean getNeedMkTxCat() {
+    return needMkTxCat;
+  }
+
+  /**
    * <p>Getter for dstTxItLnCl.</p>
    * @return Class<?>
    **/
@@ -228,5 +242,12 @@ public class UtlInvLine<RS, T extends IInvoice, L extends IInvoiceLine<T>,
    **/
   public final void setIsMutable(final Boolean pIsMutable) {
     this.isMutable = pIsMutable;
+  }
+  /**
+   * <p>Setter for needMkTxCat.</p>
+   * @param pNeedMkTxCat reference
+   **/
+  public final void setNeedMkTxCat(final Boolean pNeedMkTxCat) {
+    this.needMkTxCat = pNeedMkTxCat;
   }
 }

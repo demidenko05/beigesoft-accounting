@@ -93,7 +93,8 @@ public class InvTxMeth<T extends IInvoice, TL extends AInvTxLn<T>>
   /**
    * <p>Invoice SQL tables names: {[GOOD LINE], [SERVICE LINE],
    * [TAX LINE], [GOOD TAX LINE], [SERVICE TAX LINE]} or
-   * {[GOOD LINE], [TAX LINE], [GOOD TAX LINE]}.</p>
+   * {[GOOD LINE], [TAX LINE], [GOOD TAX LINE]}.
+   * If SQL query no needs it, then set it NULL.</p>
    **/
   private String[] tblNmsTot;
 
@@ -228,7 +229,8 @@ public class InvTxMeth<T extends IInvoice, TL extends AInvTxLn<T>>
   /**
    * <p>Getter for invoice SQL tables names: {[GOOD LINE], [SERVICE LINE],
    * [TAX LINE], [GOOD TAX LINE], [SERVICE TAX LINE]} or
-   * {[GOOD LINE], [TAX LINE], [GOOD TAX LINE]}.</p>
+   * {[GOOD LINE], [TAX LINE], [GOOD TAX LINE]}.
+   * If SQL query no needs it, then set it NULL.</p>
    * @return String[]
    **/
   @Override

@@ -15,8 +15,8 @@ package org.beigesoft.accounting.persistable;
 import java.math.BigDecimal;
 import java.util.Date;
 
-import org.beigesoft.model.IOwned;
 import org.beigesoft.persistable.APersistableBaseVersion;
+import org.beigesoft.accounting.persistable.base.AItem;
 
 /**
  * <pre>
@@ -28,7 +28,7 @@ import org.beigesoft.persistable.APersistableBaseVersion;
  * @author Yury Demidenko
  */
 public class PurchaseReturnLine extends APersistableBaseVersion
-  implements IMakingWarehouseEntry, IOwned<PurchaseReturn> {
+  implements IMakingWarehouseEntry, IInvoiceLine<PurchaseReturn> {
 
   /**
    * <p>Purchase Return.</p>
@@ -66,17 +66,17 @@ public class PurchaseReturnLine extends APersistableBaseVersion
   /**
    * <p>Total with taxes.</p>
    **/
-  private BigDecimal subtotal = new BigDecimal("0.00");
+  private BigDecimal subtotal = BigDecimal.ZERO;
 
   /**
    * <p>Total taxes.</p>
    **/
-  private BigDecimal totalTaxes = new BigDecimal("0.00");
+  private BigDecimal totalTaxes = BigDecimal.ZERO;
 
   /**
    * <p>Total.</p>
    **/
-  private BigDecimal itsTotal = new BigDecimal("0.00");
+  private BigDecimal itsTotal = BigDecimal.ZERO;
 
   /**
    * <p>Taxes description, uneditable,
@@ -88,6 +88,157 @@ public class PurchaseReturnLine extends APersistableBaseVersion
    * <p>Description.</p>
    **/
   private String description;
+
+  /**
+   * <p>Subtotal in foreign currency, if used.</p>
+   **/
+  private BigDecimal foreignSubtotal = BigDecimal.ZERO;
+
+  /**
+   * <p>Total taxes in foreign currency, if used,
+   * in case of domestic sales (if law allow it).</p>
+   **/
+  private BigDecimal foreignTotalTaxes = BigDecimal.ZERO;
+
+  /**
+   * <p>Total in foreign currency, if used.</p>
+   **/
+  private BigDecimal foreignTotal = BigDecimal.ZERO;
+
+  /**
+   * <p>Geter for item.</p>
+   * @return item
+   **/
+  @Override
+  public final AItem<?, ?> getItem() {
+    return this.purchaseInvoiceLine.getInvItem();
+  }
+
+  /**
+   * <p>Geter for reversedId.</p>
+   * @return Long
+   **/
+  @Override
+  public final Long getReversedId() {
+    return this.reversedId;
+  }
+
+  /**
+   * <p>Setter for reversedId.</p>
+   * @param pReversedId reference
+   **/
+  @Override
+  public final void setReversedId(final Long pReversedId) {
+    this.reversedId = pReversedId;
+  }
+
+  /**
+   * <p>Getter for itsCost.</p>
+   * @return BigDecimal
+   **/
+  @Override
+  public final BigDecimal getItsPrice() {
+    return this.purchaseInvoiceLine.getItsCost();
+  }
+
+  /**
+   * <p>Setter for itsCost.</p>
+   * @param pItsPrice reference
+   **/
+  @Override
+  public final void setItsPrice(final BigDecimal pItsPrice) {
+    throw new RuntimeException("UNEDITABLE");
+  }
+
+  /**
+   * <p>Getter for taxCategory.</p>
+   * @return InvItemTaxCategory
+   **/
+  @Override
+  public final InvItemTaxCategory getTaxCategory() {
+    return this.purchaseInvoiceLine.getTaxCategory();
+  }
+
+  /**
+   * <p>Setter for taxCategory.</p>
+   * @param pTaxCategory reference
+   **/
+  @Override
+  public final void setTaxCategory(final InvItemTaxCategory pTaxCategory) {
+    throw new RuntimeException("UNEDITABLE");
+  }
+
+  /**
+   * <p>Getter for foreignPrice.</p>
+   * @return BigDecimal
+   **/
+  @Override
+  public final BigDecimal getForeignPrice() {
+    return this.purchaseInvoiceLine.getForeignPrice();
+  }
+
+  /**
+   * <p>Setter for foreignPrice.</p>
+   * @param pForeignPrice reference
+   **/
+  @Override
+  public final void setForeignPrice(final BigDecimal pForeignPrice) {
+    throw new RuntimeException("UNEDITABLE");
+  }
+
+  /**
+   * <p>Getter for foreignSubtotal.</p>
+   * @return BigDecimal
+   **/
+  @Override
+  public final BigDecimal getForeignSubtotal() {
+    return this.foreignSubtotal;
+  }
+
+  /**
+   * <p>Setter for foreignSubtotal.</p>
+   * @param pForeignSubtotal reference
+   **/
+  @Override
+  public final void setForeignSubtotal(final BigDecimal pForeignSubtotal) {
+    this.foreignSubtotal = pForeignSubtotal;
+  }
+
+  /**
+   * <p>Getter for foreignTotalTaxes.</p>
+   * @return BigDecimal
+   **/
+  @Override
+  public final BigDecimal getForeignTotalTaxes() {
+    return this.foreignTotalTaxes;
+  }
+
+  /**
+   * <p>Setter for foreignTotalTaxes.</p>
+   * @param pForeignTotalTaxes reference
+   **/
+  @Override
+  public final void setForeignTotalTaxes(final BigDecimal pForeignTotalTaxes) {
+    this.foreignTotalTaxes = pForeignTotalTaxes;
+  }
+
+  /**
+   * <p>Getter for foreignTotal.</p>
+   * @return BigDecimal
+   **/
+  @Override
+  public final BigDecimal getForeignTotal() {
+    return this.foreignTotal;
+  }
+
+  /**
+   * <p>Setter for foreignTotal.</p>
+   * @param pForeignTotal reference
+   **/
+  @Override
+  public final void setForeignTotal(final BigDecimal pForeignTotal) {
+    this.foreignTotal = pForeignTotal;
+  }
 
   /**
    * <p>Setter for unitOfMeasure.</p>
@@ -155,24 +306,6 @@ public class PurchaseReturnLine extends APersistableBaseVersion
   }
 
   /**
-   * <p>Geter for reversedId.</p>
-   * @return Long
-   **/
-  @Override
-  public final Long getReversedId() {
-    return this.reversedId;
-  }
-
-  /**
-   * <p>Setter for reversedId.</p>
-   * @param pReversedId reference
-   **/
-  @Override
-  public final void setReversedId(final Long pReversedId) {
-    this.reversedId = pReversedId;
-  }
-
-  /**
    * <p>Get for document Date.</p>
    * @return Date
    **/
@@ -217,6 +350,96 @@ public class PurchaseReturnLine extends APersistableBaseVersion
     this.description = pDescription;
   }
 
+  /**
+   * <p>Getter for itsQuantity.</p>
+   * @return BigDecimal
+   **/
+  @Override
+  public final BigDecimal getItsQuantity() {
+    return this.itsQuantity;
+  }
+
+  /**
+   * <p>Setter for itsQuantity.</p>
+   * @param pItsQuantity reference
+   **/
+  @Override
+  public final void setItsQuantity(final BigDecimal pItsQuantity) {
+    this.itsQuantity = pItsQuantity;
+  }
+
+  /**
+   * <p>Getter for subtotal.</p>
+   * @return BigDecimal
+   **/
+  @Override
+  public final BigDecimal getSubtotal() {
+    return this.subtotal;
+  }
+
+  /**
+   * <p>Setter for subtotal.</p>
+   * @param pSubtotal reference
+   **/
+  @Override
+  public final void setSubtotal(final BigDecimal pSubtotal) {
+    this.subtotal = pSubtotal;
+  }
+
+  /**
+   * <p>Getter for totalTaxes.</p>
+   * @return BigDecimal
+   **/
+  @Override
+  public final BigDecimal getTotalTaxes() {
+    return this.totalTaxes;
+  }
+
+  /**
+   * <p>Setter for totalTaxes.</p>
+   * @param pTotalTaxes reference
+   **/
+  @Override
+  public final void setTotalTaxes(final BigDecimal pTotalTaxes) {
+    this.totalTaxes = pTotalTaxes;
+  }
+
+  /**
+   * <p>Getter for itsTotal.</p>
+   * @return BigDecimal
+   **/
+  @Override
+  public final BigDecimal getItsTotal() {
+    return this.itsTotal;
+  }
+
+  /**
+   * <p>Setter for itsTotal.</p>
+   * @param pItsTotal reference
+   **/
+  @Override
+  public final void setItsTotal(final BigDecimal pItsTotal) {
+    this.itsTotal = pItsTotal;
+  }
+
+  /**
+   * <p>Getter for taxesDescription.</p>
+   * @return String
+   **/
+  @Override
+  public final String getTaxesDescription() {
+    return this.taxesDescription;
+  }
+
+  /**
+   * <p>Setter for taxesDescription.</p>
+   * @param pTaxesDescription reference
+   **/
+  @Override
+  public final void setTaxesDescription(final String pTaxesDescription) {
+    this.taxesDescription = pTaxesDescription;
+  }
+
   //Simple getters and setters:
   /**
    * <p>Getter for purchaseInvoiceLine.</p>
@@ -250,86 +473,6 @@ public class PurchaseReturnLine extends APersistableBaseVersion
   public final void setPurchInvLnAppearance(
     final String pPurchInvLnAppearance) {
     this.purchInvLnAppearance = pPurchInvLnAppearance;
-  }
-
-  /**
-   * <p>Getter for itsQuantity.</p>
-   * @return BigDecimal
-   **/
-  public final BigDecimal getItsQuantity() {
-    return this.itsQuantity;
-  }
-
-  /**
-   * <p>Setter for itsQuantity.</p>
-   * @param pItsQuantity reference
-   **/
-  public final void setItsQuantity(final BigDecimal pItsQuantity) {
-    this.itsQuantity = pItsQuantity;
-  }
-
-  /**
-   * <p>Getter for subtotal.</p>
-   * @return BigDecimal
-   **/
-  public final BigDecimal getSubtotal() {
-    return this.subtotal;
-  }
-
-  /**
-   * <p>Setter for subtotal.</p>
-   * @param pSubtotal reference
-   **/
-  public final void setSubtotal(final BigDecimal pSubtotal) {
-    this.subtotal = pSubtotal;
-  }
-
-  /**
-   * <p>Getter for totalTaxes.</p>
-   * @return BigDecimal
-   **/
-  public final BigDecimal getTotalTaxes() {
-    return this.totalTaxes;
-  }
-
-  /**
-   * <p>Setter for totalTaxes.</p>
-   * @param pTotalTaxes reference
-   **/
-  public final void setTotalTaxes(final BigDecimal pTotalTaxes) {
-    this.totalTaxes = pTotalTaxes;
-  }
-
-  /**
-   * <p>Getter for itsTotal.</p>
-   * @return BigDecimal
-   **/
-  public final BigDecimal getItsTotal() {
-    return this.itsTotal;
-  }
-
-  /**
-   * <p>Setter for itsTotal.</p>
-   * @param pItsTotal reference
-   **/
-  public final void setItsTotal(final BigDecimal pItsTotal) {
-    this.itsTotal = pItsTotal;
-  }
-
-  /**
-   * <p>Getter for taxesDescription.</p>
-   * @return String
-   **/
-  public final String getTaxesDescription() {
-    return this.taxesDescription;
-  }
-
-  /**
-   * <p>Setter for taxesDescription.</p>
-   * @param pTaxesDescription reference
-   **/
-  public final void setTaxesDescription(final String pTaxesDescription) {
-    this.taxesDescription = pTaxesDescription;
   }
 
   /**

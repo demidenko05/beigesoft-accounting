@@ -16,6 +16,7 @@ import java.util.Set;
 import java.util.HashSet;
 import java.util.Map;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 import org.beigesoft.model.IRequestData;
 import org.beigesoft.exception.ExceptionWithCode;
@@ -95,17 +96,19 @@ public class PrcPurchaseInvoiceServiceLineSave<RS>
       pEntity.getItsOwner(), as, as.getIsExtractSalesTaxFromPurchase());
     //using user passed values:
     if (pEntity.getItsOwner().getForeignCurrency() != null) {
-      pEntity.setItsCost(pEntity.getForeignPrice().multiply(pEntity
-        .getItsOwner().getExchangeRate()).setScale(as
-          .getPricePrecision(), as.getRoundingMode()));
+      BigDecimal exchRate = pEntity.getItsOwner().getExchangeRate();
+      if (exchRate.compareTo(BigDecimal.ZERO) == -1) {
+        exchRate = BigDecimal.ONE.divide(exchRate.negate(), 15,
+          RoundingMode.HALF_UP);
+      }
+      pEntity.setItsCost(pEntity.getForeignPrice().multiply(exchRate)
+        .setScale(as.getPricePrecision(), as.getRoundingMode()));
       if (txRules == null || pEntity.getItsOwner().getPriceIncTax()) {
-        pEntity.setItsTotal(pEntity.getForeignTotal().multiply(pEntity
-        .getItsOwner().getExchangeRate()).setScale(as
-          .getPricePrecision(), as.getRoundingMode()));
+        pEntity.setItsTotal(pEntity.getForeignTotal().multiply(exchRate)
+          .setScale(as.getPricePrecision(), as.getRoundingMode()));
       } else {
-        pEntity.setSubtotal(pEntity.getForeignSubtotal().multiply(pEntity
-        .getItsOwner().getExchangeRate()).setScale(as
-          .getPricePrecision(), as.getRoundingMode()));
+        pEntity.setSubtotal(pEntity.getForeignSubtotal().multiply(exchRate)
+          .setScale(as.getPricePrecision(), as.getRoundingMode()));
       }
     }
     this.utlInvLine.makeLine(pReqVars, pEntity, as, txRules);

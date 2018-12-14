@@ -11,7 +11,7 @@
   <suppress checks="FileLength"
     files="FctBnAccEntitiesProcessors"/>
   <suppress checks="MethodLength"
-    files="FctBnAccEntitiesProcessors|InvoiceReportPdf|BalanceSheetPdf|PrcPurchaseReturnLineSave|PrcSalesReturnLineSave|PrcSalesInvoiceLineSave|PrcPurchaseInvoiceLineSave|UtlPurchaseGoodsServiceLine|UtlSalesGoodsServiceLine|PrcSalesInvoiceServiceLineSave|PrcPurchaseInvoiceServiceLineSave"/>
+    files="FctBnAccEntitiesProcessors|InvoiceReportPdf|BalanceSheetPdf|PrcPurchaseReturnLineSave|PrcSalesReturnLineSave|UtlInvBase"/>
   <suppress checks="ParameterNumber"
     files="UtlPurchaseGoodsServiceLine|UtlSalesGoodsServiceLine"/>
   <suppress checks="MagicNumberCheck"
@@ -25,7 +25,7 @@
   <suppress checks="MagicNumberCheck"
     files="BalanceAtAllDirtyCheck|SrvBalanceStd|GoodsLoss|GoodsLossLine|SalesReturn|SalesReturnLine|PurchaseReturn|PurchaseReturnLine|HndlAccVarsRequest|PrcInvoiceLnGfe"/>
   <suppress checks="MagicNumberCheck"
-    files="MoveItems|MoveItemsLine|BeginningInventory|BeginningInventoryLine|InvoiceReportPdf|BalanceSheetPdf|SrvBalanceSheet|ServiceToSaleCategory|UtlSalesGoodsServiceLine|UtlPurchaseGoodsServiceLine|PrcPurchRetGfe"/>
+    files="MoveItems|MoveItemsLine|BeginningInventory|BeginningInventoryLine|InvoiceReportPdf|BalanceSheetPdf|SrvBalanceSheet|ServiceToSaleCategory|PrcPurchRetGfe"/>
   <suppress checks="MagicNumberCheck"
-    files="UtlInvBase|UtlInvoice"/>
+    files="UtlInvBase|UtlInvoice|PrcPurchaseInvoiceServiceLineSave|PrcSalesInvoiceServiceLineSave"/>
 </suppressions>
