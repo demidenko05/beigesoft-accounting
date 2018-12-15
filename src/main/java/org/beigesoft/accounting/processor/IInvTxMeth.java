@@ -69,6 +69,20 @@ public interface IInvTxMeth<T extends IInvoice, TL extends AInvTxLn<T>> {
   Boolean getIsTxByUser();
 
   /**
+   * <p>Get where start clause for adjusting invoice goods
+   * lines for invoice basis method.</p>
+   * @return String
+   **/
+  String getStWhereAdjGdLnInvBas();
+
+  /**
+   * <p>Get where start clause for adjusting invoice service
+   * lines for invoice basis method.</p>
+   * @return String
+   **/
+  String getStWhereAdjSrLnInvBas();
+
+  /**
    * <p>Lazy get for quTxInvBas.</p>
    * @return String
    * @throws IOException - IO exception

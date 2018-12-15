@@ -387,18 +387,17 @@ public class UtlInvBase<RS> {
     String tbNm = pInvTxMeth.getGoodLnCl().getSimpleName();
     pReqVars.put(tbNm + "itsOwnerdeepLevel", 1);
     List<? extends IInvoiceLine<T>> gls = getSrvOrm()
-      .retrieveListWithConditions(pReqVars, pInvTxMeth.getGoodLnCl(), "where "
-        + tbNm.toUpperCase()
-          + ".TAXCATEGORY is not null and REVERSEDID is null and ITSOWNER="
-            + pInv.getItsId());
+      .retrieveListWithConditions(pReqVars, pInvTxMeth.getGoodLnCl(),
+        pInvTxMeth.getStWhereAdjGdLnInvBas() + pInv.getItsId());
+            
     pReqVars.remove(tbNm + "itsOwnerdeepLevel");
     List<? extends IInvoiceLine<T>> sls = null;
     if (pInvTxMeth.getServiceLnCl() != null) {
       tbNm = pInvTxMeth.getServiceLnCl().getSimpleName();
       pReqVars.put(tbNm + "itsOwnerdeepLevel", 1);
-      sls = getSrvOrm().retrieveListWithConditions(pReqVars,
-        pInvTxMeth.getServiceLnCl(), "where " + tbNm.toUpperCase()
-          + ".TAXCATEGORY is not null and ITSOWNER=" + pInv.getItsId());
+      sls = getSrvOrm().retrieveListWithConditions(pReqVars, pInvTxMeth
+        .getServiceLnCl(), pInvTxMeth.getStWhereAdjSrLnInvBas()
+          + pInv.getItsId());
       pReqVars.remove(tbNm + "itsOwnerdeepLevel");
     }
     //matched to current tax category (affected) invoice lines:

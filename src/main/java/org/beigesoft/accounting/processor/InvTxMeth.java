@@ -124,6 +124,40 @@ public class InvTxMeth<T extends IInvoice, TL extends AInvTxLn<T>>
   private Class<TL> invTxLnCl;
 
   /**
+   * <p>Where start clause for adjusting invoice goods
+   * lines for invoice basis method.</p>
+   **/
+  private String stWhereAdjGdLnInvBas;
+
+  /**
+   * <p>Where start clause for adjusting invoice service
+   * lines for invoice basis method.</p>
+   **/
+  private String stWhereAdjSrLnInvBas;
+
+  /**
+   * <p>Getter for stWhereAdjGdLnInvBas.
+   * Where start clause for adjusting invoice goods
+   * lines for invoice basis method.</p>
+   * @return String
+   **/
+  @Override
+  public final String getStWhereAdjGdLnInvBas() {
+    return this.stWhereAdjGdLnInvBas;
+  }
+
+  /**
+   * <p>Getter for stWhereAdjSrLnInvBas.
+   * Where start clause for adjusting invoice service
+   * lines for invoice basis method.</p>
+   * @return String
+   **/
+  @Override
+  public final String getStWhereAdjSrLnInvBas() {
+    return this.stWhereAdjSrLnInvBas;
+  }
+
+  /**
    * <p>Getter for fctInvTxLn.</p>
    * @return IFactorySimple<TL>
    **/
@@ -440,5 +474,23 @@ public class InvTxMeth<T extends IInvoice, TL extends AInvTxLn<T>>
   public final void setServiceLnCl(
     final Class<? extends IInvoiceLine<T>> pServiceLnCl) {
     this.serviceLnCl = pServiceLnCl;
+  }
+
+  /**
+   * <p>Setter for stWhereAdjGdLnInvBas.</p>
+   * @param pStWhereAdjGdLnInvBas reference
+   **/
+  public final void setStWhereAdjGdLnInvBas(
+    final String pStWhereAdjGdLnInvBas) {
+    this.stWhereAdjGdLnInvBas = pStWhereAdjGdLnInvBas;
+  }
+
+  /**
+   * <p>Setter for stWhereAdjSrLnInvBas.</p>
+   * @param pStWhereAdjSrLnInvBas reference
+   **/
+  public final void setStWhereAdjSrLnInvBas(
+    final String pStWhereAdjSrLnInvBas) {
+    this.stWhereAdjSrLnInvBas = pStWhereAdjSrLnInvBas;
   }
 }

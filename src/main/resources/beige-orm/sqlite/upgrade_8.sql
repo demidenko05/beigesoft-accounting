@@ -4,6 +4,7 @@ alter table PURCHASERETURN add column FOREIGNTOTAL real default 0;
 alter table PURCHASERETURNLINE add column FOREIGNSUBTOTAL real default 0;
 alter table PURCHASERETURNLINE add column FOREIGNTOTALTAXES real default 0;
 alter table PURCHASERETURNLINE add column FOREIGNTOTAL real default 0;
+alter table PURCHASERETURNGOODSTAXLINE add column FOREIGNTOTALTAXES real default 0;
 alter table PURCHASERETURNTAXLINE add column FOREIGNTOTALTAXES real default 0;
 alter table PURCHASERETURNTAXLINE add column TAXABLEINVBAS real default 0;
 alter table PURCHASERETURNTAXLINE add column TAXABLEINVBASFC real default 0;

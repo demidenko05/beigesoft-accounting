@@ -17,13 +17,13 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.List;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 import org.beigesoft.model.IRequestData;
 import org.beigesoft.exception.ExceptionWithCode;
 import org.beigesoft.service.ISrvI18n;
 import org.beigesoft.service.IEntityProcessor;
 import org.beigesoft.service.ISrvOrm;
-import org.beigesoft.service.ISrvDatabase;
 import org.beigesoft.service.ISrvNumberToString;
 import org.beigesoft.accounting.persistable.AccSettings;
 import org.beigesoft.accounting.persistable.PurchaseReturnGoodsTaxLine;
@@ -50,11 +50,6 @@ public class PrcPurchaseReturnLineSave<RS>
    * <p>I18N service.</p>
    **/
   private ISrvI18n srvI18n;
-
-  /**
-   * <p>Database service.</p>
-   **/
-  private ISrvDatabase<RS> srvDatabase;
 
   /**
    * <p>ORM service.</p>
@@ -182,23 +177,47 @@ public class PrcPurchaseReturnLineSave<RS>
       .getPurchaseInvoiceLine().getItsCost()) + ", " + getSrvI18n()
         .getMsg("rest_was", langDef) + "=" + prnq(pReqVars, pEntity
           .getPurchaseInvoiceLine().getTheRest()));
+        BigDecimal exchRate = pEntity.getItsOwner().getExchangeRate();
+        if (exchRate != null && exchRate.compareTo(BigDecimal.ZERO) == -1) {
+          exchRate = BigDecimal.ONE.divide(exchRate.negate(), 15,
+            RoundingMode.HALF_UP);
+        }
+        BigDecimal sourceCost;
+        BigDecimal curCost;
+        //using user passed total cause rounding error cost*quantity!=total:
         if (pEntity.getItsOwner().getForeignCurrency() != null) {
           if (txRules == null || pEntity.getItsOwner().getPriceIncTax()) {
-          pEntity.setForeignTotal(pEntity.getItsQuantity().multiply(pEntity
-  .getForeignPrice()).setScale(as.getPricePrecision(), as.getRoundingMode()));
+            pEntity.setItsTotal(pEntity.getForeignTotal().multiply(exchRate)
+              .setScale(as.getPricePrecision(), as.getRoundingMode()));
+            curCost = pEntity.getForeignTotal().divide(pEntity
+              .getItsQuantity(), as.getCostPrecision(), as.getRoundingMode());
           } else {
-          pEntity.setForeignSubtotal(pEntity.getItsQuantity().multiply(pEntity
-  .getForeignPrice()).setScale(as.getPricePrecision(), as.getRoundingMode()));
+            pEntity.setSubtotal(pEntity.getForeignSubtotal().multiply(
+          exchRate).setScale(as.getPricePrecision(), as.getRoundingMode()));
+            curCost = pEntity.getForeignSubtotal().divide(pEntity
+              .getItsQuantity(), as.getCostPrecision(), as.getRoundingMode());
+          }
+          sourceCost = pEntity.getForeignPrice();
+        } else {
+          if (txRules == null || pEntity.getItsOwner().getPriceIncTax()) {
+            curCost = pEntity.getItsTotal().divide(pEntity
+              .getItsQuantity(), as.getCostPrecision(), as.getRoundingMode());
+          } else {
+            curCost = pEntity.getSubtotal().divide(pEntity
+              .getItsQuantity(), as.getCostPrecision(), as.getRoundingMode());
+          }
+          sourceCost = pEntity.getItsPrice();
+        }
+        if (sourceCost.compareTo(curCost) != 0) {
+          if (pEntity.getDescription() == null) {
+            pEntity.setDescription(curCost.toString() + "!="
+              + sourceCost + "!");
+          } else {
+            pEntity.setDescription(pEntity.getDescription() + " " + curCost
+              + "!=" + sourceCost + "!");
           }
         }
-        if (txRules == null || pEntity.getItsOwner().getPriceIncTax()) {
-        pEntity.setItsTotal(pEntity.getItsQuantity().multiply(pEntity
-      .getItsPrice()).setScale(as.getPricePrecision(), as.getRoundingMode()));
-        } else {
-          pEntity.setSubtotal(pEntity.getItsQuantity().multiply(pEntity
-      .getItsPrice()).setScale(as.getPricePrecision(), as.getRoundingMode()));
-        }
-       this.utlInvLine.makeLine(pReqVars, pEntity, as, txRules);
+        this.utlInvLine.makeLine(pReqVars, pEntity, as, txRules);
         srvWarehouseEntry.withdrawal(pReqVars, pEntity,
           pEntity.getWarehouseSiteFo());
         srvUseMaterialEntry.withdrawalFrom(pReqVars, pEntity,
@@ -230,7 +249,7 @@ public class PrcPurchaseReturnLineSave<RS>
     return this.srvNumberToString.print(pVal.toString(),
       (String) pReqVars.get("decSepv"),
         (String) pReqVars.get("decGrSepv"),
-          (Integer) pReqVars.get("costPrecision"),
+          (Integer) pReqVars.get("costDp"),
             (Integer) pReqVars.get("digInGr"));
   }
 
@@ -245,7 +264,7 @@ public class PrcPurchaseReturnLineSave<RS>
     return this.srvNumberToString.print(pVal.toString(),
       (String) pReqVars.get("decSepv"),
         (String) pReqVars.get("decGrSepv"),
-          (Integer) pReqVars.get("quantityPrecision"),
+          (Integer) pReqVars.get("quantityDp"),
             (Integer) pReqVars.get("digInGr"));
   }
 
@@ -318,22 +337,6 @@ public class PrcPurchaseReturnLineSave<RS>
   public final void setSrvUseMaterialEntry(
     final ISrvDrawItemEntry<UseMaterialEntry> pSrvUseMaterialEntry) {
     this.srvUseMaterialEntry = pSrvUseMaterialEntry;
-  }
-
-  /**
-   * <p>Geter for srvDatabase.</p>
-   * @return ISrvDatabase
-   **/
-  public final ISrvDatabase<RS> getSrvDatabase() {
-    return this.srvDatabase;
-  }
-
-  /**
-   * <p>Setter for srvDatabase.</p>
-   * @param pSrvDatabase reference
-   **/
-  public final void setSrvDatabase(final ISrvDatabase<RS> pSrvDatabase) {
-    this.srvDatabase = pSrvDatabase;
   }
 
   /**

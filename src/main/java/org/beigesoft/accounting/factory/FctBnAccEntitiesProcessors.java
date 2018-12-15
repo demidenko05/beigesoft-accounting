@@ -168,6 +168,8 @@ import org.beigesoft.accounting.persistable.UsedMaterialLine;
 import org.beigesoft.accounting.persistable.PrepaymentTo;
 import org.beigesoft.accounting.persistable.PurchaseReturn;
 import org.beigesoft.accounting.persistable.PurchaseReturnLine;
+import org.beigesoft.accounting.persistable.PurchaseReturnTaxLine;
+import org.beigesoft.accounting.persistable.PurchaseReturnGoodsTaxLine;
 import org.beigesoft.accounting.persistable.SalesReturn;
 import org.beigesoft.accounting.persistable.SalesReturnLine;
 import org.beigesoft.accounting.persistable.GoodsLossLine;
@@ -312,6 +314,17 @@ public class FctBnAccEntitiesProcessors<RS>
    * <p>Shared invoice code-bunch.</p>
    **/
   private UtlInvBase<RS> utlInvBase;
+
+  /**
+   * <p>Purchase return tax method data/code.</p>
+   **/
+  private InvTxMeth<PurchaseReturn, PurchaseReturnTaxLine> purRetTxMeth;
+
+  /**
+   * <p>Purchase return good line utility.</p>
+   **/
+  private UtlInvLine<RS, PurchaseReturn, PurchaseReturnLine,
+    PurchaseReturnTaxLine, PurchaseReturnGoodsTaxLine> utlPurRetGdLn;
 
   /**
    * <p>Purchase invoice tax method data/code.</p>
@@ -1881,7 +1894,7 @@ public class FctBnAccEntitiesProcessors<RS>
       proc.setSrvNumberToString(getSrvNumberToString());
       proc.setSrvOrm(getSrvOrm());
       proc.setSrvI18n(getSrvI18n());
-      proc.setSrvDatabase(getSrvDatabase());
+      proc.setUtlInvLine(lazyGetUtlPurRetGdLn(pAddParam));
       proc.setSrvWarehouseEntry(getSrvWarehouseEntry());
       proc.setSrvUseMaterialEntry(getSrvUseMaterialEntry());
       //assigning fully initialized object:
@@ -2030,6 +2043,74 @@ public class FctBnAccEntitiesProcessors<RS>
   }
 
   /**
+   * <p>Get InvTxMeth<PurchaseReturn, PurchaseReturnTaxLine>.</p>
+   * @param pAddParam additional param
+   * @return requested InvTxMeth<PurchaseReturn, PurchaseReturnTaxLine>
+   * @throws Exception - an exception
+   */
+  protected final InvTxMeth<PurchaseReturn, PurchaseReturnTaxLine>
+    lazyGetPurRetTxMeth(final Map<String, Object> pAddParam) throws Exception {
+    InvTxMeth<PurchaseReturn, PurchaseReturnTaxLine> purRetTxMe =
+      this.purRetTxMeth;
+    if (purRetTxMe == null) {
+      purRetTxMe = new InvTxMeth<PurchaseReturn, PurchaseReturnTaxLine>();
+      purRetTxMe.setGoodLnCl(PurchaseReturnLine.class);
+      purRetTxMe.setInvTxLnCl(PurchaseReturnTaxLine.class);
+      purRetTxMe.setIsTxByUser(true);
+      purRetTxMe.setStWhereAdjGdLnInvBas(
+        "where TAXCATEGORY is not null and PURCHASERETURNLINE.REVERSEDID "
+          + "is null and PURCHASERETURNLINE.ITSOWNER=");
+      purRetTxMe.setFlTotals("invGdTotals.sql");
+      purRetTxMe.setFlTxItBas("invGdTxItBas.sql");
+      purRetTxMe.setFlTxItBasAggr("purRtTxItBasAggr.sql");
+      purRetTxMe.setFlTxInvBas("purRtTxInvBas.sql");
+      purRetTxMe.setFlTxInvBasAggr("purRtTxInvBasAggr.sql");
+      purRetTxMe.setTblNmsTot(new String[] {"PURCHASERETURNLINE",
+        "PURCHASERETURNTAXLINE", "PURCHASERETURNGOODSTAXLINE"});
+      FactoryPersistableBase<PurchaseReturnTaxLine> fctItl =
+        new FactoryPersistableBase<PurchaseReturnTaxLine>();
+      fctItl.setObjectClass(PurchaseReturnTaxLine.class);
+      fctItl.setDatabaseId(getSrvDatabase().getIdDatabase());
+      purRetTxMe.setFctInvTxLn(fctItl);
+      //assigning fully initialized object:
+      this.purRetTxMeth = purRetTxMe;
+    }
+    return purRetTxMe;
+  }
+
+  /**
+   * <p>Get purchase return good line utility.</p>
+   * @param pAddParam additional param
+   * @return purchase return good line utility
+   * @throws Exception - an exception
+   */
+  protected final UtlInvLine<RS, PurchaseReturn, PurchaseReturnLine,
+    PurchaseReturnTaxLine, PurchaseReturnGoodsTaxLine> lazyGetUtlPurRetGdLn(
+      final Map<String, Object> pAddParam) throws Exception {
+    UtlInvLine<RS, PurchaseReturn, PurchaseReturnLine,
+      PurchaseReturnTaxLine, PurchaseReturnGoodsTaxLine> utlInvLn = this
+        .utlPurRetGdLn;
+    if (utlInvLn == null) {
+      utlInvLn = new UtlInvLine<RS, PurchaseReturn, PurchaseReturnLine,
+        PurchaseReturnTaxLine, PurchaseReturnGoodsTaxLine>();
+      utlInvLn.setUtlInvBase(lazyGetUtlInvBase(pAddParam));
+      utlInvLn.setInvTxMeth(lazyGetPurRetTxMeth(pAddParam));
+      utlInvLn.setIsMutable(false);
+      utlInvLn.setNeedMkTxCat(false);
+      utlInvLn.setLtlCl(PurchaseReturnGoodsTaxLine.class);
+      utlInvLn.setDstTxItLnCl(DestTaxGoodsLn.class);
+      FactoryPersistableBase<PurchaseReturnGoodsTaxLine> fctLtl =
+        new FactoryPersistableBase<PurchaseReturnGoodsTaxLine>();
+      fctLtl.setObjectClass(PurchaseReturnGoodsTaxLine.class);
+      fctLtl.setDatabaseId(getSrvDatabase().getIdDatabase());
+      utlInvLn.setFctLineTxLn(fctLtl);
+      //assigning fully initialized object:
+      this.utlPurRetGdLn = utlInvLn;
+    }
+    return utlInvLn;
+  }
+
+  /**
    * <p>Get InvTxMeth<PurchaseInvoice, PurchaseInvoiceTaxLine>.</p>
    * @param pAddParam additional param
    * @return requested InvTxMeth<PurchaseInvoice, PurchaseInvoiceTaxLine>
@@ -2045,6 +2126,12 @@ public class FctBnAccEntitiesProcessors<RS>
       purInvTxMe.setServiceLnCl(PurchaseInvoiceServiceLine.class);
       purInvTxMe.setInvTxLnCl(PurchaseInvoiceTaxLine.class);
       purInvTxMe.setIsTxByUser(true);
+      purInvTxMe.setStWhereAdjGdLnInvBas(
+        "where PURCHASEINVOICELINE.TAXCATEGORY is not null and REVERSEDID "
+          + "is null and ITSOWNER=");
+      purInvTxMe.setStWhereAdjSrLnInvBas(
+      "where PURCHASEINVOICESERVICELINE.TAXCATEGORY is not null and REVERSEDID "
+          + "is null and ITSOWNER=");
       purInvTxMe.setFlTotals("invTotals.sql");
       purInvTxMe.setFlTxItBas("invTxItBas.sql");
       purInvTxMe.setFlTxItBasAggr("invTxItBasAggr.sql");
@@ -2144,6 +2231,12 @@ public class FctBnAccEntitiesProcessors<RS>
       salInvTxMe.setServiceLnCl(SalesInvoiceServiceLine.class);
       salInvTxMe.setInvTxLnCl(SalesInvoiceTaxLine.class);
       salInvTxMe.setIsTxByUser(true);
+      salInvTxMe.setStWhereAdjGdLnInvBas(
+        "where SALESINVOICELINE.TAXCATEGORY is not null and REVERSEDID "
+          + "is null and ITSOWNER=");
+      salInvTxMe.setStWhereAdjSrLnInvBas(
+      "where SALESINVOICESERVICELINE.TAXCATEGORY is not null and REVERSEDID "
+          + "is null and ITSOWNER=");
       salInvTxMe.setFlTotals("invTotals.sql");
       salInvTxMe.setFlTxItBas("invTxItBas.sql");
       salInvTxMe.setFlTxItBasAggr("invTxItBasAggr.sql");
