@@ -47,6 +47,11 @@ public class PrcPurchRetGfe implements IEntityProcessor<PurchaseReturn, Long> {
     final PurchaseReturn pEntity,
       final IRequestData pRequestData) throws Exception {
     pReqVars.put("PurchaseInvoicevendordeepLevel", 3);
+    pReqVars.put("PurchaseInvoiceforeignCurrencydeepLevel", 2);
+    Set<String> ndFlCur = new HashSet<String>();
+    ndFlCur.add("itsId");
+    ndFlCur.add("itsName");
+    pReqVars.put("CurrencyneededFields", ndFlCur);
     Set<String> ndFlDc = new HashSet<String>();
     ndFlDc.add("itsId");
     ndFlDc.add("isForeigner");
@@ -54,13 +59,19 @@ public class PrcPurchRetGfe implements IEntityProcessor<PurchaseReturn, Long> {
     pReqVars.put("DebtorCreditorneededFields", ndFlDc);
     Set<String> ndFlInv = new HashSet<String>();
     ndFlInv.add("itsId");
+    ndFlInv.add("itsDate");
+    ndFlInv.add("itsTotal");
     ndFlInv.add("vendor");
     ndFlInv.add("omitTaxes");
     ndFlInv.add("hasMadeAccEntries");
+    ndFlInv.add("priceIncTax");
+    ndFlInv.add("exchangeRate");
+    ndFlInv.add("foreignCurrency");
     pReqVars.put("PurchaseInvoiceneededFields", ndFlInv);
     PurchaseReturn invoice = this.prcEntityPbEditDelete
       .process(pReqVars, pEntity, pRequestData);
     pReqVars.remove("DebtorCreditorneededFields");
+    pReqVars.remove("CurrencyneededFields");
     pReqVars.remove("PurchaseInvoiceneededFields");
     pReqVars.remove("PurchaseInvoicevendordeepLevel");
     return invoice;

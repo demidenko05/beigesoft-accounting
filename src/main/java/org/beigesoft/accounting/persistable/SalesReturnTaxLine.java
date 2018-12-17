@@ -12,10 +12,7 @@ package org.beigesoft.accounting.persistable;
  * http://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html
  */
 
-import java.math.BigDecimal;
-
-import org.beigesoft.model.IOwned;
-import org.beigesoft.accounting.persistable.base.ADocTaxLine;
+import org.beigesoft.accounting.persistable.base.AInvTxLn;
 
 /**
  * <p>
@@ -24,18 +21,12 @@ import org.beigesoft.accounting.persistable.base.ADocTaxLine;
  *
  * @author Yury Demidenko
  */
-public class SalesReturnTaxLine extends ADocTaxLine
-  implements IOwned<SalesReturn> {
+public class SalesReturnTaxLine extends AInvTxLn<SalesReturn> {
 
   /**
    * <p>Vendor Invoice.</p>
    **/
   private SalesReturn itsOwner;
-
-  /**
-   * <p>It's 0 if item basis otherwise taxable amount for invoice basis.</p>
-   **/
-  private BigDecimal taxableInvBas = BigDecimal.ZERO;
 
   /**
    * <p>Geter for itsOwner.</p>
@@ -53,22 +44,5 @@ public class SalesReturnTaxLine extends ADocTaxLine
   @Override
   public final void setItsOwner(final SalesReturn pItsOwner) {
     this.itsOwner = pItsOwner;
-  }
-
-  //SGS:
-  /**
-   * <p>Getter for taxableInvBas.</p>
-   * @return BigDecimal
-   **/
-  public final BigDecimal getTaxableInvBas() {
-    return this.taxableInvBas;
-  }
-
-  /**
-   * <p>Setter for taxableInvBas.</p>
-   * @param pTaxableInvBas reference
-   **/
-  public final void setTaxableInvBas(final BigDecimal pTaxableInvBas) {
-    this.taxableInvBas = pTaxableInvBas;
   }
 }

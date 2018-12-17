@@ -8,5 +8,18 @@ alter table PURCHASERETURNGOODSTAXLINE add column FOREIGNTOTALTAXES real default
 alter table PURCHASERETURNTAXLINE add column FOREIGNTOTALTAXES real default 0;
 alter table PURCHASERETURNTAXLINE add column TAXABLEINVBAS real default 0;
 alter table PURCHASERETURNTAXLINE add column TAXABLEINVBASFC real default 0;
+alter table SALESRETURN add column PRICEINCTAX integer not null default 0;
+alter table SALESRETURN add column FOREIGNCURRENCY integer default null references CURRENCY(ITSID);
+alter table SALESRETURN add column EXCHANGERATE real default 0;
+alter table SALESRETURN add column FOREIGNSUBTOTAL real default 0;
+alter table SALESRETURN add column FOREIGNTOTALTAXES real default 0;
+alter table SALESRETURN add column FOREIGNTOTAL real default 0;
+alter table SALESRETURNLINE add column FOREIGNPRICE real default 0;
+alter table SALESRETURNLINE add column FOREIGNSUBTOTAL real default 0;
+alter table SALESRETURNLINE add column FOREIGNTOTALTAXES real default 0;
+alter table SALESRETURNLINE add column FOREIGNTOTAL real default 0;
+alter table SALESRETURNGOODSTAXLINE add column FOREIGNTOTALTAXES real default 0;
+alter table SALESRETURNTAXLINE add column FOREIGNTOTALTAXES real default 0;
+alter table SALESRETURNTAXLINE add column TAXABLEINVBASFC real default 0;
 alter table TAXDESTINATION add column REGZIP text;
 update DATABASEINFO set DATABASEVERSION=8, DESCRIPTION='Beige Accounting DB version 8';

@@ -60,6 +60,9 @@ public class PrcPurchaseReturnLineCreate<RS>
     ndFlInv.add("itsId");
     ndFlInv.add("vendor");
     ndFlInv.add("omitTaxes");
+    ndFlInv.add("priceIncTax");
+    ndFlInv.add("exchangeRate");
+    ndFlInv.add("foreignCurrency");
     ndFlInv.add("hasMadeAccEntries");
     pReqVars.put("PurchaseInvoiceneededFields", ndFlInv);
     entity.setItsOwner(this.prcEntityCreate.getSrvOrm()

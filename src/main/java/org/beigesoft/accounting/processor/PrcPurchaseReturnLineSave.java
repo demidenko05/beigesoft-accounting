@@ -109,6 +109,8 @@ public class PrcPurchaseReturnLineSave<RS>
       ndFlInv.add("vendor");
       ndFlInv.add("omitTaxes");
       ndFlInv.add("priceIncTax");
+      ndFlInv.add("exchangeRate");
+      ndFlInv.add("foreignCurrency");
       ndFlInv.add("hasMadeAccEntries");
       pReqVars.put("PurchaseInvoiceneededFields", ndFlInv);
       pEntity.setItsOwner(getSrvOrm()
@@ -177,16 +179,16 @@ public class PrcPurchaseReturnLineSave<RS>
       .getPurchaseInvoiceLine().getItsCost()) + ", " + getSrvI18n()
         .getMsg("rest_was", langDef) + "=" + prnq(pReqVars, pEntity
           .getPurchaseInvoiceLine().getTheRest()));
-        BigDecimal exchRate = pEntity.getItsOwner().getExchangeRate();
-        if (exchRate != null && exchRate.compareTo(BigDecimal.ZERO) == -1) {
-          exchRate = BigDecimal.ONE.divide(exchRate.negate(), 15,
-            RoundingMode.HALF_UP);
-        }
         BigDecimal sourceCost;
         BigDecimal curCost;
         //using user passed total cause rounding error cost*quantity!=total:
         if (pEntity.getItsOwner().getForeignCurrency() != null) {
-          if (txRules == null || pEntity.getItsOwner().getPriceIncTax()) {
+          BigDecimal exchRate = pEntity.getItsOwner().getExchangeRate();
+          if (exchRate.compareTo(BigDecimal.ZERO) == -1) {
+            exchRate = BigDecimal.ONE.divide(exchRate.negate(), 15,
+              RoundingMode.HALF_UP);
+          }
+          if (pEntity.getItsOwner().getPriceIncTax()) {
             pEntity.setItsTotal(pEntity.getForeignTotal().multiply(exchRate)
               .setScale(as.getPricePrecision(), as.getRoundingMode()));
             curCost = pEntity.getForeignTotal().divide(pEntity

@@ -58,6 +58,9 @@ public class PrcPurchaseReturnLineCopy<RS>
     entity.setItsTotal(BigDecimal.ZERO);
     entity.setTotalTaxes(BigDecimal.ZERO);
     entity.setSubtotal(BigDecimal.ZERO);
+    entity.setForeignSubtotal(BigDecimal.ZERO);
+    entity.setForeignTotal(BigDecimal.ZERO);
+    entity.setForeignTotalTaxes(BigDecimal.ZERO);
     entity.setTaxesDescription(null);
     return entity;
   }

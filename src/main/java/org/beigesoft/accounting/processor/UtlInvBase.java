@@ -389,7 +389,6 @@ public class UtlInvBase<RS> {
     List<? extends IInvoiceLine<T>> gls = getSrvOrm()
       .retrieveListWithConditions(pReqVars, pInvTxMeth.getGoodLnCl(),
         pInvTxMeth.getStWhereAdjGdLnInvBas() + pInv.getItsId());
-            
     pReqVars.remove(tbNm + "itsOwnerdeepLevel");
     List<? extends IInvoiceLine<T>> sls = null;
     if (pInvTxMeth.getServiceLnCl() != null) {

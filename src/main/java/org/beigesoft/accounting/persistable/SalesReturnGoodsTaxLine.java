@@ -12,8 +12,7 @@ package org.beigesoft.accounting.persistable;
  * http://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html
  */
 
-import org.beigesoft.model.IOwned;
-import org.beigesoft.accounting.persistable.base.ADocTaxLine;
+import org.beigesoft.accounting.persistable.base.ALineTxLn;
 
 /**
  * <p>
@@ -22,13 +21,8 @@ import org.beigesoft.accounting.persistable.base.ADocTaxLine;
  *
  * @author Yury Demidenko
  */
-public class SalesReturnGoodsTaxLine extends ADocTaxLine
-  implements IOwned<SalesReturnLine> {
-
-  /**
-   * <p>Return ID (to improve performance).</p>
-   **/
-  private Long invoiceId;
+public class SalesReturnGoodsTaxLine
+  extends ALineTxLn<SalesReturn, SalesReturnLine> {
 
   /**
    * <p>Goods line.</p>
@@ -51,22 +45,5 @@ public class SalesReturnGoodsTaxLine extends ADocTaxLine
   @Override
   public final void setItsOwner(final SalesReturnLine pItsOwner) {
     this.itsOwner = pItsOwner;
-  }
-
-  //Simple getters and setters:
-  /**
-   * <p>Getter for invoiceId.</p>
-   * @return Long
-   **/
-  public final Long getInvoiceId() {
-    return this.invoiceId;
-  }
-
-  /**
-   * <p>Setter for invoiceId.</p>
-   * @param pInvoiceId reference
-   **/
-  public final void setInvoiceId(final Long pInvoiceId) {
-    this.invoiceId = pInvoiceId;
   }
 }

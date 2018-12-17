@@ -80,9 +80,8 @@ import org.beigesoft.accounting.processor.PrcPaymentToGfr;
 import org.beigesoft.accounting.processor.PrcPurchaseInvoiceServiceLineSave;
 import org.beigesoft.accounting.processor.PrcPurchaseInvoiceServiceLineDelete;
 import org.beigesoft.accounting.processor.PrcPurchaseInvoiceLineSave;
-import org.beigesoft.accounting.processor.PrcPurchInvTaxLnSave;
-import org.beigesoft.accounting.processor.PrcPurchRetTaxLnSave;
-import org.beigesoft.accounting.processor.PrcSalRetTaxLnSave;
+import org.beigesoft.accounting.processor.PrcInvTaxLnSave;
+import org.beigesoft.accounting.processor.PrcPurRetTaxLnSave;
 import org.beigesoft.accounting.processor.PrcPurchaseInvoiceLineCopy;
 import org.beigesoft.accounting.processor.PrcPurchaseInvoiceLineGfr;
 import org.beigesoft.accounting.processor.PrcGoodsLossSave;
@@ -172,6 +171,8 @@ import org.beigesoft.accounting.persistable.PurchaseReturnTaxLine;
 import org.beigesoft.accounting.persistable.PurchaseReturnGoodsTaxLine;
 import org.beigesoft.accounting.persistable.SalesReturn;
 import org.beigesoft.accounting.persistable.SalesReturnLine;
+import org.beigesoft.accounting.persistable.SalesReturnTaxLine;
+import org.beigesoft.accounting.persistable.SalesReturnGoodsTaxLine;
 import org.beigesoft.accounting.persistable.GoodsLossLine;
 import org.beigesoft.accounting.persistable.SalesInvoice;
 import org.beigesoft.accounting.persistable.SalesInvoiceLine;
@@ -314,6 +315,17 @@ public class FctBnAccEntitiesProcessors<RS>
    * <p>Shared invoice code-bunch.</p>
    **/
   private UtlInvBase<RS> utlInvBase;
+
+  /**
+   * <p>Sales return tax method data/code.</p>
+   **/
+  private InvTxMeth<SalesReturn, SalesReturnTaxLine> salRetTxMeth;
+
+  /**
+   * <p>Sales return good line utility.</p>
+   **/
+  private UtlInvLine<RS, SalesReturn, SalesReturnLine,
+    SalesReturnTaxLine, SalesReturnGoodsTaxLine> utlSalRetGdLn;
 
   /**
    * <p>Purchase return tax method data/code.</p>
@@ -504,13 +516,13 @@ public class FctBnAccEntitiesProcessors<RS>
             .equals(PrcPurchaseInvoiceLineCopy.class.getSimpleName())) {
             proc = lazyGetPrcPurchaseInvoiceLineCopy(pAddParam);
           } else if (pBeanName
-            .equals(PrcSalRetTaxLnSave.class.getSimpleName())) {
+            .equals(PrcInvTaxLnSave.class.getSimpleName() + "SRTL")) {
             proc = lazyGetPrcSalRetTaxLnSave(pAddParam);
           } else if (pBeanName
-            .equals(PrcPurchRetTaxLnSave.class.getSimpleName())) {
+            .equals(PrcPurRetTaxLnSave.class.getSimpleName())) {
             proc = lazyGetPrcPurchRetTaxLnSave(pAddParam);
           } else if (pBeanName
-            .equals(PrcPurchInvTaxLnSave.class.getSimpleName())) {
+            .equals(PrcInvTaxLnSave.class.getSimpleName() + "PITL")) {
             proc = lazyGetPrcPurchInvTaxLnSave(pAddParam);
           } else if (pBeanName
             .equals(PrcPurchaseInvoiceLineSave.class.getSimpleName())) {
@@ -1543,73 +1555,75 @@ public class FctBnAccEntitiesProcessors<RS>
   }
 
   /**
-   * <p>Get PrcSalRetTaxLnSave (create and put into map).</p>
+   * <p>Get PrcInvTaxLnSave (create and put into map).</p>
    * @param pAddParam additional param
-   * @return requested PrcSalRetTaxLnSave
+   * @return requested PrcInvTaxLnSave
    * @throws Exception - an exception
    */
-  protected final PrcSalRetTaxLnSave<RS>
+  protected final PrcInvTaxLnSave<RS, SalesReturn, SalesReturnTaxLine>
     lazyGetPrcSalRetTaxLnSave(
       final Map<String, Object> pAddParam) throws Exception {
     @SuppressWarnings("unchecked")
-    PrcSalRetTaxLnSave<RS> proc = (PrcSalRetTaxLnSave<RS>)
-      this.processorsMap.get(PrcSalRetTaxLnSave.class.getSimpleName());
+    PrcInvTaxLnSave<RS, SalesReturn, SalesReturnTaxLine> proc =
+      (PrcInvTaxLnSave<RS, SalesReturn, SalesReturnTaxLine>)
+        this.processorsMap.get(PrcInvTaxLnSave.class.getSimpleName() + "SRTL");
     if (proc == null) {
-      proc = new PrcSalRetTaxLnSave<RS>();
+      proc = new PrcInvTaxLnSave<RS, SalesReturn, SalesReturnTaxLine>();
       proc.setSrvAccSettings(getSrvAccSettings());
       proc.setSrvOrm(getSrvOrm());
-      proc.setSrvDatabase(getSrvDatabase());
+      proc.setUtlInvLine(lazyGetUtlSalRetGdLn(pAddParam));
       //assigning fully initialized object:
       this.processorsMap
-        .put(PrcSalRetTaxLnSave.class.getSimpleName(), proc);
+        .put(PrcInvTaxLnSave.class.getSimpleName() + "SRTL", proc);
     }
     return proc;
   }
 
   /**
-   * <p>Get PrcPurchRetTaxLnSave (create and put into map).</p>
+   * <p>Get PrcPurRetTaxLnSave (create and put into map).</p>
    * @param pAddParam additional param
-   * @return requested PrcPurchRetTaxLnSave
+   * @return requested PrcPurRetTaxLnSave
    * @throws Exception - an exception
    */
-  protected final PrcPurchRetTaxLnSave<RS>
+  protected final PrcPurRetTaxLnSave<RS>
     lazyGetPrcPurchRetTaxLnSave(
       final Map<String, Object> pAddParam) throws Exception {
     @SuppressWarnings("unchecked")
-    PrcPurchRetTaxLnSave<RS> proc = (PrcPurchRetTaxLnSave<RS>)
-      this.processorsMap.get(PrcPurchRetTaxLnSave.class.getSimpleName());
+    PrcPurRetTaxLnSave<RS> proc = (PrcPurRetTaxLnSave<RS>)
+      this.processorsMap.get(PrcPurRetTaxLnSave.class.getSimpleName());
     if (proc == null) {
-      proc = new PrcPurchRetTaxLnSave<RS>();
+      proc = new PrcPurRetTaxLnSave<RS>();
       proc.setSrvAccSettings(getSrvAccSettings());
       proc.setSrvOrm(getSrvOrm());
-      proc.setSrvDatabase(getSrvDatabase());
+      proc.setUtlInvLine(lazyGetUtlPurRetGdLn(pAddParam));
       //assigning fully initialized object:
       this.processorsMap
-        .put(PrcPurchRetTaxLnSave.class.getSimpleName(), proc);
+        .put(PrcPurRetTaxLnSave.class.getSimpleName(), proc);
     }
     return proc;
   }
 
   /**
-   * <p>Get PrcPurchInvTaxLnSave (create and put into map).</p>
+   * <p>Get PrcInvTaxLnSave (create and put into map).</p>
    * @param pAddParam additional param
-   * @return requested PrcPurchInvTaxLnSave
+   * @return requested PrcInvTaxLnSave
    * @throws Exception - an exception
    */
-  protected final PrcPurchInvTaxLnSave<RS>
+  protected final PrcInvTaxLnSave<RS, PurchaseInvoice, PurchaseInvoiceTaxLine>
     lazyGetPrcPurchInvTaxLnSave(
       final Map<String, Object> pAddParam) throws Exception {
     @SuppressWarnings("unchecked")
-    PrcPurchInvTaxLnSave<RS> proc = (PrcPurchInvTaxLnSave<RS>)
-      this.processorsMap.get(PrcPurchInvTaxLnSave.class.getSimpleName());
+    PrcInvTaxLnSave<RS, PurchaseInvoice, PurchaseInvoiceTaxLine> proc =
+      (PrcInvTaxLnSave<RS, PurchaseInvoice, PurchaseInvoiceTaxLine>)
+        this.processorsMap.get(PrcInvTaxLnSave.class.getSimpleName() + "PITL");
     if (proc == null) {
-      proc = new PrcPurchInvTaxLnSave<RS>();
+      proc = new PrcInvTaxLnSave<RS, PurchaseInvoice, PurchaseInvoiceTaxLine>();
       proc.setSrvAccSettings(getSrvAccSettings());
       proc.setSrvOrm(getSrvOrm());
       proc.setUtlInvLine(lazyGetUtlPurGdLn(pAddParam));
       //assigning fully initialized object:
       this.processorsMap
-        .put(PrcPurchInvTaxLnSave.class.getSimpleName(), proc);
+        .put(PrcInvTaxLnSave.class.getSimpleName() + "PITL", proc);
     }
     return proc;
   }
@@ -2009,10 +2023,9 @@ public class FctBnAccEntitiesProcessors<RS>
       this.processorsMap.get(PrcSalesReturnLineSave.class.getSimpleName());
     if (proc == null) {
       proc = new PrcSalesReturnLineSave<RS>();
-      proc.setSrvNumberToString(getSrvNumberToString());
       proc.setSrvAccSettings(getSrvAccSettings());
       proc.setSrvOrm(getSrvOrm());
-      proc.setSrvDatabase(getSrvDatabase());
+      proc.setUtlInvLine(lazyGetUtlSalRetGdLn(pAddParam));
       proc.setSrvWarehouseEntry(getSrvWarehouseEntry());
       //assigning fully initialized object:
       this.processorsMap
@@ -2040,6 +2053,74 @@ public class FctBnAccEntitiesProcessors<RS>
       this.utlInvBase = utlInvBs;
     }
     return utlInvBs;
+  }
+
+  /**
+   * <p>Get InvTxMeth<SalesReturn, SalesReturnTaxLine>.</p>
+   * @param pAddParam additional param
+   * @return requested InvTxMeth<SalesReturn, SalesReturnTaxLine>
+   * @throws Exception - an exception
+   */
+  protected final InvTxMeth<SalesReturn, SalesReturnTaxLine>
+    lazyGetSalRetTxMeth(final Map<String, Object> pAddParam) throws Exception {
+    InvTxMeth<SalesReturn, SalesReturnTaxLine> salRetTxMe =
+      this.salRetTxMeth;
+    if (salRetTxMe == null) {
+      salRetTxMe = new InvTxMeth<SalesReturn, SalesReturnTaxLine>();
+      salRetTxMe.setGoodLnCl(SalesReturnLine.class);
+      salRetTxMe.setInvTxLnCl(SalesReturnTaxLine.class);
+      salRetTxMe.setIsTxByUser(true);
+      salRetTxMe.setStWhereAdjGdLnInvBas(
+        "where SALESRETURNLINE.TAXCATEGORY is not null and REVERSEDID "
+          + "is null and ITSOWNER=");
+      salRetTxMe.setFlTotals("invGdTotals.sql");
+      salRetTxMe.setFlTxItBas("invGdTxItBas.sql");
+      salRetTxMe.setFlTxItBasAggr("invGdTxItBasAggr.sql");
+      salRetTxMe.setFlTxInvBas("invGdTxInvBas.sql");
+      salRetTxMe.setFlTxInvBasAggr("invGdTxInvBasAggr.sql");
+      salRetTxMe.setTblNmsTot(new String[] {"SALESRETURNLINE",
+        "SALESRETURNTAXLINE", "SALESRETURNGOODSTAXLINE"});
+      FactoryPersistableBase<SalesReturnTaxLine> fctItl =
+        new FactoryPersistableBase<SalesReturnTaxLine>();
+      fctItl.setObjectClass(SalesReturnTaxLine.class);
+      fctItl.setDatabaseId(getSrvDatabase().getIdDatabase());
+      salRetTxMe.setFctInvTxLn(fctItl);
+      //assigning fully initialized object:
+      this.salRetTxMeth = salRetTxMe;
+    }
+    return salRetTxMe;
+  }
+
+  /**
+   * <p>Get sales return good line utility.</p>
+   * @param pAddParam additional param
+   * @return sales return good line utility
+   * @throws Exception - an exception
+   */
+  protected final UtlInvLine<RS, SalesReturn, SalesReturnLine,
+    SalesReturnTaxLine, SalesReturnGoodsTaxLine> lazyGetUtlSalRetGdLn(
+      final Map<String, Object> pAddParam) throws Exception {
+    UtlInvLine<RS, SalesReturn, SalesReturnLine,
+      SalesReturnTaxLine, SalesReturnGoodsTaxLine> utlInvLn = this
+        .utlSalRetGdLn;
+    if (utlInvLn == null) {
+      utlInvLn = new UtlInvLine<RS, SalesReturn, SalesReturnLine,
+        SalesReturnTaxLine, SalesReturnGoodsTaxLine>();
+      utlInvLn.setUtlInvBase(lazyGetUtlInvBase(pAddParam));
+      utlInvLn.setInvTxMeth(lazyGetSalRetTxMeth(pAddParam));
+      utlInvLn.setIsMutable(false);
+      utlInvLn.setNeedMkTxCat(true);
+      utlInvLn.setLtlCl(SalesReturnGoodsTaxLine.class);
+      utlInvLn.setDstTxItLnCl(DestTaxGoodsLn.class);
+      FactoryPersistableBase<SalesReturnGoodsTaxLine> fctLtl =
+        new FactoryPersistableBase<SalesReturnGoodsTaxLine>();
+      fctLtl.setObjectClass(SalesReturnGoodsTaxLine.class);
+      fctLtl.setDatabaseId(getSrvDatabase().getIdDatabase());
+      utlInvLn.setFctLineTxLn(fctLtl);
+      //assigning fully initialized object:
+      this.utlSalRetGdLn = utlInvLn;
+    }
+    return utlInvLn;
   }
 
   /**

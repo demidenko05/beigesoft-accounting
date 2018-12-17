@@ -104,9 +104,8 @@ import org.beigesoft.accounting.processor.PrcSalesInvoiceServiceLineDelete;
 import org.beigesoft.accounting.processor.PrcPurchaseInvoiceServiceLineSave;
 import org.beigesoft.accounting.processor.PrcPurchaseInvoiceServiceLineDelete;
 import org.beigesoft.accounting.processor.PrcPurchaseInvoiceLineSave;
-import org.beigesoft.accounting.processor.PrcPurchInvTaxLnSave;
-import org.beigesoft.accounting.processor.PrcPurchRetTaxLnSave;
-import org.beigesoft.accounting.processor.PrcSalRetTaxLnSave;
+import org.beigesoft.accounting.processor.PrcInvTaxLnSave;
+import org.beigesoft.accounting.processor.PrcPurRetTaxLnSave;
 import org.beigesoft.accounting.processor.PrcPurchaseInvoiceLineCopy;
 import org.beigesoft.accounting.processor.PrcPurchaseInvoiceLineGfr;
 import org.beigesoft.accounting.processor.PrcAccDocGetForReverse;
@@ -520,11 +519,11 @@ public class HldAccEntitiesProcessorNames
       return PrcEntityFfolSave.class.getSimpleName();
     } else if (ADocTaxLine.class.isAssignableFrom(pClass)) {
       if (PurchaseInvoiceTaxLine.class == pClass) {
-        return PrcPurchInvTaxLnSave.class.getSimpleName();
+        return PrcInvTaxLnSave.class.getSimpleName() + "PITL";
       } else if (SalesReturnTaxLine.class == pClass) {
-        return PrcSalRetTaxLnSave.class.getSimpleName();
+        return PrcInvTaxLnSave.class.getSimpleName() + "SRTL";
       } else if (PurchaseReturnTaxLine.class == pClass) {
-        return PrcPurchRetTaxLnSave.class.getSimpleName();
+        return PrcPurRetTaxLnSave.class.getSimpleName();
       } else {
         return null;
       }

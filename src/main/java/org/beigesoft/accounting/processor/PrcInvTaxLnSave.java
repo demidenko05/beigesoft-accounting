@@ -16,26 +16,29 @@ import java.util.Set;
 import java.util.HashSet;
 import java.util.Map;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 import org.beigesoft.model.IRequestData;
 import org.beigesoft.exception.ExceptionWithCode;
 import org.beigesoft.service.IEntityProcessor;
 import org.beigesoft.service.ISrvOrm;
+import org.beigesoft.accounting.persistable.base.AInvTxLn;
+import org.beigesoft.accounting.persistable.IInvoice;
 import org.beigesoft.accounting.persistable.AccSettings;
 import org.beigesoft.accounting.persistable.TaxDestination;
-import org.beigesoft.accounting.persistable.PurchaseInvoiceTaxLine;
-import org.beigesoft.accounting.persistable.PurchaseInvoice;
 import org.beigesoft.accounting.service.ISrvAccSettings;
 
 /**
- * <p>Service that saves Purchase Invoice Tax Line into DB
+ * <p>Service that saves Invoice Tax Line into DB
  * (only invoice basis!).</p>
  *
  * @param <RS> platform dependent record set type
+ * @param <T> invoice type
+ * @param <TL> invoice tax line type
  * @author Yury Demidenko
  */
-public class PrcPurchInvTaxLnSave<RS>
-  implements IEntityProcessor<PurchaseInvoiceTaxLine, Long> {
+public class PrcInvTaxLnSave<RS, T extends IInvoice, TL extends AInvTxLn<T>>
+  implements IEntityProcessor<TL, Long> {
 
   /**
    * <p>ORM service.</p>
@@ -50,7 +53,7 @@ public class PrcPurchInvTaxLnSave<RS>
   /**
    * <p>It makes line and total for owner.</p>
    **/
-  private UtlInvLine<RS, PurchaseInvoice, ?, ?, ?> utlInvLine;
+  private UtlInvLine<RS, T, ?, ?, ?> utlInvLine;
 
 
   /**
@@ -63,9 +66,9 @@ public class PrcPurchInvTaxLnSave<RS>
    * @throws Exception - an exception
    **/
   @Override
-  public final PurchaseInvoiceTaxLine process(
+  public final TL process(
     final Map<String, Object> pReqVars,
-      final PurchaseInvoiceTaxLine pEntity,
+      final TL pEntity,
         final IRequestData pRequestData) throws Exception {
     if (pEntity.getItsTotal().compareTo(BigDecimal.ZERO) <= 0) {
       throw new ExceptionWithCode(ExceptionWithCode.WRONG_PARAMETER,
@@ -93,14 +96,22 @@ public class PrcPurchInvTaxLnSave<RS>
       throw new ExceptionWithCode(ExceptionWithCode.WRONG_PARAMETER,
         "cant_edit_item_basis_tax");
     }
-    PurchaseInvoiceTaxLine oldEntity = getSrvOrm()
-      .retrieveEntity(pReqVars, pEntity);
+    TL oldEntity = getSrvOrm().retrieveEntity(pReqVars, pEntity);
     pEntity.setTax(oldEntity.getTax());
     pEntity.setTaxableInvBas(oldEntity.getTaxableInvBas());
     pEntity.setTaxableInvBasFc(oldEntity.getTaxableInvBasFc());
     //rounding:
     pEntity.setItsTotal(pEntity.getItsTotal().setScale(as
       .getPricePrecision(), txRules.getSalTaxRoundMode()));
+    if (pEntity.getItsOwner().getForeignCurrency() != null) {
+      BigDecimal exchRate = pEntity.getItsOwner().getExchangeRate();
+      if (exchRate.compareTo(BigDecimal.ZERO) == -1) {
+        exchRate = BigDecimal.ONE.divide(exchRate.negate(), 15,
+          RoundingMode.HALF_UP);
+      }
+      pEntity.setForeignTotalTaxes(pEntity.getItsTotal()
+        .divide(exchRate, as.getPricePrecision(), as.getRoundingMode()));
+    }
     if (pEntity.getItsTotal().compareTo(oldEntity.getItsTotal()) != 0) {
       if (pEntity.getItsOwner().getDescription() == null) {
         pEntity.getItsOwner().setDescription(pEntity.getTax().getItsName()
@@ -114,12 +125,13 @@ public class PrcPurchInvTaxLnSave<RS>
     }
     getSrvOrm().updateEntity(pReqVars, pEntity);
     // optimistic locking (dirty check):
-    Long ownerVersion = Long.valueOf(pRequestData
-      .getParameter(PurchaseInvoice.class.getSimpleName() + ".ownerVersion"));
+    Long ownerVersion = Long.valueOf(pRequestData.getParameter(pEntity
+      .getItsOwner().getClass().getSimpleName() + ".ownerVersion"));
     pEntity.getItsOwner().setItsVersion(ownerVersion);
     this.utlInvLine.updInvTots(pReqVars, pEntity.getItsOwner(), as);
     pReqVars.put("nextEntity", pEntity.getItsOwner());
-    pReqVars.put("nameOwnerEntity", PurchaseInvoice.class.getSimpleName());
+    pReqVars.put("nameOwnerEntity", pEntity.getItsOwner().getClass()
+      .getSimpleName());
     return null;
   }
 
@@ -129,7 +141,7 @@ public class PrcPurchInvTaxLnSave<RS>
    * @return UtlInvLine<RS, PurchaseInvoice, ?,
    *  PurchaseInvoiceTaxLine, ?>
    **/
-  public final UtlInvLine<RS, PurchaseInvoice, ?, ?, ?> getUtlInvLine() {
+  public final UtlInvLine<RS, T, ?, ?, ?> getUtlInvLine() {
     return this.utlInvLine;
   }
 
@@ -138,7 +150,7 @@ public class PrcPurchInvTaxLnSave<RS>
    * @param pUtlInvLine reference
    **/
   public final void setUtlInvLine(
-    final UtlInvLine<RS, PurchaseInvoice, ?, ?, ?> pUtlInvLine) {
+    final UtlInvLine<RS, T, ?, ?, ?> pUtlInvLine) {
     this.utlInvLine = pUtlInvLine;
   }
 

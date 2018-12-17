@@ -16,6 +16,7 @@ import java.util.Date;
 import java.math.BigDecimal;
 
 import org.beigesoft.persistable.IPersistableBase;
+import org.beigesoft.model.IHasVersion;
 import org.beigesoft.model.IHasTypeCode;
 
 /**
@@ -26,7 +27,7 @@ import org.beigesoft.model.IHasTypeCode;
  *
  * @author Yury Demidenko
  */
-public interface IDoc extends IPersistableBase, IHasTypeCode {
+public interface IDoc extends IPersistableBase, IHasTypeCode, IHasVersion {
 
   /**
    * <p>Geter for hasMadeAccEntries.</p>

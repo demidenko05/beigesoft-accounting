@@ -232,15 +232,16 @@ public class SalesInvoice extends ADocWithTaxesPayments implements IInvoice {
     this.omitTaxes = pOmitTaxes;
   }
 
-  //Simple getters and setters:
   /**
    * <p>Geter for customer.</p>
    * @return DebtorCreditor
    **/
+  @Override
   public final DebtorCreditor getCustomer() {
     return this.customer;
   }
 
+  //Simple getters and setters:
   /**
    * <p>Setter for customer.</p>
    * @param pCustomer reference
