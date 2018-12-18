@@ -62,6 +62,12 @@ public class InvTxMeth<T extends IInvoice, TL extends AInvTxLn<T>>
   private String quTxInvBas;
 
   /**
+   * <p>Query invoice taxes invoice basis method
+   * for adjusting invoice lines.</p>
+   **/
+  private String quTxInvAdj;
+
+  /**
    * <p>File invoice totals.</p>
    **/
   private String flTotals;
@@ -89,6 +95,12 @@ public class InvTxMeth<T extends IInvoice, TL extends AInvTxLn<T>>
    * non-aggregate tax rate.</p>
    **/
   private String flTxInvBas;
+
+  /**
+   * <p>File invoice taxes invoice basis method
+   * for adjusting invoice lines.</p>
+   **/
+  private String flTxInvAdj;
 
   /**
    * <p>Invoice SQL tables names: {[GOOD LINE], [SERVICE LINE],
@@ -191,6 +203,19 @@ public class InvTxMeth<T extends IInvoice, TL extends AInvTxLn<T>>
   @Override
   public final Boolean getIsTxByUser() {
     return this.isTxByUser;
+  }
+
+  /**
+   * <p>Lazy get for quTxInvAdj.</p>
+   * @return String
+   * @throws IOException - IO exception
+   **/
+  @Override
+  public final String lazyGetQuTxInvAdj() throws IOException {
+    if (this.quTxInvAdj == null) {
+      this.quTxInvAdj = loadString("/accounting/trade/" + this.flTxInvAdj);
+    }
+    return this.quTxInvAdj;
   }
 
   /**
@@ -363,6 +388,14 @@ public class InvTxMeth<T extends IInvoice, TL extends AInvTxLn<T>>
   }
 
   /**
+   * <p>Setter for quTxInvAdj.</p>
+   * @param pQuTxInvAdj reference
+   **/
+  public final void setQuTxInvAdj(final String pQuTxInvAdj) {
+    this.quTxInvAdj = pQuTxInvAdj;
+  }
+
+  /**
    * <p>Setter for quTxInvBas.</p>
    * @param pQuTxInvBas reference
    **/
@@ -432,6 +465,22 @@ public class InvTxMeth<T extends IInvoice, TL extends AInvTxLn<T>>
    **/
   public final void setFlTxInvBasAggr(final String pFlTxInvBasAggr) {
     this.flTxInvBasAggr = pFlTxInvBasAggr;
+  }
+
+  /**
+   * <p>Getter for flTxInvAdj.</p>
+   * @return String
+   **/
+  public final String getFlTxInvAdj() {
+    return this.flTxInvAdj;
+  }
+
+  /**
+   * <p>Setter for flTxInvAdj.</p>
+   * @param pFlTxInvAdj reference
+   **/
+  public final void setFlTxInvAdj(final String pFlTxInvAdj) {
+    this.flTxInvAdj = pFlTxInvAdj;
   }
 
   /**

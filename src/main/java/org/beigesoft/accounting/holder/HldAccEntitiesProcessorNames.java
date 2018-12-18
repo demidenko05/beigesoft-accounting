@@ -149,6 +149,7 @@ import org.beigesoft.accounting.persistable.PurchaseInvoiceServiceLine;
 import org.beigesoft.accounting.persistable.PurchaseInvoiceTaxLine;
 import org.beigesoft.accounting.persistable.SalesInvoiceServiceLine;
 import org.beigesoft.accounting.persistable.SalesInvoiceLine;
+import org.beigesoft.accounting.persistable.SalesInvoiceTaxLine;
 import org.beigesoft.accounting.persistable.PurchaseInvoiceLine;
 import org.beigesoft.accounting.persistable.BeginningInventory;
 import org.beigesoft.accounting.persistable.BeginningInventoryLine;
@@ -522,6 +523,8 @@ public class HldAccEntitiesProcessorNames
         return PrcInvTaxLnSave.class.getSimpleName() + "PITL";
       } else if (SalesReturnTaxLine.class == pClass) {
         return PrcInvTaxLnSave.class.getSimpleName() + "SRTL";
+      } else if (SalesInvoiceTaxLine.class == pClass) {
+        return PrcInvTaxLnSave.class.getSimpleName() + "SITL";
       } else if (PurchaseReturnTaxLine.class == pClass) {
         return PrcPurRetTaxLnSave.class.getSimpleName();
       } else {

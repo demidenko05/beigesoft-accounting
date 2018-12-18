@@ -13,6 +13,7 @@ package org.beigesoft.accounting.processor;
  */
 
 import java.util.Map;
+import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -28,6 +29,7 @@ import org.beigesoft.service.ISrvDatabase;
 import org.beigesoft.service.ISrvNumberToString;
 import org.beigesoft.accounting.model.ETaxType;
 import org.beigesoft.accounting.model.CmprTaxCatLnRate;
+import org.beigesoft.accounting.model.CmprTaxRate;
 import org.beigesoft.accounting.model.CmprInvLnTotal;
 import org.beigesoft.accounting.persistable.base.AInvTxLn;
 import org.beigesoft.accounting.persistable.base.ALineTxLn;
@@ -476,6 +478,151 @@ public class UtlInvBase<RS> {
     }
   }
 
+  /**
+   * <p>Retrieve from database tax data for adjusting invoice lines after
+   * invoice tax line has been changed by user.</p>
+   * @param <T> invoice type
+   * @param <L> invoice line type
+   * @param <TL> invoice tax line type
+   * @param pReqVars request scoped vars
+   * @param pInv affected invoice
+   * @param pAs Accounting Settings
+   * @param pTxRules taxable rules
+   * @param pInvTxMeth tax method code/data for purchase/sales invoice
+   * @return taxes data
+   * @throws Exception - an exception.
+   **/
+  public final <T extends IInvoice, L extends IInvoiceLine<T>,
+    TL extends AInvTxLn<T>> ArrayList<SalesInvoiceServiceLine> retrTxdLnsAdjInv(
+      final Map<String, Object> pReqVars, final T pInv, final AccSettings pAs,
+        final TaxDestination pTxRules,
+          final IInvTxMeth<T, TL> pInvTxMeth) throws Exception {
+    //totals by tax category for farther adjusting invoice:
+    ArrayList<SalesInvoiceServiceLine> txdLns =
+      new ArrayList<SalesInvoiceServiceLine>();
+    //totals by "tax category, tax", map key is ID of tax category
+    //itsPercentage holds total and plusAmount holds total FC
+    //e.g. item A "tax18%, tax3%", item B "tax18%, tax1%"
+    //there tax18% is used in two tax categories
+    Map<Long, List<Tax>> tcTxs = new HashMap<Long,  List<Tax>>();
+    //totals by tax for farther adjusting by "tax category, tax",
+    //itsPercentage holds total and plusAmount holds total FC
+    ArrayList<Tax> txs = new ArrayList<Tax>();
+    String query = pInvTxMeth.lazyGetQuTxInvAdj();
+    if (pInvTxMeth.getTblNmsTot().length == 5) { //sales/purchase:
+      query = query.replace(":TGOODLN", pInvTxMeth.getTblNmsTot()[0]);
+      query = query.replace(":TSERVICELN", pInvTxMeth.getTblNmsTot()[1]);
+      query = query.replace(":TTAXLN", pInvTxMeth.getTblNmsTot()[2]);
+    } else { //returns:
+      query = query.replace(":TGOODLN", pInvTxMeth.getTblNmsTot()[0]);
+      query = query.replace(":TTAXLN", pInvTxMeth.getTblNmsTot()[1]);
+    }
+    query = query.replace(":INVOICEID", pInv.getItsId().toString());
+    IRecordSet<RS> recordSet = null;
+    BigDecimal bd100 = new BigDecimal("100.00");
+    try {
+      recordSet = getSrvDatabase().retrieveRecords(query);
+      if (recordSet.moveToFirst()) {
+        do {
+          Long txId = recordSet.getLong("TAXID");
+          int li = txs.size() - 1;
+          if (!(li >= 0 && txs.get(li).getItsId()
+            .equals(txId))) {
+            Tax tax = new Tax();
+            tax.setItsId(txId);
+            Double txtot = recordSet.getDouble("TXTOT");
+            Double txtotfc = recordSet.getDouble("TXTOTFC");
+            tax.setItsPercentage(BigDecimal.valueOf(txtot));
+            tax.setPlusAmount(BigDecimal.valueOf(txtotfc));
+            txs.add(tax);
+          }
+          Double pr = recordSet.getDouble("ITSPERCENTAGE");
+          Long tcId = recordSet.getLong("TAXCATID");
+          List<Tax> tctxs = null;
+          for (Map.Entry<Long, List<Tax>> ent : tcTxs.entrySet()) {
+            if (ent.getKey().equals(tcId)) {
+              tctxs = ent.getValue();
+              break;
+            }
+          }
+          if (tctxs == null) {
+            tctxs = new ArrayList<Tax>();
+            tcTxs.put(tcId, tctxs);
+          }
+          Tax tctx = new Tax();
+          tctx.setItsId(txId);
+          tctxs.add(tctx);
+          BigDecimal prbd = BigDecimal.valueOf(pr);
+          BigDecimal txv;
+          BigDecimal txvf;
+          if (!pInv.getPriceIncTax()) {
+            Double su = recordSet.getDouble("SUBTOTAL");
+            Double suf = recordSet.getDouble("FOREIGNSUBTOTAL");
+            txv = BigDecimal.valueOf(su).multiply(prbd).divide(bd100,
+              pAs.getPricePrecision(), pTxRules.getSalTaxRoundMode());
+            txvf = BigDecimal.valueOf(suf).multiply(prbd).divide(bd100,
+              pAs.getPricePrecision(), pTxRules.getSalTaxRoundMode());
+          } else {
+            Double tot = recordSet.getDouble("ITSTOTAL");
+            Double totf = recordSet.getDouble("FOREIGNTOTAL");
+            BigDecimal totbd = BigDecimal.valueOf(tot);
+            BigDecimal totbdf = BigDecimal.valueOf(totf);
+            txv = totbd.subtract(totbd.divide(BigDecimal.ONE.add(prbd
+              .divide(bd100)), pAs.getPricePrecision(),
+                pTxRules.getSalTaxRoundMode()));
+            txvf = totbdf.subtract(totbdf.divide(BigDecimal.ONE.add(prbd
+              .divide(bd100)), pAs.getPricePrecision(),
+                pTxRules.getSalTaxRoundMode()));
+          }
+          tctx.setPlusAmount(txvf);
+          tctx.setItsPercentage(txv);
+        } while (recordSet.moveToNext());
+      }
+    } finally {
+      if (recordSet != null) {
+        recordSet.close();
+      }
+    }
+    //adjusting "total by [tax] -> total by [tax category, tax]":
+    Comparator<Tax> cmpr = new CmprTaxRate();
+    for (Tax tx : txs) {
+      List<Tax> tlns = new ArrayList<Tax>();
+      for (Map.Entry<Long, List<Tax>> ent : tcTxs.entrySet()) {
+        for (Tax tctx : ent.getValue()) {
+          if (tctx.getItsId().equals(tx.getItsId())) {
+            tlns.add(tctx);
+          }
+        }
+      }
+      Collections.sort(tlns, cmpr);
+      BigDecimal txRest = tx.getItsPercentage();
+      BigDecimal txRestFc = tx.getPlusAmount();
+      for (int i = 0; i < tlns.size(); i++) {
+        if (i + 1 == tlns.size()) { //the biggest last gives the rest:
+          tlns.get(i).setItsPercentage(txRest);
+          tlns.get(i).setPlusAmount(txRestFc);
+        } else { //the first lines are kept unchanged:
+          txRest = txRest.subtract(tlns.get(i).getItsPercentage());
+          txRestFc = txRestFc.subtract(tlns.get(i).getPlusAmount());
+        }
+      }
+    }
+    for (Map.Entry<Long, List<Tax>> ent : tcTxs.entrySet()) {
+      SalesInvoiceServiceLine txdLn = new SalesInvoiceServiceLine();
+      txdLn.setItsId(ent.getKey());
+      InvItemTaxCategory tc = new InvItemTaxCategory();
+      tc.setItsId(ent.getKey());
+      txdLn.setTaxCategory(tc);
+      txdLns.add(txdLn);
+      for (Tax tx : ent.getValue()) {
+        txdLn.setTotalTaxes(txdLn.getTotalTaxes().add(tx.getItsPercentage()));
+        txdLn.setForeignTotalTaxes(txdLn.getForeignTotalTaxes()
+          .add(tx.getPlusAmount()));
+      }
+    }
+    return txdLns;
+  }
+
   //Line's level code:
   /**
    * <p>Makes invoice line's taxes, totals.</p>
@@ -618,6 +765,7 @@ public class UtlInvBase<RS> {
     }
   }
 
+
   /**
    * <p>Retrieve from database bundle of tax data.</p>
    * @param <T> invoice type
@@ -691,7 +839,7 @@ public class UtlInvBase<RS> {
       if (pInvTxMeth.getTblNmsTot().length == 5) { //sales/purchase:
         query = query.replace(":TGOODLN", pInvTxMeth.getTblNmsTot()[0]);
         query = query.replace(":TSERVICELN", pInvTxMeth.getTblNmsTot()[1]);
-      } else if (pInvTxMeth.getTblNmsTot()[0] != null) { //returns:
+      } else { //returns:
         query = query.replace(":TGOODLN", pInvTxMeth.getTblNmsTot()[0]);
       }
     }

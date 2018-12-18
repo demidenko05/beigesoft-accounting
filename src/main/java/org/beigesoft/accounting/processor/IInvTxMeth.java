@@ -116,4 +116,11 @@ public interface IInvTxMeth<T extends IInvoice, TL extends AInvTxLn<T>> {
    * @throws IOException - IO exception
    **/
   String lazyGetQuTotals() throws IOException;
+
+  /**
+   * <p>Lazy get for quTxInvAdj.</p>
+   * @return String
+   * @throws IOException - IO exception
+   **/
+  String lazyGetQuTxInvAdj() throws IOException;
 }

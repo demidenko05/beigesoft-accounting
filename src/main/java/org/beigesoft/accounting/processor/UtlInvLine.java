@@ -13,6 +13,7 @@ package org.beigesoft.accounting.processor;
  */
 
 import java.util.Map;
+import java.util.List;
 
 import org.beigesoft.factory.IFactorySimple;
 import org.beigesoft.accounting.persistable.base.AInvTxLn;
@@ -22,6 +23,7 @@ import org.beigesoft.accounting.persistable.IInvoice;
 import org.beigesoft.accounting.persistable.IInvoiceLine;
 import org.beigesoft.accounting.persistable.AccSettings;
 import org.beigesoft.accounting.persistable.TaxDestination;
+import org.beigesoft.accounting.persistable.SalesInvoiceServiceLine;
 
 /**
  * <p>Utility for purchase/sales invoice line.
@@ -166,16 +168,21 @@ public class UtlInvLine<RS, T extends IInvoice, L extends IInvoiceLine<T>,
   }
 
   /**
-   * <p>Update invoice totals after tax line has
+   * <p>adjust invoice lines and Update its totals after tax line has
    * been changed (Invoice basis).</p>
    * @param pReqVars additional param
    * @param pInv Invoice
    * @param pAs accounting settings
+   * @param pTxRules not NULL
    * @throws Exception - an exception
    **/
-  public final void updInvTots(
-    final Map<String, Object> pReqVars, final T pInv,
-      final AccSettings pAs) throws Exception {
+  public final void adjInvLnsUpdTots(final Map<String, Object> pReqVars,
+    final T pInv, final AccSettings pAs,
+      final TaxDestination pTxRules) throws Exception {
+    List<SalesInvoiceServiceLine> txdLns = this.utlInvBase
+      .retrTxdLnsAdjInv(pReqVars, pInv, pAs, pTxRules, this.invTxMeth);
+    this.utlInvBase.adjustInvoiceLns(pReqVars, pInv, txdLns, pAs,
+      this.invTxMeth);
     this.utlInvBase.updInvTots(pReqVars, pInv, pAs, this.invTxMeth);
   }
 

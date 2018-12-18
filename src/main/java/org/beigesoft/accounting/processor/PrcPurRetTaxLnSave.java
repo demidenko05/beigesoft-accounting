@@ -22,8 +22,6 @@ import org.beigesoft.model.IRequestData;
 import org.beigesoft.exception.ExceptionWithCode;
 import org.beigesoft.service.IEntityProcessor;
 import org.beigesoft.service.ISrvOrm;
-import org.beigesoft.accounting.persistable.base.AInvTxLn;
-import org.beigesoft.accounting.persistable.IInvoice;
 import org.beigesoft.accounting.persistable.AccSettings;
 import org.beigesoft.accounting.persistable.TaxDestination;
 import org.beigesoft.accounting.persistable.PurchaseReturn;
@@ -31,7 +29,7 @@ import org.beigesoft.accounting.persistable.PurchaseReturnTaxLine;
 import org.beigesoft.accounting.service.ISrvAccSettings;
 
 /**
- * <p>Service that saves Invoice Tax Line into DB
+ * <p>Service that saves purchase return tax line into DB
  * (only invoice basis!).</p>
  *
  * @param <RS> platform dependent record set type
@@ -106,7 +104,8 @@ public class PrcPurRetTaxLnSave<RS>
       throw new ExceptionWithCode(ExceptionWithCode.WRONG_PARAMETER,
         "cant_edit_item_basis_tax");
     }
-    PurchaseReturnTaxLine oldEntity = getSrvOrm().retrieveEntity(pReqVars, pEntity);
+    PurchaseReturnTaxLine oldEntity = getSrvOrm()
+      .retrieveEntity(pReqVars, pEntity);
     pEntity.setTax(oldEntity.getTax());
     pEntity.setTaxableInvBas(oldEntity.getTaxableInvBas());
     pEntity.setTaxableInvBasFc(oldEntity.getTaxableInvBasFc());
@@ -138,7 +137,8 @@ public class PrcPurRetTaxLnSave<RS>
     Long ownerVersion = Long.valueOf(pRequestData.getParameter(pEntity
       .getItsOwner().getClass().getSimpleName() + ".ownerVersion"));
     pEntity.getItsOwner().setItsVersion(ownerVersion);
-    this.utlInvLine.updInvTots(pReqVars, pEntity.getItsOwner(), as);
+    this.utlInvLine.adjInvLnsUpdTots(pReqVars, pEntity.getItsOwner(), as,
+      txRules);
     pReqVars.put("nextEntity", pEntity.getItsOwner());
     pReqVars.put("nameOwnerEntity", pEntity.getItsOwner().getClass()
       .getSimpleName());

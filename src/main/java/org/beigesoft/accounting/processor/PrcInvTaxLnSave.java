@@ -128,7 +128,8 @@ public class PrcInvTaxLnSave<RS, T extends IInvoice, TL extends AInvTxLn<T>>
     Long ownerVersion = Long.valueOf(pRequestData.getParameter(pEntity
       .getItsOwner().getClass().getSimpleName() + ".ownerVersion"));
     pEntity.getItsOwner().setItsVersion(ownerVersion);
-    this.utlInvLine.updInvTots(pReqVars, pEntity.getItsOwner(), as);
+    this.utlInvLine.adjInvLnsUpdTots(pReqVars, pEntity.getItsOwner(), as,
+      txRules);
     pReqVars.put("nextEntity", pEntity.getItsOwner());
     pReqVars.put("nameOwnerEntity", pEntity.getItsOwner().getClass()
       .getSimpleName());

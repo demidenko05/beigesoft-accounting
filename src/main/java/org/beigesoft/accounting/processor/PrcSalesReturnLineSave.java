@@ -141,6 +141,7 @@ public class PrcSalesReturnLineSave<RS>
         }
         pEntity.setInvItem(getSrvOrm()
           .retrieveEntity(pReqVars, pEntity.getInvItem()));
+        pEntity.setTheRest(pEntity.getItsQuantity());
         //using user passed values:
         if (pEntity.getItsOwner().getForeignCurrency() != null) {
           BigDecimal exchRate = pEntity.getItsOwner().getExchangeRate();
@@ -159,8 +160,9 @@ public class PrcSalesReturnLineSave<RS>
           }
         }
         this.utlInvLine.makeLine(pReqVars, pEntity, as, txRules);
-        srvWarehouseEntry.load(pReqVars, pEntity, pEntity.getWarehouseSite());
       }
+      //draw or reverse warehouse entries:
+      srvWarehouseEntry.load(pReqVars, pEntity, pEntity.getWarehouseSite());
       //owner update:
       // optimistic locking (dirty check):
       Long ownerVersion = Long.valueOf(pRequestData

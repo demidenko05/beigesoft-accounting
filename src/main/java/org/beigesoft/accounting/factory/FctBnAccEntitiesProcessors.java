@@ -519,6 +519,9 @@ public class FctBnAccEntitiesProcessors<RS>
             .equals(PrcInvTaxLnSave.class.getSimpleName() + "SRTL")) {
             proc = lazyGetPrcSalRetTaxLnSave(pAddParam);
           } else if (pBeanName
+            .equals(PrcInvTaxLnSave.class.getSimpleName() + "SITL")) {
+            proc = lazyGetPrcSalInvTaxLnSave(pAddParam);
+          } else if (pBeanName
             .equals(PrcPurRetTaxLnSave.class.getSimpleName())) {
             proc = lazyGetPrcPurchRetTaxLnSave(pAddParam);
           } else if (pBeanName
@@ -1560,6 +1563,31 @@ public class FctBnAccEntitiesProcessors<RS>
    * @return requested PrcInvTaxLnSave
    * @throws Exception - an exception
    */
+  protected final PrcInvTaxLnSave<RS, SalesInvoice, SalesInvoiceTaxLine>
+    lazyGetPrcSalInvTaxLnSave(
+      final Map<String, Object> pAddParam) throws Exception {
+    @SuppressWarnings("unchecked")
+    PrcInvTaxLnSave<RS, SalesInvoice, SalesInvoiceTaxLine> proc =
+      (PrcInvTaxLnSave<RS, SalesInvoice, SalesInvoiceTaxLine>)
+        this.processorsMap.get(PrcInvTaxLnSave.class.getSimpleName() + "SITL");
+    if (proc == null) {
+      proc = new PrcInvTaxLnSave<RS, SalesInvoice, SalesInvoiceTaxLine>();
+      proc.setSrvAccSettings(getSrvAccSettings());
+      proc.setSrvOrm(getSrvOrm());
+      proc.setUtlInvLine(lazyGetUtlSalGdLn(pAddParam));
+      //assigning fully initialized object:
+      this.processorsMap
+        .put(PrcInvTaxLnSave.class.getSimpleName() + "SITL", proc);
+    }
+    return proc;
+  }
+
+  /**
+   * <p>Get PrcInvTaxLnSave (create and put into map).</p>
+   * @param pAddParam additional param
+   * @return requested PrcInvTaxLnSave
+   * @throws Exception - an exception
+   */
   protected final PrcInvTaxLnSave<RS, SalesReturn, SalesReturnTaxLine>
     lazyGetPrcSalRetTaxLnSave(
       final Map<String, Object> pAddParam) throws Exception {
@@ -2077,6 +2105,7 @@ public class FctBnAccEntitiesProcessors<RS>
       salRetTxMe.setFlTxItBas("invGdTxItBas.sql");
       salRetTxMe.setFlTxItBasAggr("invGdTxItBasAggr.sql");
       salRetTxMe.setFlTxInvBas("invGdTxInvBas.sql");
+      salRetTxMe.setFlTxInvAdj("invGdTxInvAdj.sql");
       salRetTxMe.setFlTxInvBasAggr("invGdTxInvBasAggr.sql");
       salRetTxMe.setTblNmsTot(new String[] {"SALESRETURNLINE",
         "SALESRETURNTAXLINE", "SALESRETURNGOODSTAXLINE"});
@@ -2145,6 +2174,7 @@ public class FctBnAccEntitiesProcessors<RS>
       purRetTxMe.setFlTxItBas("invGdTxItBas.sql");
       purRetTxMe.setFlTxItBasAggr("purRtTxItBasAggr.sql");
       purRetTxMe.setFlTxInvBas("purRtTxInvBas.sql");
+      purRetTxMe.setFlTxInvAdj("purRtTxInvAdj.sql");
       purRetTxMe.setFlTxInvBasAggr("purRtTxInvBasAggr.sql");
       purRetTxMe.setTblNmsTot(new String[] {"PURCHASERETURNLINE",
         "PURCHASERETURNTAXLINE", "PURCHASERETURNGOODSTAXLINE"});
@@ -2217,6 +2247,7 @@ public class FctBnAccEntitiesProcessors<RS>
       purInvTxMe.setFlTxItBas("invTxItBas.sql");
       purInvTxMe.setFlTxItBasAggr("invTxItBasAggr.sql");
       purInvTxMe.setFlTxInvBas("invTxInvBas.sql");
+      purInvTxMe.setFlTxInvAdj("invTxInvAdj.sql");
       purInvTxMe.setFlTxInvBasAggr("invTxInvBasAggr.sql");
       purInvTxMe.setTblNmsTot(new String[] {"PURCHASEINVOICELINE",
         "PURCHASEINVOICESERVICELINE", "PURCHASEINVOICETAXLINE",
@@ -2322,6 +2353,7 @@ public class FctBnAccEntitiesProcessors<RS>
       salInvTxMe.setFlTxItBas("invTxItBas.sql");
       salInvTxMe.setFlTxItBasAggr("invTxItBasAggr.sql");
       salInvTxMe.setFlTxInvBas("invTxInvBas.sql");
+      salInvTxMe.setFlTxInvAdj("invTxInvAdj.sql");
       salInvTxMe.setFlTxInvBasAggr("invTxInvBasAggr.sql");
       salInvTxMe.setTblNmsTot(new String[] {"SALESINVOICELINE",
         "SALESINVOICESERVICELINE", "SALESINVOICETAXLINE",
