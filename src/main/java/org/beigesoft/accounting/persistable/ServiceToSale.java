@@ -14,6 +14,8 @@ package org.beigesoft.accounting.persistable;
 
 import java.util.List;
 
+import org.beigesoft.model.EServTime;
+import org.beigesoft.model.IService;
 import org.beigesoft.persistable.IPersistableBase;
 import org.beigesoft.accounting.persistable.base.AItem;
 
@@ -28,7 +30,7 @@ import org.beigesoft.accounting.persistable.base.AItem;
  * @author Yury Demidenko
  */
 public class ServiceToSale extends AItem<ServiceToSale, DestTaxServSelLn>
-  implements IPersistableBase {
+  implements IService, IPersistableBase {
 
   /**
    * <p>Its category.
@@ -54,6 +56,19 @@ public class ServiceToSale extends AItem<ServiceToSale, DestTaxServSelLn>
    * <p>Destination taxes categories and rules.</p>
    **/
   private List<DestTaxServSelLn> destinationTaxes;
+
+
+  //WEB-STORE fields:
+  /**
+   * <p>Not null, default TIME, booking time method.</p>
+   **/
+  private EServTime tmMe = EServTime.TIME;
+
+  /**
+   * <p>Additional time method,
+   * e.g. step from zero in minutes (5/10/15/20/30) for tmMe=="*TIME*".</p>
+   **/
+  private Integer tmAd;
 
   /**
    * <p>Getter for destinationTaxes.</p>
@@ -108,6 +123,42 @@ public class ServiceToSale extends AItem<ServiceToSale, DestTaxServSelLn>
   @Override
   public final void setIdBirth(final Long pIdBirth) {
     this.idBirth = pIdBirth;
+  }
+
+  /**
+   * <p>Getter for tmMe.</p>
+   * @return EServTime
+   **/
+  @Override
+  public final EServTime getTmMe() {
+    return this.tmMe;
+  }
+
+  /**
+   * <p>Setter for tmMe.</p>
+   * @param pTmMe reference
+   **/
+  @Override
+  public final void setTmMe(final EServTime pTmMe) {
+    this.tmMe = pTmMe;
+  }
+
+  /**
+   * <p>Getter for tmAd.</p>
+   * @return Integer
+   **/
+  @Override
+  public final Integer getTmAd() {
+    return this.tmAd;
+  }
+
+  /**
+   * <p>Setter for tmAd.</p>
+   * @param pTmAd reference
+   **/
+  @Override
+  public final void setTmAd(final Integer pTmAd) {
+    this.tmAd = pTmAd;
   }
 
   //Simple getters and setters:

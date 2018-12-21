@@ -23,4 +23,6 @@ alter table SALESRETURNGOODSTAXLINE add column FOREIGNTOTALTAXES decimal(19,4) d
 alter table SALESRETURNTAXLINE add column FOREIGNTOTALTAXES decimal(19,4) default 0;
 alter table SALESRETURNTAXLINE add column TAXABLEINVBASFC decimal(19,4) default 0;
 alter table TAXDESTINATION add column REGZIP varchar(10);
+alter table SERVICETOSALE add column TMME tinyint not null default 0;
+alter table SERVICETOSALE add column TMAD integer default null;
 update DATABASEINFO set DATABASEVERSION=8, DESCRIPTION='Beige Accounting DB version 8';
