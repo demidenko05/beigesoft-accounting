@@ -28,6 +28,12 @@ public class Currency extends AHasNameIdLongVersion {
    **/
   private String itsSign;
 
+  /**
+   * <p>String code, e.g. "USD" for integrating with systems
+   * that use such currency identifiers instead of "840".</p>
+   **/
+  private String stCo;
+
   //Simple getters and setters:
 
   /**
@@ -44,5 +50,21 @@ public class Currency extends AHasNameIdLongVersion {
    **/
   public final void setItsSign(final String pItsSign) {
     this.itsSign = pItsSign;
+  }
+
+  /**
+   * <p>Getter for stCo.</p>
+   * @return String
+   **/
+  public final String getStCo() {
+    return this.stCo;
+  }
+
+  /**
+   * <p>Setter for stCo.</p>
+   * @param pStCo reference
+   **/
+  public final void setStCo(final String pStCo) {
+    this.stCo = pStCo;
   }
 }
