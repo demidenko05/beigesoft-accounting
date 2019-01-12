@@ -19,7 +19,7 @@ import java.util.Map;
 import java.text.DateFormat;
 import java.math.BigDecimal;
 
-import org.beigesoft.service.ISrvI18n;
+import org.beigesoft.model.ColumnsValues;
 import org.beigesoft.exception.ExceptionWithCode;
 import org.beigesoft.accounting.persistable.IDocWarehouse;
 import org.beigesoft.accounting.persistable.IMakingWarehouseEntry;
@@ -27,7 +27,9 @@ import org.beigesoft.accounting.persistable.PurchaseInvoice;
 import org.beigesoft.accounting.persistable.WarehouseSite;
 import org.beigesoft.accounting.persistable.WarehouseRest;
 import org.beigesoft.accounting.persistable.WarehouseEntry;
+import org.beigesoft.service.ISrvI18n;
 import org.beigesoft.service.ISrvOrm;
+import org.beigesoft.service.ISrvDatabase;
 
 /**
  * <p>Business service for warehouse.</p>
@@ -51,6 +53,21 @@ public class SrvWarehouseEntry<RS> implements ISrvWarehouseEntry {
    * <p>ORM service.</p>
    **/
   private ISrvOrm<RS> srvOrm;
+
+  /**
+   * <p>DB service.</p>
+   **/
+  private ISrvDatabase<RS> srvDb;
+
+  /**
+   * <p>Fastest locking (only record locking), i.e.:
+   * update WAREHOUSEREST set THEREST=THEREST-1.5
+   * where UNITOFMEASURE=5 and INVITEM=1 and WAREHOUSESITE=1.
+   * It will fail when THEREST become less than 0.
+   * Update is atomic RDBMS operation, i.e. it
+   * locks affected record during invocation.</p>
+   **/
+  private boolean fastLoc = true;
 
   /**
    * <p>minimum constructor.</p>
@@ -206,7 +223,7 @@ public class SrvWarehouseEntry<RS> implements ISrvWarehouseEntry {
    * @param pAddParam additional param
    * @param pEntity movement
    * @param pWhSite Site
-   * @param pQuantity Quantity
+   * @param pQuantity Quantity positive or negative
    * @throws Exception - an exception
    **/
   @Override
@@ -244,7 +261,24 @@ public class SrvWarehouseEntry<RS> implements ISrvWarehouseEntry {
       getSrvOrm().insertEntity(pAddParam, wr);
       wr.setIsNew(false);
     } else {
-      getSrvOrm().updateEntity(pAddParam, wr);
+      if (this.fastLoc) {
+        ColumnsValues cvs = new ColumnsValues();
+        cvs.getFormula().add("itsVersion");
+        cvs.getFormula().add("theRest");
+        cvs.setIdColumnsNames(new String[] {"warehouseSite", "invItem",
+            "unitOfMeasure"});
+        cvs.put("itsVersion", "ITSVERSION+1");
+        if (pQuantity.compareTo(BigDecimal.ZERO) == -1) {
+          cvs.put("theRest", "THEREST" + pQuantity);
+        } else {
+          cvs.put("theRest", "THEREST+" + pQuantity);
+        }
+        this.srvDb.executeUpdate("WAREHOUSEREST", cvs, "WAREHOUSESITE="
+      + wr.getWarehouseSite().getItsId() + " and INVITEM=" + wr.getInvItem()
+    .getItsId() + " and UNITOFMEASURE=" + wr.getUnitOfMeasure().getItsId());
+      } else {
+        getSrvOrm().updateEntity(pAddParam, wr);
+      }
     }
   }
 
@@ -267,6 +301,15 @@ public class SrvWarehouseEntry<RS> implements ISrvWarehouseEntry {
     String langDef = (String) pAddParam.get("langDef");
     DateFormat dateFormat = DateFormat.getDateTimeInstance(
       DateFormat.MEDIUM, DateFormat.SHORT, new Locale(langDef));
+    ColumnsValues cvs = null;
+    if (this.fastLoc) {
+      cvs = new ColumnsValues();
+      cvs.getFormula().add("itsVersion");
+      cvs.getFormula().add("theRest");
+      cvs.setIdColumnsNames(new String[] {"warehouseSite", "invItem",
+          "unitOfMeasure"});
+      cvs.put("itsVersion", "ITSVERSION+1");
+    }
     if (pWhSiteFrom != null) {
       WarehouseRest wr = getSrvOrm().retrieveEntityWithConditions(pAddParam,
         WarehouseRest.class, "where THEREST>0 and INVITEM="
@@ -280,8 +323,15 @@ public class SrvWarehouseEntry<RS> implements ISrvWarehouseEntry {
             + pEntity.getInvItem().getItsId() + "/" + pEntity.getUnitOfMeasure()
               .getItsId() + "/" + pEntity.getItsQuantity());
       }
-      wr.setTheRest(wr.getTheRest().subtract(pEntity.getItsQuantity()));
-      getSrvOrm().updateEntity(pAddParam, wr);
+      if (this.fastLoc) {
+        cvs.put("theRest", "THEREST-" + pEntity.getItsQuantity());
+        this.srvDb.executeUpdate("WAREHOUSEREST", cvs, "WAREHOUSESITE="
+      + wr.getWarehouseSite().getItsId() + " and INVITEM=" + wr.getInvItem()
+    .getItsId() + " and UNITOFMEASURE=" + wr.getUnitOfMeasure().getItsId());
+      } else {
+        wr.setTheRest(wr.getTheRest().subtract(pEntity.getItsQuantity()));
+        getSrvOrm().updateEntity(pAddParam, wr);
+      }
       WarehouseEntry wm = new WarehouseEntry();
       wm.setIdDatabaseBirth(getSrvOrm().getIdDatabase());
       wm.setSourceId(pEntity.getItsId());
@@ -322,8 +372,15 @@ public class SrvWarehouseEntry<RS> implements ISrvWarehouseEntry {
         } else {
           quantityToLeave = quantityToLeaveRest;
         }
-        wr.setTheRest(wr.getTheRest().subtract(quantityToLeave));
-        getSrvOrm().updateEntity(pAddParam, wr);
+        if (this.fastLoc) {
+          cvs.put("theRest", "THEREST-" + quantityToLeave);
+          this.srvDb.executeUpdate("WAREHOUSEREST", cvs, "WAREHOUSESITE="
+        + wr.getWarehouseSite().getItsId() + " and INVITEM=" + wr.getInvItem()
+      .getItsId() + " and UNITOFMEASURE=" + wr.getUnitOfMeasure().getItsId());
+        } else {
+          wr.setTheRest(wr.getTheRest().subtract(quantityToLeave));
+          getSrvOrm().updateEntity(pAddParam, wr);
+        }
         WarehouseEntry wm = new WarehouseEntry();
         wm.setIdDatabaseBirth(getSrvOrm().getIdDatabase());
         wm.setSourceId(pEntity.getItsId());
@@ -540,5 +597,37 @@ public class SrvWarehouseEntry<RS> implements ISrvWarehouseEntry {
    **/
   public final void setSrvI18n(final ISrvI18n pSrvI18n) {
     this.srvI18n = pSrvI18n;
+  }
+
+  /**
+   * <p>Getter for srvDb.</p>
+   * @return ISrvDatabase<RS>
+   **/
+  public final ISrvDatabase<RS> getSrvDb() {
+    return this.srvDb;
+  }
+
+  /**
+   * <p>Setter for srvDb.</p>
+   * @param pSrvDb reference
+   **/
+  public final void setSrvDb(final ISrvDatabase<RS> pSrvDb) {
+    this.srvDb = pSrvDb;
+  }
+
+  /**
+   * <p>Getter for fastLoc.</p>
+   * @return boolean
+   **/
+  public final boolean getFastLoc() {
+    return this.fastLoc;
+  }
+
+  /**
+   * <p>Setter for fastLoc.</p>
+   * @param pFastLoc reference
+   **/
+  public final void setFastLoc(final boolean pFastLoc) {
+    this.fastLoc = pFastLoc;
   }
 }

@@ -14,7 +14,7 @@ package org.beigesoft.accounting.persistable;
 
 import java.math.BigDecimal;
 
-import org.beigesoft.model.AEditable;
+import org.beigesoft.model.AEditableHasVersion;
 import org.beigesoft.model.IHasId;
 
 /**
@@ -28,7 +28,7 @@ import org.beigesoft.model.IHasId;
  *
  * @author Yury Demidenko
  */
-public class WarehouseRest extends AEditable
+public class WarehouseRest extends AEditableHasVersion
   implements IHasId<WarehouseRestId> {
 
   /**
