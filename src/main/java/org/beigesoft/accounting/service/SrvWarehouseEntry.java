@@ -265,8 +265,6 @@ public class SrvWarehouseEntry<RS> implements ISrvWarehouseEntry {
         ColumnsValues cvs = new ColumnsValues();
         cvs.getFormula().add("itsVersion");
         cvs.getFormula().add("theRest");
-        cvs.setIdColumnsNames(new String[] {"warehouseSite", "invItem",
-            "unitOfMeasure"});
         cvs.put("itsVersion", "ITSVERSION+1");
         if (pQuantity.compareTo(BigDecimal.ZERO) == -1) {
           cvs.put("theRest", "THEREST" + pQuantity);
@@ -306,8 +304,6 @@ public class SrvWarehouseEntry<RS> implements ISrvWarehouseEntry {
       cvs = new ColumnsValues();
       cvs.getFormula().add("itsVersion");
       cvs.getFormula().add("theRest");
-      cvs.setIdColumnsNames(new String[] {"warehouseSite", "invItem",
-          "unitOfMeasure"});
       cvs.put("itsVersion", "ITSVERSION+1");
     }
     if (pWhSiteFrom != null) {
