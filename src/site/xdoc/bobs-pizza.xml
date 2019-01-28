@@ -111,7 +111,14 @@
       </h5>
 
       <h5>
-        <a href="bobs-webstore.html">Bob's webstore (DRAFT).</a>
+        <a href="bobs-webstore.html">Bob's pizza web-store example. Part 1, catalog.</a>
+      </h5>
+
+      <h5>
+        <a href="bobs-ws-chou.html">Bob's pizza web-store example. Part 2, cart checkout, forced delivering (shipping).</a>
+      </h5>
+      <h5>
+        <a href="bobs-ws-prc.html">Bob's pizza web-store example. Part 3, prices depend on buyer, prices in foreign currency.</a>
       </h5>
 
     </section>
