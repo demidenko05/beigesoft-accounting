@@ -150,7 +150,8 @@ public class PrcPurchaseInvoiceLineSave<RS>
           exchRate = BigDecimal.ONE.divide(exchRate.negate(), 15,
             RoundingMode.HALF_UP);
         }
-        if (pEntity.getInvItem().getKnownCost() != null) {
+        if (pEntity.getInvItem().getKnownCost() != null
+      && pEntity.getInvItem().getKnownCost().compareTo(BigDecimal.ZERO) == 1) {
           if (pEntity.getItsOwner().getForeignCurrency() != null) {
             pEntity.setForeignPrice(pEntity.getInvItem().getKnownCost());
             if (txRules == null || pEntity.getItsOwner().getPriceIncTax()) {
