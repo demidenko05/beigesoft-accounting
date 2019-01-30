@@ -52,7 +52,6 @@
 <entry key="subaccExpense">false</entry>
 <entry key="subaccExpenseId">false</entry>
 <entry key="subaccExpenseType">false</entry>
-<entry key="knownCost">true</entry>
 <entry key="warehouseSiteFo">true</entry>
 <entry key="accDebit">true</entry>
 <entry key="accCredit">true</entry>

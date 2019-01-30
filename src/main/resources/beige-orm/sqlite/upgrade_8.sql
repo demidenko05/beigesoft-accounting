@@ -25,4 +25,5 @@ alter table CURRENCY add column STCO text;
 alter table SERVICETOSALE add column TMME integer not null default 0;
 alter table SERVICETOSALE add column TMAD integer default null;
 alter table WAREHOUSEREST add column ITSVERSION integer not null default 1;
+update INVITEM set KNOWNCOST=0 where KNOWNCOST is null;
 update DATABASEINFO set DATABASEVERSION=8, DESCRIPTION='Beige Accounting DB version 8';
