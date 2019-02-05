@@ -714,18 +714,18 @@ public class UtlInvBase<RS> {
       pLine.setForeignTotal(BigDecimal.ZERO);
       pLine.setForeignSubtotal(BigDecimal.ZERO);
     }
-    if (pTxRules != null && !pTxRules.getSalTaxIsInvoiceBase()) {
-      if (!pLine.getItsOwner().getPriceIncTax()) {
-        pLine.setItsTotal(pLine.getSubtotal().add(pLine.getTotalTaxes()));
-        if (pLine.getItsOwner().getForeignCurrency() != null) {
-          pLine.setForeignTotal(pLine.getForeignSubtotal()
-            .add(pLine.getForeignTotalTaxes()));
-        }
-      } else {
+    if (pTxRules == null || !pTxRules.getSalTaxIsInvoiceBase()) {
+      if (pTxRules == null || pLine.getItsOwner().getPriceIncTax()) {
         pLine.setSubtotal(pLine.getItsTotal().subtract(pLine.getTotalTaxes()));
         if (pLine.getItsOwner().getForeignCurrency() != null) {
           pLine.setForeignSubtotal(pLine.getForeignTotal()
             .subtract(pLine.getForeignTotalTaxes()));
+        }
+      } else {
+        pLine.setItsTotal(pLine.getSubtotal().add(pLine.getTotalTaxes()));
+        if (pLine.getItsOwner().getForeignCurrency() != null) {
+          pLine.setForeignTotal(pLine.getForeignSubtotal()
+            .add(pLine.getForeignTotalTaxes()));
         }
       }
     } //invoice basis - lines tax, subt, tot will be adjusted later!

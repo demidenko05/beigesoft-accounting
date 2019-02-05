@@ -13,6 +13,8 @@
 
 <p>Keywords: double-entry accounting software free.</p>
 
+<p>* the easiest way to install and try Beige-Accounting is install it on Android device,
+  because of you will no need to install Java and crypto-provider, see <a href="acc-android.html">Beige-Accounting on Android</a>.</p>
 
 <p>Bob Brown from NY decided to start his own pizza business as sole proprietor.
 Bob's Pizza makes frozen pizza, so according <a href="https://www.tax.ny.gov/pubs_and_bulls/tg_bulletins/st/food_sold_by_food_stores.htm">NYS. sales taxable food</a>
@@ -32,7 +34,7 @@ Bob has read <a href="https://www.irs.gov/pub/irs-pdf/p583.pdf">IRS 583 Starting
   You are able to make full database copy from SQlite database into high load (enterprise ready) MySql
   by using WEB-service (see <a href="import-db-web.html">Import database by using WEB-service</a>).
 </p>
-<p>* for Android see <a href="acc-android.html">Beige-Accounting on Android.</a></p>
+
 <p>
   Bob installed Java (Oracle) and Google Chrome on his notebook (Chromium or Opera will do too). 
   Bob downloaded file <b>beigesoft-accountingoio-ajetty-bin.zip</b> from  central Maven repository <a href="https://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.beigesoft%22">https://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.beigesoft%22</a>
@@ -51,12 +53,19 @@ Bob has read <a href="https://www.irs.gov/pub/irs-pdf/p583.pdf">IRS 583 Starting
   So you should think of strong password and A-Jetty number (it should be different from A-Jetty on another computer/tablet).
 </p>
 <p>
+  * it seems to be useless to encrypt HTTP traffic and files that are used inside only computer (because of all application on computer has direct access to databases),
+  but created certificate authority CA can be used for HTTPS outside computer.
+  Just deploy WAR file on Tomcat and your application will be Internet available when computer is connected to Internet.
+  And you are able to run non-cloud application in "protected from light harmful software mode" (see below).
+</p>
+<p>
 To make strong and ease to remember password use method similar to this:
   <ol>
     <li>use at least 3 words, e.g. raccoon eat stone</li>
     <li>change these words with a rule e.g. "last letter to first position upper case" e.g. Nraccoo Tea Eston</li>
     <li>add several digits, e.g. result is "NraccooTeaEston165" or "165NraccooTeaEston" or "165NraccooTeaEston165"...</li>
   </ol>
+  * passwords without words changing are strong too, e.g. "racooneatstone123"
 </p>
 <p>
   Bob entered new A-Jetty number, new password, confirmed it, then he pushed button <b>Start</b>.
@@ -101,9 +110,10 @@ security.provider.11=org.bouncycastle.jce.provider.BouncyCastleProvider
 </p>
 <p>
   A-Jetty Certificate Authority certificate <b>ajetty-ca.pem</b> will be at the application folder. At the first start you have to install it
-  as trusted Certificate Authority in the browser. On Chrome push Menu -> Settings -> Advanced -> Manage certificates -> AUTHORITIES and push button <b>IMPORT</b>:
+  as trusted Certificate Authority in the browser. On Chrome push Menu -> Settings -> Advanced -> Manage certificates -> AUTHORITIES and push button <b>IMPORT</b>, here is Linux example:
   <p align="center"><img alt="Beige-Accounting install CA certificate" style="max-width: 100%" src="images/installcaweb1.png" /></p>
   <p align="center"><img alt="Beige-Accounting install CA certificate" style="max-width: 100%" src="images/installcaweb2.png" /></p>
+  <p>On MS Windows switch file extension to all "*.*" in order to select "*.pem" file, and import form is different.</p>
   Certificate Authorities that aren't signed by global trusted CA are often used to create private (non-public internet) intranets and using digital signatures inside organization.
   Here A-Jetty CA is used to create HTTPS intranet inside only computer and for safe file exchanging between your computers/tablets.
 </p>
@@ -1563,12 +1573,15 @@ Debit "Cash In Bank.#1236786b17 in Bank" Credit "Bob's Started Capital" for 40,0
 <h4>Main tips to use Beige-Accounting.</h4>
 <p>
   <ul>
+    <li>* here "Entity" means any element like "Expense", "Account", document, etc.</li>
     <li>If you are editing a form but forget to create a dependent entity, e.g. Employee for document Wage,
       then you can open Beige-Accounting in another browser tab and create Employee, then go back and in picker
       press page (1 for example) to refresh it.</li>
     <li>You can edit accounting entry' description(only) in menu Accounting - Accounting Records</li>
-    <li>Several entities require entering ID manually for their creating. For customer/vendor/employee ID you can use its phone number (only numbers) or tax identification number.
-      If you got error when you are creating such entity, then probably ID is not unique.
+    <li>Part of entities require entering ID manually for their creating. For customer/vendor/employee ID you can use its phone number (only numbers) or tax identification number.
+      If you got error when you are creating such entity, then probably ID is not unique, e.g. ID for "Other fees" is already in use:
+  <p align="center"><img style="max-width: 100%" src="images/iderr.png" /></p>
+      
     </li>
   </ul>
 </p>

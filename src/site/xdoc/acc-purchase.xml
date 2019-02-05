@@ -24,11 +24,6 @@ If the service or the cost or use of the property is a deductible business expen
 you can deduct the tax as part of that service or cost.
 If the property is merchandise bought for resale, the sales tax is part of the cost of the merchandise.
 ...
-  * I think here term "property" also means materials and supplies (as well as merchandise), any way for any seller these all are "goods/merchandise".
-  * phrase "deduct an expense" means that you can deduct its cost (part or whole) from gross income, so as a result the tax is decreased.
-  deducting in double entry system usually makes with:
-  Credit [An Asset Account] Debit [An Temporary Gross Income Expense Account] for deducting amount
-  at the end of accounting period all temporary gross income expenses/revenues accounts will be closed, i.e. transfered into retaining earnings/losses account.
 </pre>  
         That is sales taxes from purchase is included into inventory and they become expenses automatically as part of Cost Of Goods Sold (method FIFO in this case).
         So Bob should set accounting settings "Extract sales taxes from purchase" to No,
@@ -45,7 +40,7 @@ If the property is merchandise bought for resale, the sales tax is part of the c
         In USA extracting taxes from purchase is required in case of using "inventory capitalized costs" method (see <a href="https://www.irs.gov/pub/irs-pdf/p538.pdf">IRS 538, Page 18 Uniform Capitalization Rules</a>).
         Capitalized cost becomes expense partially depends of ending inventory (product).
       </p>
-      <p>For many other countries sales taxes (e.g. VAT) from purchases is always extracted from goods/service cost and they are deducting themselves (taxes from sales, not deducting income tax).</p>
+      <p>For many other countries sales taxes (e.g. VAT) from purchases is always extracted from goods/service cost and they are deducting themselves (taxes from sales).</p>
       
       <h4>Prepayments</h4>
       <p>Bob has prepaid goods to Carlo's grocery on 14 Jan:
