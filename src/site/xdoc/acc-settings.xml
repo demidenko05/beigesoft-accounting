@@ -54,9 +54,7 @@ Bob has read <a href="https://www.irs.gov/pub/irs-pdf/p583.pdf">IRS 583 Starting
 </p>
 <p>
   * it seems to be useless to encrypt HTTP traffic and files that are used inside only computer (because of all application on computer has direct access to databases),
-  but created certificate authority CA can be used for HTTPS outside computer.
-  Just deploy WAR file on Tomcat and your application will be Internet available when computer is connected to Internet.
-  And you are able to run non-cloud application in "protected from light harmful software mode" (see below).
+  but you are able to run non-cloud application in "protected from light harmful software mode" (see below).
 </p>
 <p>
 To make strong and ease to remember password use method similar to this:

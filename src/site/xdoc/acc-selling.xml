@@ -42,7 +42,6 @@
         Bob has sold on Jan 17 6 Pizza with bacon frozen and 6 Pizza with cheese frozen to Mini Market (he also sold 3 pounds of cheese and 1.5 hours of cleaning for example purposes).
         Bob has filled Sales invoice:
         <p align="center"><img alt="Beige-Accounting sales invoice" style="max-width: 100%" src="images/sales0.png" /></p>
-        <p align="center"><img alt="Beige-Accounting sales invoice" style="max-width: 100%" src="images/sales1.png" /></p>
         <p align="center">After accounting full report is:</p>
         <p align="center"><img alt="Beige-Accounting sales invoice report" style="max-width: 100%" src="images/sales2.png" /></p>
         <p align="center"><img alt="Beige-Accounting sales invoice report" style="max-width: 100%" src="images/sales2-1.png" /></p>
@@ -59,11 +58,11 @@
       </p>
       <p>
         As you can see Bob made another mistake. He set Sales date less than Manufacture date for that pizza, so
-        balance of Inventory.Pizza Cheese Frozen is -19.5000 at 4:45 PM because it(pizza) was made at 6:40 PM.
+        balance of Inventory.Pizza Cheese Frozen is -18.9600 at 4:46 PM because it(pizza) was made at 6:36 PM.
         So it's reasonable to make database copy more frequently, he needs to copy beigeaccounting.sqlite
         by file explorer without exiting from accounting (on Android he should do it in the Database manager).
         Otherwise he should reverse whole document. For warehouse document date means nothing cause warehouse
-        entries use current time. And you can't draw a product or material if it doesn't exist in warehouse.
+        entries use current time. And you can't withdraw a product or material if it doesn't exist in warehouse.
       </p>
 
       <h4>Payments tracking</h4>
@@ -105,15 +104,14 @@
   checking: (20.21499-20.21)=0.00499 less than (20.22-20.21499)=0.00501
 </pre>
       </p>
-      <p>Many software give wrong result for rounding "Half-down" e.g. for "20.21501" result is "20.21", not "20.22". It do on-line calculators and "autoNumeric.js".
-        Beige-Accounting uses "properly half-down" rounding. For sales you can't change tax amount. For purchase you can, but if you enter "wrong amount", then service will report it to invoice comment (e.g. 20.21!=20.22).
-      </p>
       <p>They like to introduce new methods in financial sphere, including rounding.
         Method "CELL" is useful to make "cent discount".
         Make sure about sales tax calculation rules in your country.
         If before rounding you have to rip decimal places to 3, then "half-down" of "20.21501" gives "20.215"->"20.21", so you save cent.
         If you have to always round up all fractions after 2 decimal place, then "half-up" of "20.21499" gives "20.215"->"20.22", so you lose cent.
+        Because of it, Beige-Accounting since 1.8 version allows to change tax amount in any invoice.
       </p>
+      <p>If you have choices between standard thing and new one, then you should better opt standard one to avoid problems.</p>
     </section>
 
   </body>

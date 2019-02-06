@@ -23,7 +23,7 @@
         site/s with available item/s.</p>
       <p>Purchase return makes complex accounting, warehouse and draw goods entries:
         <p align="center"><img alt="Beige-Accounting purchase return report" style="max-width: 100%" src="images/purchase-return-report.png" /></p>
-        * software makes automatically report about rounding error - "7.7100!=7.7083!" in this case.
+        * software makes automatically report about rounding error - "7.0100!=7.0063!" in this case.
       </p>
 
       <p>After that purchase invoice full report shows goods withdrawal:
