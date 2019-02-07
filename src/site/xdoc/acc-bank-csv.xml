@@ -69,6 +69,7 @@ There are three special words for separator value:
   <li>SPACE</li>
   <li>COMMA</li>
   <li>NONE</li>
+  * SPACE is non-breaking space with code "0x00A0"
 </ul>
 Examples:
 <pre style="white-space: pre-wrap;">

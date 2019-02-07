@@ -17,7 +17,7 @@
         to estimates his taxes in calendar year period. Bob wants to estimates his real business results
         monthly. Market accounting (double entries system) based on rule:
 <pre style="white-space: pre-wrap;">
-Assets - Liabilities = current market value of Bob's business (How much he can earn if he sell it right now) = Owner's equity
+Assets - Liabilities = current market value of Bob's business (How much he can earn if he sold it right now) = Owner's equity
 </pre>
       </p>
       <p>
@@ -44,8 +44,8 @@ Assets - Liabilities = current market value of Bob's business (How much he can e
       <h4>Import data from tax accounting.</h4>
       <p>To use WEB-services on intranet (localhost) Bob installed Bouncy Castle Crypto Provider and A-Jetty CA certificate as described in <a href="import-db-web.html">Import database with WEB-service.</a></p>
       <p>
-        He launched source database Tax Beige Accounting on port 8444.
-        Then he launched market accounting on port 8443, new market database will be created with ID=2.
+        He launched source database Tax Beige Accounting on port 8445.
+        Then he launched market accounting on port 8444, new market database will be created with ID=2.
       </p>
       <p>
         He uses "menu - about" to know database ID:
@@ -56,7 +56,7 @@ Assets - Liabilities = current market value of Bob's business (How much he can e
       </p>
       <p align="center"><img style="max-width: 100%" src="images/replication-acc-method.png" /></p>
       <p>
-        He filled import acc. entries form (WEB-service address is "https://localhost:8444/bsa8444/secure/sendEntities", then fill user and password (that matched to Tax database) and pressed replicate:
+        He filled import acc. entries form (WEB-service address is "https://localhost:8445/bsa8445/secure/sendEntities", then fill user and password (that matched to Tax database) and pressed replicate:
       </p>
       <p align="center"><img alt="Beige-Accounting import from tax to market(business) accounting" style="max-width: 100%" src="images/import_acc_entries_form.png" /></p>
       <p>
@@ -92,20 +92,20 @@ Assets - Liabilities = current market value of Bob's business (How much he can e
       <p align="center"><img alt="Beige-Accounting closing entries" style="max-width: 100%" src="images/market-closing-jan.png" /></p>
       <p align="center"><img alt="Beige-Accounting closing entries" style="max-width: 100%" src="images/market-closing-jan-1.png" /></p>
       
-      <p>After that gross revenue is 9,032.9287. Bob's income tax roughly is 9,032.9287 * 25% = 2258.2322, so Bob transferred
+      <p>After that gross revenue is 9,034.8571. Bob's income tax roughly is 9,034.8571 * 25% = 2258.7143, so Bob transferred
       it from <b>Retained Earnings</b>:</p>
       <p align="center"><img style="max-width: 100%" src="images/market-jan-inc-tax.png" /></p>
       
       <p>As a result the balance sheet on 31 Jan is:</p>
       <p align="center"><img style="max-width: 100%" src="images/market-jan-balance.png" /></p>
-      <p>So Bob earn 6,774.70USD in January(*) and his business market value is 46,774.70USD.</p>
+      <p>So Bob earn 6,776.14USD in January(*) and his business market value is 46,776.14USD.</p>
       <p>* take note that it is a simple example which does not included other taxes and their properly rates, also liabilities such taxes must be payed.</p>
       
       <h4>Accounting of business (trade) name.</h4>
       <p>In February Bob has sold pizza for 37,000 USD, expenses is 11,000 USD. So gross income = 26,000 USD,
-      income tax = 6,500 USD (Bob earned 19,500 in Feb vs 6,774 in Jan). Bob closed February with result: his business market cost is 66,274.70.
+      income tax = 6,500 USD (Bob earned 19,500 in Feb vs 6,774 in Jan). Bob closed February with result: his business market cost is 66,276.14.
       But at this time (on Feb 29 evening) a reliable businessman called Bob and asked him that he wants to buy Bob's pizza business for 80,000 USD.
-      Bob refused this offer and reported this event (increased business value for 13,725.30) with new asset account <b>Bob's pizza name</b>:
+      Bob refused this offer and reported this event (increased business value for 13723.86) with new asset account <b>Bob's pizza name</b>:
       </p>
       <p align="center"><img alt="Beige-Accounting of business (trade) name" style="max-width: 100%" src="images/market-business-name.png" /></p>
       <p>Business (trade) name value always reflects to number of customers that prefer its (business maker's) goods or services.</p>
