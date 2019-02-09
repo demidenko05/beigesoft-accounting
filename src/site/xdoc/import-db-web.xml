@@ -44,7 +44,8 @@ keytool -import -trustcacerts -alias ajettyca -file "ajetty-ca.pem" -keystore /u
         </pre>        
         The default password to this keystore is <b>changeit</b>. Adding CA certificate to this keystore requires ROOT permission,
         so do not worry about keystore password. Never use this keystore to store private keys!
-      </p>     
+      </p>
+      <p>* to import web-store data with S.E. sellers you should at first add S.E. sellers into "Users" and "User Roles" with same names as in source!</p>
       <p>
         He launched SQlite version Beige Accounting on 8444 port (source local database). Then he started Tomcat and opened address <a href="https://localhost:8443/beigesoft-accounting-weboio/">https://localhost:8443/beigesoft-accounting-weboio/</a>
         He selected Menu -> Admin -> Import database, then  entered "URL of WEB-service of source database:" as "localhost:8444/bsa8444/secure/sendEntities" and filled user/password fields then pressed "submit":</p>
