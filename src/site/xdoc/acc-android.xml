@@ -33,6 +33,9 @@
   You can find this certificate in Security -> Trusted Credentials -> User:
   <p align="center"><img style="max-width: 100%" src="images/android-ca1.png" /></p>
   <p align="center"><img style="max-width: 100%" src="images/android-ca2.png" /></p>
+  After that old Android versions might blame "A trusted certificate on your device is allowing a third party to monitor your network...":
+  <p align="center"><img style="max-width: 100%" src="images/andcawarn.png" /></p>
+  <p>You can work without installing CA certificate. Just press advanced - proceed unsafe. HTTPS still works - data will be encrypted, but red sign will be appeared on address place. Any way you should learn about data protection.</p>
   <p>Start menu is:</p>
   <p align="center"><img style="max-width: 100%" src="images/android-start-menu.png" /></p>
   <p>To send SQLite database from notebook to smartphone Bob copied public key <b>ajetty-file-exch777.kpub</b> from smartphone to notebook folder
@@ -64,7 +67,7 @@
   <p align="center"><img style="max-width: 100%" src="images/andrw1.png" /></p>
   <p align="center"><img style="max-width: 100%" src="images/andrw2.png" /></p>
   <br></br>
-  <p>Screenshots from virtual Nexus 9 Android Oreo 8.0 (API-26):</p>
+  <p>Screenshots from virtual Nexus 10 Android API-28:</p>
   <p align="center"><img style="max-width: 100%" src="images/avd26-1.png" /></p>
   <p align="center"><img style="max-width: 100%" src="images/avd26-2.png" /></p>
   <p align="center"><img style="max-width: 100%" src="images/avd26-3.png" /></p>

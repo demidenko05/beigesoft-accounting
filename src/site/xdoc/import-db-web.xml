@@ -13,6 +13,8 @@
 
     <p>Keywords: Import database by using WEB-service.</p>
 
+      <p><b>* you can not use A-Jetty HTTPS certificate in Internet available version! You can use it on Tomcat only for test import purpose with disabled Internet connection!</b></p>
+
       <p>If you decided to move from lite standalone (single user) SQlite version of Beige-Accounting
       into high load enterprise-ready database MySql, then use WEB-service <b>Import database</b></p>
       <p>
@@ -60,6 +62,8 @@ keytool -import -trustcacerts -alias ajettyca -file "ajetty-ca.pem" -keystore /u
       
       <p>Local WEB-server A-Jetty <b>https://127.0.0.1:8443/bsa8443</b> is not available for cloud (Internet) WEB-application.
       Apache Tomcat uses Internet-available address, so you data will be Internet-accessible, and you can import data from your Tomcat (on your computer) to Beige-Accounting deployed on any other cloud JEE server.
+      But you can not use A-Jetty HTTPS certificate for it! You must make new HTTPS certificate by yourself that match to your Tomcat Internet address (include application path).
+      You can do it (for example) by using Bouncy Castle Crypto Java API or OpenSSL.
       </p>
     </section>
 
