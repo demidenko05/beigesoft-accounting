@@ -57,7 +57,7 @@ Bob has read <a href="https://www.irs.gov/pub/irs-pdf/p583.pdf">IRS 583 Starting
   but you are able to run non-cloud application in "protected from light harmful software mode" (see below).
 </p>
 <p>
-To make strong and ease to remember password use method similar to this:
+To make strong and ease to remember password, you should use method similar to this:
   <ol>
     <li>use at least 3 words, e.g. raccoon eat stone</li>
     <li>change these words with a rule e.g. "last letter to first position upper case" e.g. Nraccoo Tea Eston</li>
@@ -92,7 +92,7 @@ security.provider.10=sun.security.mscapi.SunMSCAPI
 security.provider.11=org.bouncycastle.jce.provider.BouncyCastleProvider
 ...
   </pre>
-  b) If starter.log saying:
+  b) If starter.log is saying:
   <pre style="white-space:pre-wrap">
 ...org.bouncycastle.operator.OperatorCreationException: unable to create OutputEncryptor: Illegal key size or default parameters...
   </pre>
