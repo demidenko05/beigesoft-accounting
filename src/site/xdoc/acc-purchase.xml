@@ -90,7 +90,7 @@ If the property is merchandise bought for resale, the sales tax is part of the c
 Debit CashInBank.Account#243443354 for 500USD Credit AccountsReceivable.FirmA for 500USD
         </pre>
         After that your bank account balance is 10000USD (in your accounting system).
-        Today you have received the bank statement that is saying that the check was rejected and you was charged for 10USD additionally cause that "wrong check"
+        Today you have received the bank statement that is saying that the check was rejected, and you was charged for 10USD additionally cause that "wrong check",
         and the balance is 9490USD.
         So you have to make two adjusting entries:
         <pre style="white-space: pre-wrap;">

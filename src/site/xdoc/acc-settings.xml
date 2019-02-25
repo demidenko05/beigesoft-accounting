@@ -46,10 +46,10 @@ Bob has read <a href="https://www.irs.gov/pub/irs-pdf/p583.pdf">IRS 583 Starting
   Bob should see window like this:
   <p align="center"><img alt="Beige-Accounting start" style="max-width: 100%" src="images/beige-acc-start.png" /></p>
 <p>
-  Since version 1.1.5 Beige-Accounting standalone versions are always in secure enabled mode,
+  Since version 1.1.5, Beige-Accounting standalone versions are always in secure enabled mode,
   that is it uses encrypted (HTTPS) connection, it requires strong password for authorization,
   it also uses encryption (modern algorithm RSA with 2048bit key and 256bit AES) for safe
-  file (SQlite databases) exchanging between computers/tablets.
+  file (SQlite databases) exchange between computers/tablets.
   So you should think of strong password and A-Jetty number (it should be different from A-Jetty on another computer/tablet).
 </p>
 <p>
@@ -79,8 +79,9 @@ To make strong and ease to remember password, you should use method similar to t
     <li>download bcprov-jdk15on-1.59.jar from <a href="https://repo1.maven.org/maven2/org/bouncycastle/bcprov-jdk15on/1.59/">https://repo1.maven.org/maven2/org/bouncycastle/bcprov-jdk15on/1.59/</a>
     and bcpkix-jdk15on-1.59.jar from <a href="https://repo1.maven.org/maven2/org/bouncycastle/bcpkix-jdk15on/1.59/">https://repo1.maven.org/maven2/org/bouncycastle/bcpkix-jdk15on/1.59/</a></li>
     <li>put them into [java-home]/lib/ext e.g. "C:\Program Files (x86)\Java\jre[version#8]\lib\ext" (change [version#8] to yours)</li>
-    <li>add entry "security.provider.[next_number]=org.bouncycastle.jce.provider.BouncyCastleProvider" into [JAVA_HOME]/lib/security/java.security</li>
   </ol>
+  Previous step is sufficient, but you may need to add Bouncy Castle into <b>java.security</b>.
+  Add entry "security.provider.[next_number]=org.bouncycastle.jce.provider.BouncyCastleProvider" into [JAVA_HOME]/lib/security/java.security.
   On MS Windows copy java.security to your documents folder, edit it then copy back into "C:\Program Files (x86)\Java\jre[version#8]\lib\security".
   <br></br>
   This is part of java.security for example:
@@ -92,6 +93,7 @@ security.provider.10=sun.security.mscapi.SunMSCAPI
 security.provider.11=org.bouncycastle.jce.provider.BouncyCastleProvider
 ...
   </pre>
+  * the latest JRE usually doesn't require next step (starting problem resolving).
   b) If starter.log is saying:
   <pre style="white-space:pre-wrap">
 ...org.bouncycastle.operator.OperatorCreationException: unable to create OutputEncryptor: Illegal key size or default parameters...
@@ -99,7 +101,7 @@ security.provider.11=org.bouncycastle.jce.provider.BouncyCastleProvider
   then you should install "Java Cryptography Extension (JCE) Unlimited Strength Jurisdiction Policy Files for Java 8" into
   folder [JAVA_HOME]/lib/security. For MS Windows you can find these files in folder "C:\Program Files (x86)\Java\jre[version#8]\lib\security\policy\unlimited",
   otherwise download these from Oracle HTTPS web-site.
-  Encryption with strong keys (long size) protects you (your information) from swindlers, so any law must protect you too.
+  Encryption with strong keys (long size) protects you (your information) from swindlers, so any law must protects you too.
 </p>
 
 <p>
@@ -111,12 +113,12 @@ security.provider.11=org.bouncycastle.jce.provider.BouncyCastleProvider
   as trusted Certificate Authority in the browser. On Chrome push Menu -> Settings -> Advanced -> Manage certificates -> AUTHORITIES and push button <b>IMPORT</b>, here is Linux example:
   <p align="center"><img alt="Beige-Accounting install CA certificate" style="max-width: 100%" src="images/installcaweb1.png" /></p>
   <p align="center"><img alt="Beige-Accounting install CA certificate" style="max-width: 100%" src="images/installcaweb2.png" /></p>
-  <p>On MS Windows switch file extension to all "*.*" in order to select "*.pem" file, and import form is different.</p>
-  Certificate Authorities that aren't signed by global trusted CA are often used to create private (non-public internet) intranets and using digital signatures inside organization.
-  Here A-Jetty CA is used to create HTTPS intranet inside only computer and for safe file exchanging between your computers/tablets.
+  <p>On MS Windows switch file extension to all "*.*" in order to select "*.pem" file, and you can not constraint CA usage to "Only for HTTPS verification".</p>
+  Certificates that aren't signed by global trusted CA are often used to create private (non-public internet) intranets and for using digital signatures inside organization (business entity).
+  Here "home-made" A-Jetty CA is used to create HTTPS intranet inside only computer and for safe file exchange between your computers/tablets.
 </p>
 <p>  
-  After installing certificate <b>ajetty-ca.pem</b> on web-browser Bob pushed button <b>https://localhost:8443/bsa8443</b> - default browser will opened this address.
+  After installing certificate <b>ajetty-ca.pem</b> on web-browser, Bob pushed button <b>https://localhost:8443/bsa8443</b> - default browser will opened this address.
   At first time empty database requires to add the first (only) user with strong password, so Bob added himself:
   <p align="center"><img alt="Beige-Accounting adding first user" style="max-width: 100%" src="images/accadduser.png" /></p>
   At first Bob changed organization name in accounting settings, he selected Menu -> Appearance - > Standard -> Accounting -> Accounting settings:
@@ -131,7 +133,7 @@ security.provider.11=org.bouncycastle.jce.provider.BouncyCastleProvider
 <h4>Chart of accounts.</h4>
 <p>Bob changed names of two accounts "started capital" and "retained earnings" and "is used" for his needs.
   Property "is used" means that whether account will presents in picker and in reports.
-  Using subaccounts is simple way to manage your chart of accounts. Bob added subaccounts taxes, properties, bank accounts, etc. Expenses screenshot:
+  Using subaccounts is simple and efficient way to manage your chart of accounts. Bob added subaccounts taxes, properties, bank accounts, etc. Expenses screenshot:
   <p align="center"><img alt="Beige-Accounting accounting subaccounts expenses" style="max-width: 100%" src="images/subaccounts-expenses.png" /></p>
   Then add them into accounts, for example <b>Employment Taxes Payable</b> account:
   <p align="center"><img alt="Beige-Accounting accounting subaccounts for Employment Taxes Payable" style="max-width: 100%" src="images/subaccounts-employment-taxes.png" /></p>
@@ -1550,7 +1552,7 @@ security.provider.11=org.bouncycastle.jce.provider.BouncyCastleProvider
 <h4>Started capital.</h4>
 <p>Bob opened checking account #1236786b17 in Bank on Jan 10 2016 and deposited 40000USD. He made the first accounting entries from Menu Accounting -> Input accounting Entries:
   <p align="center"><img alt="Beige-Accounting started capital" style="max-width: 100%" src="images/started-capital.png" /></p>
-  * amount in accounting entries always has maximum decimal places - 4 for costing precision. 
+  * amount in accounting entries always has maximum decimal places - 4 for cost precision. 
 </p>
 <h4>Book's style entries vs Computer's style ones</h4>
 <p>

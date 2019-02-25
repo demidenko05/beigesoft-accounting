@@ -9,8 +9,8 @@
 
   <body>
 
-    <section name="Accounting of rent, electricity etc.">
-  <p>Keywords: Accounting of rent, electricity.</p>
+    <section name="Accounting of rent, electricity, etc.">
+  <p>Keywords: Accounting of rent, electricity, etc.</p>
 <p>
 
   These expenses usually don't require tracking payments to its vendor(supplier), and usually they don't include taxes.
@@ -29,7 +29,7 @@
   </p>
   <h4>Accounting of unpaid rent.</h4>
   <p>
-    In April Bob will not paid rent on time, so he will make entries for occurred rent expense:
+    Assume, in April Bob will have not paid rent on time, so he will make entries for occurred rent expense:
   </p>
   <p align="center"><img alt="Beige-Accounting rent occurred unpaid" style="max-width: 100%" src="images/rent-occurred-unpaid.png" /></p>
   <p>
@@ -42,7 +42,7 @@
     <pre style="white-space: pre-wrap;">Debit "Expenses.Rent" Credit "Cash In Bank" for 1000 USD</pre>
   </p>
   <p>
-    If according the law of your country rent expense is required to be capitalized, then it's used asset account <b>1210 Inventory Capitalized Cost.Rent</b> instead of <b>Expenses.Rent</b>.
+    If according the law of your country rent expense is required to be capitalized, then it's used asset account <b>1210 Inventory Capitalized Cost.Rent</b> instead of <b>5150 Expenses.Rent</b>.
   </p>
 </p>
 
