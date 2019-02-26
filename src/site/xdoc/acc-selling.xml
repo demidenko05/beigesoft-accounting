@@ -12,7 +12,7 @@
     <section name="Accounting of sales, prepayments, payments tracking.">
     <p>Keywords: Accounting of sales, payments tracking software, sales taxes.</p>
 
-      <p>Sales taxes imposed on the buyer from your sales of your goods/service are extracted from sales revenue, and you have to pay them, this rule is applied in all countries.</p>
+      <p>Sales taxes imposed on the buyer are always extracted from sales revenue, and seller have to remit them to tax revenue authorities. This rule is applied in all countries.</p>
 
       <p>Bob should not pay sales taxes for frozen pizza, but here is used fake sales taxes for goods with cheese and all services (only for example purpose)!</p>
       
@@ -109,7 +109,7 @@
         Make sure about sales tax calculation rules in your country.
         If before rounding you have to rip decimal places to 3, then "half-down" of "20.21501" gives "20.215"->"20.21", so you save cent.
         If you have to always round up all fractions after 2 decimal place, then "half-up" of "20.21499" gives "20.215"->"20.22", so you lose cent.
-        Because of it, Beige-Accounting since 1.8 version allows to change tax amount in any invoice.
+        Because of it, Beige-Accounting since 1.1.8 version allows to change tax amount in any invoice.
       </p>
       <p>If you have choices between standard thing and new one, then you should better opt standard one to avoid problems.</p>
     </section>

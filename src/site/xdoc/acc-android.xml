@@ -11,7 +11,7 @@
 
     <section name="Beige-Accounting on Android.">
 
-    <p>Keywords: Accounting software for Android.</p>
+    <p>Keywords: Double entry accounting software for Android.</p>
 <p>
   This is same WEB application based on embedded A-Jetty for Android.
   New Beige-Accounting for Android complies rules <a href="https://play.google.com/about/privacy-security/personal-sensitive/">https://play.google.com/about/privacy-security/personal-sensitive/</a>,
@@ -35,7 +35,18 @@
   <p align="center"><img style="max-width: 100%" src="images/android-ca2.png" /></p>
   After that old Android versions might blame "A trusted certificate on your device is allowing a third party to monitor your network...":
   <p align="center"><img style="max-width: 100%" src="images/andcawarn.png" /></p>
-  <p>You can work without installing CA certificate. Just press advanced - proceed unsafe. HTTPS still works - data will be encrypted, but red sign will be appeared on address place. Any way you should learn about data protection.</p>
+  <p>There is no public explanation about this message, e.g. on <a href="https://support.google.com/nexus/answer/2844832?hl=en">https://support.google.com/nexus/answer/2844832?hl=en</a></p>
+  <p><b>* New Android versions may not show this message.</b></p>
+  <p>
+    The facts:
+    <ul>
+      <li>Manually added CA certificate is the same as already added. You can check it on ordinal computer (browser - settings - certificates).</li>
+      <li>Adding CA certificate on ordinal desktop Linux allows constraint CA to only "Trust this certificate to identity website". That is if system received an application that is signed by certificate from that CA, then signature will be refused.</li>
+      <li>HTTP (unencrypted) is actually danger thing, but browsers never show loud notice about it.</li>
+      <li>You can work without installing CA.</li>
+    </ul>
+  </p>
+  <p>You can work without installing CA certificate. Just press "advanced", then "proceed unsafe". HTTPS still works - data will be encrypted, but red sign will be appeared on address place. Any way you should learn about data protection.</p>
   <p>Start menu is:</p>
   <p align="center"><img style="max-width: 100%" src="images/android-start-menu.png" /></p>
   <p>To send SQLite database from notebook to smartphone Bob copied public key <b>ajetty-file-exch777.kpub</b> from smartphone to notebook folder

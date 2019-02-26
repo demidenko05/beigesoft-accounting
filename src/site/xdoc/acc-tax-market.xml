@@ -15,13 +15,13 @@
       <p>
         The law (IRS) demands Bob to keeps entries (in either single entry or in double entries accounting system)
         to estimates his taxes in calendar year period. Bob wants to estimates his real business results
-        monthly. Market accounting (double entries system) based on rule:
+        monthly. Market accounting (double entries system) is based on rule:
 <pre style="white-space: pre-wrap;">
 Assets - Liabilities = current market value of Bob's business (How much he can earn if he sold it right now) = Owner's equity
 </pre>
       </p>
       <p>
-        The most entries from Tax accounting is relevant to Market one. Excluding entries are:
+        The most entries from Tax accounting is relevant to Market one. Excluded entries are:
         <ul>
           <li>Property deprecation</li>
           <li>Closing entries (yearly)</li>
@@ -42,7 +42,7 @@ Assets - Liabilities = current market value of Bob's business (How much he can e
       </p>
 
       <h4>Import data from tax accounting.</h4>
-      <p>To use WEB-services on intranet (localhost) Bob installed Bouncy Castle Crypto Provider and A-Jetty CA certificate as described in <a href="import-db-web.html">Import database with WEB-service.</a></p>
+      <p>To use WEB-services on Intranet (localhost) Bob installed Bouncy Castle Crypto Provider and A-Jetty CA certificate as described in <a href="import-db-web.html">Import database with WEB-service.</a></p>
       <p>
         He launched source database Tax Beige Accounting on port 8445.
         Then he launched market accounting on port 8444, new market database will be created with ID=2.

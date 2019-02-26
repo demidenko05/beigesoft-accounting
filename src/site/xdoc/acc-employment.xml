@@ -11,15 +11,15 @@
 
     <section name="Accounting of employment (payroll).">
       
-      <p>Keywords: Accounting of employment, payroll.</p>
+      <p>Keywords: Accounting of employment (payroll).</p>
       
 <p>Beige-Accounting has implemented widely used in many countries <b>tax table percentage method</b> for automatically calculation wage taxes.</p>
-<p>It has implemented automatically calculation <b>wage tax = tax percent (according tables) * (gross wage - all allowances per payment)</b>. This is simple method used in USA.
-In others countries it's used little more complex method <b>allowances per year</b> which it hasn't implemented automatically yet.
+<p>It has implemented automatically calculation <b>wage tax = tax percent (according tables) * (gross wage - all allowances per payment)</b>. This simple method is used in USA.
+In others countries it's used little more complex method <b>allowances per year</b>, which application hasn't implemented automatically yet.
 </p>
 <p>
   Bob has hired Rob Swallow as a cook.
-  Bob uses <a href="https://www.irs.gov/pub/irs-pdf/p15.pdf">IRS Publication 15</a> (<b>IRS-ETG</b>) to accounts employment federal taxes and
+  Bob uses <a href="https://www.irs.gov/pub/irs-pdf/p15.pdf">IRS Publication 15</a> (<b>IRS-ETG</b>) to accounts employment federal taxes, and
   <a href="https://www.tax.ny.gov/pdf/publications/withholding/nys50_t_nys.pdf">NYS New York State Withholding Tax</a> for state ones.
 </p>
   <p>
@@ -77,7 +77,7 @@ In others countries it's used little more complex method <b>allowances per year<
   So you should make sure that you made all properly according the law of your country. Just call to your tax authority and ask them.
   Otherwise if you made mistake then you will get penalty, e.g. if you deduct your income tax with wrong cost of goods sold (deducting expense is greater than you can prove).
   You have to make (and keep) records that shows these properly calculations according <a href="https://www.irs.gov/pub/irs-pdf/p583.pdf">IRS 583 Starting a business, page 12</a>.
-  Beige-Accounting respect this, in addition it makes many records automatically (COGS, employment taxes, sales taxes, etc)
+  Beige-Accounting respect this, in addition it makes many records automatically (COGS, employment taxes, sales taxes, etc.)
   and reports to prove your business expenses.
 </p>
 
@@ -88,11 +88,11 @@ In others countries it's used little more complex method <b>allowances per year<
 <h4>Allowance per year</h4>
 <p>
   To use more complex method <b>allowances per year</b> don't fill allowances in tax tables. Fill allowance in wage tax line by hand.
-  For example Jim Gold got 2000 EUR allowances per year for Income tax 12%. He is paid for 1500EUR monthly, so tax lines will be:
+  For example Jim Gold got 2000 EUR allowances per year for Income tax 12%. He is paid 1500 EUR per month, so tax lines will be:
   <ul>
-    <li>1 month - allowance used 1500 (rest 500) - no tax</li>
-    <li>2 month - allowance used 500 (rest 0) - tax = (1500-500)*0.12</li>
-    <li>3, 4 ... month - allowance is 0 - tax = 1500*0.12</li>
+    <li>1st month - allowance used 1500 (the rest 500) - no tax</li>
+    <li>2nd month - allowance used 500 (the rest 0) - tax = (1500-500)*0.12</li>
+    <li>3d, 4th ... months - allowance is 0, so tax = 1500*0.12</li>
   </ul>
 </p>
 

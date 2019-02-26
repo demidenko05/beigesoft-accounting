@@ -16,11 +16,11 @@
         "Funny coffee shop" is bankrupt. The balance shows the debt:
         <p align="center"><img style="max-width: 100%" src="images/balance-debt.png" /></p>
         <p>
-          Bob has transferred on Jan 20 debt amount with accounting entries into asset account "Bad Debts":
+          Bob has transferred on Jan 20 the amount of the debt to the account of asset "Bad Debts":
         </p>
         <p align="center"><img style="max-width: 100%" src="images/bad-debts-asset.png" /></p>
         <p>
-          After that balance is:
+          After that trial balance is:
         <p align="center"><img style="max-width: 100%" src="images/balance-debt-asset.png" /></p>
         </p>
       </p>

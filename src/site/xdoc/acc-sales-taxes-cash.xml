@@ -21,7 +21,7 @@
         <li>Prepaid/paid partially - means that buyer has paid less then 100% for merchandise.</li>
         <li>Sold merchandise - means that buyer has received merchandise*.</li>
       </ul>
-      *for some countries term "sold" may means also "merchandise is sent to buyer". In Beige-Accounting "sold/bought" means when invoice is accounted.
+      *for some countries term "sold" may means also "merchandise is sent to buyer". In Beige-Accounting "sold/bought" means when invoice is accounted (document has made accounting entries).
     </p>
     <p>Accrual or cash method is dedicated to estimate income tax "WHEN" (all other taxes usually have the same method as income tax).</p>
     <p>The most used method for income tax is:
@@ -40,7 +40,7 @@
     
     <h4>Sales taxes cash method</h4>
     <p>In some countries the law may demand to use cash method to estimate sales taxes despite of using accrual method for income tax.</p>
-    <p>Beigesoft ™ accounting since 1.1.6 version has implemented this method for sales, purchases and their returns*.</p>
+    <p>Beigesoft™ accounting since 1.1.6 version has implemented this method for sales, purchases and their returns*.</p>
     <p>*You should do accounting tax entries by hand in case if where is return from purchase/sales and that purchase/sales did not paid 100% yet.
       For sales returns you can manually switch to "ON" accrual method #38 if the sales invoice paid.
     </p>

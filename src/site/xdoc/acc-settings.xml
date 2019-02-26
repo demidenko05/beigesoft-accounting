@@ -11,7 +11,7 @@
 
     <section name="Software installation, accounting settings, chart of accounts, started capital.">
 
-<p>Keywords: double-entry accounting software free.</p>
+<p>Keywords: free and open-source double-entry accounting software.</p>
 
 <p>* the easiest way to install and try Beige-Accounting is install it on Android device,
   because of you will no need to install Java and crypto-provider, see <a href="acc-android.html">Beige-Accounting on Android</a>.</p>
@@ -1592,13 +1592,13 @@ Debit "Cash In Bank.#1236786b17 in Bank" Credit "Bob's Started Capital" for 40,0
   Light harmful software run under your regular account, and it can read any file that you can read.
   On *nix OS (Linux...) you can run Beige Accounting under another account in terminal. To do this:
   <ol>
-    <li>Open terminal and login as ROOT user - command "su"</li>
-    <li>As ROOT add new user "accountant" with password - commands "useradd -m -U accountant" and "passwd accountant"</li>
+    <li>Open terminal and login as ROOT user - command "su", set current directory to "cd /home".</li>
+    <li>As ROOT add new user "accountant" with password - commands "useradd -m -U accountant", "passwd accountant" and "chmod o-r accountant"</li>
     <li>Add shared folder for file exchange: "mkdir /file-exch" and "chmod o+w /file-exch"</li>
     <li>Install file manager Midnight Commandor (mc)</li>
     <li>Exit from ROOT - "exit"</li>
     <li>Copy <b>beigesoft-accountingoio-ajetty-bin.zip</b> into <b>/file-exch</b> by using any file manager</li>
-    <li>In terminal login as accountant - "su -l accountant"</li>
+    <li>Open terminal and login as accountant - "su -l accountant"</li>
     <li>Use file manager Midnight mc to install (unpack) Beige Accounting</li>
   </ol>
   Screenshots:
@@ -1607,8 +1607,10 @@ Debit "Cash In Bank.#1236786b17 in Bank" Credit "Bob's Started Capital" for 40,0
 </p>
 <p>On Ubuntu Linux and Mac OS account <b>root</b> is disabled, and your regular account is able to invoke <b>sudo</b> command, so do that above (only root part) as:
   <pre style="white-space: pre-wrap;">
+$ cd /home
 $ sudo useradd -m -U accountant
 $ sudo passwd accountant
+$ sudo chmod o-r accountant
 $ sudo mkdir /file-exch
 $ sudo chmod o+w /file-exch
   </pre>
@@ -1617,7 +1619,7 @@ $ sudo chmod o+w /file-exch
   To start Beige Accounting in "command line mode" run: "java -jar beigesoft-accountingoio-ajetty-jar-with-dependencies.jar cli":
   <p align="center"><img style="max-width: 100%" src="images/commandline3.png" /></p>
 </p>
-<p>As a result you (and possible light harmful software, e.g. if your web-browser has allowed from HTML page read your file system) can't read "accountant" files:
+<p>As a result you (and possible light harmful software, e.g. if your web-browser has enabled macros on HTML page to read your file system) can't read "accountant" files:
   <p align="center"><img style="max-width: 100%" src="images/commandline4.png" /></p>
 </p>
 <p>
