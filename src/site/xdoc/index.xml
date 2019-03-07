@@ -17,7 +17,29 @@
       <h3>Products:</h3>
 
       <h4>Beigesoft™ Accounting</h4>
-            
+      <p>This application never waste your time because of:
+        <p><b>It provides sufficient functionality:</b></p>
+        <ul>
+          <li>Double entry accounting system including ledger and balance reports.</li>
+          <li>COGS FIFO/LIFO automatically for sales, sales returns, inventory losses.</li>
+          <li>Automatically sales taxes accounting entries for sales, purchases and their returns.</li>
+          <li>Sales tax methods: item/invoice basis, destination-based, aggregate rate, price inclusive of tax.</li>
+          <li>Prepayments/payments tracking for sales/purchases (including invoices with foreign currency).</li>
+          <li>Payroll - automatically taxes calculation (by percentage tax table method) and accounting entries.</li>
+          <li>Manufacturing - automatically cost calculation from used materials and direct labor (and other) costs.</li>
+          <li>Multi-databases (organizations) for standalone versions which use SQlite database.</li>
+          <li>Embed Web-Store</li>
+          <li>and more.</li>
+        </ul>
+        * You can check functionality by reading this documentation (without installation).
+        <p><b>It's reliable software:</b></p>
+        <ul>
+          <li>All its parts are under truly free licenses.</li>
+          <li>It's open source software, so fixing an error or customizing is not a problem.</li>
+          <li>It will never be downgraded or disappeared. You always can find it (binary and source code) in Central Maven Repository.</li>
+          <li>It's high performance oriented software. Cloud versions will never be slow even on weak computers.</li>
+        </ul>
+      </p>
       <p>Beigesoft™ Accounting is JEE-WEB based Accounting software.</p>
       <p>
         It works as:
@@ -28,20 +50,6 @@
         </ul>
       </p>
       <p>It requires Google Chrome, Opera or Chromium browser (html5-dialog ready).</p>
-      <p>
-        Features:
-        <ul>
-          <li>Double entry accounting system including ledger and balance reports.</li>
-          <li>COGS FIFO/LIFO perpetual automatically for sales, sales returns, inventory losses.</li>
-          <li>Automatically sales taxes accounting entries for sales, purchases and their returns.</li>
-          <li>Sales tax methods: item/invoice basis, destination-based, aggregate rate, price inclusive of tax.</li>
-          <li>Prepayments/payments tracking for sales/purchases (including invoices with foreign currency).</li>
-          <li>Payroll - automatically taxes calculation (by percentage tax table method) and accounting entries.</li>
-          <li>Manufacturing - automatically cost calculation from used materials and direct labor (and other) costs.</li>
-          <li>Multi-databases (organizations) for standalone versions which use SQlite database.</li>
-          <li>and more.</li>
-        </ul>
-      </p>
       <p><a href="privacypolicy-en.html">See Beigesoft™ Accounting Privacy Policy.</a></p>
       <p><a href="beigekeys.html">See Beigesoft™ digital signatures.</a></p>
       <p>
@@ -60,7 +68,7 @@
       </p>
       <p>Beigesoft™ Accounting for Android comply rules
         <a href="https://play.google.com/about/privacy-security/personal-sensitive/">https://play.google.com/about/privacy-security/personal-sensitive/</a>,
-        so you can find it in Google Play-Store.</p>
+        so you can find it in Google Play-Store (search "Beigesoft Accounting").</p>
       <p>
         Source code of Beigesoft™ Accounting and other products you can find in <a href="https://github.com/demidenko05">https://github.com/demidenko05</a>
       </p>
@@ -79,7 +87,7 @@
 
         <h4>Beigesoft™ PDF Writer.</h4>
               
-        <p>This is light-weight (all JARs size is about 250KB), international friendly and fast PDF writer.
+        <p>This is light-weight (all JARs size is about 250KB), international friendly and fast PDF writer. This is actually reporting tool. It automatically makes paging, tables (e.g. repeating header on every page).
          It's cross-platform writer - Standard Java and Android.</p>
               
         <p>Benefits:</p>
@@ -96,13 +104,13 @@
       <p>A-Jetty is Jetty 9.2 adapted for Android, it can run precompiled JSP/JSTL.</p>
       <p>Features:
           <ul>
-          <li>It can run on Android Java as well as on standard Java 7+.</li>
-          <li>It can perform precompiled by A-Tomcat JSP/JSTL.</li>
+          <li>It works on Android Java as well as on standard Java 7+.</li>
+          <li>It executes precompiled by A-Tomcat JSP/JSTL.</li>
         </ul>
       </p>
       <p>
-        JSP(plus JSTL) is the same WEB-view technology as ASPX, PHP and deprecated ASP. JSP and ASPX are faster than PHP and ASP cause
-        they are compiled into byte-code which is performed (actually it's compiled on fly into CPU code) by Java VM or DOT.NET. PHP, ASP are text that is interpreted during runtime and they are never compiled.
+        JSP(plus JSTL) is the same WEB-view technology as ASPX, PHP and deprecated ASP. JSP and ASPX are faster than PHP and ASP, because of
+        they are compiled into byte-code, which is executed (actually it's compiled on fly into CPU code) by Java VM or DOT.NET. PHP, ASP are text that is interpreted during runtime and it's never be compiled.
         All these technologies are used to build complex WEB-interface quickly.
       </p>
       <p>
@@ -124,13 +132,25 @@
         but in this Customer CustomerCategory  (2-nd level) has only ID.
       </p>
       <p>
-        Since version 1.1.6 you can set fields that are needed to retrieve, and deep level to retrieve owned entities.
-        This is very performance friendly feature that others ORMs haven't.
+        You can set the fields required for retrieving or/and updating, and you can set deep level of retrieving owned entities.
+        This is very performance friendly features that other ORMs haven't.
+        Example of updating customer orders status to BOOKED including optimistic locking:
+        <pre style="white-space: pre-wrap;">
+String[] fieldsNames = new String[] {"itsId", "itsVersion", "stat"};
+List&lt;CustOrder&gt; ords = this.srvOrm.retrieveListWithConditions(pRqVs, CustOrder.class, "where STAT=0 and BUYER=" + pBur.getItsId());
+pRqVs.put("fieldsNames", fieldsNames);
+for (CustOrder co : ords) {
+  co.setStat(EOrdStat.BOOKED);
+  getSrvOrm().updateEntity(pRqVs, co);
+}
+pRqVs.remove("fieldsNames");
+        </pre>
+        SQL queries will be consist of only required fields.
       </p>
       <p>It hasn't implemented refresh owned entity by invoke getter (there is no lazy retrieving). So you have to invoke explicitly ORM refresh e.g.:
         <pre style="white-space: pre-wrap;">
 customerInvoice.getCustomer().setCustomerCategory(getSrvOrm()
-  .retrieveEntity(pAddParam, customerInvoice.getCustomer().getCustomerCategory()));
+  .retrieveEntity(pRqVs, customerInvoice.getCustomer().getCustomerCategory()));
         </pre>
       </p>
       <p>
@@ -138,7 +158,7 @@ customerInvoice.getCustomer().setCustomerCategory(getSrvOrm()
         <pre style="white-space: pre-wrap;">
 SalesInvoiceLine sil = new SalesInvoiceLine();
 sil.setItsOwner(salesInvoice);
-salesInvoice.setItsLines(getSrvOrm().retrieveListForField(pAddParam, sil, "itsOwner"));
+salesInvoice.setItsLines(getSrvOrm().retrieveListForField(pRqVs, sil, "itsOwner"));
         </pre>
         These lines are retrieved also through 2 level by big SQL query.
       </p>
@@ -146,7 +166,7 @@ salesInvoice.setItsLines(getSrvOrm().retrieveListForField(pAddParam, sil, "itsOw
         and JDBC connection is used during whole HTTP request-response. This is no good for performance. Beigesoft™ ORM retrieve 
         a customer invoice with 15 lines by 2 SQL queries (one for body, another for lines) then close connection and pass model to viewer (renderer).
         Standard ORM make 1 SQL request for body, 1 for customer, 1 for lines, 15 for every line goods, 15 for every line unit of measure.
-        Two big SQL queries (exactly with joins) is faster than several (33 in this case) small ones. Any RDMBS is optimized (must be) to perform
+        Two big SQL queries (exactly with joins) is faster than several (33 in this case) small ones. Any RDMBS is optimized (must be) to execute
         big SQL queries that returns a lot of data.
         SQL queries without joins is bad practice that hit performance e.g.:
         <pre style="white-space: pre-wrap;">
@@ -158,8 +178,8 @@ where SALESINVOICE.ITSID=1 and DEBTORCREDITOR.ITSID=SALESINVOICE.CUSTOMER
       <p>
         Beigesoft™ ORM never alter tables, only create new ones, but it has reliable means - invoke upgrade_[new_version].sql script
         when Beigesoft™ ORM is starting. Beigesoft™ ORM requires that database must has ID and VERSION table, this is held in model org.beigesoft.persistable.DatabaseInfo.
-        Upgrade script can upgrade tables (alters, insert, updates...) and must set new database version. So task "add DebtorCreditor.spetialCategory, not null"
-        is trivial for Beigesoft™ ORM, but it's not for others ORMs:
+        Upgrade script can upgrade tables (alters, insert, updates...) and must set new database version. So task "add DebtorCreditor.specialCategory, not null"
+        is trivial for Beigesoft™ ORM, but not for other ORMs:
         <pre style="white-space: pre-wrap;">
 alter table DebtorCreditor add column specialCategory integer;
 insert into CPECIALCATEGORY  values (1, 'cat A');
@@ -175,7 +195,7 @@ update DATABASEINFO set DATABASEVERSION=[new_version], DESCRIPTION='database upg
       <p>Beigesoft™ WEB is CRUD WEB-application based on JSP, JSTL, JSON, AJAX.</p>
       <p>With it you can build complex WEB interface with no time.
         It renders forms (include entity pickers) and lists of any entity according XML settings. Beigesoft™ Accounting use it.</p>
-      <p>It uses BeigeSettings to describe how to render an entity and its fields, e.g. beige-uvd/fieldTypeToFs/wdgNewForm.xml:
+      <p>It uses Beige-Settings to describe how to render an entity and its fields, e.g. beige-uvd/fieldTypeToFs/wdgNewForm.xml:
         <pre style="white-space: pre-wrap;">
 &lt;?xml version="1.0" encoding="UTF-8"?&gt;
 &lt;!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd"&gt;
@@ -201,7 +221,7 @@ update DATABASEINFO set DATABASEVERSION=[new_version], DESCRIPTION='database upg
 &lt;%@ page language="java" contentType="application/json; charset=UTF-8" pageEncoding="UTF-8"%&gt;
 &lt;%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %&gt;
 &lt;%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %&gt;
-&lt;fmt:setLocale value="${reqVars.localeCurrent}" scope="request"/&gt;
+&lt;fmt:setLocale value="${reqVars.localeCurr}" scope="request"/&gt;
 &lt;c:set var="namePlaceForm" value="frmMainPlace" scope="request"/&gt;
 {"multiTargetResponse":
   [{"nameTarget": "${namePlaceForm}", "content": "",
@@ -210,23 +230,23 @@ update DATABASEINFO set DATABASEVERSION=[new_version], DESCRIPTION='database upg
 &lt;c:set var="namePlace" value="lstMainPlace" scope="request"/&gt;
 &lt;c:set var="nmRndList" value="listJson" scope="request"/&gt;
 &lt;c:if test="${param.javascript == null}"&gt;
-  &lt;c:set var="jscrt" value="setRsAuNum('${reqVars.digitsInGroup}','${reqVars.RSmRound}',${reqVars.RSisUsePrecision0},${reqVars.RSisUsePrecision1},${reqVars.RSisUsePrecision2},${reqVars.RSisUsePrecision3},${reqVars.RSisUsePrecision4});setAutoNum('${namePlace}list');showSuccess('${srvI18n.getMsg(param.msgSuccess, reqVars.lang)}');"/&gt;
+  &lt;c:set var="jscrt" value="setVarsNum('${reqVars.decSepv}','${reqVars.decGrSepv}',${reqVars.digInGr});showSuccess('${srvI18n.getMsg(param.msgSuccess, reqVars.lang)}');"/&gt;
 &lt;/c:if&gt;
 &lt;c:if test="${param.javascript != null}"&gt;
-  &lt;c:set var="jscrt" value="setRsAuNum('${reqVars.digitsInGroup}','${reqVars.RSmRound}',${reqVars.RSisUsePrecision0},${reqVars.RSisUsePrecision1},${reqVars.RSisUsePrecision2},${reqVars.RSisUsePrecision3},${reqVars.RSisUsePrecision4});setAutoNum('${namePlace}list');showSuccess('${srvI18n.getMsg(param.msgSuccess, reqVars.lang)}');${param.javascript}"/&gt;
+  &lt;c:set var="jscrt" value="setVarsNum('${reqVars.decSepv}','${reqVars.decGrSepv}',${reqVars.digInGr});showSuccess('${srvI18n.getMsg(param.msgSuccess, reqVars.lang)}');${param.javascript}"/&gt;
 &lt;/c:if&gt;
 &lt;c:import url="/WEB-INF/jsp/list.jsp" varReader="rdEntities" charEncoding="UTF-8"&gt;
    {"nameTarget": "${namePlace}list", "content": "${utlJsp.toJsonStringAndClose(rdEntities)}",
     "nameTargetParent": null, "javascript": "${utlJsp.toJsonString(jscrt)}"}]
 }
 &lt;/c:import&gt;    
-        </pre>
-        This response clear entity form, refresh entity list and show successful message.
+</pre>
+        This response clears entity's form, refreshs entity's list and shows successful message.
       </p>
 
       <h4>Beigesoft™ Replicator.</h4>
-      <p>Beigesoft™ Replicator replicate/persist any entity according XML settings and user's requirements with a file or network (HTTP).
-      Right now it has implemented XML format of stored/transferred data. Beigesoft™ Accounting use it to import full database copy with WEB-service and import data from tax to market accounting.</p>
+      <p>Beigesoft™ Replicator replicates/persists any entity according XML settings and user's requirements into a file or through network (HTTP).
+      Right now it has implemented XML format of stored/transferred data. Beigesoft™ Accounting use it to import full database copy with WEB-service and for importing data from tax to market accounting.</p>
 
       <h4>Beigesoft™ Settings.</h4>
       <p>Beige-Settings helps to make quickly settings for class and its fields with properties XML.
@@ -242,8 +262,8 @@ update DATABASEINFO set DATABASEVERSION=[new_version], DESCRIPTION='database upg
     <li>It generates UML class diagram from Java source.</li>
     <li>It's a doclet that generates standard Javadoc with UML class diagram.</li>
   </ol>
-<p>Using Beige-UML to generate Javadocs has disadvantage - the resulting UML diagrams are PNG files,
-  so they are increasing Javadoc files size too much. BeigeUML is planned to be ported into Beigesoft Document Writer,
+<p>Using Beige-UML to generate Javadocs has a disadvantage - the resulting UML diagrams are PNG files,
+  so they are increasing Javadoc files size too much. Beige-UML is planned to be ported into Beigesoft Document Writer,
   and writing to javadocs will be in SVG format (external file or html5 SVG).</p>
 <p>This application you can download from <a href="https://repo1.maven.org/maven2/org/beigesoft/beige-uml-swing/">https://repo1.maven.org/maven2/org/beigesoft/beige-uml-swing/</a>
   There <b>beige-uml-swing-[VERSION]-jar-with-dependencies.jar</b> is Swing application.
@@ -253,8 +273,8 @@ update DATABASEINFO set DATABASEVERSION=[new_version], DESCRIPTION='database upg
             
     <p>
       * Address http://www.beigesoft.org was switched off for security (safety) reasons.
-      HTML page comes to your browser by passing through several intermediate Internet servers.
-      If any intermediate server is affected by harmful software then it can changes content and injects harmful script into HTML page
+      Any HTML page comes to your browser by passing through several intermediate Internet servers.
+      If any intermediate server is affected by harmful software, then it can changes content and injects harmful script into HTML page
       because HTTP is an unencrypted transport.
     </p>
     </section>

@@ -4,7 +4,7 @@
   xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
 
   <properties>
-    <title>Beigesoft ™, Beige-Accounting</title>
+    <title>Beigesoft™, Beige-Accounting</title>
    </properties>
 
   <body>
@@ -45,7 +45,7 @@
         <p align="center"><img style="max-width: 100%" src="images/currencyru.png" /></p>
       </p>
       <p>
-        Finally just add invoice, report in English:
+        Finally just add invoice, report in English is:
         <p align="center"><img style="max-width: 100%" src="images/foreigninvrepin.png" /></p>
       </p>
       <p>
@@ -53,7 +53,7 @@
         <p align="center"><img style="max-width: 100%" src="images/langprefch.png" /></p>
       </p>
       <p>
-        Then report invoice again in Russian:
+        Then report invoice again in Russian is:
         <p align="center"><img style="max-width: 100%" src="images/foreigninvrepru.png" /></p>
       </p>
 

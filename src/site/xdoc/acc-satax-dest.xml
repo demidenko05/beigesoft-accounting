@@ -15,7 +15,7 @@
       
       <h4>Destination-based sales tax. Overriding vendor's tax calculation method.</h4>
       <p>If law of your country allows to use different sales tax calculation methods, then you can set <b>Tax destination</b> method for vendors with different methods.
-        For example you use HALF-UP rounding and item basis method, but a vendor uses HALF-DOWN and invoice basis one,
+        For example you use HALF-UP rounding and item basis method, but a vendor uses HALF-DOWN and invoice basis,
         then just create <b>Tax destination</b> with different methods and set it in this vendor.
         You are also able to change sales tax amount in invoice line (item basis) or in invoice total (invoice basis).
       </p>

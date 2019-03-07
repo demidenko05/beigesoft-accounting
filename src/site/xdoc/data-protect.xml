@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document xmlns="http://maven.apache.org/XDOC/2.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
+
+  <properties>
+    <title>Beigesoft™ Accounting</title>
+   </properties>
+
+  <body>
+
+    <section name="How to protect your data.">
+  
+    <p>Keywords: encryption, data protection, digital signature.</p>
+
+    <h4>Why do you should learning about data protection?</h4>
+    <p>If you are a business owner or a freelance accountant and data about your customers was leaked, then you will get problems.
+      Learning about data protection is not difficult.
+    </p>
+    
+    <h4>The facts.</h4>
+    <p>
+      <ul>
+        <li>
+          It was about 19 years ago, when a computer with an operation system was caught a virus just after it was connected to Internet. That is user even did not open WEB-browser. 
+        </li>
+        <li>
+          It was about 8 years ago, when a web-browser had enabled a harmful-script on HTML page to rewrite the master boot record (the heart of file system). That virus was trying to force victims to pay money.
+        </li>
+        <li>
+          You never need a lot of features in your software, but swindlers use them for cheating you.
+        </li>
+        <li>
+          Your software might already affected by harmful-software, and you might never know about it, but swindlers know everything from your computer.
+        </li>
+      </ul>
+    </p>
+
+    <h4>What do they doing the best for you (to protect your data)?</h4>
+    <p>
+      <ul>
+        <li>They remove or restrict swindler-friendly features, for example an Android application can't read files that belongs to another application, and you set by yourself permissions to the shared storage.</li>
+        <li>They track activity of your account (all social networks do it). Thus if swindler stole your password and trying to sign-in under your account from another device, then you will be informed about it (they even can block your account without your request).</li>
+        <li>They allow to use your social network account for authorization in other sites. Using "master" account to login into another sites is preferred authorization method, cause they track your activity.</li>
+        <li>They force you to install software from well known sources like "a software store".</li>
+        <li>Of course, things like encryption, free anti-harmful-software.</li>
+      </ul>
+      * Here "They" means IT specialists - programmers...
+    </p>
+    
+    <h4>What do they doing the worst for you?</h4>
+    <p>
+      <ul>
+        <li>They force you to use swindler-friendly features. For example, they force you to install a browser's plugin that requires permissions to your file system,
+          or they force you to install and use unsigned software from "untrusted sources" to resolve your problems.</li>
+        <li>They place recovering (installation) software on non write-protected places like HDD or flash. Complex harmful-software can poison them (installation files) and break their protection.</li>
+        <li>They do not track usage of their digital signature.</li>
+      </ul>
+      "untrusted sources" means any non-well known Internet sites.
+    </p>
+
+    <h4>What they must do for you?</h4>
+    <p>
+      <ul>
+        <li>Any web-browser can upload and download a file (files/folder) interactively. Browser's plugins and page's scripts must delegate to the browser "uploading/downloading" file (interactively only). They must have permissions only to their own "sandbox" file-system.</li>
+      </ul>
+    </p>
+
+    <h4>What do you doing the worst for you?</h4>
+    <p>
+      <ul>
+        <li>Install unneeded software (especially from untrusted sources).</li>
+        <li>Use weak passwords</li>
+        <li>Do not learn about data protection</li>
+      </ul>
+    </p>
+
+    <h4>Strong password</h4>
+    <p>
+      The weakest passwords are:
+      <ul>
+        <li>Of course, qwerty like passwords - "admin", "1234567"...</li>
+        <li>Generated passwords e.g. "87ghgjs6KYfgluy" - user can't remember such password, and it's forced to stick note with this password to its monitor.</li>
+      </ul>
+      Strong passwords are easy to remember. These are set of words e.g. "raccooneatstone165".
+    </p>
+    <p>
+      Anyway, strong passwords are vulnerable to hidden cameras. Thus saving passwords in a browser is preferred way.
+      But this storage must be under your master account (to track activity). It's also desirable, that browser doesn't save passwords locally, only caches them from account Internet storage.
+      You should sign out when you leave your computer for a long time (e.g. a vocation).
+    </p>
+    
+    <h4>How to protect you from IT swindlers completely?</h4>
+    <p>
+      There is way to  protect you from IT swindlers completely. It's all about encryption, digital signature, global tracking of using digital signature, safe storing of key for digital signature.
+    </p>
+    <p>
+      What is encryption? It's encoding message (text, file...) with an encryption algorithm and a key. Encrypted message is not readable without the key.
+    </p>
+    <p>
+      Symmetric encryption algorithms use symmetric secret key for encryption and decryption.
+    </p>
+    <p>
+      Asymmetric encryption algorithms use asymmetric secret (private) key for encryption and asymmetric public key for decryption.
+      Asymmetric algorithms also allow to encrypt information with asymmetric public key and decrypt it with asymmetric secret (private) key.
+      In these both cases key, that used for encryption, cannot be used for decryption.
+    </p>
+    <p>
+      Digital signature is information encrypted with asymmetric secret (private) key.
+      Public key is available for all, so anyone can use it to decrypt signature,
+      and this successful decryption means that signature was successfully verified.
+    </p>
+    <p>A swindler can try to match a private key by using the public one and the signature. But it's takes very long time even for high-performance computers.
+      Thus common way is to steal private key, or steal a keystore and retrieving its passphrase.
+    </p>
+    <p>
+      It must be a "device to sign" and "global tracking of using signature" to resolve these problems. "Device to sign" makes signature itself.
+      There is no way to get private key from it. It contains of your private key to make your signature, and contains of its own private key to report to the global tracking server about using your signature.
+      The best way is using this device as your only digital passport, thus it also will contain your photo, fingerprints and other information.
+      You will use this device for any operation - opening a door (home, car, hotel room), sing-in into computer and into any Internet site, making bank transfers, ATM money withdrawal, etc.
+      You even will no need to use a pin code for making signature, a cashier will check photo from your device (bank software can do it too), device itself will checks your fingerprint.
+      Not all transactions require online tracking (reporting), e.g. bank transfers that exceed 1000USD require online tracking, but opening a door allows reporting offline (after that).
+      All software must be signed by author's signatures (by this personal device).
+      Of course this requires changing law and adapting software, but finally you will be totally protected from any IT swindler's activity:
+      <ul>
+        <li>from stealing money or private information (violence against you)</li>
+        <li>from fake news (violence against democracy)</li>
+        <li>from fake ratings, duplicates and other spam activity (violence against free market)</li>
+      </ul>
+    </p>
+
+    </section>
+
+  </body>
+
+</document>

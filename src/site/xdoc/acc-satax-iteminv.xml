@@ -9,15 +9,15 @@
 
   <body>
 
-    <section name="Sales taxes due on Item vs Invoice basis.">
+    <section name="Sales tax due on transactions on an item or invoice basis.">
       
-      <p>Keywords: Sales taxes due on Item vs Invoice basis.</p>
+      <p>Keywords: Sales tax due on transactions on an item or invoice basis.</p>
       
-      <h4>Sales taxes due on Item vs Invoice basis.</h4>
+      <h4>Sales tax due on transactions on an item or invoice basis.</h4>
       <p>There are two "grouping" calculation methods:
         <ul>
           <li>Tax due on a transaction on an item basis</li>
-          <li>Tax due on an invoice basis</li>
+          <li>Tax due on a transaction on an invoice basis</li>
         </ul>
         These methods may give different results, e.g.:
 <pre style="white-space: pre-wrap;">
