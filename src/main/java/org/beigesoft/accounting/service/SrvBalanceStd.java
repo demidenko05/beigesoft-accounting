@@ -32,7 +32,7 @@ import org.beigesoft.accounting.model.TrialBalanceLine;
 import org.beigesoft.service.ISrvDatabase;
 import org.beigesoft.service.ISrvOrm;
 import org.beigesoft.model.IRecordSet;
-import org.beigesoft.log.ILogger;
+import org.beigesoft.log.ILog;
 
 
 /**
@@ -51,7 +51,7 @@ public class SrvBalanceStd<RS> implements ISrvBalance {
   /**
    * <p>Logger.</p>
    **/
-  private ILogger logger;
+  private ILog logger;
 
   /**
    * <p>ORM service.</p>
@@ -103,7 +103,7 @@ public class SrvBalanceStd<RS> implements ISrvBalance {
    **/
   public SrvBalanceStd(final ISrvOrm<RS> pSrvOrm,
       final ISrvDatabase<RS> pSrvDatabase,
-        final ISrvAccSettings pSrvAccSettings, final ILogger pLogger) {
+        final ISrvAccSettings pSrvAccSettings, final ILog pLogger) {
     this.logger = pLogger;
     this.srvDatabase = pSrvDatabase;
     this.srvOrm = pSrvOrm;
@@ -211,7 +211,9 @@ public class SrvBalanceStd<RS> implements ISrvBalance {
       final Long pSubaccId, final Date pDateAt) throws Exception {
     if (lazyGetBalanceAtAllDirtyCheck(pAddParam).getLeastAccountingEntryDate()
       .getTime() > pDateAt.getTime()) {
-      if (getLogger().getIsShowDebugMessagesFor(getClass())) {
+      boolean isDbgSh = getLogger().getDbgSh(this.getClass())
+        && getLogger().getDbgFl() < 11011 && getLogger().getDbgCl() > 11013;
+      if (isDbgSh) {
         getLogger().debug(null, SrvBalanceStd.class,
           "changing least last entry date from "
             + this.balanceAtAllDirtyCheck
@@ -856,9 +858,9 @@ public class SrvBalanceStd<RS> implements ISrvBalance {
 
   /**
    * <p>Geter for logger.</p>
-   * @return ILogger
+   * @return ILog
    **/
-  public final synchronized ILogger getLogger() {
+  public final synchronized ILog getLogger() {
     return this.logger;
   }
 
@@ -866,7 +868,7 @@ public class SrvBalanceStd<RS> implements ISrvBalance {
    * <p>Setter for logger.</p>
    * @param pLogger reference
    **/
-  public final synchronized void setLogger(final ILogger pLogger) {
+  public final synchronized void setLogger(final ILog pLogger) {
     this.logger = pLogger;
   }
 }

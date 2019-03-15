@@ -17,7 +17,7 @@ import java.util.List;
 
 import org.beigesoft.model.IRequestData;
 import org.beigesoft.handler.IHandlerRequestDch;
-import org.beigesoft.log.ILogger;
+import org.beigesoft.log.ILog;
 import org.beigesoft.service.ISrvDatabase;
 import org.beigesoft.service.ISrvOrm;
 import org.beigesoft.accounting.persistable.I18nAccounting;
@@ -37,7 +37,7 @@ public class HndlAccVarsRequest<RS> implements IHandlerRequestDch {
   /**
    * <p>Logger.</p>
    **/
-  private ILogger logger;
+  private ILog logger;
 
   /**
    * <p>Database service.</p>
@@ -164,9 +164,9 @@ public class HndlAccVarsRequest<RS> implements IHandlerRequestDch {
   //Simple getters and setters:
   /**
    * <p>Geter for logger.</p>
-   * @return ILogger
+   * @return ILog
    **/
-  public final synchronized ILogger getLogger() {
+  public final synchronized ILog getLogger() {
     return this.logger;
   }
 
@@ -174,7 +174,7 @@ public class HndlAccVarsRequest<RS> implements IHandlerRequestDch {
    * <p>Setter for logger.</p>
    * @param pLogger reference
    **/
-  public final synchronized void setLogger(final ILogger pLogger) {
+  public final synchronized void setLogger(final ILog pLogger) {
     this.logger = pLogger;
   }
 

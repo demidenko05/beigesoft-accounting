@@ -22,7 +22,7 @@ import java.net.URL;
 import org.beigesoft.exception.ExceptionWithCode;
 import org.beigesoft.model.IRequestData;
 import org.beigesoft.model.IRecordSet;
-import org.beigesoft.log.ILogger;
+import org.beigesoft.log.ILog;
 import org.beigesoft.service.ISrvDatabase;
 import org.beigesoft.service.IProcessor;
 import org.beigesoft.accounting.persistable.SalesInvoiceLine;
@@ -52,7 +52,7 @@ public class PrcRevealTaxCat<RS> implements IProcessor {
   /**
    * <p>Logger.</p>
    **/
-  private ILogger logger;
+  private ILog logger;
 
   /**
    * <p>Database service.</p>
@@ -200,9 +200,9 @@ public class PrcRevealTaxCat<RS> implements IProcessor {
   //Simple getters and setters:
   /**
    * <p>Geter for logger.</p>
-   * @return ILogger
+   * @return ILog
    **/
-  public final ILogger getLogger() {
+  public final ILog getLogger() {
     return this.logger;
   }
 
@@ -210,7 +210,7 @@ public class PrcRevealTaxCat<RS> implements IProcessor {
    * <p>Setter for logger.</p>
    * @param pLogger reference
    **/
-  public final void setLogger(final ILogger pLogger) {
+  public final void setLogger(final ILog pLogger) {
     this.logger = pLogger;
   }
 

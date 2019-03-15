@@ -21,7 +21,7 @@ import java.util.Comparator;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
-import org.beigesoft.log.ILogger;
+import org.beigesoft.log.ILog;
 import org.beigesoft.model.IRecordSet;
 import org.beigesoft.factory.IFactorySimple;
 import org.beigesoft.service.ISrvOrm;
@@ -54,7 +54,7 @@ public class UtlInvBase<RS> {
   /**
    * <p>Logger.</p>
    **/
-  private ILogger logger;
+  private ILog logger;
 
   /**
    * <p>Database service.</p>
@@ -811,8 +811,9 @@ public class UtlInvBase<RS> {
         query = pInvTxMeth.lazyGetQuTxInvBasAggr();
       }
     }
-    if (getLogger().getIsShowDebugMessagesFor(getClass())
-      && getLogger().getDetailLevel() > 40000) {
+    boolean isDbgSh = getLogger().getDbgSh(this.getClass())
+      && getLogger().getDbgFl() < 11001 && getLogger().getDbgCl() > 11003;
+    if (isDbgSh) {
       getLogger().debug(pReqVars, UtlInvBase.class,
         "Tax rules: aggregate/invoice basis/zip/RM = " + pTxRules
           .getSalTaxUseAggregItBas() + "/" + pTxRules.getSalTaxIsInvoiceBase()
@@ -1267,9 +1268,9 @@ public class UtlInvBase<RS> {
 
   /**
    * <p>Geter for logger.</p>
-   * @return ILogger
+   * @return ILog
    **/
-  public final ILogger getLogger() {
+  public final ILog getLogger() {
     return this.logger;
   }
 
@@ -1277,7 +1278,7 @@ public class UtlInvBase<RS> {
    * <p>Setter for logger.</p>
    * @param pLogger reference
    **/
-  public final void setLogger(final ILogger pLogger) {
+  public final void setLogger(final ILog pLogger) {
     this.logger = pLogger;
   }
 }

@@ -15,7 +15,7 @@ package org.beigesoft.accounting.factory;
 import java.util.Map;
 import java.util.HashMap;
 
-import org.beigesoft.log.ILogger;
+import org.beigesoft.log.ILog;
 import org.beigesoft.model.IHasId;
 import org.beigesoft.persistable.IPersistableBase;
 import org.beigesoft.factory.FactoryPersistableBase;
@@ -216,7 +216,7 @@ public class FctBnAccEntitiesProcessors<RS>
   /**
    * <p>Logger.</p>
    **/
-  private ILogger logger;
+  private ILog logger;
 
   /**
    * <p>App beans factort.</p>
@@ -3891,9 +3891,9 @@ public class FctBnAccEntitiesProcessors<RS>
 
   /**
    * <p>Geter for logger.</p>
-   * @return ILogger
+   * @return ILog
    **/
-  public final synchronized ILogger getLogger() {
+  public final synchronized ILog getLogger() {
     return this.logger;
   }
 
@@ -3901,7 +3901,7 @@ public class FctBnAccEntitiesProcessors<RS>
    * <p>Setter for logger.</p>
    * @param pLogger reference
    **/
-  public final synchronized void setLogger(final ILogger pLogger) {
+  public final synchronized void setLogger(final ILog pLogger) {
     this.logger = pLogger;
   }
 }

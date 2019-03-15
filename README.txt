@@ -4,6 +4,8 @@ Beigesoft ™ Accounting library.
 
 It implements accounting models and services, e.g. AccountingEntry, SalesInvoice, service that fill payroll taxes according tax percentage table, etc.
 
+Version 1.1.9:
+new beige-log version, debug range #11-12 (11000..12999)
 Version 1.1.7:
 *added multi-currency (including payments tracking).
 *sales taxes:
