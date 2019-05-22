@@ -158,7 +158,7 @@ public class PrcAccEntrySave<RS>
         accSettings.getCostPrecision(), accSettings.getRoundingMode()));
       getSrvOrm().updateEntity(pAddParam, itsOwner);
       getSrvBalance().handleNewAccountEntry(pAddParam, null, null,
-        pEntity.getItsDate()); //This is for SrvBalanceStd only!!!
+        pEntity.getItsDate()); //TODO This is for SrvBalanceStd only!!!
       pAddParam.put("nextEntity", itsOwner);
       pAddParam.put("nameOwnerEntity", AccountingEntries.class.getSimpleName());
       pRequestData.setAttribute("accSettings", accSettings);

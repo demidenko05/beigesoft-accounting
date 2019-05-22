@@ -1808,6 +1808,7 @@ select null, 2
       </pre>
       Postgresql can't do this since 2011 see <a href="https://www.postgresql.org/message-id/201104122018.p3CKIlWR042915@wwwmaster.postgresql.org">https://www.postgresql.org/message-id/201104122018.p3CKIlWR042915@wwwmaster.postgresql.org</a>
       There (in link) is also information that Oracle can't do it too (2011 year). Postgresql requires non-standard null type e.g. null::TEXT or null::INTEGER.
+      !!!now PostgreSQL9.6.11 can does it fine!!!
       </p>
 
       <h5>Exceptions throw ExceptionWithCode:</h5>
